@@ -1,0 +1,1345 @@
+<!DOCTYPE html>
+<html lang="ar" dir="rtl">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>هيكل الجدول - {{ department.name }}</title>
+    
+    <!-- Bootstrap 5 CSS -->
+    <link href="https://cdn.jsdelivr.net/npm/bootstrap@5.3.0/dist/css/bootstrap.min.css" rel="stylesheet">
+    
+    <!-- Bootstrap Icons -->
+    <link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/bootstrap-icons@1.10.0/font/bootstrap-icons.css">
+    
+    <!-- Select2 CSS -->
+    <link href="https://cdn.jsdelivr.net/npm/select2@4.1.0-rc.0/dist/css/select2.min.css" rel="stylesheet" />
+    <link href="https://cdn.jsdelivr.net/npm/select2-bootstrap-5-theme@1.3.0/dist/select2-bootstrap-5-theme.rtl.min.css" rel="stylesheet" />
+    
+    <style>
+        :root {
+            --primary-color: #10b981;
+            --primary-dark: #059669;
+            --secondary-color: #3b82f6;
+            --danger-color: #ef4444;
+            --warning-color: #f59e0b;
+        }
+
+        body {
+            background-color: #f3f4f6;
+            font-family: 'Cairo', sans-serif;
+        }
+
+        /* تحسينات عامة */
+        .card {
+            border: none;
+            border-radius: 15px;
+            box-shadow: 0 10px 25px rgba(0,0,0,0.05);
+            overflow: hidden;
+        }
+
+        .card-header {
+            border-bottom: none;
+            padding: 1rem 1.5rem;
+        }
+
+        .card-header.bg-success {
+            background: linear-gradient(135deg, var(--primary-color), var(--primary-dark)) !important;
+        }
+
+        .card-header.bg-primary {
+            background: linear-gradient(135deg, var(--secondary-color), #2563eb) !important;
+        }
+
+        .card-header.bg-info {
+            background: linear-gradient(135deg, #6366f1, #4f46e5) !important;
+        }
+
+        /* الجدول الرئيسي */
+        .structure-table {
+            width: 100%;
+            border-collapse: separate;
+            border-spacing: 0;
+        }
+        
+        .structure-table th {
+            background: linear-gradient(135deg, var(--primary-color), var(--primary-dark));
+            color: white;
+            padding: 15px 12px;
+            text-align: center;
+            font-weight: 600;
+            font-size: 0.95rem;
+            border: none;
+            white-space: nowrap;
+        }
+        
+        .structure-table th:first-child {
+            border-top-right-radius: 10px;
+        }
+        
+        .structure-table th:last-child {
+            border-top-left-radius: 10px;
+        }
+        
+        .structure-table td {
+            padding: 12px 8px;
+            border-bottom: 1px solid #e5e7eb;
+            vertical-align: middle;
+            background-color: white;
+        }
+        
+        .structure-table tbody tr:hover td {
+            background-color: #f9fafb;
+        }
+        
+        .structure-table tbody tr:last-child td {
+            border-bottom: none;
+        }
+
+        /* حقول الإدخال */
+        .form-control, .form-select {
+            border: 2px solid #e5e7eb;
+            border-radius: 10px;
+            padding: 0.6rem 1rem;
+            transition: all 0.2s;
+            font-size: 0.95rem;
+        }
+
+        .form-control:focus, .form-select:focus {
+            border-color: var(--primary-color);
+            box-shadow: 0 0 0 3px rgba(16, 185, 129, 0.1);
+        }
+
+        .job-title-input {
+            font-weight: 600;
+            background-color: #f0fdf4;
+            border: 2px solid #a7f3d0;
+            min-width: 200px;
+        }
+
+        .job-code-input {
+            font-weight: 600;
+            background-color: #f0f9ff;
+            border: 2px solid #bae6fd;
+            min-width: 100px;
+            text-align: center;
+            direction: ltr;
+        }
+
+        .shift-input {
+            background-color: #ffffff;
+            border: 2px solid #e5e7eb;
+            min-width: 180px;
+        }
+
+        .shift-input:hover {
+            border-color: var(--primary-color);
+        }
+
+        /* أرقام الصفوف */
+        .row-number {
+            background-color: #f3f4f6;
+            font-weight: 700;
+            color: #4b5563;
+            width: 50px;
+            text-align: center;
+            border-radius: 8px;
+        }
+
+        /* أزرار الإجراءات */
+        .btn-group .btn {
+            padding: 0.4rem 0.6rem;
+            border-radius: 8px !important;
+            margin: 0 2px;
+            border: 1px solid #e5e7eb;
+        }
+
+        .btn-group .btn:hover {
+            transform: translateY(-1px);
+            box-shadow: 0 4px 8px rgba(0,0,0,0.1);
+        }
+
+        .btn-outline-primary {
+            color: var(--secondary-color);
+            border-color: var(--secondary-color);
+        }
+
+        .btn-outline-primary:hover {
+            background-color: var(--secondary-color);
+            border-color: var(--secondary-color);
+        }
+
+        .btn-outline-success {
+            color: var(--primary-color);
+            border-color: var(--primary-color);
+        }
+
+        .btn-outline-success:hover {
+            background-color: var(--primary-color);
+            border-color: var(--primary-color);
+        }
+
+        .btn-outline-danger {
+            color: var(--danger-color);
+            border-color: var(--danger-color);
+        }
+
+        .btn-outline-danger:hover {
+            background-color: var(--danger-color);
+            border-color: var(--danger-color);
+        }
+
+        /* بطاقات الإحصائيات */
+        .stats-card {
+            background: linear-gradient(135deg, #ffffff, #f9fafb);
+            border: 2px solid #e5e7eb;
+            border-radius: 12px;
+            padding: 1rem;
+            text-align: center;
+            transition: all 0.2s;
+        }
+
+        .stats-card:hover {
+            transform: translateY(-2px);
+            border-color: var(--primary-color);
+            box-shadow: 0 10px 20px rgba(16,185,129,0.1);
+        }
+
+        .stats-number {
+            font-size: 1.8rem;
+            font-weight: 700;
+            color: var(--primary-color);
+            line-height: 1.2;
+        }
+
+        .stats-label {
+            font-size: 0.9rem;
+            color: #6b7280;
+            font-weight: 500;
+        }
+
+        /* Toast notifications */
+        .toast-container {
+            position: fixed;
+            top: 20px;
+            left: 20px;
+            z-index: 9999;
+        }
+
+        .toast {
+            border-radius: 10px;
+            box-shadow: 0 10px 25px rgba(0,0,0,0.1);
+        }
+
+        /* تحسينات للجوال */
+        @media (max-width: 1200px) {
+            .structure-table {
+                font-size: 0.9rem;
+            }
+            
+            .job-title-input {
+                min-width: 150px;
+            }
+            
+            .shift-input {
+                min-width: 130px;
+            }
+        }
+
+        @media (max-width: 768px) {
+            .btn-group {
+                display: flex;
+                flex-direction: column;
+                gap: 5px;
+            }
+            
+            .btn-group .btn {
+                border-radius: 6px !important;
+            }
+        }
+
+        /* شارة الإصدار */
+        .version-badge {
+            background: rgba(255,255,255,0.2);
+            color: white;
+            padding: 0.5rem 1rem;
+            border-radius: 30px;
+            font-size: 0.9rem;
+            backdrop-filter: blur(5px);
+        }
+
+        /* تلميحات الموظفين */
+        .employee-suggestions {
+            position: absolute;
+            background: white;
+            border: 2px solid #e5e7eb;
+            border-radius: 10px;
+            box-shadow: 0 10px 25px rgba(0,0,0,0.1);
+            max-height: 250px;
+            overflow-y: auto;
+            width: 100%;
+            z-index: 1000;
+        }
+
+        .suggestion-item {
+            padding: 10px 15px;
+            border-bottom: 1px solid #f3f4f6;
+            cursor: pointer;
+            transition: background 0.2s;
+        }
+
+        .suggestion-item:hover {
+            background-color: #f0fdf4;
+        }
+
+        .suggestion-item strong {
+            color: #1f2937;
+        }
+
+        .suggestion-item small {
+            color: #6b7280;
+        }
+
+        /* مؤشر التحميل */
+        .loading-spinner {
+            display: inline-block;
+            width: 1rem;
+            height: 1rem;
+            border: 2px solid #e5e7eb;
+            border-top-color: var(--primary-color);
+            border-radius: 50%;
+            animation: spin 1s linear infinite;
+        }
+
+        @keyframes spin {
+            to { transform: rotate(360deg); }
+        }
+    </style>
+</head>
+<body>
+    <!-- Toast Container -->
+    <div class="toast-container" id="toastContainer"></div>
+
+    <div class="container-fluid py-4">
+        <!-- ===== HEADER SECTION ===== -->
+        <div class="card shadow mb-4">
+            <div class="card-header bg-success text-white">
+                <div class="d-flex justify-content-between align-items-center flex-wrap">
+                    <div>
+                        <h4 class="mb-1">
+                            <i class="bi bi-calendar-week me-2"></i>
+                            هيكل الجدول - {{ department.name }}
+                        </h4>
+                        <p class="mb-0 opacity-75 small">
+                            <i class="bi bi-info-circle me-1"></i>
+                            تصميم هيكل الجدول الأسبوعي للقسم (نفس الهيكل لكل الأيام)
+                        </p>
+                    </div>
+                    <div class="d-flex gap-2 mt-2 mt-md-0">
+                        <span class="version-badge" id="lastModified">
+                            <i class="bi bi-clock-history me-1"></i>
+                            آخر تحديث: {{ department.structure_last_modified.strftime('%Y-%m-%d %H:%M') if department.structure_last_modified else 'لم يتم التحديث' }}
+                        </span>
+                        <a href="{{ url_for('admin_departments') }}" class="btn btn-light">
+                            <i class="bi bi-arrow-right me-2"></i>
+                            العودة للأقسام
+                        </a>
+                    </div>
+                </div>
+            </div>
+        </div>
+
+        <!-- Flash Messages -->
+        {% with messages = get_flashed_messages(with_categories=true) %}
+            {% if messages %}
+                {% for category, message in messages %}
+                <div class="alert alert-{{ 'danger' if category == 'error' else 'success' }} alert-dismissible fade show mb-4">
+                    <i class="bi bi-{{ 'exclamation-triangle' if category == 'error' else 'check-circle' }} me-2"></i>
+                    {{ message }}
+                    <button type="button" class="btn-close" data-bs-dismiss="alert"></button>
+                </div>
+                {% endfor %}
+            {% endif %}
+        {% endwith %}
+
+        <div class="row g-4">
+            <!-- ===== LEFT SIDEBAR - CONTROLS ===== -->
+            <div class="col-lg-3">
+                <div class="card shadow">
+                    <div class="card-header bg-primary text-white">
+                        <h5 class="mb-0">
+                            <i class="bi bi-tools me-2"></i>
+                            أدوات التحكم
+                        </h5>
+                    </div>
+                    <div class="card-body">
+                        <!-- إحصائيات سريعة -->
+                        <div class="mb-4">
+                            <h6 class="fw-bold text-primary mb-3">
+                                <i class="bi bi-pie-chart me-2"></i>
+                                إحصائيات سريعة
+                            </h6>
+                            <div class="row g-2">
+                                <div class="col-6">
+                                    <div class="stats-card">
+                                        <span class="stats-number">{{ structure_rows|length }}</span>
+                                        <span class="stats-label">عدد الوظائف</span>
+                                    </div>
+                                </div>
+                                <div class="col-6">
+                                    <div class="stats-card">
+                                        <span class="stats-number">{{ department.schedule_structure_version or 1 }}</span>
+                                        <span class="stats-label">الإصدار</span>
+                                    </div>
+                                </div>
+                                <div class="col-12 mt-2">
+                                    <div class="stats-card">
+                                        <span class="stats-number">
+                                            {% if structure_rows %}
+                                                {% set total = 0 %}
+                                                {% for row in structure_rows %}
+                                                    {% if row.morning_shift and row.morning_shift.strip() %}{% set total = total + 1 %}{% endif %}
+                                                    {% if row.evening_shift and row.evening_shift.strip() %}{% set total = total + 1 %}{% endif %}
+                                                    {% if row.night_shift and row.night_shift.strip() %}{% set total = total + 1 %}{% endif %}
+                                                {% endfor %}
+                                                {{ total }}
+                                            {% else %}
+                                                0
+                                            {% endif %}
+                                        </span>                             
+                                        <span class="stats-label">إجمالي التعيينات</span>
+                                    </div>
+                                </div>
+                            </div>
+                        </div>
+
+                        <!-- Add New Job -->
+                        <div class="mb-4">
+                            <h6 class="fw-bold text-primary mb-3">
+                                <i class="bi bi-plus-circle me-2"></i>
+                                إضافة وظيفة جديدة
+                            </h6>
+                            <form method="POST" action="{{ url_for('admin_schedule_structure_update', dept_id=department.id) }}" id="addRowForm">
+                                <div class="input-group">
+                                    <input type="text" name="job_title" class="form-control" placeholder="اسم الوظيفة" required>
+                                    <button type="submit" name="add_row" value="1" class="btn btn-success">
+                                        <i class="bi bi-plus-lg"></i>
+                                    </button>
+                                </div>
+                                <small class="text-muted mt-2 d-block">
+                                    <i class="bi bi-info-circle me-1"></i>
+                                    سيتم إضافة الوظيفة مع كود افتراضي
+                                </small>
+                            </form>
+                        </div>
+
+                        <!-- Excel Tools -->
+                        <div class="mb-4">
+                            <h6 class="fw-bold text-primary mb-3">
+                                <i class="bi bi-file-excel me-2"></i>
+                                أدوات Excel
+                            </h6>
+                            <form method="POST" action="{{ url_for('admin_schedule_structure_update', dept_id=department.id) }}" enctype="multipart/form-data" class="mb-3" id="excelUploadForm">
+                                <div class="input-group">
+                                    <input type="file" name="excel_file" class="form-control" accept=".xlsx,.xls" required>
+                                    <button type="submit" class="btn btn-primary" id="uploadBtn">
+                                        <i class="bi bi-upload"></i>
+                                    </button>
+                                </div>
+                                <small class="text-muted">
+                                    <i class="bi bi-info-circle me-1"></i>
+                                    الملف يجب أن يحتوي على أعمدة: الوظيفة، كود الوظيفة، الشيفت الصباحي، الشيفت المسائي، شيفت السهر
+                                </small>
+                                <div class="progress mt-2 d-none" id="uploadProgress">
+                                    <div class="progress-bar progress-bar-striped progress-bar-animated" 
+                                         role="progressbar" style="width: 0%">0%</div>
+                                </div>
+                            </form>
+                            <form method="POST" action="{{ url_for('export_schedule_structure', dept_id=department.id) }}">
+                                <button type="submit" class="btn btn-success w-100">
+                                    <i class="bi bi-download me-2"></i>
+                                    تحميل كـ Excel
+                                </button>
+                            </form>
+                        </div>
+
+                        <!-- Employee Search -->
+                        <div class="mb-4">
+                            <h6 class="fw-bold text-primary mb-3">
+                                <i class="bi bi-search me-2"></i>
+                                بحث عن موظف
+                            </h6>
+                            <select class="form-select" id="employeeSearch" style="width: 100%;">
+                                <option value="">ابحث عن موظف...</option>
+                            </select>
+                            <div class="mt-3" id="employeePositions"></div>
+                        </div>
+
+                        <!-- Job Code Reference -->
+                        <div class="mb-4">
+                            <h6 class="fw-bold text-primary mb-3">
+                                <i class="bi bi-upc-scan me-2"></i>
+                                أكواد الوظائف الشائعة
+                            </h6>
+                            <div class="border rounded p-2" style="max-height: 150px; overflow-y: auto;">
+                                <table class="table table-sm table-borderless">
+                                    <tbody id="jobCodesList">
+                                        <!-- سيتم ملؤها بالجافاسكريبت -->
+                                    </tbody>
+                                </table>
+                            </div>
+                        </div>
+
+                        <!-- Schedule Actions -->
+                        <div class="mb-4">
+                            <h6 class="fw-bold text-primary mb-3">
+                                <i class="bi bi-calendar-check me-2"></i>
+                                إجراءات الجداول
+                            </h6>
+                            <div class="d-grid gap-2">
+                                <button type="button" class="btn btn-warning" onclick="updateAllSchedules()" id="updateBtn">
+                                    <i class="bi bi-arrow-repeat me-2"></i>
+                                    تحديث الجداول الحالية
+                                </button>
+                                <button type="button" class="btn btn-info" onclick="createSchedulesFromStructure()" id="createBtn">
+                                    <i class="bi bi-calendar-plus me-2"></i>
+                                    إنشاء جداول جديدة
+                                </button>
+                                <button type="button" class="btn btn-danger" onclick="regenerateAllSchedules()" id="regenerateBtn">
+                                    <i class="bi bi-arrow-clockwise me-2"></i>
+                                    إعادة توليد الكل
+                                </button>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+            </div>
+
+            <!-- ===== MAIN CONTENT - STRUCTURE TABLE ===== -->
+            <div class="col-lg-9">
+                <div class="card shadow">
+                    <div class="card-header bg-info text-white">
+                        <div class="d-flex justify-content-between align-items-center flex-wrap">
+                            <h5 class="mb-0">
+                                <i class="bi bi-table me-2"></i>
+                                هيكل الجدول (ينطبق على جميع أيام الأسبوع)
+                            </h5>
+                            <div class="d-flex gap-2 mt-2 mt-md-0">
+                                <button type="button" class="btn btn-sm btn-light" onclick="copyStructure()">
+                                    <i class="bi bi-files me-1"></i>
+                                    نسخ
+                                </button>
+                                <span class="version-badge">
+                                    <i class="bi bi-tag me-1"></i>
+                                    الإصدار: <span id="versionNumber">{{ department.schedule_structure_version or 1 }}</span>
+                                </span>
+                            </div>
+                        </div>
+                    </div>
+                    
+                    <form method="POST" action="{{ url_for('admin_schedule_structure_update', dept_id=department.id) }}" id="mainForm">
+                        <div class="card-body p-0">
+                            <div class="table-responsive">
+                                <table class="structure-table" id="structureTable">
+                                    <thead>
+                                        <tr>
+                                            <th width="50">#</th>
+                                            <th>الوظيفة</th>
+                                            <th>كود الوظيفة</th>
+                                            <th>الشيفت الصباحي</th>
+                                            <th>الشيفت المسائي</th>
+                                            <th>شيفت السهر</th>
+                                            <th width="180">إجراءات</th>
+                                        </tr>
+                                    </thead>
+                                    <tbody id="tableBody">
+                                        {% for row in structure_rows %}
+                                        <tr data-row-id="{{ row.id }}" data-job="{{ row.job_title }}">
+                                            <td>
+                                                <div class="row-number py-2">
+                                                    <span class="row-index">{{ loop.index }}</span>
+                                                    <input type="hidden" name="order_{{ row.id }}" value="{{ row.row_order }}" class="row-order">
+                                                </div>
+                                            </td>
+                                            <td>
+                                                <input type="text" name="job_title_{{ row.id }}" 
+                                                       value="{{ row.job_title }}" 
+                                                       class="form-control job-title-input"
+                                                       placeholder="اسم الوظيفة"
+                                                       required>
+                                            </td>
+                                            <td>
+                                                <input type="text" name="job_code_{{ row.id }}" 
+                                                       value="{{ row.job_code or '' }}" 
+                                                       class="form-control job-code-input"
+                                                       placeholder="مثال: 63"
+                                                       maxlength="10">
+                                            </td>
+                                            <td>
+                                                <div class="position-relative">
+                                                    <input type="text" name="morning_shift_{{ row.id }}" 
+                                                           value="{{ row.morning_shift }}" 
+                                                           class="form-control shift-input employee-autocomplete"
+                                                           placeholder="اسم الموظف"
+                                                           data-shift="morning"
+                                                           data-row="{{ row.id }}">
+                                                    <div class="employee-suggestions d-none"></div>
+                                                </div>
+                                            </td>
+                                            <td>
+                                                <div class="position-relative">
+                                                    <input type="text" name="evening_shift_{{ row.id }}" 
+                                                           value="{{ row.evening_shift }}" 
+                                                           class="form-control shift-input employee-autocomplete"
+                                                           placeholder="اسم الموظف"
+                                                           data-shift="evening"
+                                                           data-row="{{ row.id }}">
+                                                    <div class="employee-suggestions d-none"></div>
+                                                </div>
+                                            </td>
+                                            <td>
+                                                <div class="position-relative">
+                                                    <input type="text" name="night_shift_{{ row.id }}" 
+                                                           value="{{ row.night_shift }}" 
+                                                           class="form-control shift-input employee-autocomplete"
+                                                           placeholder="اسم الموظف"
+                                                           data-shift="night"
+                                                           data-row="{{ row.id }}">
+                                                    <div class="employee-suggestions d-none"></div>
+                                                </div>
+                                            </td>
+                                            <td>
+                                                <div class="btn-group" role="group">
+                                                    <button type="button" class="btn btn-outline-primary" 
+                                                            onclick="fillWithEmployees({{ row.id }})"
+                                                            title="ملء بموظفين مقترحين">
+                                                        <i class="bi bi-people-fill"></i>
+                                                    </button>
+                                                    <button type="button" class="btn btn-outline-secondary" 
+                                                            onclick="moveRow({{ row.id }}, 'up')"
+                                                            title="تحريك لأعلى"
+                                                            {{ 'disabled' if loop.first }}>
+                                                        <i class="bi bi-arrow-up"></i>
+                                                    </button>
+                                                    <button type="button" class="btn btn-outline-secondary" 
+                                                            onclick="moveRow({{ row.id }}, 'down')"
+                                                            title="تحريك لأسفل"
+                                                            {{ 'disabled' if loop.last }}>
+                                                        <i class="bi bi-arrow-down"></i>
+                                                    </button>
+                                                    <button type="button" class="btn btn-outline-success" 
+                                                            onclick="copyRow({{ row.id }})"
+                                                            title="نسخ الصف">
+                                                        <i class="bi bi-files"></i>
+                                                    </button>
+                                                    <button type="button" class="btn btn-outline-danger" 
+                                                            onclick="deleteRow({{ row.id }})"
+                                                            title="حذف">
+                                                        <i class="bi bi-trash"></i>
+                                                    </button>
+                                                </div>
+                                            </td>
+                                        </tr>
+                                        {% endfor %}
+                                        
+                                        {% if not structure_rows %}
+                                        <tr id="emptyRow">
+                                            <td colspan="7" class="text-center py-5">
+                                                <i class="bi bi-table display-1 text-muted mb-3 d-block"></i>
+                                                <h5 class="text-muted">لا توجد بيانات</h5>
+                                                <p class="text-muted mb-3">ابدأ بإضافة وظيفة جديدة أو رفع ملف Excel</p>
+                                                <button type="button" class="btn btn-primary" onclick="document.querySelector('input[name=\"job_title\"]').focus()">
+                                                    <i class="bi bi-plus-circle me-2"></i>
+                                                    إضافة وظيفة
+                                                </button>
+                                            </td>
+                                        </tr>
+                                        {% endif %}
+                                    </tbody>
+                                </table>
+                            </div>
+                        </div>
+                        
+                        {% if structure_rows %}
+                        <div class="card-footer bg-white">
+                            <div class="d-flex justify-content-between align-items-center flex-wrap">
+                                <div class="d-flex gap-2">
+                                    <button type="submit" name="save_changes" value="1" class="btn btn-success" id="saveBtn">
+                                        <i class="bi bi-check-circle me-2"></i>
+                                        حفظ التغييرات
+                                    </button>
+                                    <button type="button" class="btn btn-outline-secondary" onclick="resetForm()">
+                                        <i class="bi bi-arrow-counterclockwise me-2"></i>
+                                        إعادة تعيين
+                                    </button>
+                                    <button type="button" class="btn btn-outline-info" onclick="validateStructure()">
+                                        <i class="bi bi-check2-circle me-2"></i>
+                                        التحقق من الصحة
+                                    </button>
+                                </div>
+                                <small class="text-muted">
+                                    <i class="bi bi-info-circle me-1"></i>
+                                    إجمالي {{ structure_rows|length }} وظيفة
+                                </small>
+                            </div>
+                        </div>
+                        {% endif %}
+                    </form>
+                </div>
+            </div>
+        </div>
+    </div>
+
+    <!-- ===== MODALS ===== -->
+
+    <!-- Delete Confirmation Modal -->
+    <div class="modal fade" id="deleteModal" tabindex="-1">
+        <div class="modal-dialog">
+            <div class="modal-content">
+                <div class="modal-header bg-danger text-white">
+                    <h5 class="modal-title">
+                        <i class="bi bi-exclamation-triangle me-2"></i>
+                        تأكيد الحذف
+                    </h5>
+                    <button type="button" class="btn-close btn-close-white" data-bs-dismiss="modal"></button>
+                </div>
+                <div class="modal-body">
+                    <p>هل أنت متأكد من أنك تريد حذف هذه الوظيفة؟</p>
+                    <p class="text-muted small">
+                        <i class="bi bi-info-circle me-1"></i>
+                        سيتم حذف جميع البيانات المرتبطة بهذه الوظيفة من جميع الجداول.
+                    </p>
+                </div>
+                <div class="modal-footer">
+                    <button type="button" class="btn btn-secondary" data-bs-dismiss="modal">إلغاء</button>
+                    <form method="POST" action="{{ url_for('admin_schedule_structure_update', dept_id=department.id) }}" id="deleteForm">
+                        <input type="hidden" name="delete_row" id="deleteRowId">
+                        <button type="submit" class="btn btn-danger" id="confirmDeleteBtn">
+                            <i class="bi bi-trash me-2"></i>
+                            حذف
+                        </button>
+                    </form>
+                </div>
+            </div>
+        </div>
+    </div>
+
+    <!-- Copy Row Modal -->
+    <div class="modal fade" id="copyRowModal" tabindex="-1">
+        <div class="modal-dialog">
+            <div class="modal-content">
+                <div class="modal-header bg-success text-white">
+                    <h5 class="modal-title">
+                        <i class="bi bi-files me-2"></i>
+                        نسخ الصف
+                    </h5>
+                    <button type="button" class="btn-close btn-close-white" data-bs-dismiss="modal"></button>
+                </div>
+                <div class="modal-body">
+                    <form id="copyRowForm">
+                        <div class="mb-3">
+                            <label class="form-label">اسم الوظيفة الجديدة</label>
+                            <input type="text" class="form-control" id="newJobTitle" placeholder="أدخل اسم الوظيفة الجديدة" required>
+                        </div>
+                        <div class="mb-3">
+                            <label class="form-label">كود الوظيفة الجديد</label>
+                            <input type="text" class="form-control" id="newJobCode" placeholder="أدخل كود الوظيفة">
+                        </div>
+                    </form>
+                </div>
+                <div class="modal-footer">
+                    <button type="button" class="btn btn-secondary" data-bs-dismiss="modal">إلغاء</button>
+                    <button type="button" class="btn btn-success" onclick="confirmCopyRow()">
+                        <i class="bi bi-files me-2"></i>
+                        نسخ
+                    </button>
+                </div>
+            </div>
+        </div>
+    </div>
+
+    <!-- Validation Results Modal -->
+    <div class="modal fade" id="validationModal" tabindex="-1">
+        <div class="modal-dialog modal-lg">
+            <div class="modal-content">
+                <div class="modal-header bg-info text-white">
+                    <h5 class="modal-title">
+                        <i class="bi bi-check2-circle me-2"></i>
+                        نتائج التحقق
+                    </h5>
+                    <button type="button" class="btn-close btn-close-white" data-bs-dismiss="modal"></button>
+                </div>
+                <div class="modal-body" id="validationResults">
+                    <!-- نتائج التحقق تظهر هنا -->
+                </div>
+                <div class="modal-footer">
+                    <button type="button" class="btn btn-secondary" data-bs-dismiss="modal">إغلاق</button>
+                </div>
+            </div>
+        </div>
+    </div>
+
+    <!-- ===== SCRIPTS ===== -->
+    <script src="https://cdn.jsdelivr.net/npm/bootstrap@5.3.0/dist/js/bootstrap.bundle.min.js"></script>
+    <script src="https://code.jquery.com/jquery-3.6.0.min.js"></script>
+    <script src="https://cdn.jsdelivr.net/npm/select2@4.1.0-rc.0/dist/js/select2.min.js"></script>
+
+    <script>
+        // ====== المتغيرات العامة ======
+        let employees = [];
+        let currentCopyRowId = null;
+        
+        // أكواد الوظائف الشائعة (يمكن تحديثها من قاعدة البيانات)
+        const commonJobCodes = {
+            'وظائف ادارية': '63',
+            'خدمات معاونة الدقي': '7',
+            'رنين الدور الأول': '9',
+            'الرنين المقفول': '10',
+            'الخدمات المعاونة ساريدار': '14',
+            'استقبال ساريدار أول': '15',
+            'استقبال تليفونات': '16',
+            'فني اشعة X-Ray برج الدقي': '17',
+            'تقارير طبية رئيسي': '18',
+            'تمريض شرايين ساريدار دور أول': '19',
+            'مساعد فني رئيسي': '20',
+            'عامل نظافة رئيسي': '21',
+            'عامل توصيل رئيسي': '22',
+            'طبيب مامو جرام': '61',
+            'فنى ماموجرام': '62',
+            'تمريض رسم قلب بالمجهود': '34',
+            'أمين المخزن': '86',
+            'تطبيق طلبية': '84',
+            'بدل شيفت قديم': '91',
+            'إستقبال دور أول 12 ساعة': '95',
+            'تمريض رسم قلب': '111',
+            'تمريض أشعة عادية وكثافة عظام': '112',
+            'تمريض بانوراما': '113',
+            'تمريض ماموجرام': '115',
+            'تحت الأختبار': '99',
+            'الحوامدية استقبال': '100',
+            'I.T': '122',
+            'إستقبال دور أرضي 12 ساعة': '123',
+            'الحوامدية تمريض': '124',
+            'الحوامدية I.T': '130',
+            'تمريض جاما كاميرا': '137',
+            'فني جاما كاميرا': '138'
+        };
+
+        // ====== التهيئة عند تحميل الصفحة ======
+        $(document).ready(function() {
+            loadEmployees();
+            initializeSelect2();
+            initializeAutocomplete();
+            displayJobCodes();
+            initializeRowNumbers();
+        });
+
+        // ====== دوال تحميل البيانات ======
+        function loadEmployees() {
+            $.get('/api/department_employees/{{ department.id }}', function(data) {
+                if (data.success) {
+                    employees = data.employees;
+                    console.log('✅ تم تحميل', employees.length, 'موظف');
+                }
+            }).fail(function() {
+                showToast('error', 'فشل تحميل قائمة الموظفين');
+            });
+        }
+
+        function displayJobCodes() {
+            let html = '';
+            let count = 0;
+            for (const [job, code] of Object.entries(commonJobCodes)) {
+                if (count++ < 10) { // عرض أول 10 فقط
+                    html += `<tr>
+                        <td><small>${job}</small></td>
+                        <td><span class="badge bg-info">${code}</span></td>
+                    </tr>`;
+                }
+            }
+            $('#jobCodesList').html(html);
+        }
+
+        // ====== دوال Select2 والبحث ======
+        function initializeSelect2() {
+            $('#employeeSearch').select2({
+                theme: 'bootstrap-5',
+                placeholder: 'ابحث عن موظف...',
+                allowClear: true,
+                minimumInputLength: 2,
+                ajax: {
+                    url: '/api/employee/search',
+                    dataType: 'json',
+                    delay: 250,
+                    data: function(params) {
+                        return {
+                            q: params.term,
+                            department_id: {{ department.id }}
+                        };
+                    },
+                    processResults: function(data) {
+                        return {
+                            results: data.employees.map(function(emp) {
+                                return {
+                                    id: emp.id,
+                                    text: emp.display_name + ' (' + (emp.job_title || 'موظف') + ')',
+                                    name: emp.display_name,
+                                    job: emp.job_title
+                                };
+                            })
+                        };
+                    }
+                }
+            }).on('select2:select', function(e) {
+                const employee = e.params.data;
+                showEmployeePositions(employee);
+            });
+        }
+
+        function showEmployeePositions(employee) {
+            let html = '<div class="mt-3 p-3 border rounded bg-light">';
+            html += `<h6 class="fw-bold mb-3">وظائف ${employee.text}:</h6>`;
+            
+            let found = false;
+            $('#tableBody tr').each(function() {
+                const jobTitle = $(this).data('job');
+                if (jobTitle === employee.job) {
+                    found = true;
+                    const rowId = $(this).data('row-id');
+                    html += `<div class="mb-2 p-2 bg-white rounded d-flex justify-content-between align-items-center">`;
+                    html += `<span><strong>${jobTitle}</strong></span>`;
+                    html += `<button class="btn btn-sm btn-outline-primary" onclick="scrollToRow(${rowId})">`;
+                    html += `<i class="bi bi-eye"></i> عرض`;
+                    html += `</button>`;
+                    html += `</div>`;
+                }
+            });
+            
+            if (!found) {
+                html += '<p class="text-muted mb-0">لا توجد وظائف مطابقة</p>';
+            }
+            
+            html += '</div>';
+            $('#employeePositions').html(html);
+        }
+
+        function scrollToRow(rowId) {
+            const row = $(`tr[data-row-id="${rowId}"]`);
+            if (row.length) {
+                $('html, body').animate({
+                    scrollTop: row.offset().top - 100
+                }, 500);
+                row.addClass('table-primary');
+                setTimeout(() => row.removeClass('table-primary'), 2000);
+            }
+        }
+
+        // ====== دوال الإكمال التلقائي ======
+        function initializeAutocomplete() {
+            $('.employee-autocomplete').on('input', function() {
+                const input = $(this);
+                const value = input.val();
+                const suggestionsDiv = input.siblings('.employee-suggestions');
+                
+                if (value.length < 2) {
+                    suggestionsDiv.addClass('d-none');
+                    return;
+                }
+                
+                const filtered = employees.filter(emp => 
+                    emp.name && emp.name.includes(value) || 
+                    (emp.arabic_name && emp.arabic_name.includes(value))
+                ).slice(0, 10);
+                
+                if (filtered.length > 0) {
+                    let html = '';
+                    filtered.forEach(emp => {
+                        html += `<div class="suggestion-item" onclick="selectEmployee('${input.attr('name')}', '${emp.name}')">`;
+                        html += `<strong>${emp.name}</strong>`;
+                        if (emp.job_title) {
+                            html += `<br><small class="text-muted">${emp.job_title}</small>`;
+                        }
+                        html += '</div>';
+                    });
+                    suggestionsDiv.html(html).removeClass('d-none');
+                } else {
+                    suggestionsDiv.addClass('d-none');
+                }
+            });
+            
+            $(document).on('click', function(e) {
+                if (!$(e.target).closest('.employee-autocomplete, .employee-suggestions').length) {
+                    $('.employee-suggestions').addClass('d-none');
+                }
+            });
+        }
+
+        function selectEmployee(inputName, employeeName) {
+            $(`[name="${inputName}"]`).val(employeeName);
+            $('.employee-suggestions').addClass('d-none');
+        }
+
+        // ====== دوال التعامل مع الصفوف ======
+        function initializeRowNumbers() {
+            updateRowNumbers();
+        }
+
+        function moveRow(rowId, direction) {
+            const rows = $('#tableBody tr').toArray();
+            const currentIndex = rows.findIndex(row => $(row).data('row-id') == rowId);
+            
+            if (direction === 'up' && currentIndex > 0) {
+                [rows[currentIndex - 1], rows[currentIndex]] = [rows[currentIndex], rows[currentIndex - 1]];
+            } else if (direction === 'down' && currentIndex < rows.length - 1) {
+                [rows[currentIndex], rows[currentIndex + 1]] = [rows[currentIndex + 1], rows[currentIndex]];
+            } else {
+                return;
+            }
+            
+            $('#tableBody').empty().append(rows);
+            updateRowNumbers();
+            
+            $('#tableBody tr').each(function(index) {
+                $(this).find('.row-order').val(index + 1);
+            });
+        }
+
+        function updateRowNumbers() {
+            $('#tableBody tr').each(function(index) {
+                $(this).find('.row-index').text(index + 1);
+            });
+        }
+
+        function copyRow(rowId) {
+            currentCopyRowId = rowId;
+            const row = $(`tr[data-row-id="${rowId}"]`);
+            const jobTitle = row.find('input[name*="job_title"]').val();
+            const jobCode = row.find('input[name*="job_code"]').val();
+            
+            $('#newJobTitle').val(jobTitle + ' (نسخة)');
+            $('#newJobCode').val(jobCode);
+            
+            const copyModal = new bootstrap.Modal(document.getElementById('copyRowModal'));
+            copyModal.show();
+        }
+
+        function confirmCopyRow() {
+            const newJobTitle = $('#newJobTitle').val().trim();
+            const newJobCode = $('#newJobCode').val().trim();
+            
+            if (!newJobTitle) {
+                showToast('error', 'الرجاء إدخال اسم الوظيفة');
+                return;
+            }
+            
+            // هنا يمكن إضافة كود إرسال نسخ الصف إلى الخادم
+            showToast('success', 'تم نسخ الصف بنجاح');
+            bootstrap.Modal.getInstance(document.getElementById('copyRowModal')).hide();
+        }
+
+        function fillWithEmployees(rowId) {
+            const row = $(`tr[data-row-id="${rowId}"]`);
+            const jobTitle = row.data('job');
+            
+            const matchingEmployees = employees.filter(emp => emp.job_title === jobTitle);
+            
+            if (matchingEmployees.length >= 3) {
+                row.find('input[name*="morning_shift"]').val(matchingEmployees[0].name);
+                row.find('input[name*="evening_shift"]').val(matchingEmployees[1].name);
+                row.find('input[name*="night_shift"]').val(matchingEmployees[2].name);
+                showToast('success', 'تم ملء الشيفتات بموظفين مقترحين');
+            } else if (matchingEmployees.length > 0) {
+                row.find('input[name*="morning_shift"]').val(matchingEmployees[0].name);
+                showToast('warning', `تم العثور على ${matchingEmployees.length} موظف فقط`);
+            } else {
+                showToast('error', 'لم يتم العثور على موظفين لهذه الوظيفة');
+            }
+        }
+
+        // ====== دوال التحقق والصلاحية ======
+        function validateStructure() {
+            const results = {
+                valid: true,
+                messages: [],
+                warnings: [],
+                errors: []
+            };
+            
+            const jobs = [];
+            const jobCodes = [];
+            
+            $('#tableBody tr').each(function() {
+                const jobTitle = $(this).find('input[name*="job_title"]').val().trim();
+                const jobCode = $(this).find('input[name*="job_code"]').val().trim();
+                
+                // التحقق من تكرار الوظائف
+                if (jobs.includes(jobTitle)) {
+                    results.valid = false;
+                    results.errors.push(`وظيفة مكررة: ${jobTitle}`);
+                }
+                jobs.push(jobTitle);
+                
+                // التحقق من تكرار أكواد الوظائف
+                if (jobCode && jobCodes.includes(jobCode)) {
+                    results.warnings.push(`كود مكرر: ${jobCode} للوظيفة ${jobTitle}`);
+                }
+                jobCodes.push(jobCode);
+                
+                // التحقق من وجود موظفين
+                const morning = $(this).find('input[name*="morning_shift"]').val().trim();
+                const evening = $(this).find('input[name*="evening_shift"]').val().trim();
+                const night = $(this).find('input[name*="night_shift"]').val().trim();
+                
+                if (!morning && !evening && !night) {
+                    results.warnings.push(`لا يوجد موظفين للوظيفة: ${jobTitle}`);
+                }
+            });
+            
+            // عرض النتائج
+            let html = '';
+            if (results.errors.length > 0) {
+                html += '<div class="alert alert-danger"><h6>❌ أخطاء:</h6><ul>';
+                results.errors.forEach(err => html += `<li>${err}</li>`);
+                html += '</ul></div>';
+            }
+            
+            if (results.warnings.length > 0) {
+                html += '<div class="alert alert-warning"><h6>⚠️ تحذيرات:</h6><ul>';
+                results.warnings.forEach(warn => html += `<li>${warn}</li>`);
+                html += '</ul></div>';
+            }
+            
+            if (results.errors.length === 0 && results.warnings.length === 0) {
+                html += '<div class="alert alert-success"><h6>✅ الهيكل صحيح</h6><p>لا توجد مشاكل في البيانات</p></div>';
+            }
+            
+            html += `<div class="mt-3"><strong>إحصائيات:</strong><br>`;
+            html += `عدد الوظائف: ${jobs.length}<br>`;
+            html += `وظائف بأكواد: ${jobCodes.filter(c => c).length}<br>`;
+            html += `وظائف بدون أكواد: ${jobCodes.filter(c => !c).length}`;
+            html += '</div>';
+            
+            $('#validationResults').html(html);
+            const validationModal = new bootstrap.Modal(document.getElementById('validationModal'));
+            validationModal.show();
+        }
+
+        // ====== دوال نسخ البيانات ======
+        function copyStructure() {
+            let text = 'الوظيفة\tكود الوظيفة\tالشيفت الصباحي\tالشيفت المسائي\tشيفت السهر\n';
+            
+            $('#tableBody tr').each(function() {
+                const job = $(this).find('input[name*="job_title"]').val();
+                const code = $(this).find('input[name*="job_code"]').val();
+                const morning = $(this).find('input[name*="morning_shift"]').val();
+                const evening = $(this).find('input[name*="evening_shift"]').val();
+                const night = $(this).find('input[name*="night_shift"]').val();
+                text += `${job}\t${code || ''}\t${morning || ''}\t${evening || ''}\t${night || ''}\n`;
+            });
+            
+            navigator.clipboard.writeText(text).then(() => {
+                showToast('success', 'تم نسخ الهيكل بنجاح');
+            }).catch(() => {
+                showToast('error', 'فشل في نسخ الهيكل');
+            });
+        }
+
+        // ====== دوال إجراءات الجداول ======
+        function updateAllSchedules() {
+            if (!confirm('هل تريد تحديث جميع الجداول الغير معتمدة بهذا الهيكل؟')) {
+                return;
+            }
+            
+            const btn = $('#updateBtn');
+            const originalText = btn.html();
+            btn.html('<span class="spinner-border spinner-border-sm me-2"></span>جاري التحديث...').prop('disabled', true);
+            
+            $.ajax({
+                url: '/admin/update_all_schedules',
+                type: 'POST',
+                data: {
+                    department_id: {{ department.id }}
+                },
+                success: function(response) {
+                    if (response.success) {
+                        showToast('success', response.message);
+                        setTimeout(() => location.reload(), 1500);
+                    } else {
+                        showToast('error', response.message);
+                        btn.html(originalText).prop('disabled', false);
+                    }
+                },
+                error: function() {
+                    showToast('error', 'حدث خطأ أثناء التحديث');
+                    btn.html(originalText).prop('disabled', false);
+                }
+            });
+        }
+
+        function createSchedulesFromStructure() {
+            if (!confirm('هل تريد إنشاء 4 جداول مستقبلية جديدة بنفس هيكل القسم؟')) {
+                return;
+            }
+            
+            const btn = $('#createBtn');
+            const originalText = btn.html();
+            btn.html('<span class="spinner-border spinner-border-sm me-2"></span>جاري الإنشاء...').prop('disabled', true);
+            
+            $.ajax({
+                url: '/admin/create_schedules_from_structure',
+                type: 'POST',
+                headers: {
+                    'Content-Type': 'application/json',
+                },
+                data: JSON.stringify({
+                    department_id: {{ department.id }},
+                    weeks_count: 4
+                }),
+                success: function(response) {
+                    if (response.success) {
+                        showToast('success', response.message);
+                    } else {
+                        showToast('error', response.message);
+                    }
+                    btn.html(originalText).prop('disabled', false);
+                },
+                error: function() {
+                    showToast('error', 'حدث خطأ في الاتصال');
+                    btn.html(originalText).prop('disabled', false);
+                }
+            });
+        }
+
+        function regenerateAllSchedules() {
+            if (!confirm('هل تريد إعادة توليد جميع الجداول (حتى المعتمدة) بهذا الهيكل؟')) {
+                return;
+            }
+            
+            const btn = $('#regenerateBtn');
+            const originalText = btn.html();
+            btn.html('<span class="spinner-border spinner-border-sm me-2"></span>جاري إعادة التوليد...').prop('disabled', true);
+            
+            $.ajax({
+                url: '/admin/regenerate_all_from_structure/{{ department.id }}',
+                type: 'GET',
+                success: function() {
+                    showToast('success', 'تم إعادة توليد جميع الجداول بنجاح');
+                    setTimeout(() => location.reload(), 1500);
+                },
+                error: function() {
+                    showToast('error', 'حدث خطأ أثناء إعادة التوليد');
+                    btn.html(originalText).prop('disabled', false);
+                }
+            });
+        }
+
+        // ====== دوال الحذف والإعادة ======
+        function deleteRow(rowId) {
+            document.getElementById('deleteRowId').value = rowId;
+            const deleteModal = new bootstrap.Modal(document.getElementById('deleteModal'));
+            deleteModal.show();
+        }
+
+        function resetForm() {
+            if (confirm('هل تريد إعادة تعيين جميع التغييرات؟')) {
+                location.reload();
+            }
+        }
+
+        // ====== دوال رفع الملفات ======
+        $('#excelUploadForm').on('submit', function(e) {
+            e.preventDefault();
+            
+            const formData = new FormData(this);
+            const btn = $('#uploadBtn');
+            const progress = $('#uploadProgress');
+            const progressBar = progress.find('.progress-bar');
+            
+            btn.prop('disabled', true);
+            progress.removeClass('d-none');
+            progressBar.css('width', '0%').text('0%');
+            
+            $.ajax({
+                url: $(this).attr('action'),
+                type: 'POST',
+                data: formData,
+                processData: false,
+                contentType: false,
+                xhr: function() {
+                    const xhr = new window.XMLHttpRequest();
+                    xhr.upload.addEventListener('progress', function(evt) {
+                        if (evt.lengthComputable) {
+                            const percentComplete = Math.round(evt.loaded / evt.total * 100);
+                            progressBar.css('width', percentComplete + '%').text(percentComplete + '%');
+                        }
+                    }, false);
+                    return xhr;
+                },
+                success: function() {
+                    showToast('success', 'تم رفع الملف بنجاح');
+                    setTimeout(() => location.reload(), 1000);
+                },
+                error: function(xhr) {
+                    let message = 'حدث خطأ أثناء رفع الملف';
+                    if (xhr.responseJSON && xhr.responseJSON.message) {
+                        message = xhr.responseJSON.message;
+                    }
+                    showToast('error', message);
+                    btn.prop('disabled', false);
+                    progress.addClass('d-none');
+                }
+            });
+        });
+
+        // ====== دوال Toast ======
+        function showToast(type, message) {
+            const toastId = 'toast-' + Date.now();
+            const bgColor = type === 'success' ? 'bg-success' : (type === 'error' ? 'bg-danger' : 'bg-warning');
+            const icon = type === 'success' ? 'check-circle' : (type === 'error' ? 'exclamation-triangle' : 'exclamation-circle');
+            
+            const toast = `
+                <div id="${toastId}" class="toast align-items-center text-white ${bgColor} border-0" role="alert">
+                    <div class="d-flex">
+                        <div class="toast-body">
+                            <i class="bi bi-${icon} me-2"></i>
+                            ${message}
+                        </div>
+                        <button type="button" class="btn-close btn-close-white me-2 m-auto" data-bs-dismiss="toast"></button>
+                    </div>
+                </div>
+            `;
+            
+            $('#toastContainer').append(toast);
+            const toastElement = new bootstrap.Toast(document.getElementById(toastId));
+            toastElement.show();
+            
+            setTimeout(() => $(`#${toastId}`).remove(), 3000);
+        }
+
+        // ====== أحداث إضافية ======
+        $('#saveBtn').on('click', function(e) {
+            if (!confirm('هل تريد حفظ التغييرات؟')) {
+                e.preventDefault();
+                return false;
+            }
+        });
+
+        $('#mainForm').on('submit', function() {
+            const versionSpan = $('#versionNumber');
+            const currentVersion = parseInt(versionSpan.text()) || 1;
+            versionSpan.text(currentVersion + 1);
+        });
+
+        // تحديث كود الوظيفة تلقائياً بناءً على الاسم
+        $(document).on('change', '.job-title-input', function() {
+            const jobTitle = $(this).val();
+            const row = $(this).closest('tr');
+            const jobCodeInput = row.find('input[name*="job_code"]');
+            
+            // البحث عن كود مطابق في القائمة
+            if (commonJobCodes[jobTitle] && !jobCodeInput.val()) {
+                jobCodeInput.val(commonJobCodes[jobTitle]);
+            }
+        });
+    </script>
+</body>
+</html>

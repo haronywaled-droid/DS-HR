@@ -1,0 +1,2127 @@
+<!DOCTYPE html>
+<html lang="ar" dir="rtl">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>إدارة المكافآت والخصومات</title>
+    
+    <!-- Bootstrap 5 CSS -->
+    <link href="https://cdn.jsdelivr.net/npm/bootstrap@5.3.0/dist/css/bootstrap.min.css" rel="stylesheet">
+    
+    <!-- Bootstrap Icons -->
+    <link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/bootstrap-icons@1.10.0/font/bootstrap-icons.css">
+    <!-- أضف هذا بعد Bootstrap CSS -->
+    <!-- SweetAlert2 -->
+    <link href="https://cdn.jsdelivr.net/npm/sweetalert2@11/dist/sweetalert2.min.css" rel="stylesheet">
+    <script src="https://cdn.jsdelivr.net/npm/sweetalert2@11"></script>
+    
+    <style>
+        :root {
+            --primary-green: #10b981;
+            --dark-green: #059669;
+            --light-green: #34d399;
+            --accent-green: #a7f3d0;
+            --gradient-primary: linear-gradient(135deg, #10b981 0%, #059669 100%);
+            --gradient-secondary: linear-gradient(135deg, #34d399 0%, #10b981 100%);
+            --gradient-dark: linear-gradient(135deg, #065f46 0%, #047857 100%);
+            --gradient-success: linear-gradient(135deg, #a7f3d0 0%, #6ee7b7 100%);
+            --header-height: 130px;
+        }
+        
+        * {
+            margin: 0;
+            padding: 0;
+            box-sizing: border-box;
+        }
+        
+        body {
+            font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif;
+            background: #f8fdf9;
+            min-height: 100vh;
+            overflow-x: hidden;
+            padding-top: var(--header-height);
+            color: #1a4731;
+        }
+        
+        /* Unified Navigation Bar */
+        .unified-nav {
+            background: var(--gradient-dark);
+            color: white;
+            position: fixed;
+            top: 0;
+            right: 0;
+            left: 0;
+            height: var(--header-height);
+            z-index: 1000;
+            box-shadow: 0 4px 20px rgba(5, 150, 105, 0.25);
+            border-bottom: 1px solid rgba(255, 255, 255, 0.1);
+        }
+        
+        .unified-nav-container {
+            display: flex;
+            flex-direction: column;
+            height: 100%;
+            padding: 0 1rem;
+        }
+        
+        .nav-top-section {
+            display: flex;
+            align-items: center;
+            justify-content: space-between;
+            height: 70px;
+            flex-shrink: 0;
+            padding: 0.5rem 0;
+        }
+        
+        .nav-bottom-section {
+            display: flex;
+            align-items: center;
+            justify-content: space-between;
+            height: 60px;
+            flex-shrink: 0;
+            border-top: 1px solid rgba(255, 255, 255, 0.15);
+            position: relative;
+        }
+        
+        .nav-brand-section {
+            display: flex;
+            align-items: center;
+            flex-shrink: 0;
+            min-width: 0;
+        }
+        
+        .logo-container {
+            width: 45px;
+            height: 45px;
+            background: var(--gradient-primary);
+            border-radius: 10px;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            box-shadow: 0 4px 12px rgba(16, 185, 129, 0.4);
+            margin-left: 0.5rem;
+            flex-shrink: 0;
+        }
+        
+        .welcome-section {
+            display: flex;
+            align-items: center;
+            flex-grow: 1;
+            justify-content: center;
+            color: white;
+            text-align: center;
+            min-width: 0;
+            overflow: hidden;
+        }
+        
+        .welcome-content {
+            min-width: 0;
+            overflow: hidden;
+        }
+        
+        .welcome-content h4 {
+            margin-bottom: 0.2rem;
+            font-weight: 600;
+            font-size: 1.1rem;
+            white-space: nowrap;
+            overflow: hidden;
+            text-overflow: ellipsis;
+        }
+        
+        .welcome-content p {
+            margin-bottom: 0;
+            font-size: 0.85rem;
+            opacity: 0.9;
+            white-space: nowrap;
+            overflow: hidden;
+            text-overflow: ellipsis;
+        }
+        
+        .nav-user-section {
+            display: flex;
+            align-items: center;
+            flex-shrink: 0;
+            min-width: 0;
+        }
+        
+        .nav-menu-section {
+            display: flex;
+            align-items: center;
+            flex-grow: 1;
+            height: 100%;
+            position: relative;
+            min-width: 0;
+        }
+        
+        .nav-menu-wrapper {
+            display: flex;
+            align-items: center;
+            height: 100%;
+            overflow-x: auto;
+            overflow-y: hidden;
+            scroll-behavior: smooth;
+            -webkit-overflow-scrolling: touch;
+            width: 100%;
+            padding: 0 0.5rem;
+            scrollbar-width: thin;
+            scrollbar-color: var(--primary-green) rgba(255, 255, 255, 0.1);
+            min-width: 0;
+        }
+        
+        /* Custom scrollbar for nav menu */
+        .nav-menu-wrapper::-webkit-scrollbar {
+            height: 6px;
+        }
+        
+        .nav-menu-wrapper::-webkit-scrollbar-track {
+            background: rgba(255, 255, 255, 0.1);
+            border-radius: 10px;
+        }
+        
+        .nav-menu-wrapper::-webkit-scrollbar-thumb {
+            background: var(--primary-green);
+            border-radius: 10px;
+        }
+        
+        .nav-menu-wrapper::-webkit-scrollbar-thumb:hover {
+            background: var(--light-green);
+        }
+        
+        .unified-nav .nav-link {
+            color: rgba(255, 255, 255, 0.9);
+            padding: 0.7rem 1.2rem;
+            margin: 0 0.2rem;
+            border-radius: 10px;
+            transition: all 0.3s ease;
+            font-weight: 500;
+            position: relative;
+            border: 1px solid transparent;
+            display: flex;
+            align-items: center;
+            text-decoration: none;
+            font-size: 0.9rem;
+            white-space: nowrap;
+            height: 80%;
+            flex-shrink: 0;
+            background: rgba(255, 255, 255, 0.05);
+            min-width: max-content;
+        }
+        
+        .unified-nav .nav-link:hover {
+            color: white;
+            background: rgba(255, 255, 255, 0.12);
+            border: 1px solid rgba(255, 255, 255, 0.2);
+            transform: translateY(-2px);
+            box-shadow: 0 4px 12px rgba(0, 0, 0, 0.15);
+        }
+        
+        .unified-nav .nav-link.active {
+            background: rgba(255, 255, 255, 0.15);
+            color: white;
+            border: 1px solid rgba(255, 255, 255, 0.25);
+            box-shadow: 0 4px 12px rgba(0, 0, 0, 0.2);
+        }
+        
+        .unified-nav .nav-link.active::after {
+            content: '';
+            position: absolute;
+            bottom: -10px;
+            right: 50%;
+            transform: translateX(50%);
+            width: 70%;
+            height: 3px;
+            background: var(--accent-green);
+            border-radius: 4px 4px 0 0;
+        }
+        
+        .nav-badge {
+            background: var(--accent-green);
+            color: #065f46;
+            padding: 0.2rem 0.4rem;
+            border-radius: 8px;
+            font-size: 0.65rem;
+            font-weight: bold;
+            margin-right: 0.3rem;
+            position: absolute;
+            top: 5px;
+            right: 5px;
+            box-shadow: 0 2px 4px rgba(0, 0, 0, 0.1);
+        }
+        
+        .nav-link-with-badge {
+            position: relative;
+        }
+        
+        .notification-badge {
+            position: absolute;
+            top: -5px;
+            right: -5px;
+            font-size: 0.7rem;
+            background: var(--gradient-secondary);
+            border: 2px solid white;
+            box-shadow: 0 2px 8px rgba(16, 185, 129, 0.4);
+        }
+        
+        .user-avatar {
+            width: 38px;
+            height: 38px;
+            background: var(--gradient-primary);
+            border-radius: 50%;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            color: white;
+            font-weight: bold;
+            font-size: 1rem;
+            box-shadow: 0 4px 10px rgba(16, 185, 129, 0.4);
+            transition: all 0.3s ease;
+            flex-shrink: 0;
+        }
+        
+        .user-avatar:hover {
+            transform: scale(1.08);
+            box-shadow: 0 6px 15px rgba(16, 185, 129, 0.5);
+        }
+        
+        .dropdown-menu {
+            background: white;
+            border: none;
+            border-radius: 12px;
+            box-shadow: 0 10px 30px rgba(16, 185, 129, 0.2);
+            overflow: hidden;
+            border: 1px solid rgba(16, 185, 129, 0.15);
+        }
+        
+        .dropdown-item {
+            padding: 0.8rem 1.2rem;
+            border-radius: 8px;
+            margin: 0.2rem 0.5rem;
+            transition: all 0.2s ease;
+            color: #065f46;
+        }
+        
+        .dropdown-item:hover {
+            background: rgba(16, 185, 129, 0.1);
+            color: #065f46;
+            transform: translateX(-5px);
+        }
+        
+        .nav-controls {
+            display: flex;
+            align-items: center;
+            position: absolute;
+            left: 0;
+            top: 0;
+            height: 100%;
+            background: linear-gradient(90deg, rgba(6, 95, 70, 0.9) 0%, transparent 100%);
+            padding: 0 0.5rem;
+            z-index: 5;
+        }
+        
+        .nav-prev, .nav-next {
+            background: rgba(255, 255, 255, 0.2);
+            border: 1px solid rgba(255, 255, 255, 0.3);
+            color: white;
+            width: 28px;
+            height: 28px;
+            border-radius: 50%;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            cursor: pointer;
+            transition: all 0.3s ease;
+            font-size: 0.8rem;
+            margin-left: 0.3rem;
+        }
+        
+        .nav-prev:hover, .nav-next:hover {
+            background: rgba(255, 255, 255, 0.3);
+            transform: scale(1.1);
+        }
+        
+        .nav-controls-right {
+            display: flex;
+            align-items: center;
+            position: absolute;
+            right: 0;
+            top: 0;
+            height: 100%;
+            background: linear-gradient(270deg, rgba(6, 95, 70, 0.9) 0%, transparent 100%);
+            padding: 0 0.5rem;
+            z-index: 5;
+        }
+        
+        /* Mobile Menu Button */
+        .mobile-menu-btn {
+            display: none;
+            background: transparent;
+            border: 1px solid rgba(255, 255, 255, 0.3);
+            color: white;
+            width: 40px;
+            height: 40px;
+            border-radius: 8px;
+            align-items: center;
+            justify-content: center;
+            cursor: pointer;
+            transition: all 0.3s ease;
+            margin-right: 0.5rem;
+        }
+        
+        .mobile-menu-btn:hover {
+            background: rgba(255, 255, 255, 0.1);
+        }
+        
+        /* Mobile Menu */
+        .mobile-nav-menu {
+            position: fixed;
+            top: var(--header-height);
+            right: 0;
+            left: 0;
+            background: var(--gradient-dark);
+            z-index: 999;
+            padding: 1rem;
+            box-shadow: 0 4px 20px rgba(0, 0, 0, 0.2);
+            display: none;
+            flex-direction: column;
+            max-height: calc(100vh - var(--header-height));
+            overflow-y: auto;
+        }
+        
+        .mobile-nav-menu.active {
+            display: flex;
+        }
+        
+        .mobile-nav-link {
+            color: white;
+            padding: 1rem;
+            margin: 0.2rem 0;
+            border-radius: 8px;
+            text-decoration: none;
+            display: flex;
+            align-items: center;
+            transition: all 0.3s ease;
+            border: 1px solid transparent;
+            position: relative;
+        }
+        
+        .mobile-nav-link:hover,
+        .mobile-nav-link.active {
+            background: rgba(255, 255, 255, 0.1);
+            border: 1px solid rgba(255, 255, 255, 0.2);
+        }
+        
+        .mobile-nav-link i {
+            margin-left: 0.5rem;
+            width: 20px;
+            text-align: center;
+        }
+        
+        /* Page Specific Styles */
+        .rewards-container {
+            max-width: 1400px;
+            margin: 0 auto;
+            padding: 20px;
+        }
+        
+        .content-card {
+            border: none;
+            border-radius: 20px;
+            box-shadow: 0 15px 35px rgba(16, 185, 129, 0.1);
+            background: rgba(255, 255, 255, 0.95);
+            margin-bottom: 25px;
+            overflow: hidden;
+        }
+        
+        .card-header {
+            border-radius: 20px 20px 0 0 !important;
+            border-bottom: 2px solid rgba(255, 255, 255, 0.1);
+            padding: 20px 25px;
+        }
+        
+        .card-header-primary {
+            background: var(--gradient-primary);
+            color: white;
+        }
+        
+        .stats-card {
+            background: rgba(255, 255, 255, 0.9);
+            border-radius: 15px;
+            padding: 20px;
+            text-align: center;
+            border: 1px solid rgba(16, 185, 129, 0.1);
+            transition: all 0.3s ease;
+            height: 100%;
+        }
+        
+        .stats-card:hover {
+            transform: translateY(-5px);
+            box-shadow: 0 10px 25px rgba(16, 185, 129, 0.15);
+        }
+        
+        .stats-value {
+            font-size: 2rem;
+            font-weight: 700;
+            color: var(--dark-green);
+            margin: 10px 0;
+        }
+        
+        .stats-label {
+            color: #6b7280;
+            font-size: 0.9rem;
+        }
+        
+        .stats-icon {
+            font-size: 2rem;
+            opacity: 0.8;
+            margin-bottom: 10px;
+        }
+        
+        .btn-primary {
+            background: var(--gradient-primary);
+            border: none;
+            border-radius: 15px;
+            padding: 12px 30px;
+            font-weight: 600;
+            transition: all 0.3s ease;
+        }
+        
+        .btn-primary:hover {
+            transform: translateY(-3px);
+            box-shadow: 0 8px 25px rgba(16, 185, 129, 0.4);
+        }
+        
+        .btn-success {
+            background: linear-gradient(135deg, #10b981 0%, #059669 100%);
+            border: none;
+        }
+        
+        .btn-danger {
+            background: linear-gradient(135deg, #ef4444 0%, #dc2626 100%);
+            border: none;
+        }
+        
+        .floating-shape {
+            position: fixed;
+            width: 200px;
+            height: 200px;
+            background: var(--gradient-primary);
+            opacity: 0.1;
+            border-radius: 50%;
+            z-index: -1;
+            animation: float 6s ease-in-out infinite;
+        }
+        
+        .shape-1 {
+            top: 10%;
+            left: 10%;
+        }
+        
+        .shape-2 {
+            bottom: 10%;
+            right: 10%;
+            animation-delay: 2s;
+        }
+        
+        @keyframes float {
+            0%, 100% { transform: translateY(0px) rotate(0deg); }
+            50% { transform: translateY(-20px) rotate(10deg); }
+        }
+        
+        .table-responsive {
+            border-radius: 15px;
+            overflow: hidden;
+            border: 2px solid rgba(16, 185, 129, 0.1);
+        }
+        
+        .table {
+            margin-bottom: 0;
+        }
+        
+        .table th {
+            background: var(--gradient-primary);
+            color: white;
+            border: none;
+            padding: 15px;
+            font-weight: 600;
+            text-align: center;
+        }
+        
+        .table td {
+            padding: 12px 15px;
+            text-align: center;
+            vertical-align: middle;
+            border-color: rgba(16, 185, 129, 0.1);
+        }
+        
+        .table-hover tbody tr:hover {
+            background-color: rgba(16, 185, 129, 0.05);
+            transform: scale(1.002);
+            transition: all 0.2s ease;
+        }
+        
+        .badge {
+            font-size: 0.8rem;
+            padding: 6px 12px;
+            border-radius: 10px;
+            font-weight: 500;
+        }
+        
+        .modal-content {
+            border-radius: 20px;
+            border: none;
+            box-shadow: 0 20px 60px rgba(16, 185, 129, 0.3);
+            overflow: hidden;
+        }
+        
+        .modal-header {
+            background: var(--gradient-primary);
+            color: white;
+            border-radius: 20px 20px 0 0;
+            border: none;
+            padding: 20px 25px;
+        }
+        
+        .modal-body {
+            padding: 25px;
+        }
+        
+        .form-control, .form-select {
+            border: 2px solid rgba(16, 185, 129, 0.2);
+            border-radius: 12px;
+            padding: 10px 15px;
+            transition: all 0.3s ease;
+        }
+        
+        .form-control:focus, .form-select:focus {
+            border-color: var(--primary-green);
+            box-shadow: 0 0 0 0.25rem rgba(16, 185, 129, 0.25);
+        }
+        
+        .loading-overlay {
+            position: fixed;
+            top: 0;
+            left: 0;
+            width: 100%;
+            height: 100%;
+            background: rgba(0, 0, 0, 0.5);
+            display: flex;
+            justify-content: center;
+            align-items: center;
+            z-index: 9999;
+            display: none;
+        }
+        
+        .loading-spinner {
+            color: white;
+            font-size: 24px;
+            background: var(--gradient-primary);
+            padding: 20px 30px;
+            border-radius: 15px;
+            box-shadow: 0 10px 30px rgba(0, 0, 0, 0.3);
+        }
+        
+        .alert-container {
+            position: fixed;
+            top: calc(var(--header-height) + 20px);
+            right: 20px;
+            z-index: 1000;
+            min-width: 300px;
+            max-width: 400px;
+        }
+        
+        .alert-container .alert {
+            border-radius: 12px;
+            border: 1px solid rgba(16, 185, 129, 0.2);
+            box-shadow: 0 5px 20px rgba(16, 185, 129, 0.15);
+            backdrop-filter: blur(10px);
+            background: rgba(255, 255, 255, 0.95);
+        }
+        
+        .alert-container .alert-success {
+            background: linear-gradient(135deg, rgba(16, 185, 129, 0.1) 0%, rgba(52, 211, 153, 0.05) 100%);
+            border-left: 4px solid var(--primary-green);
+            color: #065f46;
+        }
+        
+        .alert-container .alert-danger {
+            background: linear-gradient(135deg, rgba(239, 68, 68, 0.1) 0%, rgba(220, 38, 38, 0.05) 100%);
+            border-left: 4px solid #ef4444;
+            color: #7f1d1d;
+        }
+        
+        /* Custom Scrollbar */
+        ::-webkit-scrollbar {
+            width: 8px;
+            height: 8px;
+        }
+        
+        ::-webkit-scrollbar-track {
+            background: rgba(16, 185, 129, 0.1);
+            border-radius: 10px;
+        }
+        
+        ::-webkit-scrollbar-thumb {
+            background: var(--gradient-primary);
+            border-radius: 10px;
+        }
+        
+        ::-webkit-scrollbar-thumb:hover {
+            background: var(--dark-green);
+        }
+        
+        #live-clock {
+            font-size: 0.9rem;
+            background: rgba(255, 255, 255, 0.1);
+            padding: 0.3rem 0.7rem;
+            border-radius: 20px;
+            border: 1px solid rgba(255, 255, 255, 0.2);
+            flex-shrink: 0;
+        }
+        
+        .text-truncate {
+            overflow: hidden;
+            text-overflow: ellipsis;
+            white-space: nowrap;
+        }
+        
+        .reward-row {
+            background-color: rgba(16, 185, 129, 0.08) !important;
+        }
+        
+        .penalty-row {
+            background-color: rgba(239, 68, 68, 0.08) !important;
+        }
+        
+        .no-data {
+            text-align: center;
+            padding: 40px;
+            color: #6b7280;
+        }
+        
+        .no-data i {
+            font-size: 3rem;
+            margin-bottom: 15px;
+            opacity: 0.5;
+        }
+        
+        @media (max-width: 992px) {
+            :root {
+                --header-height: 100px;
+            }
+            
+            .unified-nav {
+                height: auto;
+                min-height: var(--header-height);
+            }
+            
+            .unified-nav-container {
+                padding: 0.5rem;
+            }
+            
+            .nav-top-section {
+                height: 60px;
+                flex-wrap: nowrap;
+                padding: 0;
+            }
+            
+            .nav-brand-section {
+                order: 1;
+                width: auto;
+                flex: 0 0 auto;
+            }
+            
+            .welcome-section {
+                order: 2;
+                flex: 1;
+                justify-content: flex-start;
+                padding: 0 0.5rem;
+                display: none;
+            }
+            
+            .nav-user-section {
+                order: 3;
+                width: auto;
+                flex: 0 0 auto;
+                justify-content: flex-end;
+            }
+            
+            .nav-bottom-section {
+                display: none;
+            }
+            
+            .mobile-menu-btn {
+                display: flex;
+            }
+            
+            .welcome-content h4 {
+                font-size: 0.9rem;
+            }
+            
+            .welcome-content p {
+                display: none;
+            }
+            
+            #live-clock {
+                display: none;
+            }
+            
+            body {
+                padding-top: var(--header-height);
+            }
+            
+            .nav-controls, .nav-controls-right {
+                display: none;
+            }
+            
+            .nav-user-section .dropdown .btn {
+                padding: 0.3rem 0.6rem;
+            }
+            
+            .user-avatar {
+                width: 32px;
+                height: 32px;
+                font-size: 0.9rem;
+                margin-left: 0.3rem;
+            }
+            
+            .nav-brand-section .d-none.d-md-block {
+                display: none !important;
+            }
+        }
+        
+        @media (max-width: 768px) {
+            :root {
+                --header-height: 80px;
+            }
+            
+            .nav-top-section {
+                height: 50px;
+            }
+            
+            .logo-container {
+                width: 35px;
+                height: 35px;
+            }
+            
+            .logo-container i {
+                font-size: 1rem;
+            }
+            
+            .user-avatar {
+                width: 32px;
+                height: 32px;
+                font-size: 0.9rem;
+            }
+            
+            .mobile-menu-btn {
+                width: 35px;
+                height: 35px;
+            }
+            
+            .notification-badge {
+                font-size: 0.6rem;
+                top: -3px;
+                right: -3px;
+            }
+            
+            .stats-value {
+                font-size: 1.5rem;
+            }
+            
+            .stats-icon {
+                font-size: 1.5rem;
+            }
+        }
+        
+        @media (max-width: 576px) {
+            :root {
+                --header-height: 70px;
+            }
+            
+            .nav-top-section {
+                height: 45px;
+            }
+            
+            .logo-container {
+                width: 30px;
+                height: 30px;
+                margin-left: 0.3rem;
+            }
+            
+            .user-avatar {
+                width: 28px;
+                height: 28px;
+                font-size: 0.8rem;
+            }
+            
+            .notification-badge {
+                font-size: 0.6rem;
+                top: -3px;
+                right: -3px;
+            }
+            
+            .btn {
+                padding: 0.3rem 0.6rem;
+                font-size: 0.8rem;
+            }
+            
+            .mobile-menu-btn {
+                width: 32px;
+                height: 32px;
+                margin-right: 0.3rem;
+            }
+            
+            .nav-user-section .dropdown .btn {
+                padding: 0.2rem 0.5rem;
+            }
+            
+            .dropdown .btn-outline-light {
+                font-size: 0.75rem;
+            }
+        }
+    </style>
+</head>
+<body>
+    
+    <!-- Unified Navigation Bar -->
+    <nav class="unified-nav">
+        <div class="unified-nav-container">
+            <!-- Top Section: Brand, Welcome, User -->
+            <div class="nav-top-section">
+                <!-- Brand Section -->
+                <div class="nav-brand-section">
+                    <div class="logo-container">
+                        <i class="bi bi-person-gear text-white"></i>
+                    </div>
+                    <div class="d-none d-md-block ms-2">
+                        <h6 class="text-white mb-0 fw-bold text-truncate">نظام الموارد البشرية</h6>
+                        <small class="text-white-50">لوحة المدير</small>
+                    </div>
+                </div>
+                
+                <!-- Welcome Section - Hidden on mobile -->
+                <div class="welcome-section d-none d-lg-flex">
+                    <div class="welcome-content">
+                        <h4 class="text-white mb-1 text-truncate">مرحباً، {{ current_user.name if current_user else 'المدير' }}</h4>
+                        <p class="text-white-50 mb-0 text-truncate">نظام الموارد البشرية - لوحة تحكم المدير</p>
+                    </div>
+                    <div class="text-white fw-bold me-3" id="live-clock">
+                        <i class="bi bi-clock me-2"></i>
+                        جاري التحميل...
+                    </div>
+                </div>
+                
+                <!-- User Section -->
+                <div class="nav-user-section">
+                    <!-- Notifications -->
+                    <div class="dropdown me-2">
+                        <button class="btn btn-light position-relative rounded-pill" 
+                                type="button" data-bs-toggle="dropdown" 
+                                style="padding: 0.4rem 0.8rem; border: 1px solid rgba(255, 255, 255, 0.3); background: rgba(255, 255, 255, 0.15); color: white;">
+                            <i class="bi bi-bell"></i>
+                            {% if notifications and notifications|length > 0 %}
+                            <span class="notification-badge badge">{{ notifications|length }}</span>
+                            {% endif %}
+                        </button>
+                        <ul class="dropdown-menu dropdown-menu-end">
+                            {% if notifications and notifications|length > 0 %}
+                                {% for notification in notifications[:3] %}
+                                <li>
+                                    <a class="dropdown-item" href="#">
+                                        <div class="d-flex align-items-start">
+                                            <div class="bg-success bg-opacity-10 rounded-circle p-2 me-3">
+                                                <i class="bi bi-bell text-success"></i>
+                                            </div>
+                                            <div>
+                                                <strong class="d-block text-dark">{{ notification.title }}</strong>
+                                                <small class="text-muted">{{ notification.message|truncate(30) }}</small>
+                                            </div>
+                                        </div>
+                                    </a>
+                                </li>
+                                {% endfor %}
+                                <li><hr class="dropdown-divider my-2"></li>
+                            {% else %}
+                                <li>
+                                    <a class="dropdown-item text-muted text-center" href="#">
+                                        <i class="bi bi-bell-slash fs-4 d-block mb-2 text-success"></i>
+                                        لا توجد إشعارات جديدة
+                                    </a>
+                                </li>
+                                <li><hr class="dropdown-divider my-2"></li>
+                            {% endif %}
+                            <li>
+                                <a class="dropdown-item text-center text-success fw-bold" href="#">
+                                    <i class="bi bi-arrow-left me-2"></i>
+                                    عرض جميع الإشعارات
+                                </a>
+                            </li>
+                        </ul>
+                    </div>
+                    
+                    <!-- User Menu -->
+                    <div class="dropdown">
+                        <button class="btn btn-outline-light dropdown-toggle rounded-pill d-flex align-items-center" 
+                                type="button" data-bs-toggle="dropdown"
+                                style="padding: 0.4rem 0.9rem; border: 1px solid rgba(255, 255, 255, 0.4);">
+                            <div class="user-avatar me-2">
+                                {{ current_user.name[0] if current_user else 'م' }}
+                            </div>
+                            <span class="d-none d-md-inline text-truncate" style="max-width: 80px;">{{ current_user.username if current_user else 'مدير' }}</span>
+                        </button>
+                        <ul class="dropdown-menu dropdown-menu-end">
+                            <li>
+                                <a class="dropdown-item" href="#">
+                                    <i class="bi bi-bell me-2 text-success"></i>الإشعارات
+                                </a>
+                            </li>
+                            <li>
+                                <a class="dropdown-item" href="#">
+                                    <i class="bi bi-key me-2 text-success"></i>تغير كلمة المرور
+                                </a>
+                            </li>
+                            <li><hr class="dropdown-divider my-2"></li>
+                            <li>
+                                <a class="dropdown-item text-danger fw-bold" href="{{ url_for('logout') }}">
+                                    <i class="bi bi-box-arrow-right me-2"></i>تسجيل الخروج
+                                </a>
+                            </li>
+                        </ul>
+                    </div>
+                    
+                    <!-- Mobile Menu Button -->
+                    <button class="mobile-menu-btn d-lg-none" id="mobileMenuBtn">
+                        <i class="bi bi-list"></i>
+                    </button>
+                </div>
+            </div>
+            
+            <!-- Bottom Section: Navigation Menu - Hidden on mobile -->
+            <!-- Bottom Section: Navigation Menu - Hidden on mobile -->
+            <div class="nav-bottom-section d-none d-lg-flex">
+                <div class="nav-controls"></div>
+                
+                <div class="nav-menu-section">
+                    <div class="nav-menu-wrapper">
+                        <a class="nav-link" href="{{ url_for('manager_dashboard') }}">
+                            <i class="bi bi-speedometer2 me-2"></i>
+                            لوحة التحكم
+                        </a>
+                        <a class="nav-link" href="{{ url_for('manager_employees') }}">
+                            <i class="bi bi-people me-2"></i>
+                            موظفي القسم
+                        </a>
+                        <a class="nav-link" href="{{ url_for('manager_schedules') }}">
+                            <i class="bi bi-calendar-check me-2"></i>
+                            جدولة الموظفين
+                        </a>
+                        <!-- Add Messages Link Here -->
+                        <a class="nav-link nav-link-with-badge" href="{{ url_for('messages_inbox') }}">
+                            <i class="bi bi-envelope me-2"></i>
+                            الرسائل
+                            {% if unread_count and unread_count > 0 %}
+                            <span class="nav-badge">{{ unread_count }}</span>
+                            {% endif %}
+                        </a>
+                        <a class="nav-link nav-link-with-badge" href="{{ url_for('manager_leave_requests') }}">
+                            <i class="bi bi-calendar-minus me-2"></i>
+                            طلبات الإجازات
+                            <span class="nav-badge">{{ stats.pending_leaves }}</span>
+                        </a>
+                        <a class="nav-link nav-link-with-badge" href="{{ url_for('manager_permission_requests') }}">
+                            <i class="bi bi-clock me-2"></i>
+                            طلبات الإذونات
+                            {% if pending_requests and pending_requests|length > 0 %}
+                            <span class="nav-badge">{{ pending_requests|length }}</span>
+                            {% endif %}
+                        </a>
+                        <a class="nav-link nav-link-with-badge" href="{{ url_for('user_salary_slips') }}">
+                            <i class="bi bi-file-earmark-text me-2"></i>
+                            شيت المرتب
+                            {% if new_salary_slips and new_salary_slips > 0 %}
+                            <span class="nav-badge">{{ new_salary_slips }}</span>
+                            {% endif %}
+                        </a>
+                        <a class="nav-link nav-link-with-badge" href="{{ url_for('manager_advance_requests') }}">
+                            <i class="bi bi-cash-coin me-2"></i>
+                            طلبات السلف
+                            <span class="nav-badge">{{ stats.pending_advances }}</span>
+                        </a>
+                        <a class="nav-link active" href="{{ url_for('manager_rewards_penalties') }}">
+                            <i class="bi bi-award me-2"></i>
+                            المكافآت والخصومات
+                        </a>
+                        <a class="nav-link" href="{{ url_for('manager_excel_data') }}">
+                            <i class="fas fa-file-excel me-2"></i>
+                            الحضور والانصراف
+                        </a>
+                        {% if current_user and current_user.is_admin %}
+                        <a class="nav-link text-warning" href="{{ url_for('admin_dashboard') }}">
+                            <i class="bi bi-person-shield me-2"></i>
+                            لوحة المسؤول
+                        </a>
+                        {% endif %}
+                    </div>
+                </div>
+                
+                <div class="nav-controls-right"></div>
+            </div>
+        </div>
+    </nav>
+
+    <!-- Mobile Navigation Menu -->
+    <!-- Mobile Navigation Menu -->
+    <div class="mobile-nav-menu" id="mobileNavMenu">
+        <a class="mobile-nav-link" href="{{ url_for('manager_dashboard') }}">
+            <i class="bi bi-speedometer2"></i>
+            لوحة التحكم
+        </a>
+        <a class="mobile-nav-link" href="{{ url_for('manager_employees') }}">
+            <i class="bi bi-people"></i>
+            موظفي القسم
+        </a>
+        <a class="mobile-nav-link" href="{{ url_for('manager_schedules') }}">
+            <i class="bi bi-calendar-check"></i>
+            جدولة الموظفين
+        </a>
+        <!-- Add Messages Link Here -->
+        <a class="mobile-nav-link nav-link-with-badge" href="{{ url_for('messages_inbox') }}">
+            <i class="bi bi-envelope"></i>
+            الرسائل
+            {% if unread_count and unread_count > 0 %}
+            <span class="nav-badge">{{ unread_count }}</span>
+            {% endif %}
+        </a>
+        <a class="mobile-nav-link" href="{{ url_for('manager_leave_requests') }}">
+            <i class="bi bi-calendar-minus"></i>
+            طلبات الإجازات
+            <span class="nav-badge">{{ stats.pending_leaves }}</span>
+        </a>
+        <a class="mobile-nav-link" href="{{ url_for('manager_permission_requests') }}">
+            <i class="bi bi-clock"></i>
+            طلبات الإذونات
+            {% if pending_requests and pending_requests|length > 0 %}
+            <span class="nav-badge">{{ pending_requests|length }}</span>
+            {% endif %}
+        </a>
+        <a class="mobile-nav-link" href="{{ url_for('user_salary_slips') }}">
+            <i class="bi bi-file-earmark-text"></i>
+            شيت المرتب
+            {% if new_salary_slips and new_salary_slips > 0 %}
+            <span class="nav-badge">{{ new_salary_slips }}</span>
+            {% endif %}
+        </a>
+        <a class="mobile-nav-link" href="{{ url_for('manager_advance_requests') }}">
+            <i class="bi bi-cash-coin"></i>
+            طلبات السلف
+            <span class="nav-badge">{{ stats.pending_advances }}</span>
+        </a>
+        <a class="mobile-nav-link active" href="{{ url_for('manager_rewards_penalties') }}">
+            <i class="bi bi-award"></i>
+            المكافآت والخصومات
+        </a>
+        <a class="mobile-nav-link" href="{{ url_for('manager_excel_data') }}">
+            <i class="fas fa-file-excel me-2"></i>
+            الحضور والانصراف
+        </a>
+        {% if current_user and current_user.is_admin %}
+        <a class="mobile-nav-link text-warning" href="{{ url_for('admin_dashboard') }}">
+            <i class="bi bi-person-shield"></i>
+            لوحة المسؤول
+        </a>
+        {% endif %}
+    </div>
+
+    <!-- Background Shapes -->
+    <div class="floating-shape shape-1"></div>
+    <div class="floating-shape shape-2"></div>
+    
+    <!-- Loading Overlay -->
+    <div class="loading-overlay" id="loadingOverlay">
+        <div class="loading-spinner">
+            <i class="bi bi-arrow-repeat me-2"></i>جاري التحميل...
+        </div>
+    </div>
+    
+    <!-- Alert Container -->
+    <div class="alert-container">
+        {% with messages = get_flashed_messages(with_categories=true) %}
+            {% if messages %}
+                {% for category, message in messages %}
+                    <div class="alert alert-{{ category if category in ['success', 'danger', 'warning', 'info'] else 'info' }} alert-dismissible fade show mb-2" role="alert">
+                        <i class="bi bi-{{ 'check-circle' if category == 'success' else 'exclamation-triangle' if category == 'danger' else 'info-circle' if category == 'info' else 'exclamation-circle' }} me-2"></i>
+                        {{ message }}
+                        <button type="button" class="btn-close" data-bs-dismiss="alert" aria-label="Close"></button>
+                    </div>
+                {% endfor %}
+            {% endif %}
+        {% endwith %}
+    </div>
+
+    <div class="rewards-container">
+        <!-- Header Card -->
+        <div class="content-card">
+            <div class="card-header card-header-primary">
+                <div class="d-flex justify-content-between align-items-center">
+                    <div>
+                        <h5 class="card-title mb-0">
+                            <i class="bi bi-award me-2"></i>
+                            إدارة المكافآت والخصومات
+                        </h5>
+                        <p class="mb-0 opacity-75">إدارة المكافآت والعقوبات لموظفي القسم</p>
+                    </div>
+                    <button class="btn btn-light" data-bs-toggle="modal" data-bs-target="#addRewardPenaltyModal">
+                        <i class="bi bi-plus-circle me-2"></i>إضافة مكافأة/خصم
+                    </button>
+                </div>
+            </div>
+        </div>
+
+        <!-- Statistics Cards -->
+        <div class="row mb-4">
+            <div class="col-xl-3 col-md-6 mb-4">
+                <div class="stats-card">
+                    <div class="stats-icon text-primary">
+                        <i class="bi bi-arrow-left-right"></i>
+                    </div>
+                    <div class="stats-label">إجمالي المكافآت والخصومات</div>
+                    <div class="stats-value">{{ stats.total }}</div>
+                </div>
+            </div>
+
+            <div class="col-xl-3 col-md-6 mb-4">
+                <div class="stats-card">
+                    <div class="stats-icon text-success">
+                        <i class="bi bi-gift"></i>
+                    </div>
+                    <div class="stats-label">المكافآت</div>
+                    <div class="stats-value">{{ stats.rewards }}</div>
+                </div>
+            </div>
+
+            <div class="col-xl-3 col-md-6 mb-4">
+                <div class="stats-card">
+                    <div class="stats-icon text-danger">
+                        <i class="bi bi-dash-circle"></i>
+                    </div>
+                    <div class="stats-label">الخصومات</div>
+                    <div class="stats-value">{{ stats.penalties }}</div>
+                </div>
+            </div>
+
+            <div class="col-xl-3 col-md-6 mb-4">
+                <div class="stats-card">
+                    <div class="stats-icon text-warning">
+                        <i class="bi bi-cash-coin"></i>
+                    </div>
+                    <div class="stats-label">صافي المبلغ</div>
+                    <div class="stats-value">{{ stats.total_amount | round(2) }} ج</div>
+                </div>
+            </div>
+        </div>
+
+        <!-- Rewards & Penalties Table -->
+
+        <!-- تعديل جزء الجدول لإضافة عمود الإجراءات وأزرار الحذف -->
+        <div class="content-card">
+            <div class="card-header card-header-primary d-flex justify-content-between align-items-center">
+                <h5 class="card-title mb-0">
+                    <i class="bi bi-clock-history me-2"></i>
+                    سجل المكافآت والخصومات
+                </h5>
+                
+                <!-- إضافة زر الحذف الجماعي (يظهر فقط إذا كان اليوم <= 25) -->
+                {% if can_delete_today %}
+                <div class="btn-group">
+                    <button type="button" class="btn btn-sm btn-outline-light" id="selectAllBtn">
+                        <i class="bi bi-check-all me-1"></i> تحديد الكل
+                    </button>
+                    <button type="button" class="btn btn-sm btn-danger" id="bulkDeleteBtn" disabled>
+                        <i class="bi bi-trash me-1"></i> حذف المحدد
+                    </button>
+                </div>
+                {% endif %}
+            </div>
+            
+            <!-- شريط تحذيري إذا كان اليوم > 25 -->
+            {% if not can_delete_today %}
+            <div class="alert alert-warning m-3">
+                <i class="bi bi-exclamation-triangle me-2"></i>
+                <strong>تنبيه:</strong> {{ deletion_message }}
+                <small class="d-block mt-1 text-muted">يمكنك الحذف فقط من يوم 1 إلى 25 من الشهر</small>
+            </div>
+            {% endif %}
+            
+            <div class="card-body p-0">
+                <div class="table-responsive">
+                    <table class="table table-hover mb-0" id="rewardsTable">
+                        <thead>
+                            <tr>
+                                {% if can_delete_today %}
+                                <th width="50"><input type="checkbox" class="form-check-input" id="selectAllCheckbox"></th>
+                                {% endif %}
+                                <th>#</th>
+                                <th>اسم الموظف</th>
+                                <th>القسم</th>
+                                <th>النوع</th>
+                                <th>المبلغ</th>
+                                <th>التاريخ</th>
+                                <th>السبب</th>
+                                <th>تم الإضافة بواسطة</th>
+                                <th>تاريخ الإضافة</th>
+                                {% if can_delete_today %}
+                                <th>الإجراءات</th>
+                                {% endif %}
+                            </tr>
+                        </thead>
+                        <tbody>
+                            {% for rp in rewards_penalties %}
+                            <tr class="{% if rp.type == 'reward' %}reward-row{% else %}penalty-row{% endif %}" data-id="{{ rp.id }}">
+                                {% if can_delete_today %}
+                                <td><input type="checkbox" class="row-checkbox form-check-input" data-id="{{ rp.id }}"></td>
+                                {% endif %}
+                                <td>{{ loop.index }}</td>
+                                <td>
+                                    {% if rp.user %}
+                                        {{ rp.user.name }}
+                                    {% else %}
+                                        <span class="text-muted">غير معروف</span>
+                                    {% endif %}
+                                </td>
+                                <td>
+                                    {% if rp.department %}
+                                        {{ rp.department.name }}
+                                    {% else %}
+                                        <span class="text-muted">غير معين</span>
+                                    {% endif %}
+                                </td>
+                                <td>
+                                    {% if rp.type == 'reward' %}
+                                        <span class="badge bg-success">مكافأة</span>
+                                    {% else %}
+                                        <span class="badge bg-danger">خصم</span>
+                                    {% endif %}
+                                </td>
+                                <td>
+                                    <strong class="{% if rp.type == 'reward' %}text-success{% else %}text-danger{% endif %}">
+                                        {{ rp.amount }} ج
+                                    </strong>
+                                </td>
+                                <td>{{ rp.effective_date.strftime('%Y-%m-%d') }}</td>
+                                <td>
+                                    <span class="text-truncate" style="max-width: 150px; display: inline-block;" 
+                                        title="{{ rp.reason }}">
+                                        {{ rp.reason }}
+                                    </span>
+                                </td>
+                                <td>
+                                    {% if rp.creator %}
+                                        {{ rp.creator.name }}
+                                    {% else %}
+                                        <span class="text-muted">نظام</span>
+                                    {% endif %}
+                                </td>
+                                <td>{{ rp.created_at.strftime('%Y-%m-%d %H:%M') }}</td>
+                                
+                                {% if can_delete_today %}
+                                <td>
+                                    <div class="btn-group">
+                                        <!-- زر الحذف الفردي -->
+                                        <button type="button" class="btn btn-sm btn-danger delete-single-btn" 
+                                                data-id="{{ rp.id }}" 
+                                                data-name="{{ rp.user.name if rp.user else 'غير معروف' }}"
+                                                data-type="{% if rp.type == 'reward' %}مكافأة{% else %}خصم{% endif %}"
+                                                data-amount="{{ rp.amount }}"
+                                                data-date="{{ rp.effective_date.strftime('%Y-%m-%d') }}"
+                                                title="حذف">
+                                            <i class="bi bi-trash"></i>
+                                        </button>
+                                    </div>
+                                </td>
+                                {% endif %}
+                            </tr>
+                            {% else %}
+                            <tr>
+                                <td colspan="{% if can_delete_today %}11{% else %}10{% endif %}" class="text-center py-5">
+                                    <div class="no-data">
+                                        <i class="bi bi-award text-muted"></i>
+                                        <h5 class="text-muted mt-3">لا توجد بيانات</h5>
+                                        <p class="text-muted">لم يتم إضافة أي مكافآت أو خصومات بعد</p>
+                                    </div>
+                                </td>
+                            </tr>
+                            {% endfor %}
+                        </tbody>
+                    </table>
+                </div>
+            </div>
+        </div>
+
+        
+    </div>
+
+    <!-- Modal لإضافة مكافأة/خصم -->
+    <div class="modal fade" id="addRewardPenaltyModal" tabindex="-1" aria-labelledby="addRewardPenaltyModalLabel" aria-hidden="true">
+        <div class="modal-dialog modal-lg">
+            <div class="modal-content">
+                <div class="modal-header">
+                    <h5 class="modal-title" id="addRewardPenaltyModalLabel">
+                        <i class="bi bi-plus-circle me-2"></i>
+                        إضافة مكافأة/خصم جديد
+                    </h5>
+                    <button type="button" class="btn-close" data-bs-dismiss="modal" aria-label="Close"></button>
+                </div>
+                <form method="POST" action="{{ url_for('manager_rewards_penalties') }}" id="rewardPenaltyForm">
+                    <div class="modal-body">
+                        <div class="row">
+                            <div class="col-md-6 mb-3">
+                                <label for="department_id" class="form-label">القسم</label>
+                                <select class="form-select" id="department_id" name="department_id" required onchange="loadEmployees(this.value)">
+                                    <option value="">اختر القسم</option>
+                                    {% for dept in departments %}
+                                    <option value="{{ dept.id }}">{{ dept.name }}</option>
+                                    {% endfor %}
+                                </select>
+                            </div>
+                            
+                            <div class="col-md-6 mb-3">
+                                <label for="employee_id" class="form-label">اسم الموظف</label>
+                                <select class="form-select" id="employee_id" name="employee_id" required disabled>
+                                    <option value="">اختر الموظف</option>
+                                </select>
+                                <div class="form-text text-muted">يجب اختيار القسم أولاً</div>
+                            </div>
+                            
+                            <div class="col-md-6 mb-3">
+                                <label for="type" class="form-label">النوع</label>
+                                <select class="form-select" id="type" name="type" required>
+                                    <option value="reward">مكافأة</option>
+                                    <option value="penalty">خصم</option>
+                                </select>
+                            </div>
+                            
+                            <div class="col-md-6 mb-3">
+                                <label for="amount" class="form-label">المبلغ (جنيه)</label>
+                                <input type="number" class="form-control" id="amount" name="amount" 
+                                       min="0.01" step="0.01" required placeholder="0.00">
+                            </div>
+                            
+                            <div class="col-md-6 mb-3">
+                                <label for="effective_date" class="form-label">تاريخ التطبيق</label>
+                                <input type="date" class="form-control" id="effective_date" name="effective_date" 
+                                       value="{{ date.today().strftime('%Y-%m-%d') }}" required>
+                            </div>
+                            
+                            <div class="col-12 mb-3">
+                                <label for="reason" class="form-label">السبب</label>
+                                <textarea class="form-control" id="reason" name="reason" rows="3" 
+                                          placeholder="أدخل سبب المكافأة/الخصم" required></textarea>
+                            </div>
+                        </div>
+                    </div>
+                    <div class="modal-footer">
+                        <button type="button" class="btn btn-secondary" data-bs-dismiss="modal">إلغاء</button>
+                        <button type="submit" class="btn btn-primary">حفظ</button>
+                    </div>
+                </form>
+            </div>
+        </div>
+    </div>
+
+    <!-- Bootstrap 5 JS -->
+    <script src="https://cdn.jsdelivr.net/npm/bootstrap@5.3.0/dist/js/bootstrap.bundle.min.js"></script>
+    <!-- jQuery -->
+    <script src="https://code.jquery.com/jquery-3.6.0.min.js"></script>
+
+    <script>
+        // Global variables and functions
+        document.addEventListener('DOMContentLoaded', function() {
+            // Mobile menu functionality
+            const mobileMenuBtn = document.getElementById('mobileMenuBtn');
+            const mobileNavMenu = document.getElementById('mobileNavMenu');
+            
+            if (mobileMenuBtn && mobileNavMenu) {
+                mobileMenuBtn.addEventListener('click', function() {
+                    mobileNavMenu.classList.toggle('active');
+                });
+                
+                // Close mobile menu when clicking outside
+                document.addEventListener('click', function(event) {
+                    if (!mobileMenuBtn.contains(event.target) && !mobileNavMenu.contains(event.target)) {
+                        mobileNavMenu.classList.remove('active');
+                    }
+                });
+            }
+
+            // Real-time clock
+            function updateClock() {
+                const now = new Date();
+                const timeString = now.toLocaleTimeString('ar-EG');
+                const dateString = now.toLocaleDateString('ar-EG', {
+                    weekday: 'long',
+                    year: 'numeric',
+                    month: 'long',
+                    day: 'numeric'
+                });
+                
+                const clockElement = document.getElementById('live-clock');
+                
+                if (clockElement) {
+                    clockElement.innerHTML = `
+                        <i class="bi bi-clock me-2"></i>
+                        ${timeString}
+                        <small class="text-white-50 ms-2 d-none d-md-inline">${dateString}</small>
+                    `;
+                }
+            }
+            
+            updateClock();
+            setInterval(updateClock, 1000);
+            
+            // Initialize form validation
+            initFormValidation();
+            
+            // Set default amount input color
+            $('#type').trigger('change');
+            
+            // Pre-populate employee dropdown if we have department employees data
+            {% if department_employees %}
+                const deptSelect = document.getElementById('department_id');
+                if (deptSelect) {
+                    deptSelect.addEventListener('change', function() {
+                        const deptId = this.value;
+                        populateEmployeesFromTemplate(deptId);
+                    });
+                }
+            {% endif %}
+        });
+
+        // Load employees based on department - SIMPLIFIED VERSION
+        // في ملف HTML الخاص بك، في القسم <script>
+        // بدلاً من استخدام AJAX، استخدم البيانات المسبقة
+        function loadEmployees(departmentId) {
+            if (!departmentId) {
+                $('#employee_id').prop('disabled', true);
+                $('#employee_id').html('<option value="">اختر الموظف</option>');
+                return;
+            }
+            
+            // استخدام البيانات المسبقة إذا كانت متوفرة
+            const departmentEmployees = {{ department_employees_json|safe }};
+            
+            const employeeSelect = $('#employee_id');
+            employeeSelect.html('<option value="">اختر الموظف</option>');
+            
+            if (departmentId in departmentEmployees && departmentEmployees[departmentId].length > 0) {
+                departmentEmployees[departmentId].forEach(employee => {
+                    employeeSelect.append(
+                        `<option value="${employee.id}">${employee.arabic_name || employee.name}${employee.job_title ? ' - ' + employee.job_title : ''}</option>`
+                    );
+                });
+                employeeSelect.prop('disabled', false);
+            } else {
+                employeeSelect.html('<option value="">لا يوجد موظفين في هذا القسم</option>');
+                employeeSelect.prop('disabled', true);
+            }
+        }
+
+        // بدء التحميل عند تغيير القسم
+        $('#department_id').on('change', function() {
+            loadEmployees(this.value);
+        });
+
+
+        
+        // Handle employee API response
+        function handleEmployeeResponse(response, departmentId) {
+            const employeeSelect = $('#employee_id');
+            employeeSelect.html('<option value="">اختر الموظف</option>');
+            
+            // Check if response is an array
+            if (Array.isArray(response)) {
+                populateSelectWithEmployees(response);
+            } 
+            // Check if response has data property
+            else if (response && Array.isArray(response.data)) {
+                populateSelectWithEmployees(response.data);
+            }
+            // Check if response has employees property
+            else if (response && Array.isArray(response.employees)) {
+                populateSelectWithEmployees(response.employees);
+            }
+            // Check if response is an object with success property
+            else if (response && response.success && Array.isArray(response.employees)) {
+                populateSelectWithEmployees(response.employees);
+            }
+            // If response is a string that might be JSON
+            else if (typeof response === 'string') {
+                try {
+                    const parsed = JSON.parse(response);
+                    handleEmployeeResponse(parsed, departmentId);
+                } catch (e) {
+                    console.error('Failed to parse response as JSON:', e);
+                    useMockEmployees(departmentId);
+                }
+            }
+            // Default fallback
+            else {
+                console.warn('Unrecognized response format:', response);
+                useMockEmployees(departmentId);
+            }
+            
+            hideLoading();
+        }
+        
+        // Populate select with employee data
+        function populateSelectWithEmployees(employees) {
+            const employeeSelect = $('#employee_id');
+            
+            if (!employees || employees.length === 0) {
+                employeeSelect.html('<option value="">لا يوجد موظفين في هذا القسم</option>');
+                employeeSelect.prop('disabled', true);
+                showAlert('لا يوجد موظفين في القسم المحدد', 'warning');
+                return;
+            }
+            
+            employees.forEach(employee => {
+                const displayName = employee.arabic_name || employee.name || employee.full_name || 'غير معروف';
+                const jobTitle = employee.job_title || employee.position || '';
+                const employeeId = employee.id || employee.user_id || employee.employee_id;
+                
+                if (employeeId && displayName) {
+                    employeeSelect.append(
+                        `<option value="${employeeId}">${displayName}${jobTitle ? ' - ' + jobTitle : ''}</option>`
+                    );
+                }
+            });
+            
+            if ($('#employee_id option').length > 1) {
+                employeeSelect.prop('disabled', false);
+                showAlert('تم تحميل الموظفين بنجاح', 'success');
+            } else {
+                employeeSelect.html('<option value="">لا يوجد موظفين متاحين</option>');
+                employeeSelect.prop('disabled', true);
+            }
+        }
+        
+        // Try alternative API endpoints
+        function tryAlternativeEndpoints(departmentId) {
+            const endpoints = [
+                `/api/get_employees_by_department/${departmentId}`,
+                `/api/employees/department/${departmentId}`,
+                `/api/manager/department/${departmentId}/employees`
+            ];
+            
+            let currentEndpointIndex = 0;
+            
+            function tryNextEndpoint() {
+                if (currentEndpointIndex >= endpoints.length) {
+                    hideLoading();
+                    useMockEmployees(departmentId);
+                    return;
+                }
+                
+                const endpoint = endpoints[currentEndpointIndex];
+                currentEndpointIndex++;
+                
+                $.ajax({
+                    url: endpoint,
+                    type: 'GET',
+                    dataType: 'json',
+                    success: function(response) {
+                        handleEmployeeResponse(response, departmentId);
+                    },
+                    error: function() {
+                        tryNextEndpoint();
+                    }
+                });
+            }
+            
+            tryNextEndpoint();
+        }
+        
+        // Use mock employee data as fallback
+        function useMockEmployees(departmentId) {
+            const employeeSelect = $('#employee_id');
+            employeeSelect.html('<option value="">اختر الموظف</option>');
+            
+            // Mock employees for testing
+            const mockEmployees = [
+                { id: 1, name: 'أحمد محمد', job_title: 'مطور ويب' },
+                { id: 2, name: 'محمد علي', job_title: 'مصمم جرافيك' },
+                { id: 3, name: 'سارة خالد', job_title: 'مدير مشروع' },
+                { id: 4, name: 'فاطمة عبدالله', job_title: 'محاسب' }
+            ];
+            
+            mockEmployees.forEach(employee => {
+                employeeSelect.append(
+                    `<option value="${employee.id}">${employee.name} - ${employee.job_title}</option>`
+                );
+            });
+            
+            employeeSelect.prop('disabled', false);
+            showAlert('تم تحميل بيانات تجريبية. الرجاء التحقق من اتصال الخادم.', 'warning');
+            hideLoading();
+        }
+        
+        // Populate employees from template data (if available)
+        function populateEmployeesFromTemplate(departmentId) {
+            const employeeSelect = $('#employee_id');
+            employeeSelect.html('<option value="">اختر الموظف</option>');
+            
+            {% if department_employees %}
+                let hasEmployees = false;
+                {% for dept_id, employees in department_employees.items() %}
+                    if ("{{ dept_id }}" == departmentId) {
+                        {% for emp in employees %}
+                            employeeSelect.append(
+                                `<option value="{{ emp.id }}">{{ emp.name }}{% if emp.job_title %} - {{ emp.job_title }}{% endif %}</option>`
+                            );
+                            hasEmployees = true;
+                        {% endfor %}
+                    }
+                {% endfor %}
+                
+                if (hasEmployees) {
+                    employeeSelect.prop('disabled', false);
+                } else {
+                    employeeSelect.html('<option value="">لا يوجد موظفين في هذا القسم</option>');
+                    employeeSelect.prop('disabled', true);
+                }
+            {% else %}
+                // If no template data, use mock data
+                useMockEmployees(departmentId);
+            {% endif %}
+        }
+
+        // Change amount input color based on type
+        $('#type').on('change', function() {
+            const amountInput = $('#amount');
+            if ($(this).val() === 'reward') {
+                amountInput.css('border-color', '#10b981');
+                amountInput.css('background-color', 'rgba(16, 185, 129, 0.05)');
+            } else {
+                amountInput.css('border-color', '#ef4444');
+                amountInput.css('background-color', 'rgba(239, 68, 68, 0.05)');
+            }
+        });
+
+        // Initialize form validation
+        function initFormValidation() {
+            const form = document.getElementById('rewardPenaltyForm');
+            if (form) {
+                form.addEventListener('submit', function(e) {
+                    const type = document.getElementById('type').value;
+                    const amount = parseFloat(document.getElementById('amount').value);
+                    const employeeId = document.getElementById('employee_id').value;
+                    const departmentId = document.getElementById('department_id').value;
+                    
+                    // Validate department
+                    if (!departmentId) {
+                        e.preventDefault();
+                        showAlert('يجب اختيار القسم', 'danger');
+                        return false;
+                    }
+                    
+                    // Validate employee
+                    if (!employeeId) {
+                        e.preventDefault();
+                        showAlert('يجب اختيار الموظف', 'danger');
+                        return false;
+                    }
+                    
+                    // Validate amount
+                    if (isNaN(amount) || amount <= 0) {
+                        e.preventDefault();
+                        showAlert('يجب أن يكون المبلغ أكبر من صفر', 'danger');
+                        return false;
+                    }
+                    
+                    showLoading('جاري إضافة المكافأة/الخصم...');
+                });
+            }
+        }
+
+        // Show loading
+        function showLoading(message = 'جاري التحميل...') {
+            const loadingOverlay = document.getElementById('loadingOverlay');
+            const loadingSpinner = document.querySelector('.loading-spinner');
+            if (loadingOverlay) {
+                loadingOverlay.style.display = 'flex';
+            }
+            if (loadingSpinner) {
+                loadingSpinner.innerHTML = `<i class="bi bi-arrow-repeat me-2"></i>${message}`;
+            }
+        }
+
+        // Hide loading
+        function hideLoading() {
+            const loadingOverlay = document.getElementById('loadingOverlay');
+            if (loadingOverlay) {
+                loadingOverlay.style.display = 'none';
+            }
+        }
+
+        // Show alert
+        function showAlert(message, type = 'success') {
+            // Remove existing alerts after a delay
+            setTimeout(() => {
+                const existingAlerts = document.querySelectorAll('.alert-container .alert');
+                existingAlerts.forEach(alert => {
+                    if (alert.parentElement) {
+                        alert.remove();
+                    }
+                });
+            }, 100);
+            
+            const alertHTML = `
+                <div class="alert alert-${type} alert-dismissible fade show mb-2" role="alert">
+                    <i class="bi bi-${type === 'success' ? 'check-circle' : type === 'danger' ? 'exclamation-triangle' : type === 'warning' ? 'exclamation-circle' : 'info-circle'} me-2"></i>
+                    ${message}
+                    <button type="button" class="btn-close" data-bs-dismiss="alert" aria-label="Close"></button>
+                </div>
+            `;
+            
+            const alertContainer = document.querySelector('.alert-container');
+            if (alertContainer) {
+                alertContainer.insertAdjacentHTML('beforeend', alertHTML);
+            }
+            
+            // Auto remove after 5 seconds
+            setTimeout(() => {
+                const alerts = document.querySelectorAll('.alert-container .alert');
+                if (alerts.length > 0) {
+                    const lastAlert = alerts[alerts.length - 1];
+                    if (lastAlert.parentElement) {
+                        lastAlert.remove();
+                    }
+                }
+            }, 5000);
+        }
+    </script>
+<script>
+    $(document).ready(function() {
+        // التحقق من حالة الحذف أولاً
+        $.getJSON('/api/check_deletion_status', function(data) {
+            console.log('Deletion status:', data);
+            if (!data.can_delete) {
+                // إظهار رسالة تحذيرية إذا لزم الأمر
+                if ($('#deletion-warning').length === 0) {
+                    $('.alert-warning').show();
+                }
+            }
+        }).fail(function() {
+            console.log('Could not check deletion status');
+        });
+    
+        // ====== وظائف التحديد المتعدد ======
+        var anyChecked = false;
+        
+        // تحديد الكل / إلغاء التحديد
+        $('#selectAllCheckbox').change(function() {
+            $('.row-checkbox').prop('checked', $(this).prop('checked'));
+            toggleBulkDeleteButton();
+        });
+        
+        // تفعيل/تعطيل زر الحذف الجماعي عند تغيير التحديد
+        $('.row-checkbox').change(function() {
+            toggleBulkDeleteButton();
+        });
+        
+        // زر تحديد الكل
+        $('#selectAllBtn').click(function() {
+            $('.row-checkbox').prop('checked', true);
+            $('#selectAllCheckbox').prop('checked', true);
+            toggleBulkDeleteButton();
+        });
+        
+        function toggleBulkDeleteButton() {
+            var checkedCount = $('.row-checkbox:checked').length;
+            if (checkedCount > 0) {
+                $('#bulkDeleteBtn').prop('disabled', false);
+                $('#bulkDeleteBtn').html(`<i class="bi bi-trash me-1"></i> حذف (${checkedCount})`);
+            } else {
+                $('#bulkDeleteBtn').prop('disabled', true);
+                $('#bulkDeleteBtn').html(`<i class="bi bi-trash me-1"></i> حذف المحدد`);
+            }
+        }
+    
+        // ====== حذف فردي ======
+        $('.delete-single-btn').click(function() {
+            var btn = $(this);
+            var id = btn.data('id');
+            var name = btn.data('name');
+            var type = btn.data('type');
+            var amount = btn.data('amount');
+            var date = btn.data('date');
+            
+            Swal.fire({
+                title: 'تأكيد الحذف',
+                html: `
+                    <div class="text-center">
+                        <i class="bi bi-exclamation-triangle text-warning" style="font-size: 3rem;"></i>
+                        <h5 class="mt-3">هل أنت متأكد من حذف ${type}؟</h5>
+                        <p class="mb-2"><strong>الموظف:</strong> ${name}</p>
+                        <p class="mb-2"><strong>المبلغ:</strong> ${amount} ج</p>
+                        <p class="mb-3"><strong>التاريخ:</strong> ${date}</p>
+                        <div class="alert alert-warning">
+                            <i class="bi bi-info-circle me-2"></i>
+                            هذا الإجراء لا يمكن التراجع عنه
+                        </div>
+                    </div>
+                `,
+                icon: 'warning',
+                showCancelButton: true,
+                confirmButtonColor: '#d33',
+                cancelButtonColor: '#3085d6',
+                confirmButtonText: 'نعم، احذف',
+                cancelButtonText: 'إلغاء',
+                reverseButtons: true
+            }).then((result) => {
+                if (result.isConfirmed) {
+                    // إظهار مؤشر التحميل
+                    Swal.fire({
+                        title: 'جاري الحذف...',
+                        allowOutsideClick: false,
+                        didOpen: () => {
+                            Swal.showLoading();
+                        }
+                    });
+                    
+                    // إرسال طلب الحذف
+                    $.ajax({
+                        url: `/manager/delete_reward/${id}`,
+                        type: 'POST',
+                        dataType: 'json',
+                        success: function(response) {
+                            if (response.success) {
+                                Swal.fire({
+                                    title: 'تم الحذف',
+                                    text: response.message,
+                                    icon: 'success',
+                                    timer: 2000,
+                                    showConfirmButton: false
+                                }).then(() => {
+                                    location.reload();
+                                });
+                            } else {
+                                Swal.fire({
+                                    title: 'خطأ',
+                                    text: response.message,
+                                    icon: 'error'
+                                });
+                            }
+                        },
+                        error: function(xhr) {
+                            let errorMsg = 'حدث خطأ في الاتصال';
+                            try {
+                                const response = JSON.parse(xhr.responseText);
+                                errorMsg = response.message || errorMsg;
+                            } catch(e) {}
+                            
+                            Swal.fire({
+                                title: 'خطأ',
+                                text: errorMsg,
+                                icon: 'error'
+                            });
+                        }
+                    });
+                }
+            });
+        });
+    
+        // ====== حذف جماعي ======
+        $('#bulkDeleteBtn').click(function() {
+            var selectedIds = [];
+            $('.row-checkbox:checked').each(function() {
+                selectedIds.push($(this).data('id'));
+            });
+            
+            if (selectedIds.length === 0) {
+                Swal.fire('تنبيه', 'لم يتم تحديد أي عناصر', 'warning');
+                return;
+            }
+            
+            Swal.fire({
+                title: 'تأكيد الحذف الجماعي',
+                html: `
+                    <div class="text-center">
+                        <i class="bi bi-exclamation-triangle text-warning" style="font-size: 3rem;"></i>
+                        <h5 class="mt-3">هل أنت متأكد من حذف <strong>${selectedIds.length}</strong> عنصر؟</h5>
+                        <div class="alert alert-danger mt-3">
+                            <i class="bi bi-info-circle me-2"></i>
+                            <strong>تحذير:</strong> هذا الإجراء لا يمكن التراجع عنه
+                        </div>
+                    </div>
+                `,
+                icon: 'warning',
+                showCancelButton: true,
+                confirmButtonColor: '#d33',
+                cancelButtonColor: '#3085d6',
+                confirmButtonText: 'نعم، احذف الكل',
+                cancelButtonText: 'إلغاء',
+                reverseButtons: true
+            }).then((result) => {
+                if (result.isConfirmed) {
+                    Swal.fire({
+                        title: 'جاري الحذف...',
+                        allowOutsideClick: false,
+                        didOpen: () => {
+                            Swal.showLoading();
+                        }
+                    });
+                    
+                    $.ajax({
+                        url: '/manager/bulk_delete_items',
+                        type: 'POST',
+                        contentType: 'application/json',
+                        data: JSON.stringify({
+                            type: 'rewards',
+                            ids: selectedIds
+                        }),
+                        success: function(response) {
+                            if (response.success) {
+                                Swal.fire({
+                                    title: 'تم الحذف',
+                                    html: response.message,
+                                    icon: 'success',
+                                    timer: 2500,
+                                    showConfirmButton: false
+                                }).then(() => {
+                                    location.reload();
+                                });
+                            } else {
+                                Swal.fire({
+                                    title: 'خطأ',
+                                    text: response.message,
+                                    icon: 'error'
+                                });
+                            }
+                        },
+                        error: function(xhr) {
+                            let errorMsg = 'حدث خطأ في الاتصال';
+                            try {
+                                const response = JSON.parse(xhr.responseText);
+                                errorMsg = response.message || errorMsg;
+                            } catch(e) {}
+                            
+                            Swal.fire({
+                                title: 'خطأ',
+                                text: errorMsg,
+                                icon: 'error'
+                            });
+                        }
+                    });
+                }
+            });
+        });
+    
+        // ====== إضافة زر حذف للصف عند التحويم ======
+        $('#rewardsTable tbody tr').hover(
+            function() {
+                $(this).find('.btn-group').addClass('shadow-sm');
+            },
+            function() {
+                $(this).find('.btn-group').removeClass('shadow-sm');
+            }
+        );
+    
+        // ====== إظهار رسالة تأكيد عند محاولة حذف عنصر قديم ======
+        $('.delete-single-btn').each(function() {
+            var dateStr = $(this).data('date');
+            if (dateStr) {
+                var itemDate = new Date(dateStr);
+                var today = new Date();
+                var diffTime = today - itemDate;
+                var diffDays = diffTime / (1000 * 60 * 60 * 24);
+                
+                if (diffDays > 30) {
+                    $(this).addClass('btn-outline-danger').removeClass('btn-danger');
+                    $(this).attr('title', 'حذف (عنصر قديم)');
+                }
+            }
+        });
+    });
+    </script>
+    
+    <!-- إضافة CSS إضافي للأزرار -->
+    <style>
+        .btn-group .btn {
+            margin: 0 2px;
+            transition: all 0.2s ease;
+        }
+        
+        .btn-group .btn:hover {
+            transform: translateY(-2px);
+            box-shadow: 0 4px 8px rgba(0,0,0,0.1);
+        }
+        
+        #bulkDeleteBtn:disabled {
+            opacity: 0.5;
+            cursor: not-allowed;
+        }
+        
+        .row-checkbox {
+            cursor: pointer;
+        }
+        
+        #selectAllCheckbox {
+            cursor: pointer;
+        }
+        
+        /* تنسيق رسائل SweetAlert2 */
+        .swal2-popup {
+            font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif;
+            border-radius: 15px !important;
+        }
+        
+        .swal2-title {
+            color: #1a4731 !important;
+        }
+        
+        .swal2-confirm {
+            border-radius: 10px !important;
+        }
+        
+        .swal2-cancel {
+            border-radius: 10px !important;
+        }
+        
+        /* تنسيق شريط التحذير */
+        .alert-warning {
+            background: linear-gradient(135deg, #fef3c7 0%, #fde68a 100%);
+            border: 1px solid #f59e0b;
+            color: #92400e;
+            border-radius: 12px;
+        }
+        
+        /* تنسيق زر الحذف في العمود */
+        .delete-single-btn {
+            background: linear-gradient(135deg, #ef4444 0%, #dc2626 100%);
+            border: none;
+            width: 32px;
+            height: 32px;
+            padding: 0;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+        }
+        
+        .delete-single-btn i {
+            font-size: 1rem;
+        }
+        
+        .delete-single-btn.btn-outline-danger {
+            background: transparent;
+            border: 1px solid #dc2626;
+            color: #dc2626;
+        }
+        
+        .delete-single-btn.btn-outline-danger:hover {
+            background: #dc2626;
+            color: white;
+        }
+    </style>
+
+</body>
+</html>

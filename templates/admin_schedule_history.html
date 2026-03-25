@@ -1,0 +1,710 @@
+<!DOCTYPE html>
+<html lang="ar" dir="rtl">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>التاريخ الكامل للجداول - نظام إدارة الموارد البشرية</title>
+    
+    <!-- Bootstrap 5 CSS -->
+    <link href="https://cdn.jsdelivr.net/npm/bootstrap@5.3.0/dist/css/bootstrap.min.css" rel="stylesheet">
+    
+    <!-- Bootstrap Icons -->
+    <link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/bootstrap-icons@1.10.0/font/bootstrap-icons.css">
+    
+    <style>
+        :root {
+            --primary-green: #10b981;
+            --dark-green: #059669;
+            --light-green: #34d399;
+            --gradient-primary: linear-gradient(135deg, #10b981 0%, #059669 100%);
+            --gradient-dark: linear-gradient(135deg, #065f46 0%, #047857 100%);
+        }
+        
+        body {
+            font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif;
+            background: linear-gradient(135deg, #ecfdf5 0%, #d1fae5 100%);
+            min-height: 100vh;
+            padding: 20px;
+        }
+        
+        .admin-container {
+            max-width: 1400px;
+            margin: 0 auto;
+        }
+        
+        .header-card {
+            background: var(--gradient-dark);
+            border: none;
+            border-radius: 20px;
+            color: white;
+            box-shadow: 0 15px 35px rgba(5, 150, 105, 0.2);
+            margin-bottom: 30px;
+        }
+        
+        .content-card {
+            border: none;
+            border-radius: 20px;
+            box-shadow: 0 15px 35px rgba(16, 185, 129, 0.1);
+            background: rgba(255, 255, 255, 0.95);
+            margin-bottom: 25px;
+        }
+        
+        .card-header {
+            border-radius: 20px 20px 0 0 !important;
+            border-bottom: 2px solid rgba(255, 255, 255, 0.1);
+            padding: 20px 25px;
+        }
+        
+        .card-header-primary {
+            background: var(--gradient-primary);
+            color: white;
+        }
+        
+        .card-header-info {
+            background: linear-gradient(135deg, #0ea5e9 0%, #0284c7 100%);
+            color: white;
+        }
+        
+        .btn-primary {
+            background: var(--gradient-primary);
+            border: none;
+            border-radius: 15px;
+            padding: 12px 30px;
+            font-weight: 600;
+            transition: all 0.3s ease;
+        }
+        
+        .back-btn {
+            background: rgba(255, 255, 255, 0.2);
+            border: 2px solid rgba(255, 255, 255, 0.3);
+            color: white;
+            border-radius: 15px;
+            padding: 10px 20px;
+            transition: all 0.3s ease;
+            font-weight: 600;
+        }
+        
+        .back-btn:hover {
+            background: rgba(255, 255, 255, 0.3);
+            border-color: rgba(255, 255, 255, 0.5);
+            color: white;
+        }
+
+        .schedule-table {
+            width: 100%;
+            border-collapse: separate;
+            border-spacing: 0 8px;
+        }
+        
+        .schedule-table th {
+            color: var(--dark-green);
+            font-weight: 600;
+            padding: 15px;
+            background: rgba(16, 185, 129, 0.05);
+        }
+        
+        .schedule-table td {
+            padding: 15px;
+            background: rgba(255, 255, 255, 0.9);
+            border: 1px solid rgba(16, 185, 129, 0.1);
+            vertical-align: middle;
+        }
+        
+        .badge {
+            font-size: 0.8rem;
+            padding: 6px 12px;
+            border-radius: 10px;
+            font-weight: 500;
+        }
+        
+        .stats-card {
+            background: rgba(255, 255, 255, 0.9);
+            border-radius: 15px;
+            padding: 20px;
+            text-align: center;
+            border: 1px solid rgba(16, 185, 129, 0.1);
+            transition: all 0.3s ease;
+            height: 100%;
+        }
+        
+        .stats-card:hover {
+            transform: translateY(-3px);
+            box-shadow: 0 8px 25px rgba(16, 185, 129, 0.15);
+        }
+        
+        .stats-value {
+            font-size: 2rem;
+            font-weight: 700;
+            color: var(--dark-green);
+            margin: 10px 0;
+        }
+        
+        .stats-label {
+            color: #6b7280;
+            font-size: 0.9rem;
+        }
+        
+        .schedule-actions {
+            display: flex;
+            gap: 8px;
+            flex-wrap: wrap;
+            justify-content: center;
+        }
+        
+        .empty-state {
+            text-align: center;
+            padding: 40px 20px;
+            color: #6b7280;
+        }
+        
+        .export-btn {
+            background: linear-gradient(135deg, #10b981 0%, #059669 100%);
+            border: none;
+            border-radius: 10px;
+            padding: 8px 16px;
+            color: white;
+            font-weight: 600;
+        }
+        
+        .view-btn {
+            background: linear-gradient(135deg, #3b82f6 0%, #1d4ed8 100%);
+            border: none;
+            border-radius: 10px;
+            padding: 8px 16px;
+            color: white;
+            font-weight: 600;
+        }
+        
+        .month-section {
+            background: linear-gradient(135deg, #f8fafc 0%, #f1f5f9 100%);
+            border-radius: 15px;
+            padding: 20px;
+            margin-bottom: 25px;
+            border: 2px solid rgba(16, 185, 129, 0.1);
+        }
+        
+        .month-header {
+            background: linear-gradient(135deg, #e0f2fe 0%, #bae6fd 100%);
+            border-radius: 10px;
+            padding: 15px 20px;
+            margin-bottom: 15px;
+            border-right: 4px solid #0ea5e9;
+        }
+        
+        .period-badge {
+            background: linear-gradient(135deg, #7dd3fc 0%, #0ea5e9 100%);
+            color: white;
+            font-size: 1.1rem;
+            padding: 8px 16px;
+            border-radius: 10px;
+        }
+        
+        .current-week {
+            background: linear-gradient(135deg, #dcfce7 0%, #bbf7d0 100%) !important;
+            border: 2px solid #22c55e;
+        }
+        
+        .floating-shape {
+            position: fixed;
+            width: 200px;
+            height: 200px;
+            background: var(--gradient-primary);
+            opacity: 0.1;
+            border-radius: 50%;
+            z-index: -1;
+            animation: float 6s ease-in-out infinite;
+        }
+        
+        .shape-1 {
+            top: 10%;
+            left: 10%;
+        }
+        
+        .shape-2 {
+            bottom: 10%;
+            right: 10%;
+            animation-delay: 2s;
+        }
+        
+        @keyframes float {
+            0%, 100% { transform: translateY(0px) rotate(0deg); }
+            50% { transform: translateY(-20px) rotate(10deg); }
+        }
+        
+        .loading-overlay {
+            position: fixed;
+            top: 0;
+            left: 0;
+            width: 100%;
+            height: 100%;
+            background: rgba(0, 0, 0, 0.5);
+            display: flex;
+            justify-content: center;
+            align-items: center;
+            z-index: 9999;
+            display: none;
+        }
+        
+        .alert-container {
+            position: fixed;
+            top: 20px;
+            right: 20px;
+            z-index: 9999;
+            min-width: 300px;
+        }
+        
+        .timeline-connector {
+            position: relative;
+        }
+        
+        .timeline-connector::before {
+            content: '';
+            position: absolute;
+            left: -15px;
+            top: 0;
+            bottom: 0;
+            width: 2px;
+            background: linear-gradient(to bottom, #10b981, #34d399);
+        }
+    </style>
+</head>
+<body>
+    <!-- Background Shapes -->
+    <div class="floating-shape shape-1"></div>
+    <div class="floating-shape shape-2"></div>
+    
+    <!-- Loading Overlay -->
+    <div class="loading-overlay" id="loadingOverlay">
+        <div class="text-white text-center">
+            <i class="bi bi-arrow-repeat spinner display-4 d-block mb-3"></i>
+            <span>جاري التحميل...</span>
+        </div>
+    </div>
+    
+    <!-- Alert Container -->
+    <div class="alert-container"></div>
+    
+    <div class="admin-container">
+        <!-- Header -->
+        <div class="header-card card">
+            <div class="card-body">
+                <div class="row align-items-center">
+                    <div class="col-md-8">
+                        <h1 class="h2 fw-bold mb-2">
+                            <i class="bi bi-clock-history me-3"></i>
+                            التاريخ الكامل للجداول
+                        </h1>
+                        <p class="mb-0 opacity-75">
+                            قسم: <strong>{{ department.name }}</strong> | 
+                            جميع الجداول الأسبوعية المحفوظة في النظام
+                        </p>
+                    </div>
+                    <div class="col-md-4 text-start">
+                        <a href="{{ url_for('admin_schedules') }}" class="btn back-btn me-2">
+                            <i class="bi bi-arrow-right me-2"></i>
+                            العودة للجداول
+                        </a>
+                        <a href="{{ url_for('admin_dashboard') }}" class="btn back-btn">
+                            <i class="bi bi-house me-2"></i>
+                            لوحة التحكم
+                        </a>
+                    </div>
+                </div>
+            </div>
+        </div>
+
+        <!-- Statistics -->
+        <div class="row mb-4">
+            <div class="col-md-2">
+                <div class="stats-card">
+                    <i class="bi bi-calendar-week text-primary display-6"></i>
+                    <div class="stats-value">{{ stats.total_schedules }}</div>
+                    <div class="stats-label">إجمالي الجداول</div>
+                </div>
+            </div>
+            <div class="col-md-2">
+                <div class="stats-card">
+                    <i class="bi bi-check-circle text-success display-6"></i>
+                    <div class="stats-value">{{ stats.approved_schedules }}</div>
+                    <div class="stats-label">معتمدة</div>
+                </div>
+            </div>
+            <div class="col-md-2">
+                <div class="stats-card">
+                    <i class="bi bi-clock-history text-warning display-6"></i>
+                    <div class="stats-value">{{ stats.pending_schedules }}</div>
+                    <div class="stats-label">بانتظار الاعتماد</div>
+                </div>
+            </div>
+            <div class="col-md-2">
+                <div class="stats-card">
+                    <i class="bi bi-pencil text-secondary display-6"></i>
+                    <div class="stats-value">{{ stats.draft_schedules }}</div>
+                    <div class="stats-label">مسودة</div>
+                </div>
+            </div>
+            <div class="col-md-2">
+                <div class="stats-card">
+                    <i class="bi bi-lock text-danger display-6"></i>
+                    <div class="stats-value">{{ stats.locked_schedules }}</div>
+                    <div class="stats-label">مقفلة</div>
+                </div>
+            </div>
+            <div class="col-md-2">
+                <div class="stats-card">
+                    <i class="bi bi-calendar-range text-info display-6"></i>
+                    <div class="stats-value">
+                        {% if stats.oldest_schedule %}
+                            {{ ((stats.newest_schedule - stats.oldest_schedule).days // 7) + 1 }}
+                        {% else %}
+                            0
+                        {% endif %}
+                    </div>
+                    <div class="stats-label">عدد الأسابيع</div>
+                </div>
+            </div>
+        </div>
+
+        <!-- Date Range Info -->
+        <div class="content-card card mb-4">
+            <div class="card-header card-header-info">
+                <h5 class="card-title mb-0">
+                    <i class="bi bi-info-circle me-2"></i>
+                    معلومات النطاق الزمني
+                </h5>
+            </div>
+            <div class="card-body">
+                <div class="row text-center">
+                    <div class="col-md-4">
+                        <div class="fw-bold text-success">أول جدول</div>
+                        <div class="fs-5">
+                            {% if stats.oldest_schedule %}
+                                {{ stats.oldest_schedule.strftime('%Y-%m-%d') }}
+                            {% else %}
+                                لا يوجد
+                            {% endif %}
+                        </div>
+                    </div>
+                    <div class="col-md-4">
+                        <div class="fw-bold text-primary">أحدث جدول</div>
+                        <div class="fs-5">
+                            {% if stats.newest_schedule %}
+                                {{ stats.newest_schedule.strftime('%Y-%m-%d') }}
+                            {% else %}
+                                لا يوجد
+                            {% endif %}
+                        </div>
+                    </div>
+                    <div class="col-md-4">
+                        <div class="fw-bold text-warning">الأسبوع الحالي</div>
+                        <div class="fs-5">{{ current_week_start.strftime('%Y-%m-%d') }} - {{ current_week_end.strftime('%Y-%m-%d') }}</div>
+                    </div>
+                </div>
+            </div>
+        </div>
+
+        <!-- Schedules History -->
+        <div class="content-card card">
+            <div class="card-header card-header-primary">
+                <h5 class="card-title mb-0">
+                    <i class="bi bi-list-ul me-2"></i>
+                    السجل الزمني للجداول
+                    <small class="opacity-75">(مرتبة من الأحدث إلى الأقدم)</small>
+                </h5>
+            </div>
+            <div class="card-body">
+                {% if schedules_by_period %}
+                    {% for period_key, period_data in schedules_by_period.items() %}
+                    <div class="month-section">
+                        <div class="month-header">
+                            <div class="d-flex justify-content-between align-items-center">
+                                <h5 class="mb-0">
+                                    <i class="bi bi-calendar-month me-2"></i>
+                                    {{ period_data.display_name }}
+                                </h5>
+                                <span class="period-badge">
+                                    {{ period_data.schedules|length }} جدول
+                                </span>
+                            </div>
+                        </div>
+                        
+                        <div class="table-responsive">
+                            <table class="schedule-table">
+                                <thead>
+                                    <tr>
+                                        <th></th>
+                                        <th>الفترة</th>
+                                        <th>الحالة</th>
+                                        <th>المُنشئ</th>
+                                        <th>تاريخ الإنشاء</th>
+                                        <th>الإجراءات</th>
+                                    </tr>
+                                </thead>
+                                <tbody>
+                                    {% for schedule in period_data.schedules %}
+                                    <tr class="timeline-connector {% if schedule.week_start_date <= today and schedule.week_end_date >= today %}current-week{% endif %}">
+                                        <td>
+                                            <div class="d-flex align-items-center">
+                                                <i class="bi bi-calendar-week {% if schedule.week_start_date <= today and schedule.week_end_date >= today %}text-success{% else %}text-primary{% endif %} me-3 fs-5"></i>
+                                                <div>
+                                                    <strong>{{ schedule.week_start_date.strftime('%Y-%m-%d') }}</strong>
+                                                    <span class="mx-2">→</span>
+                                                    <strong>{{ schedule.week_end_date.strftime('%Y-%m-%d') }}</strong>
+                                                    {% if schedule.week_start_date <= today and schedule.week_end_date >= today %}
+                                                        <br>
+                                                        <span class="badge bg-success mt-1">
+                                                            <i class="bi bi-star-fill me-1"></i>
+                                                            الأسبوع الحالي
+                                                        </span>
+                                                    {% endif %}
+                                                </div>
+                                            </div>
+                                        </td>
+                                        <td>
+                                            <div class="schedule-status">
+                                                {% if schedule.is_approved %}
+                                                    <span class="badge bg-success">
+                                                        <i class="bi bi-check-circle me-1"></i>
+                                                        معتمد
+                                                    </span>
+                                                    {% if schedule.approver %}
+                                                        <br>
+                                                        <small class="text-muted">بواسطة {{ schedule.approver.name }}</small>
+                                                    {% endif %}
+                                                {% elif schedule.status == 'pending' %}
+                                                    <span class="badge bg-warning">
+                                                        <i class="bi bi-clock-history me-1"></i>
+                                                        بانتظار الاعتماد
+                                                    </span>
+                                                {% else %}
+                                                    <span class="badge bg-secondary">
+                                                        <i class="bi bi-pencil me-1"></i>
+                                                        مسودة
+                                                    </span>
+                                                {% endif %}
+                                                
+                                                {% if schedule.is_locked %}
+                                                    <br>
+                                                    <span class="badge bg-danger mt-1">
+                                                        <i class="bi bi-lock me-1"></i>
+                                                        مقفل
+                                                    </span>
+                                                {% endif %}
+                                            </div>
+                                        </td>
+                                        <td>
+                                            {% if schedule.creator %}
+                                                <div class="d-flex align-items-center">
+                                                    <i class="bi bi-person-circle text-success me-2"></i>
+                                                    <div>
+                                                        <strong>{{ schedule.creator.name }}</strong>
+                                                        <br>
+                                                        <small class="text-muted">{{ schedule.creator.username }}</small>
+                                                    </div>
+                                                </div>
+                                            {% else %}
+                                                <span class="badge bg-secondary">النظام</span>
+                                            {% endif %}
+                                        </td>
+                                        <td>
+                                            <small class="text-muted">
+                                                {{ schedule.created_at.strftime('%Y-%m-%d') }}
+                                            </small>
+                                            <br>
+                                            <small class="text-success">
+                                                {{ schedule.created_at.strftime('%H:%M') }}
+                                            </small>
+                                        </td>
+                                        <td>
+                                            <div class="schedule-actions">
+                                                <a href="{{ url_for('view_schedule', schedule_id=schedule.id) }}" 
+                                                   class="btn view-btn btn-sm" title="عرض الجدول">
+                                                    <i class="bi bi-eye"></i>
+                                                </a>
+                                                
+                                                <a href="{{ url_for('admin_export_schedule', schedule_id=schedule.id) }}" 
+                                                   class="btn export-btn btn-sm" title="تحميل الجدول">
+                                                    <i class="bi bi-download"></i>
+                                                </a>
+                                                
+                                                {% if schedule.is_approved and not schedule.is_locked %}
+                                                <button type="button" class="btn btn-outline-warning btn-sm" 
+                                                        onclick="lockSchedule({{ schedule.id }})"
+                                                        title="قفل الجدول">
+                                                    <i class="bi bi-lock"></i>
+                                                </button>
+                                                {% endif %}
+                                            </div>
+                                        </td>
+                                    </tr>
+                                    {% endfor %}
+                                </tbody>
+                            </table>
+                        </div>
+                    </div>
+                    {% endfor %}
+                {% else %}
+                    <div class="empty-state">
+                        <i class="bi bi-calendar-x display-4 text-muted"></i>
+                        <h5 class="text-muted mt-3">لا توجد جداول تاريخية</h5>
+                        <p class="text-muted">لم يتم إنشاء أي جداول أسبوعية لهذا القسم بعد</p>
+                        <div class="mt-4">
+                            <a href="{{ url_for('admin_schedules') }}" class="btn btn-primary me-2">
+                                <i class="bi bi-arrow-left me-2"></i>
+                                العودة للجداول
+                            </a>
+                            <button class="btn btn-success" onclick="generateFutureSchedules()">
+                                <i class="bi bi-plus-circle me-2"></i>
+                                إنشاء جداول مستقبلية
+                            </button>
+                        </div>
+                    </div>
+                {% endif %}
+            </div>
+        </div>
+    </div>
+
+    <!-- Bootstrap 5 JS -->
+    <script src="https://cdn.jsdelivr.net/npm/bootstrap@5.3.0/dist/js/bootstrap.bundle.min.js"></script>
+
+    <script>
+        // Show loading overlay
+        function showLoading() {
+            document.getElementById('loadingOverlay').style.display = 'flex';
+        }
+
+        // Hide loading overlay
+        function hideLoading() {
+            document.getElementById('loadingOverlay').style.display = 'none';
+        }
+
+        // Show alert message
+        function showAlert(message, type = 'success') {
+            const alertContainer = document.querySelector('.alert-container');
+            const alertId = 'alert-' + Date.now();
+            
+            const alertHTML = `
+                <div id="${alertId}" class="alert alert-${type} alert-dismissible fade show" role="alert">
+                    <i class="bi bi-${type === 'success' ? 'check-circle' : 'exclamation-triangle'} me-2"></i>
+                    ${message}
+                    <button type="button" class="btn-close" data-bs-dismiss="alert" aria-label="Close"></button>
+                </div>
+            `;
+            
+            alertContainer.insertAdjacentHTML('beforeend', alertHTML);
+            
+            // Auto remove after 5 seconds
+            setTimeout(() => {
+                const alert = document.getElementById(alertId);
+                if (alert) {
+                    alert.remove();
+                }
+            }, 5000);
+        }
+
+        // Generate future schedules
+        function generateFutureSchedules() {
+            if (confirm('هل تريد إنشاء الجداول المستقبلية لهذا القسم؟')) {
+                showLoading();
+                fetch(`/admin/regenerate_schedule/{{ department.id }}`)
+                    .then(response => {
+                        hideLoading();
+                        if (response.ok) {
+                            showAlert('✅ تم إنشاء الجداول المستقبلية بنجاح', 'success');
+                            setTimeout(() => {
+                                location.reload();
+                            }, 2000);
+                        } else {
+                            showAlert('❌ حدث خطأ أثناء إنشاء الجداول', 'danger');
+                        }
+                    })
+                    .catch(error => {
+                        hideLoading();
+                        console.error('Error:', error);
+                        showAlert('❌ حدث خطأ أثناء إنشاء الجداول', 'danger');
+                    });
+            }
+        }
+
+        // Lock schedule
+        function lockSchedule(scheduleId) {
+            if (confirm('هل تريد قفل هذا الجدول؟ بعد القفل لا يمكن تعديله.')) {
+                showLoading();
+                fetch(`/admin/schedule/lock/${scheduleId}`)
+                    .then(response => response.json())
+                    .then(data => {
+                        hideLoading();
+                        if (data.success) {
+                            showAlert('✅ ' + data.message, 'success');
+                            setTimeout(() => {
+                                location.reload();
+                            }, 2000);
+                        } else {
+                            showAlert('❌ ' + data.message, 'danger');
+                        }
+                    })
+                    .catch(error => {
+                        hideLoading();
+                        console.error('Error:', error);
+                        showAlert('❌ حدث خطأ أثناء قفل الجدول', 'danger');
+                    });
+            }
+        }
+
+        // Handle download links to show loading
+        document.querySelectorAll('.export-btn').forEach(btn => {
+            btn.addEventListener('click', function(e) {
+                showLoading();
+                // Hide loading after 5 seconds in case download fails
+                setTimeout(() => {
+                    hideLoading();
+                }, 5000);
+            });
+        });
+
+        // Add animations
+        document.addEventListener('DOMContentLoaded', function() {
+            // Animate month sections
+            const sections = document.querySelectorAll('.month-section');
+            sections.forEach((section, index) => {
+                section.style.opacity = '0';
+                section.style.transform = 'translateY(20px)';
+                section.style.transition = 'all 0.6s ease';
+                
+                setTimeout(() => {
+                    section.style.opacity = '1';
+                    section.style.transform = 'translateY(0)';
+                }, index * 200);
+            });
+
+            // Animate stats cards
+            const statsCards = document.querySelectorAll('.stats-card');
+            statsCards.forEach((card, index) => {
+                card.style.opacity = '0';
+                card.style.transform = 'scale(0.8)';
+                card.style.transition = 'all 0.5s ease';
+                
+                setTimeout(() => {
+                    card.style.opacity = '1';
+                    card.style.transform = 'scale(1)';
+                }, index * 100 + 500);
+            });
+        });
+
+        // Print functionality
+        function printHistory() {
+            window.print();
+        }
+
+        // Export all schedules for this department
+        function exportAllSchedules() {
+            showLoading();
+            // This would need a new route to export all schedules for a department
+            setTimeout(() => {
+                hideLoading();
+                showAlert('⏳ هذه الميزة قيد التطوير', 'info');
+            }, 1000);
+        }
+    </script>
+</body>
+</html>

@@ -1,0 +1,435 @@
+<div class="container-fluid" dir="rtl">
+    <div class="row">
+        <div class="col-12">
+            <div class="page-title-box">
+                <h4 class="page-title">إدارة بوت التليجرام</h4>
+            </div>
+        </div>
+    </div>
+
+    <!-- Status Cards -->
+    <div class="row">
+        <div class="col-md-3">
+            <div class="card">
+                <div class="card-body">
+                    <h5 class="card-title">حالة البوت</h5>
+                    {% if bot_status == 'online' %}
+                        <span class="badge bg-success">🟢 متصل</span>
+                    {% elif bot_status == 'offline' %}
+                        <span class="badge bg-danger">🔴 غير متصل</span>
+                    {% else %}
+                        <span class="badge bg-secondary">⚪ غير معروف</span>
+                    {% endif %}
+                    <p class="mt-2"><small>URL: {{ bot_url }}</small></p>
+                </div>
+            </div>
+        </div>
+        
+        <div class="col-md-3">
+            <div class="card">
+                <div class="card-body">
+                    <h5 class="card-title">المستخدمين النشطين</h5>
+                    <h2>{{ active_users }}</h2>
+                    <p class="text-muted">من أصل {{ total_users }} مستخدم</p>
+                </div>
+            </div>
+        </div>
+        
+        <div class="col-md-3">
+            <div class="card">
+                <div class="card-body">
+                    <h5 class="card-title">موظفين لديهم أرقام</h5>
+                    <h2>{{ users|selectattr('has_phone', 'equalto', true)|list|length }}</h2>
+                    <p class="text-muted">من أصل {{ users|length }} موظف</p>
+                </div>
+            </div>
+        </div>
+        
+        <div class="col-md-3">
+            <div class="card">
+                <div class="card-body">
+                    <h5 class="card-title">إرسال رسالة جماعية</h5>
+                    <button type="button" class="btn btn-primary btn-sm" data-bs-toggle="modal" data-bs-target="#broadcastModal">
+                        <i class="fa fa-paper-plane"></i> إرسال رسالة
+                    </button>
+                </div>
+            </div>
+        </div>
+    </div>
+
+    <!-- Tabs for Users and Connected Users -->
+    <div class="row mt-4">
+        <div class="col-12">
+            <div class="card">
+                <div class="card-header">
+                    <ul class="nav nav-tabs card-header-tabs" id="telegramTabs" role="tablist">
+                        <li class="nav-item" role="presentation">
+                            <button class="nav-link active" id="users-tab" data-bs-toggle="tab" data-bs-target="#users" type="button" role="tab">
+                                <i class="fa fa-users"></i> جميع الموظفين
+                            </button>
+                        </li>
+                        <li class="nav-item" role="presentation">
+                            <button class="nav-link" id="connected-tab" data-bs-toggle="tab" data-bs-target="#connected" type="button" role="tab">
+                                <i class="fa fa-check-circle"></i> المرتبطين بالبوت
+                                {% if mappings|length > 0 %}
+                                    <span class="badge bg-success">{{ mappings|length }}</span>
+                                {% endif %}
+                            </button>
+                        </li>
+                        <li class="nav-item" role="presentation">
+                            <button class="nav-link" id="unconnected-tab" data-bs-toggle="tab" data-bs-target="#unconnected" type="button" role="tab">
+                                <i class="fa fa-exclamation-circle"></i> غير مرتبطين
+                                {% set unconnected = users|rejectattr('is_mapped', 'equalto', true)|list %}
+                                {% if unconnected|length > 0 %}
+                                    <span class="badge bg-warning">{{ unconnected|length }}</span>
+                                {% endif %}
+                            </button>
+                        </li>
+                    </ul>
+                </div>
+                <div class="card-body">
+                    <div class="tab-content" id="telegramTabsContent">
+                        <!-- All Users Tab -->
+                        <div class="tab-pane fade show active" id="users" role="tabpanel">
+                            <div class="table-responsive">
+                                <table class="table table-hover datatable">
+                                    <thead>
+                                        <tr>
+                                            <th>#</th>
+                                            <th>اسم الموظف</th>
+                                            <th>اسم المستخدم</th>
+                                            <th>رقم الهاتف</th>
+                                            <th>الحالة</th>
+                                            <th>إجراءات</th>
+                                        </tr>
+                                    </thead>
+                                    <tbody>
+                                        {% for user in users %}
+                                        <tr>
+                                            <td>{{ loop.index }}</td>
+                                            <td>{{ user.name }}</td>
+                                            <td>{{ user.username }}</td>
+                                            <td>
+                                                {% if user.has_phone %}
+                                                    <span class="text-success">{{ user.phone }}</span>
+                                                {% else %}
+                                                    <span class="text-muted">لم يضف رقم</span>
+                                                {% endif %}
+                                            </td>
+                                            <td>
+                                                {% if user.is_mapped %}
+                                                    <span class="badge bg-success">مرتبط</span>
+                                                {% else %}
+                                                    <span class="badge bg-secondary">غير مرتبط</span>
+                                                {% endif %}
+                                            </td>
+                                            <td>
+                                                {% if user.has_phone and not user.is_mapped %}
+                                                <button class="btn btn-sm btn-primary send-link-btn" 
+                                                        data-userid="{{ user.id }}"
+                                                        data-username="{{ user.username }}"
+                                                        data-phone="{{ user.phone }}">
+                                                    <i class="fa fa-telegram"></i> إرسال رابط الربط
+                                                </button>
+                                                {% endif %}
+                                            </td>
+                                        </tr>
+                                        {% endfor %}
+                                    </tbody>
+                                </table>
+                            </div>
+                        </div>
+                        
+                        <!-- Connected Users Tab -->
+                        <div class="tab-pane fade" id="connected" role="tabpanel">
+                            <div class="table-responsive">
+                                <table class="table table-hover">
+                                    <thead>
+                                        <tr>
+                                            <th>#</th>
+                                            <th>اسم الموظف</th>
+                                            <th>رقم الهاتف</th>
+                                            <th>Telegram ID</th>
+                                            <th>تاريخ الربط</th>
+                                            <th>الحالة</th>
+                                            <th>آخر نشاط</th>
+                                        </tr>
+                                    </thead>
+                                    <tbody>
+                                        {% for mapping in mappings %}
+                                        <tr>
+                                            <td>{{ loop.index }}</td>
+                                            <td>{{ mapping.user_name }}</td>
+                                            <td>{{ mapping.phone_number }}</td>
+                                            <td><code>{{ mapping.telegram_id }}</code></td>
+                                            <td>{{ mapping.verified_at }}</td>
+                                            <td>
+                                                {% if mapping.is_active %}
+                                                    <span class="badge bg-success">نشط</span>
+                                                {% else %}
+                                                    <span class="badge bg-secondary">غير نشط</span>
+                                                {% endif %}
+                                            </td>
+                                            <td>
+                                                <button class="btn btn-sm btn-info test-user-btn" 
+                                                        data-telegramid="{{ mapping.telegram_id }}"
+                                                        data-name="{{ mapping.user_name }}">
+                                                    اختبار
+                                                </button>
+                                            </td>
+                                        </tr>
+                                        {% else %}
+                                        <tr>
+                                            <td colspan="7" class="text-center">لا يوجد مستخدمين مرتبطين بعد</td>
+                                        </tr>
+                                        {% endfor %}
+                                    </tbody>
+                                </table>
+                            </div>
+                        </div>
+                        
+                        <!-- Unconnected Users Tab -->
+                        <div class="tab-pane fade" id="unconnected" role="tabpanel">
+                            <div class="table-responsive">
+                                <table class="table table-hover">
+                                    <thead>
+                                        <tr>
+                                            <th>#</th>
+                                            <th>اسم الموظف</th>
+                                            <th>رقم الهاتف</th>
+                                            <th>حالة الرقم</th>
+                                            <th>رابط الربط</th>
+                                        </tr>
+                                    </thead>
+                                    <tbody>
+                                        {% for user in users if not user.is_mapped %}
+                                        <tr>
+                                            <td>{{ loop.index }}</td>
+                                            <td>{{ user.name }}</td>
+                                            <td>
+                                                {% if user.has_phone %}
+                                                    {{ user.phone }}
+                                                {% else %}
+                                                    <span class="text-danger">لا يوجد رقم</span>
+                                                {% endif %}
+                                            </td>
+                                            <td>
+                                                {% if user.has_phone %}
+                                                    <span class="badge bg-success">✅ يوجد رقم</span>
+                                                {% else %}
+                                                    <span class="badge bg-danger">❌ لا يوجد</span>
+                                                {% endif %}
+                                            </td>
+                                            <td>
+                                                {% if user.has_phone %}
+                                                <button class="btn btn-sm btn-success copy-link-btn" 
+                                                        data-link="https://t.me/dokki_scan_hr_bot?start={{ user.phone }}">
+                                                    <i class="fa fa-copy"></i> نسخ رابط الربط
+                                                </button>
+                                                {% else %}
+                                                <button class="btn btn-sm btn-warning" 
+                                                        onclick="alert('الموظف ليس لديه رقم هاتف مسجل')">
+                                                    <i class="fa fa-edit"></i> تحديث الرقم
+                                                </button>
+                                                {% endif %}
+                                            </td>
+                                        </tr>
+                                        {% else %}
+                                        <tr>
+                                            <td colspan="5" class="text-center">جميع الموظفين مرتبطين بالبوت! 🎉</td>
+                                        </tr>
+                                        {% endfor %}
+                                    </tbody>
+                                </table>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </div>
+</div>
+
+<!-- Broadcast Modal -->
+<div class="modal fade" id="broadcastModal" tabindex="-1">
+    <div class="modal-dialog">
+        <div class="modal-content">
+            <div class="modal-header">
+                <h5 class="modal-title">إرسال رسالة جماعية</h5>
+                <button type="button" class="btn-close" data-bs-dismiss="modal"></button>
+            </div>
+            <div class="modal-body">
+                <form id="broadcastForm">
+                    <div class="mb-3">
+                        <label class="form-label">نص الرسالة</label>
+                        <textarea class="form-control" id="broadcastMessage" rows="4" required></textarea>
+                        <small class="text-muted">سيتم إرسال هذه الرسالة لجميع المستخدمين المرتبطين بالبوت</small>
+                    </div>
+                    <div class="mb-3">
+                        <label class="form-label">نوع الإشعار</label>
+                        <select class="form-control" id="notificationType">
+                            <option value="broadcast">إشعار عام</option>
+                            <option value="important">إشعار هام</option>
+                            <option value="urgent">إشعار عاجل</option>
+                        </select>
+                    </div>
+                </form>
+                <div id="broadcastProgress" style="display: none;">
+                    <div class="progress">
+                        <div class="progress-bar progress-bar-striped progress-bar-animated" style="width: 100%"></div>
+                    </div>
+                    <p class="text-center mt-2">جاري الإرسال...</p>
+                </div>
+                <div id="broadcastResult"></div>
+            </div>
+            <div class="modal-footer">
+                <button type="button" class="btn btn-secondary" data-bs-dismiss="modal">إلغاء</button>
+                <button type="button" class="btn btn-primary" id="sendBroadcastBtn">
+                    <i class="fa fa-paper-plane"></i> إرسال
+                </button>
+            </div>
+        </div>
+    </div>
+</div>
+
+<!-- JavaScript -->
+<script>
+document.addEventListener('DOMContentLoaded', function() {
+    // Send broadcast
+    document.getElementById('sendBroadcastBtn').addEventListener('click', function() {
+        const message = document.getElementById('broadcastMessage').value;
+        const type = document.getElementById('notificationType').value;
+        
+        if (!message.trim()) {
+            alert('الرجاء إدخال نص الرسالة');
+            return;
+        }
+        
+        // Show progress
+        document.getElementById('broadcastProgress').style.display = 'block';
+        document.getElementById('sendBroadcastBtn').disabled = true;
+        
+        fetch('/api/broadcast_telegram', {
+            method: 'POST',
+            headers: {
+                'Content-Type': 'application/json',
+            },
+            body: JSON.stringify({
+                message: message,
+                type: type
+            })
+        })
+        .then(response => response.json())
+        .then(data => {
+            document.getElementById('broadcastProgress').style.display = 'none';
+            document.getElementById('sendBroadcastBtn').disabled = false;
+            
+            const resultDiv = document.getElementById('broadcastResult');
+            if (data.success) {
+                resultDiv.innerHTML = `<div class="alert alert-success">${data.message}</div>`;
+                setTimeout(() => {
+                    $('#broadcastModal').modal('hide');
+                }, 2000);
+            } else {
+                resultDiv.innerHTML = `<div class="alert alert-danger">${data.message}</div>`;
+            }
+        })
+        .catch(error => {
+            document.getElementById('broadcastProgress').style.display = 'none';
+            document.getElementById('sendBroadcastBtn').disabled = false;
+            document.getElementById('broadcastResult').innerHTML = 
+                `<div class="alert alert-danger">خطأ: ${error}</div>`;
+        });
+    });
+    
+    // Copy link buttons
+    document.querySelectorAll('.copy-link-btn').forEach(btn => {
+        btn.addEventListener('click', function() {
+            const link = this.dataset.link;
+            navigator.clipboard.writeText(link).then(() => {
+                alert('تم نسخ الرابط! أرسله للموظف عبر واتساب أو أي وسيلة أخرى');
+            });
+        });
+    });
+    
+    // Test user buttons
+    document.querySelectorAll('.test-user-btn').forEach(btn => {
+        btn.addEventListener('click', function() {
+            const telegramId = this.dataset.telegramid;
+            const name = this.dataset.name;
+            
+            fetch('/api/test_telegram_user', {
+                method: 'POST',
+                headers: {
+                    'Content-Type': 'application/json',
+                },
+                body: JSON.stringify({
+                    telegram_id: telegramId,
+                    message: '🔔 هذا اختبار من النظام'
+                })
+            })
+            .then(response => response.json())
+            .then(data => {
+                if (data.success) {
+                    alert(`✅ تم إرسال رسالة اختبار إلى ${name}`);
+                } else {
+                    alert(`❌ فشل الإرسال: ${data.message}`);
+                }
+            });
+        });
+    });
+    
+    // Send link to user (via SMS or WhatsApp)
+    document.querySelectorAll('.send-link-btn').forEach(btn => {
+        btn.addEventListener('click', function() {
+            const phone = this.dataset.phone;
+            const username = this.dataset.username;
+            
+            // You can customize this to send via WhatsApp or SMS
+            const message = encodeURIComponent(
+                `مرحباً ${username}،\n\n` +
+                `لربط حسابك في بوت التليجرام الخاص بالنظام، يرجى:\n` +
+                `1. فتح تليجرام والبحث عن البوت\n` +
+                `2. إرسال الأمر: /phone ${phone}\n\n` +
+                `أو الضغط على الرابط المباشر:\n` +
+                `https://t.me/dokki_scan_hr_bot?start=${phone}`
+            );
+            
+            // Open WhatsApp
+            window.open(`https://wa.me/${phone}?text=${message}`, '_blank');
+        });
+    });
+});
+
+// Initialize DataTable
+$(document).ready(function() {
+    $('.datatable').DataTable({
+        "language": {
+            "url": "//cdn.datatables.net/plug-ins/1.10.25/i18n/Arabic.json"
+        },
+        "pageLength": 25,
+        "order": [[0, 'asc']]
+    });
+});
+</script>
+
+<style>
+.card {
+    margin-bottom: 20px;
+    box-shadow: 0 2px 4px rgba(0,0,0,0.1);
+}
+.table th {
+    background-color: #f8f9fa;
+}
+.nav-tabs .nav-link {
+    color: #495057;
+}
+.nav-tabs .nav-link.active {
+    color: #0d6efd;
+    font-weight: bold;
+}
+.badge {
+    font-size: 11px;
+    padding: 5px 8px;
+}
+</style>

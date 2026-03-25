@@ -1,0 +1,46 @@
+{% extends "layouts/admin_base.html" %}
+
+{% block title %}هيكل الجدول - {{ department.name }}{% endblock %}
+
+{% block admin_content %}
+<div class="d-flex justify-content-between flex-wrap flex-md-nowrap align-items-center pt-3 pb-2 mb-3 border-bottom">
+    <h1 class="h2">هيكل الجدول - {{ department.name }}</h1>
+    <a href="{{ url_for('admin_departments') }}" class="btn btn-secondary">
+        <i class="fas fa-arrow-right me-2"></i>العودة للأقسام
+    </a>
+</div>
+
+<div class="card">
+    <div class="card-header">
+        <h5 class="card-title mb-0">تحديد هيكل الجدول الأسبوعي</h5>
+    </div>
+    <div class="card-body">
+        <form method="POST">
+            <div class="mb-3">
+                <label for="schedule_structure" class="form-label">هيكل الجدول (JSON)</label>
+                <textarea class="form-control" id="schedule_structure" name="schedule_structure" 
+                          rows="10" placeholder='{"shifts": ["صباحي", "مسائي"], "days": ["السبت", "الأحد", "الإثنين", "الثلاثاء", "الأربعاء", "الخميس"]}'>
+                    {{ department.schedule_structure or '' }}
+                </textarea>
+                <div class="form-text">
+                    أدخل هيكل الجدول بصيغة JSON. مثال:
+                    <code>
+                        {
+                            "shifts": ["صباحي", "مسائي"],
+                            "days": ["السبت", "الأحد", "الإثنين", "الثلاثاء", "الأربعاء", "الخميس"],
+                            "shift_times": {
+                                "صباحي": {"start": "08:00", "end": "16:00"},
+                                "مسائي": {"start": "16:00", "end": "00:00"}
+                            }
+                        }
+                    </code>
+                </div>
+            </div>
+
+            <button type="submit" class="btn btn-primary">
+                <i class="fas fa-save me-2"></i>حفظ الهيكل
+            </button>
+        </form>
+    </div>
+</div>
+{% endblock %}

@@ -1,0 +1,145 @@
+{% extends "layouts/base.html" %}
+
+{% block content %}
+<div class="container-fluid">
+    <div class="row">
+        <!-- Sidebar -->
+        <nav class="col-md-3 col-lg-2 d-md-block sidebar collapse">
+            <div class="position-sticky pt-3">
+                <div class="text-center mb-4">
+                    <h4>نظام الموارد البشرية</h4>
+                    <p class="text-light">لوحة الموظف</p>
+                </div>
+                
+                <ul class="nav flex-column">
+                    <li class="nav-item">
+                        <a class="nav-link {% if request.endpoint == 'user_dashboard' %}active{% endif %}" 
+                           href="{{ url_for('user_dashboard') }}">
+                            <i class="fas fa-tachometer-alt me-2"></i>
+                            لوحة التحكم
+                        </a>
+                    </li>
+                    <li class="nav-item">
+                        <a class="nav-link {% if request.endpoint == 'user_form' %}active{% endif %}" 
+                           href="{{ url_for('user_form') }}">
+                            <i class="fas fa-user-edit me-2"></i>
+                            البيانات الشخصية
+                        </a>
+                    </li>
+                    <li class="nav-item">
+                        <a class="nav-link {% if request.endpoint == 'user_leave' %}active{% endif %}" 
+                           href="{{ url_for('user_leave') }}">
+                            <i class="fas fa-calendar-minus me-2"></i>
+                            طلب إجازة
+                        </a>
+                    </li>
+                    <li class="nav-item">
+                        <a class="nav-link {% if request.endpoint == 'user_permission' %}active{% endif %}" 
+                           href="{{ url_for('user_permission') }}">
+                            <i class="fas fa-clock me-2"></i>
+                            طلب إذن
+                        </a>
+                    </li>
+                    <li class="nav-item">
+                        <a class="nav-link {% if request.endpoint == 'user_salary_slips' %}active{% endif %}" 
+                           href="{{ url_for('user_salary_slips') }}">
+                            <i class="fas fa-file-invoice-dollar me-2"></i>
+                            شيت المرتب
+                        </a>
+                    </li>
+                    <li class="nav-item">
+                        <a class="nav-link {% if request.endpoint == 'user_schedule' %}active{% endif %}" 
+                           href="{{ url_for('user_schedule') }}">
+                            <i class="fas fa-calendar-alt me-2"></i>
+                            الجدول الأسبوعي
+                        </a>
+                    </li>
+                    <li class="nav-item">
+                        <a class="nav-link {% if request.endpoint == 'user_rewards_penalties' %}active{% endif %}" 
+                           href="{{ url_for('user_rewards_penalties') }}">
+                            <i class="fas fa-award me-2"></i>
+                            المكافآت والخصومات
+                        </a>
+                    </li>
+                    <li class="nav-item">
+                        <a class="nav-link" href="{{ url_for('user_leave_requests') }}">
+                            <i class="fas fa-history me-2"></i>
+                            طلباتي السابقة
+                        </a>
+                    </li>
+                    <li class="nav-item">
+                        <a class="nav-link" href="{{ url_for('manager_excel_data') }}">
+                            <i class="fas fa-file-excel me-2"></i>
+                            الحضور والانصراف
+                        </a>
+                    </li>
+
+                </ul>
+            </div>
+        </nav>
+
+        <!-- Main content -->
+        <main class="col-md-9 ms-sm-auto col-lg-10 main-content">
+            <!-- Navbar -->
+            <nav class="navbar navbar-expand-lg navbar-light bg-white shadow-sm">
+                <div class="container-fluid">
+                    <button class="navbar-toggler" type="button" data-bs-toggle="collapse" 
+                            data-bs-target="#navbarSupportedContent">
+                        <span class="navbar-toggler-icon"></span>
+                    </button>
+                    
+                    <div class="collapse navbar-collapse" id="navbarSupportedContent">
+                        <ul class="navbar-nav me-auto mb-2 mb-lg-0">
+                            <li class="nav-item">
+                                <span class="navbar-text">
+                                    مرحباً، {{ current_user.name }}
+                                </span>
+                            </li>
+                        </ul>
+                        
+                        <div class="d-flex align-items-center">
+                            <!-- Notifications -->
+                            {% include 'shared/components/notification_bell.html' %}
+                            
+                            <!-- User menu -->
+                            <div class="dropdown">
+                                <button class="btn btn-outline-secondary dropdown-toggle" type="button" 
+                                        data-bs-toggle="dropdown">
+                                    <i class="fas fa-user me-2"></i>
+                                    {{ current_user.username }}
+                                </button>
+                                <ul class="dropdown-menu">
+                                    <li><a class="dropdown-item" href="{{ url_for('notifications') }}">
+                                        <i class="fas fa-bell me-2"></i>الإشعارات
+                                    </a></li>
+                                    <li><hr class="dropdown-divider"></li>
+                                    <li><a class="dropdown-item" href="{{ url_for('logout') }}">
+                                        <i class="fas fa-sign-out-alt me-2"></i>تسجيل الخروج
+                                    </a></li>
+                                </ul>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+            </nav>
+
+            <!-- Page content -->
+            <div class="container-fluid mt-4">
+                <!-- Flash messages -->
+                {% with messages = get_flashed_messages() %}
+                    {% if messages %}
+                        {% for message in messages %}
+                            <div class="alert alert-info alert-dismissible fade show" role="alert">
+                                {{ message }}
+                                <button type="button" class="btn-close" data-bs-dismiss="alert"></button>
+                            </div>
+                        {% endfor %}
+                    {% endif %}
+                {% endwith %}
+
+                {% block user_content %}{% endblock %}
+            </div>
+        </main>
+    </div>
+</div>
+{% endblock %}

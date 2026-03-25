@@ -1,0 +1,265 @@
+<!DOCTYPE html>
+<html dir="rtl" lang="ar">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>هيكل القسم - {{ department.name }}</title>
+    <link href="https://cdn.jsdelivr.net/npm/bootstrap@5.3.0/dist/css/bootstrap.min.css" rel="stylesheet">
+    <style>
+        body {
+            font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif;
+            background-color: #f8f9fa;
+            padding: 20px;
+        }
+        .header {
+            background: linear-gradient(135deg, #6a11cb 0%, #2575fc 100%);
+            color: white;
+            padding: 30px;
+            border-radius: 15px;
+            margin-bottom: 30px;
+            box-shadow: 0 4px 6px rgba(0,0,0,0.1);
+        }
+        .structure-card {
+            background: white;
+            border-radius: 10px;
+            padding: 25px;
+            margin-bottom: 20px;
+            box-shadow: 0 2px 10px rgba(0,0,0,0.05);
+            border: 1px solid #e0e0e0;
+        }
+        .structure-item {
+            background: #f8f9fa;
+            border: 1px solid #dee2e6;
+            border-radius: 8px;
+            padding: 15px;
+            margin-bottom: 15px;
+        }
+        .day-header {
+            background: #e3f2fd;
+            color: #1976d2;
+            padding: 12px;
+            border-radius: 8px;
+            margin-bottom: 10px;
+            font-weight: bold;
+        }
+        .shift-badge {
+            background: #4CAF50;
+            color: white;
+            padding: 5px 10px;
+            border-radius: 5px;
+            font-size: 0.9em;
+            margin: 3px;
+        }
+        .job-badge {
+            background: #FF9800;
+            color: white;
+            padding: 5px 10px;
+            border-radius: 5px;
+            font-size: 0.9em;
+            margin: 3px;
+        }
+        .info-box {
+            background: #e8f5e9;
+            border-left: 4px solid #4CAF50;
+            padding: 15px;
+            margin: 15px 0;
+        }
+        .btn-back {
+            background: #6c757d;
+            color: white;
+            padding: 10px 20px;
+            text-decoration: none;
+            border-radius: 5px;
+            display: inline-block;
+            margin-top: 20px;
+        }
+        .btn-back:hover {
+            background: #5a6268;
+            color: white;
+            text-decoration: none;
+        }
+    </style>
+</head>
+<body>
+    <div class="container">
+        <!-- العنوان -->
+        <div class="header text-center">
+            <h1>📋 هيكل الجدول للقسم: {{ department.name }}</h1>
+            <p class="lead">معرف القسم: {{ department.id }}</p>
+            <p>تاريخ الإنشاء: {{ department.created_at.strftime('%Y-%m-%d %H:%M') if department.created_at else 'غير معروف' }}</p>
+        </div>
+
+        <!-- معلومات القسم -->
+        <div class="structure-card">
+            <h3>📊 معلومات القسم</h3>
+            <div class="info-box">
+                <p><strong>اسم القسم:</strong> {{ department.name }}</p>
+                <p><strong>المعرف:</strong> {{ department.id }}</p>
+                <p><strong>التوليد التلقائي:</strong> 
+                    {% if department.auto_generate_schedule %}
+                        <span class="badge bg-success">مفعل</span>
+                    {% else %}
+                        <span class="badge bg-danger">معطل</span>
+                    {% endif %}
+                </p>
+                <p><strong>نسخة الهيكل:</strong> {{ department.schedule_structure_version }}</p>
+            </div>
+        </div>
+
+        <!-- بيانات الهيكل -->
+        <div class="structure-card">
+            <h3>📝 بيانات الهيكل</h3>
+            
+            {% if structure_data %}
+                <div class="mb-3">
+                    <strong>نوع البيانات:</strong> {{ structure_data.__class__.__name__ }}
+                    <span class="badge bg-info">نسخة {{ department.schedule_structure_version }}</span>
+                </div>
+
+                {% if structure_data is mapping %}
+                    <!-- إذا كانت البيانات dictionary -->
+                    {% for key, value in structure_data.items() %}
+                        <div class="structure-item">
+                            <h5>{{ key }}</h5>
+                            {% if value is string %}
+                                <p>{{ value }}</p>
+                            {% elif value is iterable and value is not string %}
+                                <ul>
+                                    {% for item in value %}
+                                        <li>
+                                            {% if item is mapping %}
+                                                <!-- عنصر من نوع dict -->
+                                                <div class="day-header">
+                                                    {{ item.get('day', 'يوم') }} - {{ item.get('date', 'تاريخ') }}
+                                                </div>
+                                                <div class="d-flex flex-wrap mt-2">
+                                                    {% if item.get('morning_shift') %}
+                                                        <span class="shift-badge">🌅 {{ item.morning_shift }}</span>
+                                                    {% endif %}
+                                                    {% if item.get('evening_shift') %}
+                                                        <span class="shift-badge">🌇 {{ item.evening_shift }}</span>
+                                                    {% endif %}
+                                                    {% if item.get('night_shift') %}
+                                                        <span class="shift-badge">🌙 {{ item.night_shift }}</span>
+                                                    {% endif %}
+                                                    {% if item.get('job') %}
+                                                        <span class="job-badge">👨‍💼 {{ item.job }}</span>
+                                                    {% endif %}
+                                                </div>
+                                            {% else %}
+                                                {{ item }}
+                                            {% endif %}
+                                        </li>
+                                    {% endfor %}
+                                </ul>
+                            {% else %}
+                                <p>{{ value }}</p>
+                            {% endif %}
+                        </div>
+                    {% endfor %}
+                
+                {% elif structure_data is iterable %}
+                    <!-- إذا كانت البيانات list -->
+                    <div class="row">
+                        {% for item in structure_data %}
+                            <div class="col-md-4 mb-3">
+                                <div class="structure-item">
+                                    {% if item is mapping %}
+                                        <div class="day-header">
+                                            <h6>{{ item.get('day', 'يوم') }}</h6>
+                                            <small>{{ item.get('date', 'تاريخ') }}</small>
+                                        </div>
+                                        <div class="mt-2">
+                                            <p><strong>القسم:</strong> {{ item.get('department', department.name) }}</p>
+                                            {% if item.get('morning_shift') %}
+                                                <p><strong>الشيفت الصباحي:</strong> {{ item.morning_shift }}</p>
+                                            {% endif %}
+                                            {% if item.get('evening_shift') %}
+                                                <p><strong>الشيفت المسائي:</strong> {{ item.evening_shift }}</p>
+                                            {% endif %}
+                                            {% if item.get('night_shift') %}
+                                                <p><strong>شيفت السهر:</strong> {{ item.night_shift }}</p>
+                                            {% endif %}
+                                            {% if item.get('job') %}
+                                                <p><strong>الوظيفة:</strong> <span class="job-badge">{{ item.job }}</span></p>
+                                            {% endif %}
+                                        </div>
+                                    {% else %}
+                                        {{ item }}
+                                    {% endif %}
+                                </div>
+                            </div>
+                        {% endfor %}
+                    </div>
+                {% endif %}
+
+                <!-- عرض البيانات الخام JSON -->
+                <div class="structure-card mt-4">
+                    <h4>📄 البيانات الخام (JSON)</h4>
+                    <pre style="background: #f5f5f5; padding: 15px; border-radius: 5px; overflow: auto;">
+{{ department.schedule_structure | safe }}
+                    </pre>
+                </div>
+
+            {% else %}
+                <div class="alert alert-warning">
+                    <h4>⚠️ لا يوجد هيكل للقسم</h4>
+                    <p>هذا القسم ليس لديه هيكل جدول محدد.</p>
+                    <a href="{{ url_for('admin_schedule_structure', dept_id=department.id) }}" 
+                       class="btn btn-primary">
+                       إنشاء هيكل جديد
+                    </a>
+                </div>
+            {% endif %}
+        </div>
+
+        <!-- إحصائيات -->
+        <div class="structure-card">
+            <h3>📊 إحصائيات</h3>
+            <div class="row">
+                <div class="col-md-4">
+                    <div class="info-box">
+                        <h5>عدد الأيام</h5>
+                        <p class="h2">
+                            {% if structure_data and structure_data is mapping and 'schedule' in structure_data %}
+                                {{ structure_data.schedule|length }}
+                            {% elif structure_data and structure_data is iterable %}
+                                {{ structure_data|length }}
+                            {% else %}
+                                0
+                            {% endif %}
+                        </p>
+                    </div>
+                </div>
+                <div class="col-md-4">
+                    <div class="info-box">
+                        <h5>حجم البيانات</h5>
+                        <p class="h2">{{ department.schedule_structure|length if department.schedule_structure else 0 }} حرف</p>
+                    </div>
+                </div>
+                <div class="col-md-4">
+                    <div class="info-box">
+                        <h5>آخر تحديث</h5>
+                        <p class="h6">{{ department.structure_last_modified.strftime('%Y-%m-%d %H:%M') if department.structure_last_modified else 'غير معروف' }}</p>
+                    </div>
+                </div>
+            </div>
+        </div>
+
+        <!-- أزرار التنقل -->
+        <div class="d-flex justify-content-between mt-4">
+            <a href="{{ url_for('admin_schedule_structure', dept_id=department.id) }}" 
+               class="btn btn-primary">
+               ✏️ تعديل الهيكل
+            </a>
+            
+            <a href="{{ url_for('admin_departments') }}" 
+               class="btn-back">
+               ↩ العودة إلى الأقسام
+            </a>
+        </div>
+    </div>
+
+    <script src="https://cdn.jsdelivr.net/npm/bootstrap@5.3.0/dist/js/bootstrap.bundle.min.js"></script>
+</body>
+</html>

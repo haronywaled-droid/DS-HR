@@ -1,0 +1,2549 @@
+<!DOCTYPE html>
+<html lang="ar" dir="rtl">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>طلباتي - نظام إدارة الموارد البشرية</title>
+    
+    <!-- Bootstrap 5 CSS -->
+    <link href="https://cdn.jsdelivr.net/npm/bootstrap@5.3.0/dist/css/bootstrap.min.css" rel="stylesheet">
+    
+    <!-- Bootstrap Icons -->
+    <link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/bootstrap-icons@1.10.0/font/bootstrap-icons.css">
+    
+    <!-- Font Awesome -->
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.0.0/css/all.min.css">
+    
+    <style>
+        :root {
+            --primary-green: #10b981;
+            --dark-green: #059669;
+            --light-green: #34d399;
+            --accent-green: #a7f3d0;
+            --gradient-primary: linear-gradient(135deg, #10b981 0%, #059669 100%);
+            --gradient-secondary: linear-gradient(135deg, #34d399 0%, #10b981 100%);
+            --gradient-dark: linear-gradient(135deg, #065f46 0%, #047857 100%);
+            --gradient-success: linear-gradient(135deg, #a7f3d0 0%, #6ee7b7 100%);
+            --gradient-warning: linear-gradient(135deg, #f59e0b 0%, #d97706 100%);
+            --gradient-danger: linear-gradient(135deg, #ef4444 0%, #dc2626 100%);
+            --gradient-info: linear-gradient(135deg, #0ea5e9 0%, #0284c7 100%);
+            --header-height: 130px;
+        }
+        
+        * {
+            margin: 0;
+            padding: 0;
+            box-sizing: border-box;
+        }
+        
+        body {
+            font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif;
+            background: linear-gradient(135deg, #f0fdf4 0%, #dcfce7 100%);
+            min-height: 100vh;
+            overflow-x: hidden;
+            padding-top: var(--header-height);
+            color: #1a4731;
+        }
+        
+        /* Unified Navigation Bar */
+        .unified-nav {
+            background: var(--gradient-dark);
+            color: white;
+            position: fixed;
+            top: 0;
+            right: 0;
+            left: 0;
+            height: var(--header-height);
+            z-index: 1000;
+            box-shadow: 0 4px 20px rgba(5, 150, 105, 0.25);
+            border-bottom: 1px solid rgba(255, 255, 255, 0.1);
+        }
+        
+        .unified-nav-container {
+            display: flex;
+            flex-direction: column;
+            height: 100%;
+            padding: 0 1rem;
+        }
+        
+        .nav-top-section {
+            display: flex;
+            align-items: center;
+            justify-content: space-between;
+            height: 70px;
+            flex-shrink: 0;
+            padding: 0.5rem 0;
+        }
+        
+        .nav-bottom-section {
+            display: flex;
+            align-items: center;
+            justify-content: space-between;
+            height: 60px;
+            flex-shrink: 0;
+            border-top: 1px solid rgba(255, 255, 255, 0.15);
+            position: relative;
+        }
+        
+        .nav-brand-section {
+            display: flex;
+            align-items: center;
+            flex-shrink: 0;
+            min-width: 0;
+        }
+        
+        .logo-container {
+            width: 45px;
+            height: 45px;
+            background: var(--gradient-primary);
+            border-radius: 10px;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            box-shadow: 0 4px 12px rgba(16, 185, 129, 0.4);
+            margin-left: 0.5rem;
+            flex-shrink: 0;
+        }
+        
+        .welcome-section {
+            display: flex;
+            align-items: center;
+            flex-grow: 1;
+            justify-content: center;
+            color: white;
+            text-align: center;
+            min-width: 0;
+            overflow: hidden;
+        }
+        
+        .welcome-content {
+            min-width: 0;
+            overflow: hidden;
+        }
+        
+        .welcome-content h4 {
+            margin-bottom: 0.2rem;
+            font-weight: 600;
+            font-size: 1.1rem;
+            white-space: nowrap;
+            overflow: hidden;
+            text-overflow: ellipsis;
+        }
+        
+        .welcome-content p {
+            margin-bottom: 0;
+            font-size: 0.85rem;
+            opacity: 0.9;
+            white-space: nowrap;
+            overflow: hidden;
+            text-overflow: ellipsis;
+        }
+        
+        .nav-user-section {
+            display: flex;
+            align-items: center;
+            flex-shrink: 0;
+            min-width: 0;
+        }
+        
+        .nav-menu-section {
+            display: flex;
+            align-items: center;
+            flex-grow: 1;
+            height: 100%;
+            position: relative;
+            min-width: 0;
+        }
+        
+        .nav-menu-wrapper {
+            display: flex;
+            align-items: center;
+            height: 100%;
+            overflow-x: auto;
+            overflow-y: hidden;
+            scroll-behavior: smooth;
+            -webkit-overflow-scrolling: touch;
+            width: 100%;
+            padding: 0 0.5rem;
+            scrollbar-width: thin;
+            scrollbar-color: var(--primary-green) rgba(255, 255, 255, 0.1);
+            min-width: 0;
+        }
+        
+        /* Custom scrollbar for nav menu */
+        .nav-menu-wrapper::-webkit-scrollbar {
+            height: 6px;
+        }
+        
+        .nav-menu-wrapper::-webkit-scrollbar-track {
+            background: rgba(255, 255, 255, 0.1);
+            border-radius: 10px;
+        }
+        
+        .nav-menu-wrapper::-webkit-scrollbar-thumb {
+            background: var(--primary-green);
+            border-radius: 10px;
+        }
+        
+        .nav-menu-wrapper::-webkit-scrollbar-thumb:hover {
+            background: var(--light-green);
+        }
+        
+        .unified-nav .nav-link {
+            color: rgba(255, 255, 255, 0.9);
+            padding: 0.7rem 1.2rem;
+            margin: 0 0.2rem;
+            border-radius: 10px;
+            transition: all 0.3s ease;
+            font-weight: 500;
+            position: relative;
+            border: 1px solid transparent;
+            display: flex;
+            align-items: center;
+            text-decoration: none;
+            font-size: 0.9rem;
+            white-space: nowrap;
+            height: 80%;
+            flex-shrink: 0;
+            background: rgba(255, 255, 255, 0.05);
+            min-width: max-content;
+        }
+        
+        .unified-nav .nav-link:hover {
+            color: white;
+            background: rgba(255, 255, 255, 0.12);
+            border: 1px solid rgba(255, 255, 255, 0.2);
+            transform: translateY(-2px);
+            box-shadow: 0 4px 12px rgba(0, 0, 0, 0.15);
+        }
+        
+        .unified-nav .nav-link.active {
+            background: rgba(255, 255, 255, 0.15);
+            color: white;
+            border: 1px solid rgba(255, 255, 255, 0.25);
+            box-shadow: 0 4px 12px rgba(0, 0, 0, 0.2);
+        }
+        
+        .unified-nav .nav-link.active::after {
+            content: '';
+            position: absolute;
+            bottom: -10px;
+            right: 50%;
+            transform: translateX(50%);
+            width: 70%;
+            height: 3px;
+            background: var(--accent-green);
+            border-radius: 4px 4px 0 0;
+        }
+        
+        .nav-badge {
+            background: var(--accent-green);
+            color: #065f46;
+            padding: 0.2rem 0.4rem;
+            border-radius: 8px;
+            font-size: 0.65rem;
+            font-weight: bold;
+            margin-right: 0.3rem;
+            position: absolute;
+            top: 5px;
+            right: 5px;
+            box-shadow: 0 2px 4px rgba(0, 0, 0, 0.1);
+        }
+        
+        .nav-link-with-badge {
+            position: relative;
+        }
+        
+        .notification-badge {
+            position: absolute;
+            top: -5px;
+            right: -5px;
+            font-size: 0.7rem;
+            background: var(--gradient-secondary);
+            border: 2px solid white;
+            box-shadow: 0 2px 8px rgba(16, 185, 129, 0.4);
+        }
+        
+        .user-avatar {
+            width: 38px;
+            height: 38px;
+            background: var(--gradient-primary);
+            border-radius: 50%;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            color: white;
+            font-weight: bold;
+            font-size: 1rem;
+            box-shadow: 0 4px 10px rgba(16, 185, 129, 0.4);
+            transition: all 0.3s ease;
+            flex-shrink: 0;
+        }
+        
+        .user-avatar:hover {
+            transform: scale(1.08);
+            box-shadow: 0 6px 15px rgba(16, 185, 129, 0.5);
+        }
+        
+        .dropdown-menu {
+            background: white;
+            border: none;
+            border-radius: 12px;
+            box-shadow: 0 10px 30px rgba(16, 185, 129, 0.2);
+            overflow: hidden;
+            border: 1px solid rgba(16, 185, 129, 0.15);
+        }
+        
+        .dropdown-item {
+            padding: 0.8rem 1.2rem;
+            border-radius: 8px;
+            margin: 0.2rem 0.5rem;
+            transition: all 0.2s ease;
+            color: #065f46;
+        }
+        
+        .dropdown-item:hover {
+            background: rgba(16, 185, 129, 0.1);
+            color: #065f46;
+            transform: translateX(-5px);
+        }
+        
+        .nav-controls {
+            display: flex;
+            align-items: center;
+            position: absolute;
+            left: 0;
+            top: 0;
+            height: 100%;
+            background: linear-gradient(90deg, rgba(6, 95, 70, 0.9) 0%, transparent 100%);
+            padding: 0 0.5rem;
+            z-index: 5;
+        }
+        
+        .nav-prev, .nav-next {
+            background: rgba(255, 255, 255, 0.2);
+            border: 1px solid rgba(255, 255, 255, 0.3);
+            color: white;
+            width: 28px;
+            height: 28px;
+            border-radius: 50%;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            cursor: pointer;
+            transition: all 0.3s ease;
+            font-size: 0.8rem;
+            margin-left: 0.3rem;
+        }
+        
+        .nav-prev:hover, .nav-next:hover {
+            background: rgba(255, 255, 255, 0.3);
+            transform: scale(1.1);
+        }
+        
+        .nav-controls-right {
+            display: flex;
+            align-items: center;
+            position: absolute;
+            right: 0;
+            top: 0;
+            height: 100%;
+            background: linear-gradient(270deg, rgba(6, 95, 70, 0.9) 0%, transparent 100%);
+            padding: 0 0.5rem;
+            z-index: 5;
+        }
+        
+        /* Main Content */
+        .main-content {
+            min-height: 100vh;
+            background: transparent;
+            position: relative;
+        }
+        
+        /* Shift Badges Styling */
+        .shift-badge {
+            display: inline-block;
+            padding: 6px 12px;
+            border-radius: 8px;
+            font-size: 0.85rem;
+            font-weight: 600;
+            margin: 2px 3px;
+            transition: all 0.3s ease;
+        }
+        
+        .shift-badge.morning {
+            background: linear-gradient(135deg, #fef3c7 0%, #fbbf24 100%);
+            color: #92400e;
+            border: 1px solid #f59e0b;
+        }
+        
+        .shift-badge.evening {
+            background: linear-gradient(135deg, #dbeafe 0%, #3b82f6 100%);
+            color: #1e40af;
+            border: 1px solid #2563eb;
+        }
+        
+        .shift-badge i {
+            margin-left: 4px;
+        }
+        
+        .job-badge {
+            display: inline-block;
+            background: rgba(16, 185, 129, 0.15);
+            color: #065f46;
+            padding: 4px 10px;
+            border-radius: 6px;
+            font-size: 0.8rem;
+            margin-right: 5px;
+            border: 1px solid rgba(16, 185, 129, 0.3);
+        }
+        
+        /* تحسين عرض الشيفتات في الجدول */
+        .shift-container {
+            min-width: 120px;
+        }
+        
+        /* تحسين عرض كروت الشيفتات */
+        .shift-card {
+            background: rgba(255, 255, 255, 0.9);
+            border-radius: 10px;
+            padding: 10px;
+            margin: 5px;
+            border: 1px solid rgba(16, 185, 129, 0.2);
+        }
+        
+        .shift-card.morning {
+            border-left: 4px solid #f59e0b;
+        }
+        
+        .shift-card.evening {
+            border-left: 4px solid #3b82f6;
+        }
+        
+        /* Requests Page Styles */
+        .header-card {
+            background: var(--gradient-dark);
+            border: none;
+            border-radius: 20px;
+            color: white;
+            box-shadow: 0 20px 40px rgba(5, 150, 105, 0.3);
+            margin-bottom: 30px;
+            overflow: hidden;
+            position: relative;
+        }
+        
+        .header-card::before {
+            content: '';
+            position: absolute;
+            top: 0;
+            left: 0;
+            right: 0;
+            height: 4px;
+            background: var(--light-green);
+        }
+        
+        .type-badge {
+            background: rgba(255, 255, 255, 0.2);
+            border: 2px solid rgba(255, 255, 255, 0.3);
+            color: white;
+            padding: 10px 20px;
+            border-radius: 15px;
+            font-weight: 600;
+            font-size: 1rem;
+            backdrop-filter: blur(10px);
+        }
+        
+        .back-btn {
+            background: rgba(255, 255, 255, 0.15);
+            border: 2px solid rgba(255, 255, 255, 0.3);
+            color: white;
+            border-radius: 12px;
+            padding: 12px 25px;
+            transition: all 0.3s ease;
+            font-weight: 600;
+            backdrop-filter: blur(10px);
+        }
+        
+        .back-btn:hover {
+            background: rgba(255, 255, 255, 0.25);
+            border-color: rgba(255, 255, 255, 0.5);
+            transform: translateY(-2px);
+            box-shadow: 0 8px 20px rgba(255, 255, 255, 0.2);
+        }
+        
+        /* Filter Section */
+        .filter-card {
+            background: rgba(255, 255, 255, 0.95);
+            border: none;
+            border-radius: 20px;
+            box-shadow: 0 15px 35px rgba(16, 185, 129, 0.15);
+            margin-bottom: 25px;
+            backdrop-filter: blur(10px);
+            border: 1px solid rgba(16, 185, 129, 0.1);
+        }
+        
+        .filter-header {
+            background: var(--gradient-primary);
+            color: white;
+            border-radius: 20px 20px 0 0;
+            padding: 20px 25px;
+            border: none;
+        }
+        
+        .quick-filter-btn {
+            background: rgba(16, 185, 129, 0.1);
+            border: 2px solid rgba(16, 185, 129, 0.2);
+            color: var(--dark-green);
+            border-radius: 12px;
+            padding: 10px 20px;
+            font-weight: 600;
+            transition: all 0.3s ease;
+            margin: 0 5px 10px 0;
+        }
+        
+        .quick-filter-btn:hover,
+        .quick-filter-btn.active {
+            background: var(--gradient-primary);
+            color: white;
+            border-color: var(--primary-green);
+            transform: translateY(-2px);
+        }
+        
+        .stats-badge {
+            background: linear-gradient(135deg, #e0f2fe 0%, #bae6fd 100%);
+            border: 2px solid rgba(59, 130, 246, 0.2);
+            border-radius: 12px;
+            padding: 15px;
+            text-align: center;
+            min-width: 120px;
+        }
+        
+        /* Content Cards */
+        .content-card {
+            background: rgba(255, 255, 255, 0.95);
+            border: none;
+            border-radius: 20px;
+            box-shadow: 0 15px 35px rgba(16, 185, 129, 0.1);
+            margin-bottom: 25px;
+            backdrop-filter: blur(10px);
+            border: 1px solid rgba(16, 185, 129, 0.1);
+        }
+        
+        .card-header-primary {
+            background: var(--gradient-primary);
+            color: white;
+            border-radius: 20px 20px 0 0;
+            padding: 20px 25px;
+            border: none;
+        }
+        
+        /* Navigation Tabs */
+        .nav-tabs {
+            border-bottom: 3px solid rgba(16, 185, 129, 0.2);
+            padding: 0 10px;
+        }
+        
+        .nav-tabs .nav-link {
+            border: none;
+            color: #6b7280;
+            font-weight: 600;
+            padding: 15px 30px;
+            border-radius: 15px 15px 0 0;
+            margin: 0 5px;
+            transition: all 0.3s ease;
+            background: rgba(16, 185, 129, 0.05);
+        }
+        
+        .nav-tabs .nav-link:hover {
+            background: rgba(16, 185, 129, 0.1);
+            color: var(--dark-green);
+        }
+        
+        .nav-tabs .nav-link.active {
+            background: var(--gradient-primary);
+            color: white;
+            border: none;
+            transform: translateY(-2px);
+            box-shadow: 0 5px 15px rgba(16, 185, 129, 0.3);
+        }
+        
+        /* Tables */
+        .requests-table {
+            width: 100%;
+            border-collapse: separate;
+            border-spacing: 0 12px;
+        }
+        
+        .requests-table th {
+            color: var(--dark-green);
+            font-weight: 700;
+            padding: 18px;
+            background: rgba(16, 185, 129, 0.08);
+            border-bottom: 3px solid rgba(16, 185, 129, 0.2);
+            font-size: 0.95rem;
+        }
+        
+        .requests-table td {
+            padding: 18px;
+            background: rgba(255, 255, 255, 0.9);
+            border: 1px solid rgba(16, 185, 129, 0.1);
+            vertical-align: middle;
+            transition: all 0.3s ease;
+        }
+        
+        .requests-table tr:hover td {
+            background: rgba(16, 185, 129, 0.03);
+            transform: translateY(-2px);
+            box-shadow: 0 5px 15px rgba(16, 185, 129, 0.1);
+        }
+        
+        /* Badges */
+        .badge {
+            font-size: 0.8rem;
+            padding: 8px 14px;
+            border-radius: 10px;
+            font-weight: 600;
+        }
+        
+        .status-badge {
+            padding: 8px 16px;
+            border-radius: 20px;
+            font-weight: 600;
+            font-size: 0.85rem;
+        }
+        
+        /* Cards for Mobile */
+        .request-card {
+            background: linear-gradient(135deg, #f8fafc 0%, #f1f5f9 100%);
+            border-radius: 18px;
+            padding: 25px;
+            margin-bottom: 20px;
+            border: 2px solid rgba(16, 185, 129, 0.15);
+            transition: all 0.3s ease;
+            position: relative;
+            overflow: hidden;
+        }
+        
+        .request-card::before {
+            content: '';
+            position: absolute;
+            top: 0;
+            right: 0;
+            width: 4px;
+            height: 100%;
+            background: var(--primary-green);
+        }
+        
+        .request-card:hover {
+            transform: translateY(-5px);
+            box-shadow: 0 15px 30px rgba(16, 185, 129, 0.2);
+        }
+        
+        .request-card.pending {
+            background: linear-gradient(135deg, #fffbeb 0%, #fef3c7 100%);
+            border-color: rgba(245, 158, 11, 0.3);
+        }
+        
+        .request-card.pending::before {
+            background: #f59e0b;
+        }
+        
+        .request-card.approved {
+            background: linear-gradient(135deg, #f0fdf4 0%, #dcfce7 100%);
+            border-color: rgba(16, 185, 129, 0.3);
+        }
+        
+        .request-card.approved::before {
+            background: #10b981;
+        }
+        
+        .request-card.rejected {
+            background: linear-gradient(135deg, #fef2f2 0%, #fee2e2 100%);
+            border-color: rgba(239, 68, 68, 0.3);
+        }
+        
+        .request-card.rejected::before {
+            background: #ef4444;
+        }
+        
+        /* Buttons */
+        .cancel-btn {
+            background: var(--gradient-danger);
+            border: none;
+            border-radius: 12px;
+            padding: 10px 20px;
+            color: white;
+            font-weight: 600;
+            transition: all 0.3s ease;
+        }
+        
+        .cancel-btn:hover {
+            transform: translateY(-2px);
+            box-shadow: 0 8px 20px rgba(239, 68, 68, 0.4);
+        }
+        
+        .btn-primary {
+            background: var(--gradient-primary);
+            border: none;
+            border-radius: 12px;
+            padding: 12px 25px;
+            font-weight: 600;
+            transition: all 0.3s ease;
+        }
+        
+        .btn-primary:hover {
+            transform: translateY(-2px);
+            box-shadow: 0 8px 20px rgba(16, 185, 129, 0.4);
+        }
+        
+        /* Empty State */
+        .empty-state {
+            text-align: center;
+            padding: 80px 20px;
+            color: #6b7280;
+        }
+        
+        .file-icon {
+            font-size: 4rem;
+            color: var(--primary-green);
+            opacity: 0.7;
+            margin-bottom: 20px;
+        }
+        
+        /* Form Elements */
+        .form-select, .form-control {
+            border-radius: 12px;
+            border: 2px solid rgba(16, 185, 129, 0.2);
+            padding: 12px 15px;
+            transition: all 0.3s ease;
+        }
+        
+        .form-select:focus, .form-control:focus {
+            border-color: var(--primary-green);
+            box-shadow: 0 0 0 0.3rem rgba(16, 185, 129, 0.15);
+        }
+        
+        .form-label {
+            font-weight: 600;
+            color: var(--dark-green);
+            margin-bottom: 10px;
+        }
+        
+        /* Animations */
+        .floating-shape {
+            position: fixed;
+            width: 300px;
+            height: 300px;
+            background: var(--gradient-primary);
+            opacity: 0.05;
+            border-radius: 50%;
+            z-index: -1;
+            animation: float 8s ease-in-out infinite;
+        }
+        
+        .shape-1 {
+            top: 10%;
+            left: 10%;
+        }
+        
+        .shape-2 {
+            bottom: 10%;
+            right: 10%;
+            animation-delay: 2s;
+        }
+        
+        .shape-3 {
+            top: 50%;
+            left: 50%;
+            transform: translate(-50%, -50%);
+            animation-delay: 4s;
+        }
+        
+        @keyframes float {
+            0%, 100% { 
+                transform: translateY(0px) rotate(0deg); 
+            }
+            50% { 
+                transform: translateY(-30px) rotate(10deg); 
+            }
+        }
+        
+        .card {
+            background: white;
+            border: none;
+            border-radius: 12px;
+            box-shadow: 0 6px 15px rgba(16, 185, 129, 0.1);
+            transition: all 0.3s ease;
+            margin-bottom: 1.5rem;
+            border: 1px solid rgba(16, 185, 129, 0.1);
+        }
+        
+        .card:hover {
+            transform: translateY(-5px);
+            box-shadow: 0 12px 25px rgba(16, 185, 129, 0.15);
+        }
+        
+        .alert-success {
+            background-color: rgba(16, 185, 129, 0.1);
+            border-color: rgba(16, 185, 255, 0.2);
+            color: #065f46;
+            border-radius: 10px;
+        }
+        
+        /* Mobile Menu Button */
+        .mobile-menu-btn {
+            display: none;
+            background: transparent;
+            border: 1px solid rgba(255, 255, 255, 0.3);
+            color: white;
+            width: 40px;
+            height: 40px;
+            border-radius: 8px;
+            align-items: center;
+            justify-content: center;
+            cursor: pointer;
+            transition: all 0.3s ease;
+        }
+        
+        .mobile-menu-btn:hover {
+            background: rgba(255, 255, 255, 0.1);
+        }
+        
+        /* Mobile Menu */
+        .mobile-nav-menu {
+            position: fixed;
+            top: var(--header-height);
+            right: 0;
+            left: 0;
+            background: var(--gradient-dark);
+            z-index: 999;
+            padding: 1rem;
+            box-shadow: 0 4px 20px rgba(0, 0, 0, 0.2);
+            display: none;
+            flex-direction: column;
+            max-height: calc(100vh - var(--header-height));
+            overflow-y: auto;
+        }
+        
+        .mobile-nav-menu.active {
+            display: flex;
+        }
+        
+        .mobile-nav-link {
+            color: white;
+            padding: 1rem;
+            margin: 0.2rem 0;
+            border-radius: 8px;
+            text-decoration: none;
+            display: flex;
+            align-items: center;
+            transition: all 0.3s ease;
+            border: 1px solid transparent;
+        }
+        
+        .mobile-nav-link:hover,
+        .mobile-nav-link.active {
+            background: rgba(255, 255, 255, 0.1);
+            border: 1px solid rgba(255, 255, 255, 0.2);
+        }
+        
+        .mobile-nav-link i {
+            margin-left: 0.5rem;
+            width: 20px;
+            text-align: center;
+        }
+        
+        /* Custom Scrollbar for whole page */
+        ::-webkit-scrollbar {
+            width: 8px;
+            height: 8px;
+        }
+        
+        ::-webkit-scrollbar-track {
+            background: rgba(16, 185, 129, 0.1);
+            border-radius: 10px;
+        }
+        
+        ::-webkit-scrollbar-thumb {
+            background: var(--gradient-primary);
+            border-radius: 10px;
+        }
+        
+        ::-webkit-scrollbar-thumb:hover {
+            background: var(--dark-green);
+        }
+        
+        /* Green accent elements */
+        .text-success {
+            color: var(--primary-green) !important;
+        }
+        
+        .bg-success {
+            background-color: var(--primary-green) !important;
+        }
+        
+        #live-clock {
+            font-size: 0.9rem;
+            background: rgba(255, 255, 255, 0.1);
+            padding: 0.3rem 0.7rem;
+            border-radius: 20px;
+            border: 1px solid rgba(255, 255, 255, 0.2);
+            flex-shrink: 0;
+        }
+        
+        /* Ensure text doesn't overflow */
+        .text-truncate {
+            overflow: hidden;
+            text-overflow: ellipsis;
+            white-space: nowrap;
+        }
+        
+        /* Enhanced duration display for permissions */
+        .duration-display {
+            background: linear-gradient(135deg, #e0f2fe 0%, #bae6fd 100%);
+            border: 2px solid rgba(59, 130, 246, 0.2);
+            border-radius: 10px;
+            padding: 5px 10px;
+            display: inline-flex;
+            align-items: center;
+            justify-content: center;
+            min-width: 80px;
+        }
+        
+        .duration-value {
+            font-weight: 700;
+            font-size: 1.1rem;
+            color: #1e40af;
+            margin-left: 3px;
+        }
+        
+        .duration-unit {
+            color: #3b82f6;
+            font-size: 0.9rem;
+            font-weight: 600;
+        }
+        
+        /* Styling for time range display */
+        .time-range {
+            background: rgba(255, 255, 255, 0.2);
+            border: 1px solid rgba(255, 255, 255, 0.3);
+            border-radius: 8px;
+            padding: 3px 8px;
+            font-size: 0.85rem;
+            display: inline-block;
+            margin: 2px;
+        }
+        
+        /* New Styles for Enhanced Permission Table */
+        .permission-type-badge {
+            display: inline-block;
+            padding: 6px 12px;
+            border-radius: 8px;
+            font-size: 0.8rem;
+            font-weight: 600;
+            margin: 2px;
+        }
+        
+        .permission-type-badge.attendance {
+            background: linear-gradient(135deg, #dcfce7 0%, #bbf7d0 100%);
+            color: #166534;
+            border: 1px solid #22c55e;
+        }
+        
+        .permission-type-badge.leave {
+            background: linear-gradient(135deg, #fef3c7 0%, #fde68a 100%);
+            color: #92400e;
+            border: 1px solid #f59e0b;
+        }
+        
+        .permission-type-badge.forgot {
+            background: linear-gradient(135deg, #dbeafe 0%, #bfdbfe 100%);
+            color: #1e40af;
+            border: 1px solid #3b82f6;
+        }
+        
+        .permission-type-badge.exchange {
+            background: linear-gradient(135deg, #f3e8ff 0%, #e9d5ff 100%);
+            color: #6b21a8;
+            border: 1px solid #9333ea;
+        }
+        
+        .permission-type-badge.overtime {
+            background: linear-gradient(135deg, #ffedd5 0%, #fed7aa 100%);
+            color: #9a3412;
+            border: 1px solid #ea580c;
+        }
+        
+        .time-display {
+            background: #f8fafc;
+            border: 1px solid #e5e7eb;
+            border-radius: 8px;
+            padding: 4px 8px;
+            font-size: 0.85rem;
+            color: #4b5563;
+            display: inline-block;
+        }
+        
+        .employee-display {
+            background: #f0fdf4;
+            border: 1px solid #bbf7d0;
+            border-radius: 8px;
+            padding: 6px 10px;
+            font-size: 0.85rem;
+            color: #166534;
+            display: inline-block;
+            max-width: 200px;
+            overflow: hidden;
+            text-overflow: ellipsis;
+            white-space: nowrap;
+        }
+        
+        .overtime-hours {
+            background: linear-gradient(135deg, #fef3c7 0%, #fde68a 100%);
+            border: 2px solid #f59e0b;
+            border-radius: 10px;
+            padding: 8px 12px;
+            font-weight: 700;
+            font-size: 1rem;
+            color: #92400e;
+            text-align: center;
+            min-width: 60px;
+        }
+        
+        .attendance-type-badge {
+            display: inline-block;
+            padding: 4px 8px;
+            border-radius: 6px;
+            font-size: 0.75rem;
+            font-weight: 600;
+        }
+        
+        .attendance-type-badge.check-in {
+            background: #dcfce7;
+            color: #166534;
+            border: 1px solid #22c55e;
+        }
+        
+        .attendance-type-badge.check-out {
+            background: #fef3c7;
+            color: #92400e;
+            border: 1px solid #f59e0b;
+        }
+        
+        .details-tooltip {
+            position: relative;
+            display: inline-block;
+            cursor: help;
+        }
+        
+        .details-tooltip .tooltip-text {
+            visibility: hidden;
+            width: 300px;
+            background-color: #1f2937;
+            color: #fff;
+            text-align: center;
+            border-radius: 6px;
+            padding: 10px;
+            position: absolute;
+            z-index: 1;
+            bottom: 125%;
+            left: 50%;
+            margin-left: -150px;
+            opacity: 0;
+            transition: opacity 0.3s;
+            font-size: 0.85rem;
+            box-shadow: 0 4px 15px rgba(0,0,0,0.2);
+        }
+        
+        .details-tooltip:hover .tooltip-text {
+            visibility: visible;
+            opacity: 1;
+        }
+        
+        .details-tooltip .tooltip-text::after {
+            content: "";
+            position: absolute;
+            top: 100%;
+            left: 50%;
+            margin-left: -5px;
+            border-width: 5px;
+            border-style: solid;
+            border-color: #1f2937 transparent transparent transparent;
+        }
+        
+        /* Mobile Responsive */
+        @media (max-width: 1200px) {
+            :root {
+                --header-height: 120px;
+            }
+            
+            .unified-nav .nav-link {
+                padding: 0.6rem 1rem;
+                font-size: 0.85rem;
+            }
+            
+            .requests-table th,
+            .requests-table td {
+                padding: 12px 8px;
+                font-size: 0.85rem;
+            }
+        }
+        
+        @media (max-width: 992px) {
+            :root {
+                --header-height: 100px;
+            }
+            
+            .unified-nav {
+                height: auto;
+                min-height: var(--header-height);
+            }
+            
+            .unified-nav-container {
+                padding: 0.5rem;
+            }
+            
+            .nav-top-section {
+                height: 60px;
+                flex-wrap: nowrap;
+                padding: 0;
+            }
+            
+            .nav-brand-section {
+                order: 1;
+                width: auto;
+                flex: 0 0 auto;
+            }
+            
+            .welcome-section {
+                order: 2;
+                flex: 1;
+                justify-content: flex-start;
+                padding: 0 0.5rem;
+                display: none;
+            }
+            
+            .nav-user-section {
+                order: 3;
+                width: auto;
+                flex: 0 0 auto;
+                justify-content: flex-end;
+            }
+            
+            .nav-bottom-section {
+                order: 4;
+                height: 40px;
+                margin-top: 0;
+                display: none;
+            }
+            
+            .mobile-menu-btn {
+                display: flex;
+                margin-left: 0.5rem;
+            }
+            
+            .welcome-content h4 {
+                font-size: 0.9rem;
+            }
+            
+            .welcome-content p {
+                display: none;
+            }
+            
+            #live-clock {
+                display: none;
+            }
+            
+            body {
+                padding-top: var(--header-height);
+            }
+            
+            .nav-controls, .nav-controls-right {
+                display: none;
+            }
+        }
+        
+        @media (max-width: 768px) {
+            :root {
+                --header-height: 80px;
+            }
+            
+            .nav-top-section {
+                height: 50px;
+            }
+            
+            .logo-container {
+                width: 35px;
+                height: 35px;
+            }
+            
+            .logo-container i {
+                font-size: 1rem;
+            }
+            
+            .user-avatar {
+                width: 32px;
+                height: 32px;
+                font-size: 0.9rem;
+            }
+            
+            .nav-brand-section .d-none.d-md-block {
+                display: none !important;
+            }
+            
+            .mobile-menu-btn {
+                width: 35px;
+                height: 35px;
+            }
+            
+            /* Hide table on mobile */
+            .d-none.d-lg-block {
+                display: none !important;
+            }
+            
+            /* Show card view on mobile */
+            .d-lg-none {
+                display: block !important;
+            }
+        }
+        
+        @media (max-width: 576px) {
+            :root {
+                --header-height: 70px;
+            }
+            
+            .nav-top-section {
+                height: 45px;
+            }
+            
+            .logo-container {
+                width: 30px;
+                height: 30px;
+                margin-left: 0.3rem;
+            }
+            
+            .user-avatar {
+                width: 28px;
+                height: 28px;
+                font-size: 0.8rem;
+            }
+            
+            .notification-badge {
+                font-size: 0.6rem;
+                top: -3px;
+                right: -3px;
+            }
+            
+            .btn {
+                padding: 0.3rem 0.6rem;
+                font-size: 0.8rem;
+            }
+        }
+    </style>
+</head>
+<body>
+    <!-- Background Shapes -->
+    <div class="floating-shape shape-1"></div>
+    <div class="floating-shape shape-2"></div>
+    <div class="floating-shape shape-3"></div>
+    
+    <div class="container-fluid p-0">
+        <!-- Unified Navigation Bar -->
+        <nav class="unified-nav">
+            <div class="unified-nav-container">
+                <!-- Top Section: Brand, Welcome, User -->
+                <div class="nav-top-section">
+                    <!-- Brand Section -->
+                    <div class="nav-brand-section">
+                        <div class="logo-container">
+                            <i class="bi bi-person-circle text-white"></i>
+                        </div>
+                        <div class="d-none d-md-block ms-2">
+                            <h6 class="text-white mb-0 fw-bold text-truncate">نظام الموارد البشرية</h6>
+                            <small class="text-white-50">لوحة الموظف</small>
+                        </div>
+                    </div>
+                    
+                    <!-- Welcome Section - Hidden on mobile -->
+                    <div class="welcome-section d-none d-lg-flex">
+                        <div class="welcome-content">
+                            <h4 class="text-white mb-1 text-truncate">مرحباً، {{ current_user.name }}</h4>
+                            <p class="text-white-50 mb-0 text-truncate">نظام الموارد البشرية - لوحة تحكم الموظف</p>
+                        </div>
+                        <div class="text-white fw-bold me-3" id="live-clock">
+                            <i class="bi bi-clock me-2"></i>
+                            جاري التحميل...
+                        </div>
+                    </div>
+                    
+                    <!-- User Section -->
+                    <div class="nav-user-section">
+                        <!-- Notifications -->
+                        <div class="dropdown me-2">
+                            <button class="btn btn-light position-relative rounded-pill" 
+                                    type="button" data-bs-toggle="dropdown" 
+                                    style="padding: 0.4rem 0.8rem; border: 1px solid rgba(255, 255, 255, 0.3); background: rgba(255, 255, 255, 0.15); color: white;">
+                                <i class="bi bi-bell"></i>
+                                {% if notifications and notifications|length > 0 %}
+                                <span class="notification-badge badge">{{ notifications|length }}</span>
+                                {% endif %}
+                            </button>
+                            <ul class="dropdown-menu dropdown-menu-end">
+                                {% if notifications and notifications|length > 0 %}
+                                    {% for notification in notifications[:3] %}
+                                    <li>
+                                        <a class="dropdown-item" href="#">
+                                            <div class="d-flex align-items-start">
+                                                <div class="bg-success bg-opacity-10 rounded-circle p-2 me-3">
+                                                    <i class="bi bi-bell text-success"></i>
+                                                </div>
+                                                <div>
+                                                    <strong class="d-block text-dark">{{ notification.title }}</strong>
+                                                    <small class="text-muted">{{ notification.message|truncate(30) }}</small>
+                                                </div>
+                                            </div>
+                                        </a>
+                                    </li>
+                                    {% endfor %}
+                                    <li><hr class="dropdown-divider my-2"></li>
+                                {% else %}
+                                    <li>
+                                        <a class="dropdown-item text-muted text-center" href="#">
+                                            <i class="bi bi-bell-slash fs-4 d-block mb-2 text-success"></i>
+                                            لا توجد إشعارات جديدة
+                                        </a>
+                                    </li>
+                                    <li><hr class="dropdown-divider my-2"></li>
+                                {% endif %}
+                                <li>
+                                    <a class="dropdown-item text-center text-success fw-bold" href="{{ url_for('notifications') }}">
+                                        <i class="bi bi-arrow-left me-2"></i>
+                                        عرض جميع الإشعارات
+                                    </a>
+                                </li>
+                            </ul>
+                        </div>
+                        
+                        <!-- User Menu -->
+                        <div class="dropdown">
+                            <button class="btn btn-outline-light dropdown-toggle rounded-pill d-flex align-items-center" 
+                                    type="button" data-bs-toggle="dropdown"
+                                    style="padding: 0.4rem 0.9rem; border: 1px solid rgba(255, 255, 255, 0.4);">
+                                <div class="user-avatar me-2">
+                                    {{ current_user.name[0] }}
+                                </div>
+                                <span class="d-none d-md-inline text-truncate" style="max-width: 80px;">{{ current_user.username }}</span>
+                            </button>
+                            <ul class="dropdown-menu dropdown-menu-end">
+                                <li>
+                                    <a class="dropdown-item" href="{{ url_for('notifications') }}">
+                                        <i class="bi bi-bell me-2 text-success"></i>الإشعارات
+                                    </a>
+                                </li>
+                                <li>
+                                    <a class="dropdown-item" href="{{ url_for('edit_user', user_id=current_user.id) }}">
+                                        <i class="bi bi-key me-2 text-success"></i>تغير كلمة المرور
+                                    </a>
+                                </li>
+                                <li><hr class="dropdown-divider my-2"></li>
+                                <li>
+                                    <a class="dropdown-item text-danger fw-bold" href="{{ url_for('logout') }}">
+                                        <i class="bi bi-box-arrow-right me-2"></i>تسجيل الخروج
+                                    </a>
+                                </li>
+                            </ul>
+                        </div>
+                        
+                        <!-- Mobile Menu Button -->
+                        <button class="mobile-menu-btn d-lg-none" id="mobileMenuBtn">
+                            <i class="bi bi-list"></i>
+                        </button>
+                    </div>
+                </div>
+                
+                <!-- Bottom Section: Navigation Menu - Hidden on mobile -->
+                <div class="nav-bottom-section d-none d-lg-flex">
+                    <div class="nav-controls">
+                        <!-- Navigation scroll controls -->
+                        <button class="nav-prev">
+                            <i class="bi bi-chevron-right"></i>
+                        </button>
+                        <button class="nav-next">
+                            <i class="bi bi-chevron-left"></i>
+                        </button>
+                    </div>
+                    
+                    <div class="nav-menu-section">
+                        <div class="nav-menu-wrapper">
+                            <a class="nav-link {% if request.endpoint == 'user_dashboard' %}active{% endif %}" href="{{ url_for('user_dashboard') }}">
+                                <i class="bi bi-speedometer2 me-2"></i>
+                                لوحة التحكم
+                            </a>
+                            <a class="nav-link {% if request.endpoint == 'user_form' %}active{% endif %}" href="{{ url_for('user_form') }}">
+                                <i class="bi bi-person-lines-fill me-2"></i>
+                                البيانات الشخصية
+                            </a>
+                            
+                            <!-- الرسائل - للموظف -->
+                            <a class="nav-link nav-link-with-badge {% if request.endpoint == 'messages_inbox' %}active{% endif %}" href="{{ url_for('messages_inbox') }}">
+                                <i class="bi bi-envelope me-2"></i>
+                                الرسائل
+                                {% if unread_count and unread_count > 0 %}
+                                <span class="nav-badge">{{ unread_count }}</span>
+                                {% endif %}
+                            </a>
+                            
+                            <a class="nav-link {% if request.endpoint == 'user_leave' %}active{% endif %}" href="{{ url_for('user_leave') }}">
+                                <i class="bi bi-calendar-minus me-2"></i>
+                                طلب إجازة
+                            </a>
+                            <a class="nav-link {% if request.endpoint == 'user_permission' %}active{% endif %}" href="{{ url_for('user_permission') }}">
+                                <i class="bi bi-clock me-2"></i>
+                                طلب إذن
+                            </a>
+                            <a class="nav-link nav-link-with-badge {% if request.endpoint == 'user_salary_slips' %}active{% endif %}" href="{{ url_for('user_salary_slips') }}">
+                                <i class="bi bi-file-earmark-text me-2"></i>
+                                شيت المرتب
+                                {% if new_salary_slips and new_salary_slips > 0 %}
+                                <span class="nav-badge">{{ new_salary_slips }}</span>
+                                {% endif %}
+                            </a>
+                            <a class="nav-link {% if request.endpoint == 'user_schedule' %}active{% endif %}" href="{{ url_for('user_schedule') }}">
+                                <i class="bi bi-calendar-week me-2"></i>
+                                الجدول الأسبوعي
+                            </a>
+                            
+                            <!-- Added missing user_excel_data link -->
+                            <a class="nav-link {% if request.endpoint == 'user_excel_data' %}active{% endif %}" href="{{ url_for('user_excel_data') }}">
+                                <i class="fas fa-file-excel me-2"></i>
+                                الحضور والانصراف
+                            </a>
+                            
+                            <a class="nav-link active" href="{{ url_for('user_leave_requests') }}">
+                                <i class="bi bi-clock-history me-2"></i>
+                                طلباتي السابقة
+                            </a>
+
+                        </div>
+                    </div>
+                    
+                    <div class="nav-controls-right">
+                        <!-- Navigation scroll controls -->
+                        <button class="nav-next">
+                            <i class="bi bi-chevron-left"></i>
+                        </button>
+                        <button class="nav-prev">
+                            <i class="bi bi-chevron-right"></i>
+                        </button>
+                    </div>
+                </div>
+            </div>
+        </nav>
+
+        <!-- Mobile Navigation Menu -->
+        <div class="mobile-nav-menu" id="mobileNavMenu">
+            <a class="mobile-nav-link {% if request.endpoint == 'user_dashboard' %}active{% endif %}" href="{{ url_for('user_dashboard') }}">
+                <i class="bi bi-speedometer2"></i>
+                لوحة التحكم
+            </a>
+            <a class="mobile-nav-link {% if request.endpoint == 'user_form' %}active{% endif %}" href="{{ url_for('user_form') }}">
+                <i class="bi bi-person-lines-fill"></i>
+                البيانات الشخصية
+            </a>
+            
+            <!-- الرسائل - للموظف (موبايل) -->
+            <a class="mobile-nav-link nav-link-with-badge {% if request.endpoint == 'messages_inbox' %}active{% endif %}" href="{{ url_for('messages_inbox') }}">
+                <i class="bi bi-envelope"></i>
+                الرسائل
+                {% if unread_count and unread_count > 0 %}
+                <span class="nav-badge">{{ unread_count }}</span>
+                {% endif %}
+            </a>
+            
+            <a class="mobile-nav-link {% if request.endpoint == 'user_leave' %}active{% endif %}" href="{{ url_for('user_leave') }}">
+                <i class="bi bi-calendar-minus"></i>
+                طلب إجازة
+            </a>
+            <a class="mobile-nav-link {% if request.endpoint == 'user_permission' %}active{% endif %}" href="{{ url_for('user_permission') }}">
+                <i class="bi bi-clock"></i>
+                طلب إذن
+            </a>
+            <a class="mobile-nav-link {% if request.endpoint == 'user_salary_slips' %}active{% endif %}" href="{{ url_for('user_salary_slips') }}">
+                <i class="bi bi-file-earmark-text"></i>
+                شيت المرتب
+                {% if new_salary_slips and new_salary_slips > 0 %}
+                <span class="nav-badge">{{ new_salary_slips }}</span>
+                {% endif %}
+            </a>
+            <a class="mobile-nav-link {% if request.endpoint == 'user_schedule' %}active{% endif %}" href="{{ url_for('user_schedule') }}">
+                <i class="bi bi-calendar-week"></i>
+                الجدول الأسبوعي
+            </a>
+            
+            <!-- Added missing user_excel_data link for mobile -->
+            <a class="mobile-nav-link {% if request.endpoint == 'user_excel_data' %}active{% endif %}" href="{{ url_for('user_excel_data') }}">
+                <i class="fas fa-file-excel"></i>
+                الحضور والانصراف
+            </a>
+
+            <a class="mobile-nav-link active" href="{{ url_for('user_leave_requests') }}">
+                <i class="bi bi-clock-history"></i>
+                طلباتي السابقة
+            </a>
+        </div>
+
+        <!-- Main Content -->
+        <main class="main-content">
+            <!-- Page Content -->
+            <div class="container py-4">
+                <!-- Flash messages -->
+                {% with messages = get_flashed_messages() %}
+                    {% if messages %}
+                        {% for message in messages %}
+                            <div class="alert alert-success alert-dismissible fade show mb-4" role="alert">
+                                <div class="d-flex align-items-center">
+                                    <i class="bi bi-check-circle me-2 fs-5"></i>
+                                    <div class="flex-grow-1">{{ message }}</div>
+                                    <button type="button" class="btn-close" data-bs-dismiss="alert"></button>
+                                </div>
+                            </div>
+                        {% endfor %}
+                    {% endif %}
+                {% endwith %}
+                
+                <!-- Welcome Card for Mobile -->
+                <div class="card p-3 d-lg-none mb-4">
+                    <div class="d-flex justify-content-between align-items-center">
+                        <div>
+                            <h4 class="text-success mb-1">مرحباً، {{ current_user.name }}</h4>
+                            <p class="text-muted mb-0">نظام الموارد البشرية - لوحة تحكم الموظف</p>
+                        </div>
+                        <div class="text-success fw-bold" id="mobile-clock">
+                            <i class="bi bi-clock me-2"></i>
+                            جاري التحميل...
+                        </div>
+                    </div>
+                </div>
+                
+                <!-- Filter Section -->
+                <div class="filter-card card border-0 shadow-sm">
+                    <div class="card-header bg-transparent py-3">
+                        <h5 class="card-title mb-0">
+                            <i class="bi bi-funnel me-2"></i>
+                            تصفية النتائج
+                        </h5>
+                    </div>
+                    <div class="card-body">
+                        <form method="GET" action="{{ url_for('user_leave_requests') }}" id="filterForm">
+                            <!-- Hidden input for period parameter -->
+                            <input type="hidden" id="period" name="period" value="{{ period_filter or 'all' }}">
+                            
+                            <!-- Main Filter Row -->
+                            <div class="row g-3 align-items-end">
+                                <!-- Quick Filter Buttons -->
+                                <div class="col-md-8">
+                                    <label class="form-label mb-2">فلاتر سريعة</label>
+                                    <div class="d-flex gap-2 flex-wrap">
+                                        <button type="button" class="btn {% if period_filter == 'all' %}btn-primary{% else %}btn-outline-primary{% endif %}" onclick="applyQuickFilter('all')">
+                                            الكل
+                                        </button>
+                                        <button type="button" class="btn {% if period_filter == 'week' %}btn-primary{% else %}btn-outline-primary{% endif %}" onclick="applyQuickFilter('week')">
+                                            هذا الأسبوع
+                                        </button>
+                                        <button type="button" class="btn {% if period_filter == 'month' %}btn-primary{% else %}btn-outline-primary{% endif %}" onclick="applyQuickFilter('month')">
+                                            هذا الشهر
+                                        </button>
+                                        <button type="button" class="btn {% if period_filter == '3months' %}btn-primary{% else %}btn-outline-primary{% endif %}" onclick="applyQuickFilter('3months')">
+                                            ٣ أشهر
+                                        </button>
+                                    </div>
+                                </div>
+                                
+                                <!-- Action Buttons & Active Filter -->
+                                <div class="col-md-4">          
+                                    <!-- Active Filter Display -->
+                                    {% if period_filter != 'all' %}
+                                    <div class="mt-2">
+                                        <span class="badge bg-primary text-white small">
+                                            <i class="bi bi-info-circle me-1"></i>
+                                            {% if period_filter == 'week' %}
+                                            الأسبوع الحالي
+                                            {% elif period_filter == 'month' %}
+                                            الشهر الحالي
+                                            {% elif period_filter == '3months' %}
+                                            آخر 3 أشهر
+                                            {% endif %}
+                                        </span>
+                                    </div>
+                                    {% endif %}
+                                </div>
+                            </div>
+                        </form>
+                    </div>
+                </div>
+
+                <!-- Navigation Tabs -->
+                <ul class="nav nav-tabs mb-4" id="requestsTabs" role="tablist">
+                    <li class="nav-item" role="presentation">
+                        <button class="nav-link" id="leave-tab" data-bs-toggle="tab" data-bs-target="#leave" type="button" role="tab">
+                            <i class="bi bi-calendar-event me-2"></i>
+                            طلبات الإجازات
+                            <span class="badge bg-light text-dark ms-2">{{ leave_requests|length }}</span>
+                        </button>
+                    </li>
+                    <li class="nav-item" role="presentation">
+                        <button class="nav-link active" id="permission-tab" data-bs-toggle="tab" data-bs-target="#permission" type="button" role="tab">
+                            <i class="bi bi-clock me-2"></i>
+                            طلبات الإذونات
+                            <span class="badge bg-light text-dark ms-2">{{ permission_requests|length }}</span>
+                        </button>
+                    </li>
+                </ul>
+
+                <!-- Tab Content -->
+                <div class="tab-content" id="requestsTabsContent">
+                    
+                    <!-- Leave Requests Tab -->
+                    <div class="tab-pane fade" id="leave" role="tabpanel">
+                        <div class="content-card card">
+                            <div class="card-header card-header-primary">
+                                <div class="d-flex justify-content-between align-items-center">
+                                    <h5 class="card-title mb-0">
+                                        <i class="bi bi-calendar-event me-2"></i>
+                                        طلبات الإجازات
+                                    </h5>
+                                    <a href="{{ url_for('user_leave') }}" class="btn btn-light">
+                                        <i class="bi bi-plus-circle me-2"></i>
+                                        طلب جديد
+                                    </a>
+                                </div>
+                            </div>
+                            <div class="card-body">
+                                {% if leave_requests and leave_requests|length > 0 %}
+                                <!-- Table View for Larger Screens -->
+                                <div class="d-none d-lg-block">
+                                    <div class="table-responsive">
+                                        <table class="requests-table">
+                                            <thead>
+                                                <tr>
+                                                    <th>نوع الإجازة</th>
+                                                    <th>تاريخ الإجازة</th>
+                                                    <th>الشيفت</th>
+                                                    <th>الوظيفة</th>
+                                                    <th>المدة</th>
+                                                    <th>الحالة</th>
+                                                    <th>تاريخ الطلب</th>
+                                                    <th>الإجراءات</th>
+                                                </tr>
+                                            </thead>
+                                            <tbody>
+                                                {% for request in leave_requests %}
+                                                <tr>
+                                                    <td>
+                                                        <div class="d-flex align-items-center">
+                                                            <i class="bi bi-calendar-check text-primary me-3 fs-5"></i>
+                                                            <div>
+                                                                <strong class="d-block">{{ request.leave_type }}</strong>
+                                                                {% if request.reason %}
+                                                                <small class="text-muted">{{ request.reason|truncate(30) }}</small>
+                                                                {% endif %}
+                                                            </div>
+                                                        </div>
+                                                    </td>
+                                                    <td>
+                                                        <div class="text-center">
+                                                            <div class="fw-bold text-dark">{{ request.leave_date.strftime('%Y-%m-%d') }}</div>
+                                                        </div>
+                                                    </td>
+                                                    <td>
+                                                        {% if request.shift_name %}
+                                                            {% if request.shift_name == 'صباحي' %}
+                                                                <span class="shift-badge morning">
+                                                                    <i class="bi bi-sun-fill"></i> {{ request.shift_name }}
+                                                                </span>
+                                                            {% elif request.shift_name == 'مسائي' %}
+                                                                <span class="shift-badge evening">
+                                                                    <i class="bi bi-moon-fill"></i> {{ request.shift_name }}
+                                                                </span>
+                                                            {% elif request.shift_name == 'ليلي' %}
+                                                                <span class="shift-badge evening">
+                                                                    <i class="bi bi-moon-stars-fill"></i> {{ request.shift_name }}
+                                                                </span>
+                                                            {% else %}
+                                                                <span class="shift-badge">
+                                                                    {{ request.shift_name }}
+                                                                </span>
+                                                            {% endif %}
+                                                        {% else %}
+                                                            <div class="text-muted small">بدون شيفت محدد</div>
+                                                        {% endif %}
+                                                    </td>
+                                                    <td>
+                                                        {% if request.shift_job %}
+                                                            <span class="job-badge">{{ request.shift_job }}</span>
+                                                        {% else %}
+                                                            <span class="text-muted small">-</span>
+                                                        {% endif %}
+                                                    </td>
+                                                    <td>
+                                                        <span class="fw-bold fs-5 text-primary">1</span>
+                                                        <span class="text-muted">يوم</span>
+                                                    </td>
+                                                    <td>
+                                                        {% if request.status == 'approved' %}
+                                                        <span class="status-badge bg-success text-white">
+                                                            <i class="bi bi-check-circle me-1"></i>
+                                                            مقبولة
+                                                        </span>
+                                                        {% elif request.status == 'rejected' %}
+                                                        <span class="status-badge bg-danger text-white">
+                                                            <i class="bi bi-x-circle me-1"></i>
+                                                            مرفوضة
+                                                        </span>
+                                                        {% if request.rejection_reason %}
+                                                        <br>
+                                                        <small class="text-muted mt-1 d-block">{{ request.rejection_reason|truncate(20) }}</small>
+                                                        {% endif %}
+                                                        {% else %}
+                                                        <span class="status-badge bg-warning text-dark">
+                                                            <i class="bi bi-clock me-1"></i>
+                                                            قيد الانتظار
+                                                        </span>
+                                                        {% endif %}
+                                                    </td>
+                                                    <td>
+                                                        <div class="text-center">
+                                                            <div class="text-muted">{{ request.created_at.strftime('%Y-%m-%d') }}</div>
+                                                            <div class="text-success small">{{ request.created_at.strftime('%H:%M') }}</div>
+                                                        </div>
+                                                    </td>
+                                                    <td>
+                                                        {% if request.status == 'pending' %}
+                                                        <a href="{{ url_for('cancel_leave_request', request_id=request.id) }}" 
+                                                        class="btn cancel-btn"
+                                                        onclick="return confirm('هل أنت متأكد من إلغاء هذا الشيفت؟')">
+                                                            <i class="bi bi-x-circle me-1"></i>
+                                                            إلغاء
+                                                        </a>
+                                                        {% else %}
+                                                        <span class="text-muted">-</span>
+                                                        {% endif %}
+                                                    </td>
+                                                </tr>
+                                                {% endfor %}
+                                            </tbody>
+                                        </table>
+                                    </div>
+                                </div>
+
+                                <!-- Card View for Mobile -->
+                                <div class="d-lg-none">
+                                    {% for request in leave_requests %}
+                                    <div class="request-card {{ request.status }}">
+                                        <div class="row align-items-center">
+                                            <div class="col-2 text-center">
+                                                <i class="bi bi-calendar-check fs-2 text-primary"></i>
+                                            </div>
+                                            <div class="col-6">
+                                                <h6 class="fw-bold mb-1">{{ request.leave_type }}</h6>
+                                                <p class="mb-1 text-muted">
+                                                    <i class="bi bi-calendar me-1"></i>
+                                                    {{ request.leave_date.strftime('%Y-%m-%d') }}
+                                                </p>
+                                                
+                                                {% if request.shift_name %}
+                                                <div class="mb-2">
+                                                    {% if request.shift_name == 'صباحي' %}
+                                                        <span class="shift-badge morning">
+                                                            {{ request.shift_name }}
+                                                        </span>
+                                                    {% elif request.shift_name == 'مسائي' %}
+                                                        <span class="shift-badge evening">
+                                                            {{ request.shift_name }}
+                                                        </span>
+                                                    {% elif request.shift_name == 'ليلي' %}
+                                                        <span class="shift-badge evening">
+                                                            {{ request.shift_name }}
+                                                        </span>
+                                                    {% else %}
+                                                        <span class="shift-badge">
+                                                            {{ request.shift_name }}
+                                                        </span>
+                                                    {% endif %}
+                                                    
+                                                    {% if request.shift_job %}
+                                                        <span class="job-badge">
+                                                            {{ request.shift_job }}
+                                                        </span>
+                                                    {% endif %}
+                                                </div>
+                                                {% endif %}
+
+                                                <p class="mb-1">
+                                                    <span class="fw-bold text-primary">1</span> يوم
+                                                </p>
+                                                
+                                                {% if request.reason %}
+                                                <p class="mb-1">
+                                                    <small class="text-muted">{{ request.reason }}</small>
+                                                </p>
+                                                {% endif %}
+                                                
+                                                <small class="text-muted">
+                                                    <i class="bi bi-clock me-1"></i>
+                                                    {{ request.created_at.strftime('%Y-%m-%d %H:%M') }}
+                                                </small>
+                                            </div>
+                                            <div class="col-4 text-center">
+                                                <div class="mb-2">
+                                                    {% if request.status == 'approved' %}
+                                                    <span class="badge bg-success">مقبولة</span>
+                                                    {% elif request.status == 'rejected' %}
+                                                    <span class="badge bg-danger">مرفوضة</span>
+                                                    {% else %}
+                                                    <span class="badge bg-warning">قيد الانتظار</span>
+                                                    {% endif %}
+                                                </div>
+                                                {% if request.status == 'pending' %}
+                                                <a href="{{ url_for('cancel_leave_request', request_id=request.id) }}" 
+                                                class="btn cancel-btn btn-sm"
+                                                onclick="return confirm('هل أنت متأكد من إلغاء هذا الشيفت؟')">
+                                                    <i class="bi bi-x-circle"></i>
+                                                </a>
+                                                {% endif %}
+                                            </div>
+                                        </div>
+                                    </div>
+                                    {% endfor %}
+                                </div> 
+                                {% else %}
+                                <div class="empty-state">
+                                    <i class="bi bi-calendar-x file-icon"></i>
+                                    <h4 class="text-muted mt-3">لا توجد طلبات إجازات</h4>
+                                    <p class="text-muted mb-4">لم تقم بتقديم أي طلبات إجازة حتى الآن</p>
+                                    <a href="{{ url_for('user_leave') }}" class="btn btn-primary btn-lg">
+                                        <i class="bi bi-plus-circle me-2"></i>
+                                        تقديم طلب إجازة جديد
+                                    </a>
+                                </div>
+                                {% endif %}
+                            </div>
+                        </div>
+                    </div>
+
+                    <!-- Permission Requests Tab -->
+                    <div class="tab-pane fade show active" id="permission" role="tabpanel">
+                        <div class="content-card card">
+                            <div class="card-header card-header-primary">
+                                <div class="d-flex justify-content-between align-items-center">
+                                    <h5 class="card-title mb-0">
+                                        <i class="bi bi-clock me-2"></i>
+                                        طلبات الإذونات
+                                    </h5>
+                                    <a href="{{ url_for('user_permission') }}" class="btn btn-light">
+                                        <i class="bi bi-plus-circle me-2"></i>
+                                        طلب جديد
+                                    </a>
+                                </div>
+                            </div>
+                            <div class="card-body">
+                                {% if permission_requests and permission_requests|length > 0 %}
+                                <!-- Table View for Larger Screens -->
+                                <div class="d-none d-lg-block">
+                                    <div class="table-responsive">
+                                    <!-- Replace the permission request table section in your HTML with this: -->
+
+                                    <table class="requests-table">
+                                        <thead>
+                                            <tr>
+                                                <th>نوع الإذن</th>
+                                                <th>تاريخ الإذن</th>
+                                                <th>تاريخ تقديم الطلب</th>
+                                                <th>سبب الإذن</th>
+                                                <th>الشيفت</th>
+                                                <th>الوظيفة</th>
+                                                <th>الموظف البديل</th>
+                                                <th>التوقيت</th>
+                                                <th>عدد الساعات الاضافي</th>
+                                                <th>الحالة</th>
+                                                <th>الإجراءات</th>
+                                            </tr>
+                                        </thead>
+                                        <tbody>
+                                            {% for request in permission_requests %}
+                                            <tr>
+                                                <td>
+                                                    <div class="d-flex align-items-center">
+                                                        {% if 'تبديل' in request.permission_type %}
+                                                        <i class="bi bi-arrow-left-right text-purple me-2 fs-5"></i>
+                                                        <span class="permission-type-badge exchange">تبديل وردية</span>
+                                                        {% elif 'حضور' in request.permission_type %}
+                                                        <i class="bi bi-sign-in-alt text-success me-2 fs-5"></i>
+                                                        <span class="permission-type-badge attendance">حضور</span>
+                                                        {% elif 'انصراف' in request.permission_type %}
+                                                        <i class="bi bi-sign-out-alt text-warning me-2 fs-5"></i>
+                                                        <span class="permission-type-badge leave">انصراف</span>
+                                                        {% elif 'نسيان' in request.permission_type %}
+                                                        <i class="bi bi-fingerprint text-info me-2 fs-5"></i>
+                                                        <span class="permission-type-badge forgot">نسيان توقيع</span>
+                                                        {% elif 'اضافي' in request.permission_type %}
+                                                        <i class="bi bi-clock-history text-orange me-2 fs-5"></i>
+                                                        <span class="permission-type-badge overtime">ساعات اضافي</span>
+                                                        {% else %}
+                                                        <i class="bi bi-clock text-primary me-2 fs-5"></i>
+                                                        <span class="badge bg-secondary">{{ request.permission_type }}</span>
+                                                        {% endif %}
+                                                    </div>
+                                                </td>
+                                                <td>
+                                                    <strong class="fs-6 text-dark">{{ request.date.strftime('%Y-%m-%d') if request.date else 'N/A' }}</strong>
+                                                </td>
+
+                                                <td>
+                                                    <div class="text-center">
+                                                        <div class="text-muted">{{ request.created_at.strftime('%Y-%m-%d') if request.created_at else 'N/A' }}</div>
+                                                        <div class="text-success small">{{ request.created_at.strftime('%H:%M') if request.created_at else '' }}</div>
+                                                    </div>
+                                                </td>
+                                                <td>
+                                                    <div class="details-tooltip">
+                                                        <span class="text-truncate d-inline-block" style="max-width: 150px;">
+                                                            {{ request.reason|truncate(30) if request.reason else '-' }}
+                                                        </span>
+                                                        <div class="tooltip-text">
+                                                            <strong>سبب الإذن:</strong><br>
+                                                            {{ request.reason or 'لا يوجد' }}
+                                                            {% if request.rejection_reason %}
+                                                            <hr class="my-2">
+                                                            <strong>سبب الرفض:</strong><br>
+                                                            {{ request.rejection_reason }}
+                                                            {% endif %}
+                                                        </div>
+                                                    </div>
+                                                </td>
+                                                <td>
+                                                    {% set shift_name = request.extra_data|get_shift_name if request.extra_data else '' %}
+                                                    {% if shift_name and shift_name|length > 0 %}
+                                                        {% if 'صباحي' in shift_name %}
+                                                            <span class="shift-badge morning">
+                                                                <i class="bi bi-sun-fill"></i> صباحي
+                                                            </span>
+                                                        {% elif 'مسائي' in shift_name %}
+                                                            <span class="shift-badge evening">
+                                                                <i class="bi bi-moon-fill"></i> مسائي
+                                                            </span>
+                                                        {% elif 'ليلي' in shift_name %}
+                                                            <span class="shift-badge evening">
+                                                                <i class="bi bi-moon-stars-fill"></i> ليلي
+                                                            </span>
+                                                        {% else %}
+                                                            <span class="shift-badge">
+                                                                {{ shift_name }}
+                                                            </span>
+                                                        {% endif %}
+                                                    {% else %}
+                                                        <div class="text-muted small">-</div>
+                                                    {% endif %}
+                                                </td>
+                                                <td>
+                                                    {% set shift_job = request.extra_data|get_shift_job if request.extra_data else '' %}
+                                                    {% if shift_job and shift_job|length > 0 %}
+                                                        <span class="job-badge">{{ shift_job }}</span>
+                                                    {% else %}
+                                                        <span class="text-muted small">-</span>
+                                                    {% endif %}
+                                                </td>
+                                                <td>
+                                                    {% set employee_name = request.extra_data|get_employee_name if request.extra_data else '' %}
+                                                    {% if employee_name and employee_name|length > 0 %}
+                                                        <div class="employee-display" title="{{ employee_name }}">
+                                                            <i class="bi bi-person me-1"></i>
+                                                            {{ employee_name|truncate(20) }}
+                                                        </div>
+                                                    {% else %}
+                                                        <span class="text-muted small">-</span>
+                                                    {% endif %}
+                                                </td>
+                                                <td>
+                                                    {% set attendance_type = request.extra_data|get_attendance_type if request.extra_data else '' %}
+                                                    {% if attendance_type and attendance_type|length > 0 %}
+                                                        <span class="attendance-type-badge {% if 'حضور' in attendance_type %}check-in{% else %}check-out{% endif %}">
+                                                            {{ attendance_type }}
+                                                        </span>
+                                                    {% else %}
+                                                        <span class="text-muted small">-</span>
+                                                    {% endif %}
+                                                </td>
+                                                <td>
+                                                    {% set overtime_hours = request.extra_data|get_overtime_hours if request.extra_data else 0 %}
+                                                    {% if overtime_hours and overtime_hours|int > 0 %}
+                                                        <div class="overtime-hours">
+                                                            {{ overtime_hours }}<small>س</small>
+                                                        </div>
+                                                    {% else %}
+                                                        <span class="text-muted small">-</span>
+                                                    {% endif %}
+                                                </td>
+                                                <td>
+                                                    {% if request.status == 'approved' %}
+                                                    <span class="status-badge bg-success text-white">
+                                                        <i class="bi bi-check-circle me-1"></i>
+                                                        مقبولة
+                                                    </span>
+                                                    {% elif request.status == 'rejected' %}
+                                                    <span class="status-badge bg-danger text-white">
+                                                        <i class="bi bi-x-circle me-1"></i>
+                                                        مرفوضة
+                                                    </span>
+                                                    {% if request.rejection_reason %}
+                                                    <br>
+                                                    <small class="text-muted mt-1 d-block">{{ request.rejection_reason|truncate(20) }}</small>
+                                                    {% endif %}
+                                                    {% else %}
+                                                    <span class="status-badge bg-warning text-dark">
+                                                        <i class="bi bi-clock me-1"></i>
+                                                        قيد الانتظار
+                                                    </span>
+                                                    {% endif %}
+                                                </td>
+                                                <td>
+                                                    {% if request.status == 'pending' %}
+                                                    <a href="{{ url_for('cancel_permission_request', request_id=request.id) }}" 
+                                                    class="btn cancel-btn"
+                                                    onclick="return confirm('هل أنت متأكد من إلغاء طلب الإذن؟')">
+                                                        <i class="bi bi-x-circle me-1"></i>
+                                                        إلغاء
+                                                    </a>
+                                                    {% else %}
+                                                    <span class="text-muted">-</span>
+                                                    {% endif %}
+                                                </td>
+                                            </tr>
+                                            {% endfor %}
+                                        </tbody>
+                                    </table>
+
+
+                                    </div>
+                                </div>
+
+                                <!-- Card View for Mobile -->
+                                <div class="d-lg-none">
+                                    {% for request in permission_requests %}
+                                    <div class="request-card {{ request.status }}">
+                                        <div class="row">
+                                            <div class="col-12 mb-3">
+                                                <div class="d-flex justify-content-between align-items-start">
+                                                    <div class="d-flex align-items-center">
+                                                        {% if request.permission_type == 'اذن حضور' %}
+                                                        <i class="bi bi-sign-in-alt text-success me-2 fs-4"></i>
+                                                        <span class="permission-type-badge attendance">حضور</span>
+                                                        {% elif request.permission_type == 'اذن انصراف' %}
+                                                        <i class="bi bi-sign-out-alt text-warning me-2 fs-4"></i>
+                                                        <span class="permission-type-badge leave">انصراف</span>
+                                                        {% elif request.permission_type == 'اذن نسيان توقيع' %}
+                                                        <i class="bi bi-fingerprint text-info me-2 fs-4"></i>
+                                                        <span class="permission-type-badge forgot">نسيان توقيع</span>
+                                                        {% elif request.permission_type == 'اذن تبديل وردية' %}
+                                                        <i class="bi bi-arrow-left-right text-purple me-2 fs-4"></i>
+                                                        <span class="permission-type-badge exchange">تبديل وردية</span>
+                                                        {% elif request.permission_type == 'اذن طلب ساعات اضافي' %}
+                                                        <i class="bi bi-clock-history text-orange me-2 fs-4"></i>
+                                                        <span class="permission-type-badge overtime">ساعات اضافي</span>
+                                                        {% else %}
+                                                        <i class="bi bi-clock text-primary me-2 fs-4"></i>
+                                                        <span class="badge bg-secondary">{{ request.permission_type }}</span>
+                                                        {% endif %}
+                                                    </div>
+                                                    <div>
+                                                        {% if request.status == 'approved' %}
+                                                        <span class="badge bg-success">مقبولة</span>
+                                                        {% elif request.status == 'rejected' %}
+                                                        <span class="badge bg-danger">مرفوضة</span>
+                                                        {% else %}
+                                                        <span class="badge bg-warning">قيد الانتظار</span>
+                                                        {% endif %}
+                                                    </div>
+                                                </div>
+                                            </div>
+                                            
+                                            <div class="col-12">
+                                                <div class="row">
+                                                    <div class="col-6">
+                                                        <p class="mb-1 text-muted">
+                                                            <i class="bi bi-calendar me-1"></i>
+                                                            <strong>تاريخ الإذن:</strong>
+                                                        </p>
+                                                        <p class="mb-2">{{ request.date.strftime('%Y-%m-%d') }}</p>
+                                                        
+                                                        {% if request.time %}
+                                                        <p class="mb-1 text-muted">
+                                                            <i class="bi bi-clock me-1"></i>
+                                                            <strong>الوقت:</strong>
+                                                        </p>
+                                                        <p class="mb-2">{{ request.time }}</p>
+                                                        {% endif %}
+                                                        
+                                                        <p class="mb-1 text-muted">
+                                                            <i class="bi bi-calendar-plus me-1"></i>
+                                                            <strong>تاريخ الطلب:</strong>
+                                                        </p>
+                                                        <p class="mb-2">{{ request.created_at.strftime('%Y-%m-%d %H:%M') }}</p>
+                                                    </div>
+                                                    
+                                                    <div class="col-6">
+                                                        {% if request.shift_name %}
+                                                        <p class="mb-1 text-muted">
+                                                            <i class="bi bi-clock-history me-1"></i>
+                                                            <strong>الشيفت:</strong>
+                                                        </p>
+                                                        <p class="mb-2">
+                                                            {% if request.shift_name == 'صباحي' %}
+                                                                <span class="shift-badge morning">
+                                                                    {{ request.shift_name }}
+                                                                </span>
+                                                            {% elif request.shift_name == 'مسائي' %}
+                                                                <span class="shift-badge evening">
+                                                                    {{ request.shift_name }}
+                                                                </span>
+                                                            {% else %}
+                                                                <span class="shift-badge">
+                                                                    {{ request.shift_name }}
+                                                                </span>
+                                                            {% endif %}
+                                                        </p>
+                                                        {% endif %}
+                                                        
+                                                        {% if request.shift_job %}
+                                                        <p class="mb-1 text-muted">
+                                                            <i class="bi bi-briefcase me-1"></i>
+                                                            <strong>الوظيفة:</strong>
+                                                        </p>
+                                                        <p class="mb-2">
+                                                            <span class="job-badge">{{ request.shift_job }}</span>
+                                                        </p>
+                                                        {% endif %}
+                                                    </div>
+                                                </div>
+                                                
+                                                {% if request.exchange_employee_name %}
+                                                <div class="col-12">
+                                                    <p class="mb-1 text-muted">
+                                                        <i class="bi bi-person me-1"></i>
+                                                        <strong>الموظف البديل:</strong>
+                                                    </p>
+                                                    <p class="mb-2">
+                                                        <span class="employee-display">{{ request.exchange_employee_name }}</span>
+                                                    </p>
+                                                </div>
+                                                {% endif %}
+                                                
+                                                {% if request.time_period %}
+                                                <div class="col-12">
+                                                    <p class="mb-1 text-muted">
+                                                        <i class="bi bi-clock me-1"></i>
+                                                        <strong>الفترة:</strong>
+                                                    </p>
+                                                    <p class="mb-2">
+                                                        <span class="time-range">{{ request.time_period }}</span>
+                                                    </p>
+                                                </div>
+                                                {% endif %}
+                                                
+                                                {% if request.attendance_type %}
+                                                <div class="col-12">
+                                                    <p class="mb-1 text-muted">
+                                                        <i class="bi bi-stopwatch me-1"></i>
+                                                        <strong>التوقيت:</strong>
+                                                    </p>
+                                                    <p class="mb-2">
+                                                        <span class="attendance-type-badge {% if request.attendance_type == 'حضور' %}check-in{% else %}check-out{% endif %}">
+                                                            {{ request.attendance_type }}
+                                                        </span>
+                                                    </p>
+                                                </div>
+                                                {% endif %}
+                                                
+                                                {% if request.overtime_hours and request.overtime_hours > 0 %}
+                                                <div class="col-12">
+                                                    <p class="mb-1 text-muted">
+                                                        <i class="bi bi-hourglass-split me-1"></i>
+                                                        <strong>الساعات الاضافي:</strong>
+                                                    </p>
+                                                    <p class="mb-2">
+                                                        <span class="overtime-hours">{{ request.overtime_hours }} ساعة</span>
+                                                    </p>
+                                                </div>
+                                                {% endif %}
+                                                
+                                                <div class="col-12">
+                                                    <p class="mb-1 text-muted">
+                                                        <i class="bi bi-chat-text me-1"></i>
+                                                        <strong>السبب:</strong>
+                                                    </p>
+                                                    <p class="mb-3">{{ request.reason }}</p>
+                                                    
+                                                    {% if request.rejection_reason %}
+                                                    <p class="mb-1 text-muted">
+                                                        <i class="bi bi-x-circle me-1"></i>
+                                                        <strong>سبب الرفض:</strong>
+                                                    </p>
+                                                    <p class="mb-3 text-danger">{{ request.rejection_reason }}</p>
+                                                    {% endif %}
+                                                </div>
+                                                
+                                                <div class="col-12 text-center">
+                                                    {% if request.status == 'pending' %}
+                                                    <a href="{{ url_for('cancel_permission_request', request_id=request.id) }}" 
+                                                       class="btn cancel-btn btn-sm"
+                                                       onclick="return confirm('هل أنت متأكد من إلغاء طلب الإذن؟')">
+                                                        <i class="bi bi-x-circle me-1"></i>
+                                                        إلغاء الطلب
+                                                    </a>
+                                                    {% endif %}
+                                                </div>
+                                            </div>
+                                        </div>
+                                    </div>
+                                    {% endfor %}
+                                </div>
+                                {% else %}
+                                <div class="empty-state">
+                                    <i class="bi bi-clock file-icon"></i>
+                                    <h4 class="text-muted mt-3">لا توجد طلبات إذونات</h4>
+                                    <p class="text-muted mb-4">لم تقم بتقديم أي طلبات إذونات حتى الآن</p>
+                                    <a href="{{ url_for('user_permission') }}" class="btn btn-primary btn-lg">
+                                        <i class="bi bi-plus-circle me-2"></i>
+                                        تقديم طلب إذن جديد
+                                    </a>
+                                </div>
+                                {% endif %}
+                            </div>
+                        </div>
+                    </div>
+                </div>
+
+                <!-- No Data Message -->
+                {% if (not leave_requests or leave_requests|length == 0) and (not permission_requests or permission_requests|length == 0) %}
+                <div class="content-card card mt-4">
+                    <div class="card-body text-center py-5">
+                        <i class="bi bi-inbox display-1 text-muted mb-3"></i>
+                        <h4 class="text-muted">لا توجد طلبات لعرضها</h4>
+                        <p class="text-muted mb-4">يمكنك البدء بتقديم طلبات جديدة من خلال الأزرار أعلاه</p>
+                        <div class="d-flex gap-3 justify-content-center">
+                            <a href="{{ url_for('user_leave') }}" class="btn btn-primary">
+                                <i class="bi bi-calendar-plus me-2"></i>
+                                طلب إجازة
+                            </a>
+                            <a href="{{ url_for('user_permission') }}" class="btn btn-outline-primary">
+                                <i class="bi bi-clock me-2"></i>
+                                طلب إذن
+                            </a>
+                        </div>
+                    </div>
+                </div>
+                {% endif %}
+            </div>
+        </main>
+    </div>
+
+    <!-- Bootstrap 5 JS -->
+    <script src="https://cdn.jsdelivr.net/npm/bootstrap@5.3.0/dist/js/bootstrap.bundle.min.js"></script>
+
+    <script>
+        // Enhanced interactive elements
+        document.addEventListener('DOMContentLoaded', function() {
+            // Mobile menu functionality
+            const mobileMenuBtn = document.getElementById('mobileMenuBtn');
+            const mobileNavMenu = document.getElementById('mobileNavMenu');
+            
+            if (mobileMenuBtn && mobileNavMenu) {
+                mobileMenuBtn.addEventListener('click', function() {
+                    mobileNavMenu.classList.toggle('active');
+                });
+                
+                // Close mobile menu when clicking outside
+                document.addEventListener('click', function(event) {
+                    if (!mobileMenuBtn.contains(event.target) && !mobileNavMenu.contains(event.target)) {
+                        mobileNavMenu.classList.remove('active');
+                    }
+                });
+            }
+            
+            // Navigation controls for horizontal scrolling
+            const navWrapper = document.querySelector('.nav-menu-wrapper');
+            const navPrevButtons = document.querySelectorAll('.nav-prev');
+            const navNextButtons = document.querySelectorAll('.nav-next');
+            
+            if (navWrapper && navPrevButtons.length > 0 && navNextButtons.length > 0) {
+                const scrollAmount = 200;
+                
+                navNextButtons.forEach(button => {
+                    button.addEventListener('click', function() {
+                        navWrapper.scrollBy({ left: -scrollAmount, behavior: 'smooth' });
+                    });
+                });
+                
+                navPrevButtons.forEach(button => {
+                    button.addEventListener('click', function() {
+                        navWrapper.scrollBy({ left: scrollAmount, behavior: 'smooth' });
+                    });
+                });
+                
+                // Show/hide controls based on scroll position
+                const updateNavControls = () => {
+                    const showLeft = navWrapper.scrollLeft > 0;
+                    const showRight = navWrapper.scrollLeft < (navWrapper.scrollWidth - navWrapper.clientWidth);
+                    
+                    document.querySelector('.nav-controls').style.display = showLeft ? 'flex' : 'none';
+                    document.querySelector('.nav-controls-right').style.display = showRight ? 'flex' : 'none';
+                };
+                
+                navWrapper.addEventListener('scroll', updateNavControls);
+                window.addEventListener('resize', updateNavControls);
+                updateNavControls();
+            }
+
+            // Real-time clock
+            function updateClock() {
+                const now = new Date();
+                const timeString = now.toLocaleTimeString('ar-EG');
+                const dateString = now.toLocaleDateString('ar-EG', {
+                    weekday: 'long',
+                    year: 'numeric',
+                    month: 'long',
+                    day: 'numeric'
+                });
+                
+                const clockElement = document.getElementById('live-clock');
+                const mobileClockElement = document.getElementById('mobile-clock');
+                
+                if (clockElement) {
+                    clockElement.innerHTML = `
+                        <i class="bi bi-clock me-2"></i>
+                        ${timeString}
+                        <small class="text-white-50 ms-2 d-none d-md-inline">${dateString}</small>
+                    `;
+                }
+                
+                if (mobileClockElement) {
+                    mobileClockElement.innerHTML = `
+                        <i class="bi bi-clock me-2"></i>
+                        ${timeString}
+                    `;
+                }
+            }
+            
+            updateClock();
+            setInterval(updateClock, 1000);
+            
+            // Add touch scrolling for mobile
+            let touchStartX = 0;
+            let touchEndX = 0;
+            
+            if (navWrapper) {
+                navWrapper.addEventListener('touchstart', e => {
+                    touchStartX = e.changedTouches[0].screenX;
+                });
+                
+                navWrapper.addEventListener('touchend', e => {
+                    touchEndX = e.changedTouches[0].screenX;
+                    handleSwipe();
+                });
+                
+                function handleSwipe() {
+                    const swipeThreshold = 50;
+                    const diff = touchStartX - touchEndX;
+                    
+                    if (Math.abs(diff) > swipeThreshold) {
+                        if (diff > 0) {
+                            // Swipe left
+                            navWrapper.scrollBy({ left: scrollAmount, behavior: 'smooth' });
+                        } else {
+                            // Swipe right
+                            navWrapper.scrollBy({ left: -scrollAmount, behavior: 'smooth' });
+                        }
+                    }
+                }
+            }
+
+            // Initialize page
+            animateElements();
+            setupButtonLoading();
+            updateFilterButtons();
+            initializeTooltips();
+        });
+
+        // Animation function
+        function animateElements() {
+            const cards = document.querySelectorAll('.request-card, .stats-badge, .content-card');
+            cards.forEach((card, index) => {
+                card.style.opacity = '0';
+                card.style.transform = 'translateY(30px)';
+                card.style.transition = 'all 0.6s ease';
+                
+                setTimeout(() => {
+                    card.style.opacity = '1';
+                    card.style.transform = 'translateY(0)';
+                }, index * 100);
+            });
+        }
+
+        // Initialize tooltips
+        function initializeTooltips() {
+            const tooltips = document.querySelectorAll('.details-tooltip');
+            tooltips.forEach(tooltip => {
+                tooltip.addEventListener('mouseenter', function() {
+                    const tooltipText = this.querySelector('.tooltip-text');
+                    if (tooltipText) {
+                        tooltipText.style.visibility = 'visible';
+                        tooltipText.style.opacity = '1';
+                    }
+                });
+                
+                tooltip.addEventListener('mouseleave', function() {
+                    const tooltipText = this.querySelector('.tooltip-text');
+                    if (tooltipText) {
+                        tooltipText.style.visibility = 'hidden';
+                        tooltipText.style.opacity = '0';
+                    }
+                });
+            });
+        }
+
+        // Quick filter function
+        function applyQuickFilter(period) {
+            // Update the hidden input value
+            document.getElementById('period').value = period;
+            
+            // Update button states
+            updateFilterButtons(period);
+            
+            // Submit the form
+            document.getElementById('filterForm').submit();
+        }
+
+        // Update filter button states
+        function updateFilterButtons(activePeriod) {
+            const buttons = document.querySelectorAll('.quick-filter-btn');
+            const currentPeriod = activePeriod || document.getElementById('period').value;
+            
+            buttons.forEach(button => {
+                const period = button.getAttribute('onclick').match(/'([^']+)'/)[1];
+                
+                if (period === currentPeriod) {
+                    button.classList.remove('btn-outline-primary');
+                    button.classList.add('btn-primary');
+                } else {
+                    button.classList.remove('btn-primary');
+                    button.classList.add('btn-outline-primary');
+                }
+            });
+        }
+
+        // Setup button loading states
+        function setupButtonLoading() {
+            // Cancel buttons
+            document.querySelectorAll('.cancel-btn').forEach(btn => {
+                btn.addEventListener('click', function(e) {
+                    const originalText = this.innerHTML;
+                    this.innerHTML = '<i class="bi bi-hourglass-split me-1"></i>جاري الإلغاء...';
+                    this.disabled = true;
+                    
+                    setTimeout(() => {
+                        this.innerHTML = originalText;
+                        this.disabled = false;
+                    }, 5000);
+                });
+            });
+        }
+
+        // Auto-activate tab based on URL hash
+        document.addEventListener('DOMContentLoaded', function() {
+            const hash = window.location.hash;
+            if (hash) {
+                const trigger = document.querySelector(`[data-bs-target="${hash}"]`);
+                if (trigger) {
+                    new bootstrap.Tab(trigger).show();
+                }
+            }
+        });
+
+        // Enhance table row clicks
+        document.querySelectorAll('.requests-table tbody tr').forEach(row => {
+            row.addEventListener('click', function(e) {
+                if (!e.target.closest('a') && !e.target.closest('.details-tooltip')) {
+                    this.style.transform = 'scale(1.02)';
+                    setTimeout(() => {
+                        this.style.transform = '';
+                    }, 200);
+                }
+            });
+        });
+
+        // Tab switching with animation
+        document.querySelectorAll('[data-bs-toggle="tab"]').forEach(tab => {
+            tab.addEventListener('shown.bs.tab', function (e) {
+                const targetId = e.target.getAttribute('data-bs-target');
+                const targetContent = document.querySelector(targetId);
+                
+                if (targetContent) {
+                    targetContent.style.opacity = '0';
+                    targetContent.style.transform = 'translateY(20px)';
+                    
+                    setTimeout(() => {
+                        targetContent.style.transition = 'all 0.3s ease';
+                        targetContent.style.opacity = '1';
+                        targetContent.style.transform = 'translateY(0)';
+                    }, 100);
+                    
+                    // Animate cards in the active tab
+                    setTimeout(() => {
+                        animateElements();
+                    }, 300);
+                }
+            });
+        });
+
+        // Add hover effect for permission type badges
+        document.querySelectorAll('.permission-type-badge').forEach(badge => {
+            badge.addEventListener('mouseenter', function() {
+                this.style.transform = 'translateY(-2px)';
+                this.style.boxShadow = '0 4px 12px rgba(0,0,0,0.1)';
+            });
+            
+            badge.addEventListener('mouseleave', function() {
+                this.style.transform = 'translateY(0)';
+                this.style.boxShadow = 'none';
+            });
+        });
+
+        // Responsive table adjustments
+        function adjustTableResponsiveness() {
+            const table = document.querySelector('.requests-table');
+            if (table && window.innerWidth < 1200) {
+                const cells = table.querySelectorAll('td, th');
+                cells.forEach(cell => {
+                    if (cell.cellIndex > 5) { // Hide some columns on medium screens
+                        cell.style.padding = '8px 4px';
+                        cell.style.fontSize = '0.8rem';
+                    }
+                });
+            }
+        }
+
+        // Call on load and resize
+        window.addEventListener('load', adjustTableResponsiveness);
+        window.addEventListener('resize', adjustTableResponsiveness);
+
+        // Export functionality (for future implementation)
+        function exportToExcel() {
+            // This would require server-side implementation
+            alert('سيتم إضافة خاصية التصدير في تحديث قادم');
+        }
+
+        // Initialize export buttons
+        setTimeout(addExportButtons, 1000);
+    </script>
+</body>
+</html>

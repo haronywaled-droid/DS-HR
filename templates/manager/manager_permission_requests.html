@@ -1,0 +1,3551 @@
+<!DOCTYPE html>
+<html lang="ar" dir="rtl">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>إدارة طلبات الإذونات - نظام إدارة الموارد البشرية</title>
+    
+    <!-- Bootstrap 5 CSS -->
+    <link href="https://cdn.jsdelivr.net/npm/bootstrap@5.3.0/dist/css/bootstrap.min.css" rel="stylesheet">
+    
+    <!-- Bootstrap Icons -->
+    <link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/bootstrap-icons@1.10.0/font/bootstrap-icons.css">
+    
+    <!-- Font Awesome -->
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css">
+    
+    <!-- ApexCharts for Statistics -->
+    <link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/apexcharts@3.35.0/dist/apexcharts.css">
+    
+    <style>
+
+        /* Mobile Card Actions - Full width buttons */
+.mobile-card-actions {
+    display: flex;
+    flex-direction: column;
+    gap: 10px;
+    margin-top: 20px;
+    width: 100%;
+}
+
+.mobile-card-actions .action-btn {
+    width: 100%;
+    height: 48px;
+    border-radius: 12px;
+    border: none;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    font-size: 1rem;
+    font-weight: 600;
+    transition: all 0.3s ease;
+    cursor: pointer;
+    box-shadow: 0 4px 12px rgba(0, 0, 0, 0.15);
+    text-decoration: none;
+    padding: 0 20px;
+    margin: 0;
+    min-height: 48px;
+}
+
+.mobile-card-actions .action-btn i {
+    margin-left: 8px;
+    font-size: 1.1rem;
+}
+
+.mobile-card-actions .action-btn.approve {
+    background: var(--gradient-primary);
+    color: white;
+}
+
+.mobile-card-actions .action-btn.reject {
+    background: var(--gradient-danger);
+    color: white;
+}
+
+.mobile-card-actions .action-btn.view {
+    background: var(--gradient-info);
+    color: white;
+}
+
+.mobile-card-actions .action-btn:hover {
+    transform: translateY(-3px);
+    box-shadow: 0 8px 20px rgba(0, 0, 0, 0.2);
+}
+
+/* For single button - make it full width */
+.mobile-card-actions.single-button {
+    flex-direction: row;
+}
+
+.mobile-card-actions.single-button .action-btn {
+    flex: 1;
+}
+
+/* For two buttons side by side */
+.mobile-card-actions.two-buttons {
+    flex-direction: row;
+    gap: 10px;
+}
+
+.mobile-card-actions.two-buttons .action-btn {
+    flex: 1;
+    min-width: 0; /* Allow buttons to shrink */
+}
+
+/* Responsive adjustments */
+@media (max-width: 576px) {
+    .mobile-card-actions {
+        flex-direction: column;
+    }
+    
+    .mobile-card-actions.two-buttons {
+        flex-direction: column;
+    }
+    
+    .mobile-card-actions .action-btn {
+        height: 52px;
+        font-size: 1.05rem;
+    }
+    
+    .mobile-card-actions .action-btn span {
+        display: inline !important;
+    }
+}
+
+/* Ensure button text is always visible on mobile */
+@media (max-width: 768px) {
+    .mobile-card-actions .action-btn span {
+        display: inline !important;
+        margin-right: 4px;
+    }
+    
+    .mobile-card-actions .action-btn i {
+        margin-left: 4px;
+        margin-right: 4px;
+    }
+}
+
+/* Tablet adjustments */
+@media (min-width: 577px) and (max-width: 768px) {
+    .mobile-card-actions.two-buttons {
+        flex-direction: row;
+    }
+    
+    .mobile-card-actions .action-btn {
+        height: 50px;
+    }
+}
+
+        /* Mobile Card View for Tables */
+        .d-none.d-lg-block {
+            display: block !important;
+        }
+
+        .d-lg-none {
+            display: none !important;
+        }
+
+        /* Request Cards for Mobile */
+        .request-card {
+            background: linear-gradient(135deg, #f8fafc 0%, #f1f5f9 100%);
+            border-radius: 18px;
+            padding: 25px;
+            margin-bottom: 20px;
+            border: 2px solid rgba(16, 185, 129, 0.15);
+            transition: all 0.3s ease;
+            position: relative;
+            overflow: hidden;
+        }
+
+        .request-card::before {
+            content: '';
+            position: absolute;
+            top: 0;
+            right: 0;
+            width: 4px;
+            height: 100%;
+            background: var(--primary-green);
+        }
+
+        .request-card:hover {
+            transform: translateY(-5px);
+            box-shadow: 0 15px 30px rgba(16, 185, 129, 0.2);
+        }
+
+        .request-card.pending {
+            background: linear-gradient(135deg, #fffbeb 0%, #fef3c7 100%);
+            border-color: rgba(245, 158, 11, 0.3);
+        }
+
+        .request-card.pending::before {
+            background: #f59e0b;
+        }
+
+        .request-card.approved {
+            background: linear-gradient(135deg, #f0fdf4 0%, #dcfce7 100%);
+            border-color: rgba(16, 185, 129, 0.3);
+        }
+
+        .request-card.approved::before {
+            background: #10b981;
+        }
+
+        .request-card.rejected {
+            background: linear-gradient(135deg, #fef2f2 0%, #fee2e2 100%);
+            border-color: rgba(239, 68, 68, 0.3);
+        }
+
+        .request-card.rejected::before {
+            background: #ef4444;
+        }
+
+        /* Enhanced mobile responsive styles */
+        @media (max-width: 768px) {
+            /* Hide table on mobile */
+            .requests-table-container {
+                display: none;
+            }
+            
+            .d-none.d-lg-block {
+                display: none !important;
+            }
+            
+            /* Show card view on mobile */
+            .d-lg-none {
+                display: block !important;
+            }
+            
+            .request-card {
+                padding: 20px;
+            }
+            
+            .request-card .row {
+                margin: 0;
+            }
+            
+            .request-card .col-12 {
+                padding: 0;
+                margin-bottom: 10px;
+            }
+        }
+
+        @media (min-width: 769px) {
+            /* Hide card view on desktop */
+            .d-lg-none {
+                display: none !important;
+            }
+            
+            /* Show table on desktop */
+            .d-none.d-lg-block {
+                display: block !important;
+            }
+            
+            .requests-table-container {
+                display: block;
+            }
+        }
+
+        /* Additional mobile styles for card view */
+        .mobile-card-header {
+            display: flex;
+            justify-content: space-between;
+            align-items: flex-start;
+            margin-bottom: 15px;
+            border-bottom: 1px solid rgba(0, 0, 0, 0.1);
+            padding-bottom: 10px;
+        }
+
+        .mobile-card-section {
+            margin-bottom: 12px;
+        }
+
+        .mobile-card-label {
+            color: #6b7280;
+            font-size: 0.85rem;
+            margin-bottom: 4px;
+            display: flex;
+            align-items: center;
+        }
+
+        .mobile-card-label i {
+            margin-left: 5px;
+            width: 16px;
+        }
+
+        .mobile-card-value {
+            font-weight: 600;
+            color: #1a4731;
+            font-size: 0.9rem;
+        }
+
+        .mobile-card-actions {
+            display: flex;
+            gap: 8px;
+            margin-top: 15px;
+        }
+
+        .mobile-card-badges {
+            display: flex;
+            flex-wrap: wrap;
+            gap: 5px;
+            margin-top: 5px;
+        }
+
+        /* Loading state for statistics */
+        .loading-statistics .stat-value {
+            background: linear-gradient(90deg, #e5e7eb 25%, #d1d5db 50%, #e5e7eb 75%);
+            background-size: 200% 100%;
+            animation: loading 1.5s infinite;
+            -webkit-text-fill-color: transparent;
+        }
+
+        @keyframes loading {
+            0% { background-position: 200% 0; }
+            100% { background-position: -200% 0; }
+        }
+
+        :root {
+            --primary-green: #10b981;
+            --dark-green: #059669;
+            --light-green: #34d399;
+            --accent-green: #a7f3d0;
+            --gradient-primary: linear-gradient(135deg, #10b981 0%, #059669 100%);
+            --gradient-secondary: linear-gradient(135deg, #34d399 0%, #10b981 100%);
+            --gradient-dark: linear-gradient(135deg, #065f46 0%, #047857 100%);
+            --gradient-warning: linear-gradient(135deg, #f59e0b 0%, #d97706 100%);
+            --gradient-danger: linear-gradient(135deg, #ef4444 0%, #dc2626 100%);
+            --gradient-info: linear-gradient(135deg, #0ea5e9 0%, #0284c7 100%);
+            --header-height: 130px;
+        }
+        
+        * {
+            margin: 0;
+            padding: 0;
+            box-sizing: border-box;
+        }
+        
+        body {
+            font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif;
+            background: #f8fdf9;
+            min-height: 100vh;
+            overflow-x: hidden;
+            padding-top: var(--header-height);
+            color: #1a4731;
+        }
+        
+        /* Unified Navigation Bar */
+        .unified-nav {
+            background: var(--gradient-dark);
+            color: white;
+            position: fixed;
+            top: 0;
+            right: 0;
+            left: 0;
+            height: var(--header-height);
+            z-index: 1000;
+            box-shadow: 0 4px 20px rgba(5, 150, 105, 0.25);
+            border-bottom: 1px solid rgba(255, 255, 255, 0.1);
+        }
+        
+        .unified-nav-container {
+            display: flex;
+            flex-direction: column;
+            height: 100%;
+            padding: 0 1rem;
+        }
+        
+        .nav-top-section {
+            display: flex;
+            align-items: center;
+            justify-content: space-between;
+            height: 70px;
+            flex-shrink: 0;
+            padding: 0.5rem 0;
+        }
+        
+        .nav-bottom-section {
+            display: flex;
+            align-items: center;
+            justify-content: space-between;
+            height: 60px;
+            flex-shrink: 0;
+            border-top: 1px solid rgba(255, 255, 255, 0.15);
+            position: relative;
+        }
+        
+        .nav-brand-section {
+            display: flex;
+            align-items: center;
+            flex-shrink: 0;
+            min-width: 0;
+        }
+        
+        .logo-container {
+            width: 45px;
+            height: 45px;
+            background: var(--gradient-primary);
+            border-radius: 10px;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            box-shadow: 0 4px 12px rgba(16, 185, 129, 0.4);
+            margin-left: 0.5rem;
+            flex-shrink: 0;
+        }
+        
+        .welcome-section {
+            display: flex;
+            align-items: center;
+            flex-grow: 1;
+            justify-content: center;
+            color: white;
+            text-align: center;
+            min-width: 0;
+            overflow: hidden;
+        }
+        
+        .welcome-content {
+            min-width: 0;
+            overflow: hidden;
+        }
+        
+        .welcome-content h4 {
+            margin-bottom: 0.2rem;
+            font-weight: 600;
+            font-size: 1.1rem;
+            white-space: nowrap;
+            overflow: hidden;
+            text-overflow: ellipsis;
+        }
+        
+        .welcome-content p {
+            margin-bottom: 0;
+            font-size: 0.85rem;
+            opacity: 0.9;
+            white-space: nowrap;
+            overflow: hidden;
+            text-overflow: ellipsis;
+        }
+        
+        .nav-user-section {
+            display: flex;
+            align-items: center;
+            flex-shrink: 0;
+            min-width: 0;
+        }
+        
+        .nav-menu-section {
+            display: flex;
+            align-items: center;
+            flex-grow: 1;
+            height: 100%;
+            position: relative;
+            min-width: 0;
+        }
+        
+        .nav-menu-wrapper {
+            display: flex;
+            align-items: center;
+            height: 100%;
+            overflow-x: auto;
+            overflow-y: hidden;
+            scroll-behavior: smooth;
+            -webkit-overflow-scrolling: touch;
+            width: 100%;
+            padding: 0 0.5rem;
+            scrollbar-width: thin;
+            scrollbar-color: var(--primary-green) rgba(255, 255, 255, 0.1);
+            min-width: 0;
+        }
+        
+        .nav-menu-wrapper::-webkit-scrollbar {
+            height: 6px;
+        }
+        
+        .nav-menu-wrapper::-webkit-scrollbar-track {
+            background: rgba(255, 255, 255, 0.1);
+            border-radius: 10px;
+        }
+        
+        .nav-menu-wrapper::-webkit-scrollbar-thumb {
+            background: var(--primary-green);
+            border-radius: 10px;
+        }
+        
+        .nav-menu-wrapper::-webkit-scrollbar-thumb:hover {
+            background: var(--light-green);
+        }
+        
+        .unified-nav .nav-link {
+            color: rgba(255, 255, 255, 0.9);
+            padding: 0.7rem 1.2rem;
+            margin: 0 0.2rem;
+            border-radius: 10px;
+            transition: all 0.3s ease;
+            font-weight: 500;
+            position: relative;
+            border: 1px solid transparent;
+            display: flex;
+            align-items: center;
+            text-decoration: none;
+            font-size: 0.9rem;
+            white-space: nowrap;
+            height: 80%;
+            flex-shrink: 0;
+            background: rgba(255, 255, 255, 0.05);
+            min-width: max-content;
+        }
+        
+        .unified-nav .nav-link:hover {
+            color: white;
+            background: rgba(255, 255, 255, 0.12);
+            border: 1px solid rgba(255, 255, 255, 0.2);
+            transform: translateY(-2px);
+            box-shadow: 0 4px 12px rgba(0, 0, 0, 0.15);
+        }
+        
+        .unified-nav .nav-link.active {
+            background: rgba(255, 255, 255, 0.15);
+            color: white;
+            border: 1px solid rgba(255, 255, 255, 0.25);
+            box-shadow: 0 4px 12px rgba(0, 0, 0, 0.2);
+        }
+        
+        .unified-nav .nav-link.active::after {
+            content: '';
+            position: absolute;
+            bottom: -10px;
+            right: 50%;
+            transform: translateX(50%);
+            width: 70%;
+            height: 3px;
+            background: var(--accent-green);
+            border-radius: 4px 4px 0 0;
+        }
+        
+        .nav-badge {
+            background: var(--accent-green);
+            color: #065f46;
+            padding: 0.2rem 0.4rem;
+            border-radius: 8px;
+            font-size: 0.65rem;
+            font-weight: bold;
+            margin-right: 0.3rem;
+            position: absolute;
+            top: 5px;
+            right: 5px;
+            box-shadow: 0 2px 4px rgba(0, 0, 0, 0.1);
+        }
+        
+        .nav-link-with-badge {
+            position: relative;
+        }
+        
+        .notification-badge {
+            position: absolute;
+            top: -5px;
+            right: -5px;
+            font-size: 0.7rem;
+            background: var(--gradient-secondary);
+            border: 2px solid white;
+            box-shadow: 0 2px 8px rgba(16, 185, 129, 0.4);
+        }
+        
+        .user-avatar {
+            width: 38px;
+            height: 38px;
+            background: var(--gradient-primary);
+            border-radius: 50%;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            color: white;
+            font-weight: bold;
+            font-size: 1rem;
+            box-shadow: 0 4px 10px rgba(16, 185, 129, 0.4);
+            transition: all 0.3s ease;
+            flex-shrink: 0;
+        }
+        
+        .user-avatar:hover {
+            transform: scale(1.08);
+            box-shadow: 0 6px 15px rgba(16, 185, 129, 0.5);
+        }
+        
+        .dropdown-menu {
+            background: white;
+            border: none;
+            border-radius: 12px;
+            box-shadow: 0 10px 30px rgba(16, 185, 129, 0.2);
+            overflow: hidden;
+            border: 1px solid rgba(16, 185, 129, 0.15);
+        }
+        
+        .dropdown-item {
+            padding: 0.8rem 1.2rem;
+            border-radius: 8px;
+            margin: 0.2rem 0.5rem;
+            transition: all 0.2s ease;
+            color: #065f46;
+        }
+        
+        .dropdown-item:hover {
+            background: rgba(16, 185, 129, 0.1);
+            color: #065f46;
+            transform: translateX(-5px);
+        }
+        
+        .mobile-menu-btn {
+            display: none;
+            background: transparent;
+            border: 1px solid rgba(255, 255, 255, 0.3);
+            color: white;
+            width: 40px;
+            height: 40px;
+            border-radius: 8px;
+            align-items: center;
+            justify-content: center;
+            cursor: pointer;
+            transition: all 0.3s ease;
+            margin-right: 0.5rem;
+        }
+        
+        .mobile-menu-btn:hover {
+            background: rgba(255, 255, 255, 0.1);
+        }
+        
+        .mobile-nav-menu {
+            position: fixed;
+            top: var(--header-height);
+            right: 0;
+            left: 0;
+            background: var(--gradient-dark);
+            z-index: 999;
+            padding: 1rem;
+            box-shadow: 0 4px 20px rgba(0, 0, 0, 0.2);
+            display: none;
+            flex-direction: column;
+            max-height: calc(100vh - var(--header-height));
+            overflow-y: auto;
+        }
+        
+        .mobile-nav-menu.active {
+            display: flex;
+        }
+        
+        .mobile-nav-link {
+            color: white;
+            padding: 1rem;
+            margin: 0.2rem 0;
+            border-radius: 8px;
+            text-decoration: none;
+            display: flex;
+            align-items: center;
+            transition: all 0.3s ease;
+            border: 1px solid transparent;
+            position: relative;
+        }
+        
+        .mobile-nav-link:hover,
+        .mobile-nav-link.active {
+            background: rgba(255, 255, 255, 0.1);
+            border: 1px solid rgba(255, 255, 255, 0.2);
+        }
+        
+        @media (max-width: 992px) {
+            :root {
+                --header-height: 100px;
+            }
+            
+            .unified-nav {
+                height: auto;
+                min-height: var(--header-height);
+            }
+            
+            .unified-nav-container {
+                padding: 0.5rem;
+            }
+            
+            .nav-top-section {
+                height: 60px;
+                flex-wrap: nowrap;
+                padding: 0;
+            }
+            
+            .nav-brand-section {
+                order: 1;
+                width: auto;
+                flex: 0 0 auto;
+            }
+            
+            .welcome-section {
+                order: 2;
+                flex: 1;
+                justify-content: flex-start;
+                padding: 0 0.5rem;
+                display: none;
+            }
+            
+            .nav-user-section {
+                order: 3;
+                width: auto;
+                flex: 0 0 auto;
+                justify-content: flex-end;
+            }
+            
+            .nav-bottom-section {
+                display: none;
+            }
+            
+            .mobile-menu-btn {
+                display: flex;
+            }
+            
+            body {
+                padding-top: var(--header-height);
+            }
+        }
+        
+        @media (max-width: 768px) {
+            :root {
+                --header-height: 80px;
+            }
+            
+            .nav-top-section {
+                height: 50px;
+            }
+            
+            .logo-container {
+                width: 35px;
+                height: 35px;
+            }
+            
+            .user-avatar {
+                width: 32px;
+                height: 32px;
+                font-size: 0.9rem;
+            }
+        }
+        
+        @media (max-width: 576px) {
+            :root {
+                --header-height: 70px;
+            }
+            
+            .nav-top-section {
+                height: 45px;
+            }
+            
+            .logo-container {
+                width: 30px;
+                height: 30px;
+                margin-left: 0.3rem;
+            }
+            
+            .user-avatar {
+                width: 28px;
+                height: 28px;
+                font-size: 0.8rem;
+            }
+        }
+
+        /* Main Content Styles */
+        .main-content {
+            padding: 20px;
+            max-width: 1400px;
+            margin: 0 auto;
+        }
+        
+        /* Content Tabs */
+        .content-tabs {
+            background: white;
+            border-radius: 20px;
+            box-shadow: 0 10px 30px rgba(16, 185, 129, 0.1);
+            margin-bottom: 30px;
+            overflow: hidden;
+        }
+        
+        .tabs-nav {
+            display: flex;
+            background: #f8fafc;
+            border-bottom: 2px solid #e5e7eb;
+            overflow-x: auto;
+            scrollbar-width: none;
+        }
+        
+        .tabs-nav::-webkit-scrollbar {
+            display: none;
+        }
+        
+        .tab-btn {
+            padding: 1.2rem 2rem;
+            background: transparent;
+            border: none;
+            color: #6b7280;
+            font-weight: 600;
+            font-size: 1rem;
+            cursor: pointer;
+            transition: all 0.3s ease;
+            white-space: nowrap;
+            position: relative;
+            display: flex;
+            align-items: center;
+            gap: 10px;
+        }
+        
+        .tab-btn:hover {
+            color: var(--primary-green);
+            background: rgba(16, 185, 129, 0.05);
+        }
+        
+        .tab-btn.active {
+            color: var(--primary-green);
+            background: white;
+        }
+        
+        .tab-btn.active::after {
+            content: '';
+            position: absolute;
+            bottom: -2px;
+            right: 0;
+            left: 0;
+            height: 3px;
+            background: var(--primary-green);
+        }
+        
+        .tab-badge {
+            background: var(--accent-green);
+            color: #065f46;
+            padding: 0.3rem 0.6rem;
+            border-radius: 20px;
+            font-size: 0.8rem;
+            font-weight: bold;
+        }
+        
+        .tab-content {
+            display: none;
+            padding: 2rem;
+        }
+        
+        .tab-content.active {
+            display: block;
+            animation: fadeIn 0.5s ease;
+        }
+        
+        @keyframes fadeIn {
+            from { opacity: 0; transform: translateY(10px); }
+            to { opacity: 1; transform: translateY(0); }
+        }
+        
+        /* Statistics Cards */
+        .stats-grid {
+            display: grid;
+            grid-template-columns: repeat(auto-fit, minmax(250px, 1fr));
+            gap: 1.5rem;
+            margin-bottom: 2rem;
+        }
+        
+        .stat-card {
+            background: white;
+            border-radius: 20px;
+            padding: 1.5rem;
+            box-shadow: 0 10px 30px rgba(16, 185, 129, 0.1);
+            border: 2px solid rgba(16, 185, 129, 0.1);
+            transition: all 0.3s ease;
+            height: 100%;
+        }
+        
+        .stat-card:hover {
+            transform: translateY(-5px);
+            box-shadow: 0 15px 40px rgba(16, 185, 129, 0.2);
+            border-color: var(--light-green);
+        }
+        
+        .stat-header {
+            display: flex;
+            align-items: center;
+            justify-content: space-between;
+            margin-bottom: 1rem;
+        }
+        
+        .stat-icon {
+            width: 50px;
+            height: 50px;
+            border-radius: 12px;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            font-size: 1.5rem;
+        }
+        
+        .stat-icon.pending { background: #fef3c7; color: #d97706; }
+        .stat-icon.approved { background: #d1fae5; color: #059669; }
+        .stat-icon.rejected { background: #fee2e2; color: #dc2626; }
+        .stat-icon.total { background: #dbeafe; color: #2563eb; }
+        
+        .stat-value {
+            font-size: 2.5rem;
+            font-weight: 800;
+            margin-bottom: 0.5rem;
+            background: var(--gradient-primary);
+            -webkit-background-clip: text;
+            -webkit-text-fill-color: transparent;
+        }
+        
+        .stat-label {
+            color: #6b7280;
+            font-size: 0.9rem;
+            margin-bottom: 1rem;
+        }
+        
+        .stat-trend {
+            display: flex;
+            align-items: center;
+            gap: 5px;
+            font-size: 0.85rem;
+            font-weight: 500;
+        }
+        
+        .stat-trend.up { color: #059669; }
+        .stat-trend.down { color: #dc2626; }
+        
+        /* Charts Container */
+        .charts-container {
+            display: grid;
+            grid-template-columns: repeat(auto-fit, minmax(400px, 1fr));
+            gap: 2rem;
+            margin-bottom: 2rem;
+        }
+        
+        @media (max-width: 768px) {
+            .charts-container {
+                grid-template-columns: 1fr;
+            }
+        }
+        
+        .chart-card {
+            background: white;
+            border-radius: 20px;
+            padding: 1.5rem;
+            box-shadow: 0 10px 30px rgba(16, 185, 129, 0.1);
+            border: 2px solid rgba(16, 185, 129, 0.1);
+        }
+        
+        .chart-header {
+            display: flex;
+            align-items: center;
+            justify-content: space-between;
+            margin-bottom: 1rem;
+        }
+        
+        .chart-title {
+            font-weight: 600;
+            color: #1f2937;
+            font-size: 1.1rem;
+        }
+        
+        /* Detailed Reports */
+        .reports-container {
+            background: white;
+            border-radius: 20px;
+            padding: 2rem;
+            box-shadow: 0 10px 30px rgba(16, 185, 129, 0.1);
+            margin-bottom: 2rem;
+        }
+        
+        .reports-header {
+            display: flex;
+            align-items: center;
+            justify-content: space-between;
+            margin-bottom: 1.5rem;
+            flex-wrap: wrap;
+            gap: 1rem;
+        }
+        
+        .reports-actions {
+            display: flex;
+            gap: 1rem;
+            flex-wrap: wrap;
+        }
+        
+        .date-range-picker {
+            display: flex;
+            align-items: center;
+            gap: 1rem;
+            background: #f9fafb;
+            padding: 0.8rem 1.2rem;
+            border-radius: 12px;
+            border: 2px solid #e5e7eb;
+        }
+        
+        .date-range-picker input {
+            border: none;
+            background: transparent;
+            font-family: inherit;
+            color: #374151;
+            width: 120px;
+        }
+        
+        .export-btn {
+            background: var(--gradient-primary);
+            color: white;
+            border: none;
+            padding: 0.8rem 1.5rem;
+            border-radius: 12px;
+            font-weight: 600;
+            display: flex;
+            align-items: center;
+            gap: 8px;
+            cursor: pointer;
+            transition: all 0.3s ease;
+        }
+        
+        .export-btn:hover {
+            transform: translateY(-2px);
+            box-shadow: 0 5px 15px rgba(16, 185, 129, 0.3);
+        }
+        
+        /* Employee Details Table */
+        .employee-details-table {
+            width: 100%;
+            border-collapse: collapse;
+            margin-top: 1.5rem;
+        }
+        
+        .employee-details-table th {
+            background: linear-gradient(135deg, #f0fdf4 0%, #dcfce7 100%);
+            padding: 1rem;
+            text-align: right;
+            font-weight: 600;
+            color: var(--dark-green);
+            border-bottom: 3px solid #e5e7eb;
+        }
+        
+        .employee-details-table td {
+            padding: 1rem;
+            border-bottom: 1px solid #f1f5f9;
+            vertical-align: middle;
+        }
+        
+        .employee-details-table tr:hover {
+            background: #f9fafb;
+        }
+        
+        /* Filters Section */
+        .filters-section {
+            background: white;
+            border-radius: 20px;
+            padding: 1.5rem;
+            margin-bottom: 2rem;
+            box-shadow: 0 10px 30px rgba(16, 185, 129, 0.1);
+        }
+        
+        .filter-row {
+            display: grid;
+            grid-template-columns: repeat(auto-fit, minmax(200px, 1fr));
+            gap: 1rem;
+            margin-bottom: 1rem;
+        }
+        
+        .filter-group {
+            margin-bottom: 0;
+        }
+        
+        .filter-select {
+            width: 100%;
+            padding: 0.8rem 1rem;
+            border: 2px solid #e5e7eb;
+            border-radius: 12px;
+            background: white;
+            font-family: inherit;
+            color: #374151;
+            transition: all 0.3s ease;
+        }
+        
+        .filter-select:focus {
+            outline: none;
+            border-color: var(--primary-green);
+            box-shadow: 0 0 0 3px rgba(16, 185, 129, 0.2);
+        }
+        
+        /* Requests Table */
+        .requests-table-container {
+            overflow-x: auto;
+            border-radius: 12px;
+            border: 2px solid rgba(16, 185, 129, 0.1);
+            background: white;
+        }
+        
+        .requests-table {
+            width: 100%;
+            min-width: 1000px;
+            border-collapse: collapse;
+        }
+        
+        .requests-table th {
+            background: linear-gradient(135deg, #f0fdf4 0%, #dcfce7 100%);
+            padding: 1rem;
+            text-align: right;
+            font-weight: 600;
+            color: var(--dark-green);
+            border-bottom: 3px solid #e5e7eb;
+            position: sticky;
+            top: 0;
+            z-index: 10;
+        }
+        
+        .requests-table td {
+            padding: 1rem;
+            border-bottom: 1px solid #f1f5f9;
+            vertical-align: middle;
+        }
+        
+        .requests-table tr:hover {
+            background: #f9fafb;
+        }
+        
+        .status-badge {
+            padding: 0.5rem 1rem;
+            border-radius: 25px;
+            font-size: 0.85rem;
+            font-weight: 600;
+            display: inline-flex;
+            align-items: center;
+            gap: 6px;
+        }
+        
+        .badge-pending { background: #fef3c7; color: #92400e; }
+        .badge-approved { background: #d1fae5; color: #065f46; }
+        .badge-rejected { background: #fee2e2; color: #7f1d1d; }
+        
+        /* Permission Type Badges */
+        .permission-type-badge {
+            padding: 0.5rem 1rem;
+            border-radius: 25px;
+            font-size: 0.85rem;
+            font-weight: 600;
+            display: inline-flex;
+            align-items: center;
+            gap: 6px;
+        }
+        
+        .badge-attendance { background: #d1fae5; color: #065f46; }
+        .badge-leave { background: #fef3c7; color: #92400e; }
+        .badge-forgot { background: #dbeafe; color: #1e40af; }
+        .badge-exchange { background: #f3e8ff; color: #6b21a8; }
+        .badge-overtime { background: #ffedd5; color: #9a3412; }
+        
+        /* Actions */
+        .actions-cell {
+            min-width: 120px;
+        }
+        
+        .actions-container {
+            display: flex;
+            gap: 8px;
+            flex-wrap: wrap;
+        }
+        
+        .action-btn {
+            width: 36px;
+            height: 36px;
+            border-radius: 10px;
+            border: none;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            font-size: 1rem;
+            transition: all 0.3s ease;
+            cursor: pointer;
+            box-shadow: 0 4px 8px rgba(0, 0, 0, 0.1);
+        }
+        
+        .action-btn.approve { background: var(--gradient-primary); color: white; }
+        .action-btn.reject { background: var(--gradient-danger); color: white; }
+        .action-btn.view { background: var(--gradient-info); color: white; }
+        
+        .action-btn:hover {
+            transform: translateY(-2px);
+            box-shadow: 0 6px 12px rgba(0, 0, 0, 0.15);
+        }
+        
+        /* Empty State */
+        .empty-state {
+            padding: 3rem 1rem;
+            text-align: center;
+            color: #6b7280;
+        }
+        
+        .empty-state i {
+            font-size: 3rem;
+            color: #9ca3af;
+            margin-bottom: 1rem;
+            opacity: 0.5;
+        }
+        
+        /* Overtime Hours Display */
+        .overtime-hours {
+            background: linear-gradient(135deg, #fef3c7 0%, #fde68a 100%);
+            border: 2px solid #f59e0b;
+            border-radius: 10px;
+            padding: 8px 12px;
+            font-weight: 700;
+            font-size: 1rem;
+            color: #92400e;
+            text-align: center;
+            min-width: 60px;
+            display: inline-block;
+        }
+        
+        /* Employee Display */
+        .employee-display {
+            background: #f0fdf4;
+            border: 1px solid #bbf7d0;
+            border-radius: 8px;
+            padding: 6px 10px;
+            font-size: 0.85rem;
+            color: #166534;
+            display: inline-block;
+            max-width: 150px;
+            overflow: hidden;
+            text-overflow: ellipsis;
+            white-space: nowrap;
+        }
+        
+        /* Shift Badge */
+        .shift-badge {
+            display: inline-block;
+            padding: 6px 12px;
+            border-radius: 8px;
+            font-size: 0.85rem;
+            font-weight: 600;
+            margin: 2px 3px;
+        }
+        
+        .shift-badge.morning {
+            background: linear-gradient(135deg, #fef3c7 0%, #fbbf24 100%);
+            color: #92400e;
+            border: 1px solid #f59e0b;
+        }
+        
+        .shift-badge.evening {
+            background: linear-gradient(135deg, #dbeafe 0%, #3b82f6 100%);
+            color: #1e40af;
+            border: 1px solid #2563eb;
+        }
+        
+        /* Attendance Type Badge */
+        .attendance-type-badge {
+            display: inline-block;
+            padding: 4px 8px;
+            border-radius: 6px;
+            font-size: 0.75rem;
+            font-weight: 600;
+        }
+        
+        .attendance-type-badge.check-in {
+            background: #dcfce7;
+            color: #166534;
+            border: 1px solid #22c55e;
+        }
+        
+        .attendance-type-badge.check-out {
+            background: #fef3c7;
+            color: #92400e;
+            border: 1px solid #f59e0b;
+        }
+        
+        /* Balance Badge */
+        .balance-badge {
+            background: linear-gradient(135deg, #3b82f6 0%, #1d4ed8 100%);
+            color: white;
+            padding: 6px 12px;
+            border-radius: 10px;
+            font-weight: 600;
+            font-size: 0.9rem;
+            display: inline-block;
+            min-width: 80px;
+            text-align: center;
+        }
+        
+        .balance-badge.low {
+            background: linear-gradient(135deg, #ef4444 0%, #dc2626 100%);
+        }
+        
+        .balance-badge.high {
+            background: linear-gradient(135deg, #10b981 0%, #059669 100%);
+        }
+        
+        .balance-badge.medium {
+            background: linear-gradient(135deg, #f59e0b 0%, #d97706 100%);
+        }
+        
+        /* Tooltip for Details */
+        .details-tooltip {
+            position: relative;
+            display: inline-block;
+            cursor: help;
+        }
+        
+        .details-tooltip .tooltip-text {
+            visibility: hidden;
+            width: 300px;
+            background-color: #1f2937;
+            color: #fff;
+            text-align: center;
+            border-radius: 6px;
+            padding: 10px;
+            position: absolute;
+            z-index: 1;
+            bottom: 125%;
+            left: 50%;
+            margin-left: -150px;
+            opacity: 0;
+            transition: opacity 0.3s;
+            font-size: 0.85rem;
+            box-shadow: 0 4px 15px rgba(0,0,0,0.2);
+        }
+        
+        .details-tooltip:hover .tooltip-text {
+            visibility: visible;
+            opacity: 1;
+        }
+        
+        .details-tooltip .tooltip-text::after {
+            content: "";
+            position: absolute;
+            top: 100%;
+            left: 50%;
+            margin-left: -5px;
+            border-width: 5px;
+            border-style: solid;
+            border-color: #1f2937 transparent transparent transparent;
+        }
+        
+        /* Loading States */
+        .loading {
+            opacity: 0.6;
+            pointer-events: none;
+        }
+        
+        .loading-overlay {
+            position: fixed;
+            top: 0;
+            left: 0;
+            width: 100%;
+            height: 100%;
+            background: rgba(0, 0, 0, 0.7);
+            display: flex;
+            justify-content: center;
+            align-items: center;
+            z-index: 9999;
+            flex-direction: column;
+            gap: 1.5rem;
+            backdrop-filter: blur(5px);
+        }
+        
+        .loading-spinner {
+            width: 60px;
+            height: 60px;
+            border: 5px solid rgba(255, 255, 255, 0.3);
+            border-top: 5px solid var(--primary-green);
+            border-radius: 50%;
+            animation: spin 1s linear infinite;
+        }
+        
+        @keyframes spin {
+            0% { transform: rotate(0deg); }
+            100% { transform: rotate(360deg); }
+        }
+        
+        /* Alert Container */
+        .alert-container {
+            position: fixed;
+            top: calc(var(--header-height) + 20px);
+            right: 20px;
+            z-index: 1000;
+            min-width: 300px;
+            max-width: 400px;
+        }
+        
+        .alert-container .alert {
+            border-radius: 12px;
+            border: 1px solid rgba(16, 185, 129, 0.2);
+            box-shadow: 0 5px 20px rgba(16, 185, 129, 0.15);
+            backdrop-filter: blur(10px);
+            background: rgba(255, 255, 255, 0.95);
+        }
+        
+        /* Mobile Responsive Adjustments */
+        @media (max-width: 768px) {
+            .main-content {
+                padding: 10px;
+            }
+            
+            .tabs-nav {
+                flex-direction: column;
+            }
+            
+            .tab-btn {
+                width: 100%;
+                justify-content: center;
+                padding: 1rem;
+            }
+            
+            .stats-grid {
+                grid-template-columns: 1fr;
+            }
+            
+            .charts-container {
+                gap: 1rem;
+            }
+            
+            .chart-card {
+                padding: 1rem;
+            }
+            
+            .reports-header {
+                flex-direction: column;
+                align-items: stretch;
+            }
+            
+            .reports-actions {
+                flex-direction: column;
+            }
+            
+            .date-range-picker {
+                justify-content: center;
+            }
+            
+            .employee-details-table {
+                display: block;
+                overflow-x: auto;
+            }
+        }
+        
+        /* Custom Scrollbar */
+        ::-webkit-scrollbar {
+            width: 8px;
+            height: 8px;
+        }
+        
+        ::-webkit-scrollbar-track {
+            background: rgba(16, 185, 129, 0.1);
+            border-radius: 10px;
+        }
+        
+        ::-webkit-scrollbar-thumb {
+            background: var(--gradient-primary);
+            border-radius: 10px;
+        }
+        
+        ::-webkit-scrollbar-thumb:hover {
+            background: var(--dark-green);
+        }
+    </style>
+</head>
+<body>
+    <!-- Unified Navigation Bar -->
+    <nav class="unified-nav">
+        <div class="unified-nav-container">
+            <!-- Top Section: Brand, Welcome, User -->
+            <div class="nav-top-section">
+                <!-- Brand Section -->
+                <div class="nav-brand-section">
+                    <div class="logo-container">
+                        <i class="bi bi-person-gear text-white"></i>
+                    </div>
+                    <div class="d-none d-md-block ms-2">
+                        <h6 class="text-white mb-0 fw-bold text-truncate">نظام الموارد البشرية</h6>
+                        <small class="text-white-50">لوحة المدير</small>
+                    </div>
+                </div>
+                
+                <!-- Welcome Section -->
+                <div class="welcome-section d-none d-lg-flex">
+                    <div class="welcome-content">
+                        <h4 class="text-white mb-1 text-truncate">مرحباً، {{ current_user.name if current_user else 'المدير' }}</h4>
+                        <p class="text-white-50 mb-0 text-truncate">نظام الموارد البشرية - إدارة طلبات الإذونات</p>
+                    </div>
+                    <div class="text-white fw-bold me-3" id="live-clock">
+                        <i class="bi bi-clock me-2"></i>
+                        جاري التحميل...
+                    </div>
+                </div>
+                
+                <!-- User Section -->
+                <div class="nav-user-section">
+                    <!-- Notifications -->
+                    <div class="dropdown me-2">
+                        <button class="btn btn-light position-relative rounded-pill" 
+                                type="button" data-bs-toggle="dropdown" 
+                                style="padding: 0.4rem 0.8rem; border: 1px solid rgba(255, 255, 255, 0.3); background: rgba(255, 255, 255, 0.15); color: white;">
+                            <i class="bi bi-bell"></i>
+                            {% if notifications and notifications|length > 0 %}
+                            <span class="notification-badge badge">{{ notifications|length }}</span>
+                            {% endif %}
+                        </button>
+                        <ul class="dropdown-menu dropdown-menu-end">
+                            {% if notifications and notifications|length > 0 %}
+                                {% for notification in notifications[:3] %}
+                                <li>
+                                    <a class="dropdown-item" href="#">
+                                        <div class="d-flex align-items-start">
+                                            <div class="bg-success bg-opacity-10 rounded-circle p-2 me-3">
+                                                <i class="bi bi-bell text-success"></i>
+                                            </div>
+                                            <div>
+                                                <strong class="d-block text-dark">{{ notification.title }}</strong>
+                                                <small class="text-muted">{{ notification.message|truncate(30) }}</small>
+                                            </div>
+                                        </div>
+                                    </a>
+                                </li>
+                                {% endfor %}
+                                <li><hr class="dropdown-divider my-2"></li>
+                            {% else %}
+                                <li>
+                                    <a class="dropdown-item text-muted text-center" href="#">
+                                        <i class="bi bi-bell-slash fs-4 d-block mb-2 text-success"></i>
+                                        لا توجد إشعارات جديدة
+                                    </a>
+                                </li>
+                                <li><hr class="dropdown-divider my-2"></li>
+                            {% endif %}
+                            <li>
+                                <a class="dropdown-item text-center text-success fw-bold" href="#">
+                                    <i class="bi bi-arrow-left me-2"></i>
+                                    عرض جميع الإشعارات
+                                </a>
+                            </li>
+                        </ul>
+                    </div>
+                    
+                    <!-- User Menu -->
+                    <div class="dropdown">
+                        <button class="btn btn-outline-light dropdown-toggle rounded-pill d-flex align-items-center" 
+                                type="button" data-bs-toggle="dropdown"
+                                style="padding: 0.4rem 0.9rem; border: 1px solid rgba(255, 255, 255, 0.4);">
+                            <div class="user-avatar me-2">
+                                {{ current_user.name[0] if current_user else 'م' }}
+                            </div>
+                            <span class="d-none d-md-inline text-truncate" style="max-width: 80px;">{{ current_user.username if current_user else 'مدير' }}</span>
+                        </button>
+                        <ul class="dropdown-menu dropdown-menu-end">
+                            <li>
+                                <a class="dropdown-item" href="#">
+                                    <i class="bi bi-bell me-2 text-success"></i>الإشعارات
+                                </a>
+                            </li>
+                            <li>
+                                <a class="dropdown-item" href="#">
+                                    <i class="bi bi-key me-2 text-success"></i>تغير كلمة المرور
+                                </a>
+                            </li>
+                            <li><hr class="dropdown-divider my-2"></li>
+                            <li>
+                                <a class="dropdown-item text-danger fw-bold" href="{{ url_for('logout') }}">
+                                    <i class="bi bi-box-arrow-right me-2"></i>تسجيل الخروج
+                                </a>
+                            </li>
+                        </ul>
+                    </div>
+                    
+                    <!-- Mobile Menu Button -->
+                    <button class="mobile-menu-btn d-lg-none" id="mobileMenuBtn">
+                        <i class="bi bi-list"></i>
+                    </button>
+                </div>
+            </div>
+            
+            <!-- Bottom Section: Navigation Menu -->
+            <!-- Bottom Section: Navigation Menu -->
+            <div class="nav-bottom-section d-none d-lg-flex">
+                <div class="nav-menu-section">
+                    <div class="nav-menu-wrapper">
+                        <a class="nav-link" href="{{ url_for('manager_dashboard') }}">
+                            <i class="bi bi-speedometer2 me-2"></i>
+                            لوحة التحكم
+                        </a>
+                        <a class="nav-link" href="{{ url_for('manager_employees') }}">
+                            <i class="bi bi-people me-2"></i>
+                            موظفي القسم
+                        </a>
+                        <a class="nav-link" href="{{ url_for('manager_schedules') }}">
+                            <i class="bi bi-calendar-check me-2"></i>
+                            جدولة الموظفين
+                        </a>
+                        <!-- Add Messages Link Here -->
+                        <a class="nav-link nav-link-with-badge" href="{{ url_for('messages_inbox') }}">
+                            <i class="bi bi-envelope me-2"></i>
+                            الرسائل
+                            {% if unread_count and unread_count > 0 %}
+                            <span class="nav-badge">{{ unread_count }}</span>
+                            {% endif %}
+                        </a>
+                        <a class="nav-link nav-link-with-badge" href="{{ url_for('manager_leave_requests') }}">
+                            <i class="bi bi-calendar-minus me-2"></i>
+                            طلبات الإجازات
+                            {% if stats and stats.pending_leaves > 0 %}
+                            <span class="nav-badge">{{ stats.pending_leaves }}</span>
+                            {% endif %}
+                        </a>
+                        <a class="nav-link nav-link-with-badge active" href="{{ url_for('manager_permission_requests') }}">
+                            <i class="bi bi-clock me-2"></i>
+                            طلبات الإذونات
+                            {% if pending_requests and pending_requests|length > 0 %}
+                            <span class="nav-badge">{{ pending_requests|length }}</span>
+                            {% endif %}
+                        </a>
+                        <a class="nav-link nav-link-with-badge" href="{{ url_for('user_salary_slips') }}">
+                            <i class="bi bi-file-earmark-text me-2"></i>
+                            شيت المرتب
+                            {% if new_salary_slips and new_salary_slips > 0 %}
+                            <span class="nav-badge">{{ new_salary_slips }}</span>
+                            {% endif %}
+                        </a>
+                        <a class="nav-link nav-link-with-badge" href="{{ url_for('manager_advance_requests') }}">
+                            <i class="bi bi-cash-coin me-2"></i>
+                            طلبات السلف
+                            {% if stats and stats.pending_advances > 0 %}
+                            <span class="nav-badge">{{ stats.pending_advances }}</span>
+                            {% endif %}
+                        </a>
+                        <a class="nav-link" href="{{ url_for('manager_rewards_penalties') }}">
+                            <i class="bi bi-award me-2"></i>
+                            المكافآت والخصومات
+                        </a>
+                        <a class="nav-link" href="{{ url_for('manager_excel_data') }}">
+                            <i class="fas fa-file-excel me-2"></i>
+                            الحضور والانصراف
+                        </a>
+                        {% if current_user and current_user.is_admin %}
+                        <a class="nav-link text-warning" href="{{ url_for('admin_dashboard') }}">
+                            <i class="bi bi-person-shield me-2"></i>
+                            لوحة المسؤول
+                        </a>
+                        {% endif %}
+                    </div>
+                </div>
+            </div>
+        </div>
+    </nav>
+
+    <!-- Mobile Navigation Menu -->
+    <!-- Mobile Navigation Menu -->
+    <div class="mobile-nav-menu" id="mobileNavMenu">
+        <a class="mobile-nav-link" href="{{ url_for('manager_dashboard') }}">
+            <i class="bi bi-speedometer2"></i>
+            لوحة التحكم
+        </a>
+        <a class="mobile-nav-link" href="{{ url_for('manager_employees') }}">
+            <i class="bi bi-people"></i>
+            موظفي القسم
+        </a>
+        <a class="mobile-nav-link" href="{{ url_for('manager_schedules') }}">
+            <i class="bi bi-calendar-check"></i>
+            جدولة الموظفين
+        </a>
+        <!-- Add Messages Link Here -->
+        <a class="mobile-nav-link nav-link-with-badge" href="{{ url_for('messages_inbox') }}">
+            <i class="bi bi-envelope"></i>
+            الرسائل
+            {% if unread_count and unread_count > 0 %}
+            <span class="nav-badge">{{ unread_count }}</span>
+            {% endif %}
+        </a>
+        <a class="mobile-nav-link" href="{{ url_for('manager_leave_requests') }}">
+            <i class="bi bi-calendar-minus"></i>
+            طلبات الإجازات
+            {% if stats and stats.pending_leaves > 0 %}
+            <span class="nav-badge">{{ stats.pending_leaves }}</span>
+            {% endif %}
+        </a>
+        <a class="mobile-nav-link active" href="{{ url_for('manager_permission_requests') }}">
+            <i class="bi bi-clock"></i>
+            طلبات الإذونات
+            {% if pending_requests and pending_requests|length > 0 %}
+            <span class="nav-badge">{{ pending_requests|length }}</span>
+            {% endif %}
+        </a>
+        <a class="mobile-nav-link" href="{{ url_for('user_salary_slips') }}">
+            <i class="bi bi-file-earmark-text"></i>
+            شيت المرتب
+            {% if new_salary_slips and new_salary_slips > 0 %}
+            <span class="nav-badge">{{ new_salary_slips }}</span>
+            {% endif %}
+        </a>
+        <a class="mobile-nav-link" href="{{ url_for('manager_advance_requests') }}">
+            <i class="bi bi-cash-coin"></i>
+            طلبات السلف
+            {% if stats and stats.pending_advances > 0 %}
+            <span class="nav-badge">{{ stats.pending_advances }}</span>
+            {% endif %}
+        </a>
+        <a class="mobile-nav-link" href="{{ url_for('manager_rewards_penalties') }}">
+            <i class="bi bi-award"></i>
+            المكافآت والخصومات
+        </a>
+        <a class="mobile-nav-link" href="{{ url_for('manager_excel_data') }}">
+            <i class="fas fa-file-excel me-2"></i>
+            الحضور والانصراف
+        </a>
+        {% if current_user and current_user.is_admin %}
+        <a class="mobile-nav-link text-warning" href="{{ url_for('admin_dashboard') }}">
+            <i class="bi bi-person-shield"></i>
+            لوحة المسؤول
+        </a>
+        {% endif %}
+    </div>
+
+    <!-- Main Content -->
+    <div class="main-content">
+        <!-- Alert Container -->
+        <div class="alert-container">
+            {% with messages = get_flashed_messages(with_categories=true) %}
+                {% if messages %}
+                    {% for category, message in messages %}
+                        <div class="alert alert-{{ category if category in ['success', 'danger', 'warning', 'info'] else 'info' }} alert-dismissible fade show mb-2" role="alert">
+                            <i class="bi bi-{{ 'check-circle' if category == 'success' else 'exclamation-triangle' if category == 'danger' else 'info-circle' if category == 'info' else 'exclamation-circle' }} me-2"></i>
+                            {{ message }}
+                            <button type="button" class="btn-close" data-bs-dismiss="alert" aria-label="Close"></button>
+                        </div>
+                    {% endfor %}
+                {% endif %}
+            {% endwith %}
+        </div>
+
+        <!-- Content Tabs -->
+        <div class="content-tabs">
+            <div class="tabs-nav">
+                <button class="tab-btn active" data-tab="pending">
+                    <i class="fas fa-clock"></i>
+                    الطلبات المعلقة
+                    {% if pending_requests and pending_requests|length > 0 %}
+                    <span class="tab-badge">{{ pending_requests|length }}</span>
+                    {% endif %}
+                </button>
+
+                <button class="tab-btn" data-tab="history">
+                    <i class="fas fa-history"></i>
+                    سجل الطلبات
+                    {% if history_requests and history_requests|length > 0 %}
+                    <span class="tab-badge">{{ history_requests|length }}</span>
+                    {% endif %}
+                </button>
+
+                <button class="tab-btn" data-tab="submit-permission" onclick="window.location.href='{{ url_for('user_permission') }}'">
+                    <i class="fas fa-plus-circle"></i>
+                    تقديم إذن
+                </button>
+
+                <button class="tab-btn" data-tab="special-permission" onclick="window.location.href='{{ url_for('manager_create_permission') }}'">
+                    <i class="fas fa-star"></i>
+                    إذونات استثنائية
+                </button>
+
+                <button class="tab-btn" data-tab="statistics">
+                    <i class="fas fa-chart-bar"></i>
+                    الإحصائيات
+                </button>
+
+                <button class="tab-btn" data-tab="reports">
+                    <i class="fas fa-file-alt"></i>
+                    التقارير
+                </button>
+            </div>
+            <!-- Pending Requests Tab -->
+            <div class="tab-content active" id="pending-tab">
+                <!-- Filters Section -->
+                <div class="filters-section">
+                    <div class="filter-row">
+                        <div class="filter-group">
+                            <label class="form-label">نوع الإذن</label>
+                            <select class="filter-select" id="permissionTypeFilter">
+                                <option value="all">جميع الأنواع</option>
+                                <option value="اذن حضور">اذن حضور</option>
+                                <option value="اذن انصراف">اذن انصراف</option>
+                                <option value="اذن نسيان توقيع">اذن نسيان توقيع</option>
+                                <option value="اذن تبديل وردية">اذن تبديل وردية</option>
+                                <option value="اذن طلب ساعات اضافي">اذن ساعات اضافي</option>
+                            </select>
+                        </div>
+                        <div class="filter-group">
+                            <label class="form-label">القسم</label>
+                            <select class="filter-select" id="departmentFilter">
+                                <option value="all">جميع الأقسام</option>
+                                {% for dept in departments %}
+                                <option value="{{ dept.id }}">{{ dept.name }}</option>
+                                {% endfor %}
+                            </select>
+                        </div>
+                        <div class="filter-group">
+                            <label class="form-label">التاريخ</label>
+                            <select class="filter-select" id="dateFilter">
+                                <option value="all">جميع التواريخ</option>
+                                <option value="today">اليوم</option>
+                                <option value="week">هذا الأسبوع</option>
+                                <option value="month">هذا الشهر</option>
+                            </select>
+                        </div>
+                        <div class="filter-group">
+                            <label class="form-label">&nbsp;</label>
+                            <button class="export-btn" id="resetFilters">
+                                <i class="fas fa-redo"></i>
+                                إعادة التعيين
+                            </button>
+                        </div>
+                    </div>
+                </div>
+
+                <!-- Pending Requests Table -->
+                <!-- Pending Requests Table -->
+                {% if pending_requests and pending_requests|length > 0 %}
+                <!-- Desktop View -->
+                <div class="requests-table-container d-none d-lg-block">
+                    <table class="requests-table">
+                        <!-- Your existing table header and body structure -->
+                        <thead>
+                            <tr>
+                                <th>الموظف</th>
+                                <th>نوع الإذن</th>
+                                <th>تاريخ الإذن</th>
+                                <th>رصيد الموظف</th>
+                                <th>الشيفت</th>
+                                <th>سبب الإذن</th>
+                                <th>التوقيت</th>
+                                <th>الإجراءات</th>
+                            </tr>
+                        </thead>
+                        <tbody>
+                            <!-- Existing table rows will be populated by JavaScript -->
+                        </tbody>
+                    </table>
+                </div>
+
+                <!-- Mobile Card View -->
+                <div class="d-lg-none" id="pending-mobile-cards">
+                    <!-- Mobile cards will be populated by JavaScript -->
+                </div>
+                {% else %}
+                <div class="empty-state">
+                    <i class="fas fa-check-circle"></i>
+                    <h5>لا توجد طلبات إذونات معلقة</h5>
+                    <p>جميع الطلبات تمت معالجتها</p>
+                </div>
+                {% endif %}
+            </div>
+
+            <!-- History Tab -->
+            <div class="tab-content" id="history-tab">
+                <!-- History Filters -->
+                <div class="filters-section">
+                    <div class="filter-row">
+                        <div class="filter-group">
+                            <label class="form-label">الحالة</label>
+                            <select class="filter-select" id="historyStatusFilter">
+                                <option value="all">جميع الحالات</option>
+                                <option value="approved">مقبولة</option>
+                                <option value="rejected">مرفوضة</option>
+                            </select>
+                        </div>
+                        <div class="filter-group">
+                            <label class="form-label">الفترة</label>
+                            <select class="filter-select" id="historyPeriodFilter">
+                                <option value="all">جميع الفترات</option>
+                                <option value="week">آخر أسبوع</option>
+                                <option value="month">آخر شهر</option>
+                                <option value="3months">آخر 3 أشهر</option>
+                            </select>
+                        </div>
+                        <div class="filter-group">
+                            <label class="form-label">بحث</label>
+                            <input type="text" class="filter-select" id="historySearch" placeholder="بحث باسم الموظف...">
+                        </div>
+                    </div>
+                </div>
+
+                <!-- History Requests Table -->
+                <!-- History Requests Table -->
+                {% if history_requests and history_requests|length > 0 %}
+                <!-- Desktop View -->
+                <div class="requests-table-container d-none d-lg-block">
+                    <table class="requests-table">
+                        <!-- Your existing table header and body structure -->
+                        <thead>
+                            <tr>
+                                <th>الموظف</th>
+                                <th>نوع الإذن</th>
+                                <th>تاريخ الإذن</th>
+                                <th>الحالة</th>
+                                <th>تاريخ القرار</th>
+                                <th>سبب الرفض</th>
+                                <th>تمت المعالجة بواسطة</th>
+                            </tr>
+                        </thead>
+                        <tbody>
+                            <!-- Existing table rows will be populated by JavaScript -->
+                        </tbody>
+                    </table>
+                </div>
+
+                <!-- Mobile Card View -->
+                <div class="d-lg-none" id="history-mobile-cards">
+                    <!-- Mobile cards will be populated by JavaScript -->
+                </div>
+                {% else %}
+                <div class="empty-state">
+                    <i class="fas fa-inbox"></i>
+                    <h5>لا توجد طلبات سابقة</h5>
+                    <p>لم يتم معالجة أي طلبات بعد</p>
+                </div>
+                {% endif %}
+
+
+
+            </div>
+
+            <!-- Submit Permission Tab -->
+            <div class="tab-content" id="submit-permission-tab">
+                <div class="submit-permission-container">
+                    <div class="text-center py-5">
+                        <i class="fas fa-plus-circle fa-3x text-success mb-3"></i>
+                        <h4 class="mb-3">تقديم طلب إذن جديد</h4>
+                        <p class="text-muted mb-4">لإرسال طلب إذن جديد، يرجى النقر على الزر أدناه</p>
+                        <a href="{{ url_for('user_permission') }}" class="btn btn-success btn-lg">
+                            <i class="fas fa-plus me-2"></i>
+                            تقديم طلب إذن جديد
+                        </a>
+                    </div>
+                </div>
+            </div>
+
+            <!-- Special Permissions Tab -->
+            <div class="tab-content" id="special-permission-tab">
+                <div class="special-permission-container">
+                    <div class="text-center py-5">
+                        <i class="fas fa-star fa-3x text-warning mb-3"></i>
+                        <h4 class="mb-3">تقديم إذونات استثنائية</h4>
+                        <p class="text-muted mb-4">لإرسال إذونات استثنائية للموظفين</p>
+                        <a href="{{ url_for('manager_create_permission') }}" class="btn btn-warning btn-lg text-white">
+                            <i class="fas fa-star me-2"></i>
+                            تقديم إذونات استثنائية
+                        </a>
+                    </div>
+                </div>
+            </div>
+
+            <!-- Statistics Tab -->
+            <div class="tab-content" id="statistics-tab">
+                <!-- Statistics Overview -->
+                <div class="stats-grid">
+                    <div class="stat-card">
+                        <div class="stat-header">
+                            <div>
+                                <h3 class="stat-value" id="totalPermissions">{{ stats.total_permissions if stats and stats.total_permissions else 0 }}</h3>
+                                <p class="stat-label">إجمالي طلبات الإذونات</p>
+                            </div>
+                            <div class="stat-icon total">
+                                <i class="fas fa-clock"></i>
+                            </div>
+                        </div>
+                        <div class="stat-trend {% if stats and stats.current_month_requests > 0 %}up{% else %}down{% endif %}">
+                            <i class="fas fa-arrow-{% if stats and stats.current_month_requests > 0 %}up{% else %}down{% endif %}"></i>
+                            <span>{{ stats.current_month_requests if stats and stats.current_month_requests else 0 }} هذا الشهر</span>
+                        </div>
+                    </div>
+                    
+                    <div class="stat-card">
+                        <div class="stat-header">
+                            <div>
+                                <h3 class="stat-value">{{ pending_requests|length if pending_requests else 0 }}</h3>
+                                <p class="stat-label">طلبات معلقة</p>
+                            </div>
+                            <div class="stat-icon pending">
+                                <i class="fas fa-clock"></i>
+                            </div>
+                        </div>
+                        <div class="stat-trend {% if pending_requests and pending_requests|length > 0 %}up{% else %}down{% endif %}">
+                            <i class="fas fa-arrow-{% if pending_requests and pending_requests|length > 0 %}up{% else %}down{% endif %}"></i>
+                            <span>{{ pending_requests|length if pending_requests else 0 }} طلب</span>
+                        </div>
+                    </div>
+                    
+                    <div class="stat-card">
+                        <div class="stat-header">
+                            <div>
+                                <h3 class="stat-value">{{ stats.approved_permissions if stats and stats.approved_permissions else 0 }}</h3>
+                                <p class="stat-label">طلبات مقبولة</p>
+                            </div>
+                            <div class="stat-icon approved">
+                                <i class="fas fa-check-circle"></i>
+                            </div>
+                        </div>
+                        <div class="stat-trend {% if stats and stats.approved_permissions > 0 %}up{% else %}down{% endif %}">
+                            <i class="fas fa-arrow-{% if stats and stats.approved_permissions > 0 %}up{% else %}down{% endif %}"></i>
+                            <span>{{ stats.approval_rate|default(0) if stats and stats.approval_rate else 0 }}% معدل القبول</span>
+                        </div>
+                    </div>
+                    
+                    <div class="stat-card">
+                        <div class="stat-header">
+                            <div>
+                                <h3 class="stat-value">{{ stats.rejected_permissions if stats and stats.rejected_permissions else 0 }}</h3>
+                                <p class="stat-label">طلبات مرفوضة</p>
+                            </div>
+                            <div class="stat-icon rejected">
+                                <i class="fas fa-times-circle"></i>
+                            </div>
+                        </div>
+                        <div class="stat-trend {% if stats and stats.rejected_permissions > 0 %}up{% else %}down{% endif %}">
+                            <i class="fas fa-arrow-{% if stats and stats.rejected_permissions > 0 %}up{% else %}down{% endif %}"></i>
+                            <span>{{ stats.rejected_permissions if stats and stats.rejected_permissions else 0 }} طلب</span>
+                        </div>
+                    </div>
+                </div>
+
+                <!-- Charts Section -->
+                <div class="charts-container">
+                    <div class="chart-card">
+                        <div class="chart-header">
+                            <h4 class="chart-title">توزيع أنواع الإذونات</h4>
+                            <select class="filter-select" style="width: auto;" id="chartPeriod">
+                                <option value="month">هذا الشهر</option>
+                                <option value="week">هذا الأسبوع</option>
+                                <option value="year">هذا العام</option>
+                            </select>
+                        </div>
+                        <div id="permissionTypesChart" style="height: 300px;"></div>
+                    </div>
+                    
+                    <div class="chart-card">
+                        <div class="chart-header">
+                            <h4 class="chart-title">الاتجاه الشهري</h4>
+                            <select class="filter-select" style="width: auto;" id="trendPeriod">
+                                <option value="6months">آخر 6 أشهر</option>
+                                <option value="year">آخر سنة</option>
+                                <option value="all">كل الوقت</option>
+                            </select>
+                        </div>
+                        <div id="monthlyTrendChart" style="height: 300px;"></div>
+                    </div>
+                </div>
+            </div>
+
+            <!-- Reports Tab -->
+            <div class="tab-content" id="reports-tab">
+                <div class="reports-container">
+                    <div class="reports-header">
+                        <h4>التقارير التفصيلية للإذونات</h4>
+                        <div class="reports-actions">
+                            <div class="date-range-picker">
+                                <i class="fas fa-calendar-alt"></i>
+                                <input type="date" id="startDate" value="{{ (date.today() - timedelta(days=30)).strftime('%Y-%m-%d') }}">
+                                <span>إلى</span>
+                                <input type="date" id="endDate" value="{{ date.today().strftime('%Y-%m-%d') }}">
+                            </div>
+                            <button class="export-btn" onclick="generateReport()">
+                                <i class="fas fa-download"></i>
+                                تصدير تقرير
+                            </button>
+                            <button class="export-btn" onclick="printReport()">
+                                <i class="fas fa-print"></i>
+                                طباعة
+                            </button>
+                        </div>
+                    </div>
+
+                    <!-- Employee Details Report -->
+                    <div class="mt-4">
+                        <h5 class="mb-3">تفاصيل الموظفين والإذونات</h5>
+                        <div class="requests-table-container">
+                            <table class="employee-details-table">
+                                <thead>
+                                    <tr>
+                                        <th>اسم الموظف</th>
+                                        <th>القسم</th>
+                                        <th>إجمالي الإذونات</th>
+                                        <th>مقبولة</th>
+                                        <th>مرفوضة</th>
+                                        <th>معلقة</th>
+                                        <th>معدل القبول</th>
+                                        <th>متوسط ساعات الإضافي</th>
+                                    </tr>
+                                </thead>
+                                <tbody id="employeeReportBody">
+                                    <!-- Will be populated by JavaScript -->
+                                </tbody>
+                            </table>
+                        </div>
+                    </div>
+
+                    <!-- Summary Statistics -->
+                    <div class="row mt-4">
+                        <div class="col-md-6">
+                            <div class="stat-card">
+                                <div class="stat-header">
+                                    <div>
+                                        <h3 class="stat-value" id="avgProcessingTime">1.2</h3>
+                                        <p class="stat-label">متوسط وقت المعالجة (أيام)</p>
+                                    </div>
+                                    <div class="stat-icon">
+                                        <i class="fas fa-clock"></i>
+                                    </div>
+                                </div>
+                            </div>
+                        </div>
+                        <div class="col-md-6">
+                            <div class="stat-card">
+                                <div class="stat-header">
+                                    <div>
+                                        <h3 class="stat-value" id="peakPermissionType">نسيان توقيع</h3>
+                                        <p class="stat-label">النوع الأكثر طلباً</p>
+                                    </div>
+                                    <div class="stat-icon">
+                                        <i class="fas fa-chart-pie"></i>
+                                    </div>
+                                </div>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </div>
+    <!-- JavaScript Libraries -->
+    <script src="https://cdn.jsdelivr.net/npm/bootstrap@5.3.0/dist/js/bootstrap.bundle.min.js"></script>
+    <script src="https://cdn.jsdelivr.net/npm/apexcharts@3.35.0/dist/apexcharts.min.js"></script>
+
+    <script>
+    document.addEventListener('DOMContentLoaded', function() {
+        // متغيرات التطبيق
+        const appState = {
+            currentTab: 'pending',
+            charts: {
+                types: null,
+                trend: null
+            },
+            statistics: null,
+            reports: null
+        };
+
+        // ============ تهيئة التطبيق ============
+        initApplication();
+
+        function initApplication() {
+            initMobileMenu();
+            initClock();
+            initTabs();
+            initFilters();
+            initDatePickers();
+            initEventListeners();
+            loadInitialData();
+        }
+
+        // ============ Mobile Menu ============
+        function initMobileMenu() {
+            const mobileMenuBtn = document.getElementById('mobileMenuBtn');
+            const mobileNavMenu = document.getElementById('mobileNavMenu');
+            
+            if (mobileMenuBtn && mobileNavMenu) {
+                mobileMenuBtn.addEventListener('click', function(e) {
+                    e.stopPropagation();
+                    mobileNavMenu.classList.toggle('active');
+                });
+                
+                document.addEventListener('click', function(e) {
+                    if (!mobileMenuBtn.contains(e.target) && !mobileNavMenu.contains(e.target)) {
+                        mobileNavMenu.classList.remove('active');
+                    }
+                });
+            }
+        }
+
+        // ============ Real-time Clock ============
+        function initClock() {
+            function updateClock() {
+                const now = new Date();
+                const timeString = now.toLocaleTimeString('ar-EG', { 
+                    hour: '2-digit', 
+                    minute: '2-digit',
+                    second: '2-digit' 
+                });
+                
+                const dateString = now.toLocaleDateString('ar-EG', {
+                    weekday: 'long',
+                    year: 'numeric',
+                    month: 'long',
+                    day: 'numeric'
+                });
+                
+                const clockElement = document.getElementById('live-clock');
+                if (clockElement) {
+                    clockElement.innerHTML = `
+                        <i class="bi bi-clock me-2"></i>
+                        ${timeString}
+                        <small class="text-white-50 ms-2 d-none d-md-inline">${dateString}</small>
+                    `;
+                }
+            }
+            
+            updateClock();
+            setInterval(updateClock, 1000);
+        }
+
+        // ============ Tab Management ============
+        function initTabs() {
+            const tabButtons = document.querySelectorAll('.tab-btn');
+            const tabContents = document.querySelectorAll('.tab-content');
+            
+            tabButtons.forEach(button => {
+                button.addEventListener('click', () => {
+                    const tabId = button.dataset.tab;
+                    if (appState.currentTab === tabId) return;
+                    
+                    // تحديث حالة التبويب
+                    appState.currentTab = tabId;
+                    
+                    // تحديث التبويب النشط
+                    tabButtons.forEach(btn => btn.classList.remove('active'));
+                    button.classList.add('active');
+                    
+                    // إظهار المحتوى المناسب
+                    tabContents.forEach(content => {
+                        content.classList.remove('active');
+                        if (content.id === `${tabId}-tab`) {
+                            content.classList.add('active');
+                        }
+                    });
+                    
+                    // تحميل البيانات الخاصة بالتبويب
+                    loadTabData(tabId);
+                });
+            });
+        }
+
+        // Update the loadTabData function to handle mobile views
+        async function loadTabData(tabId) {
+            switch(tabId) {
+                case 'pending':
+                    await loadPendingRequests();
+                    break;
+                case 'history':
+                    await loadHistoryRequests();
+                    break;
+                case 'statistics':
+                    await loadStatistics();
+                    break;
+                case 'reports':
+                    await loadReports();
+                    break;
+            }
+            
+            // Initialize animations for mobile cards
+            if (window.innerWidth < 768) {
+                animateMobileCards();
+            }
+        }
+
+        // Add this function for mobile card animations
+        function animateMobileCards() {
+            const cards = document.querySelectorAll('.request-card');
+            cards.forEach((card, index) => {
+                card.style.opacity = '0';
+                card.style.transform = 'translateY(20px)';
+                card.style.transition = 'all 0.5s ease';
+                
+                setTimeout(() => {
+                    card.style.opacity = '1';
+                    card.style.transform = 'translateY(0)';
+                }, index * 100);
+            });
+        }
+
+
+        // ============ Filters Management ============
+        function initFilters() {
+            // فلتر الطلبات المعلقة
+            document.getElementById('permissionTypeFilter')?.addEventListener('change', applyPendingFilters);
+            document.getElementById('departmentFilter')?.addEventListener('change', applyPendingFilters);
+            document.getElementById('dateFilter')?.addEventListener('change', applyPendingFilters);
+            document.getElementById('resetFilters')?.addEventListener('click', resetPendingFilters);
+            
+            // فلتر الطلبات السابقة
+            document.getElementById('historyStatusFilter')?.addEventListener('change', applyHistoryFilters);
+            document.getElementById('historyPeriodFilter')?.addEventListener('change', applyHistoryFilters);
+            document.getElementById('historySearch')?.addEventListener('input', applyHistoryFilters);
+        }
+
+        function applyPendingFilters() {
+            const permissionType = document.getElementById('permissionTypeFilter').value;
+            const department = document.getElementById('departmentFilter').value;
+            const dateFilter = document.getElementById('dateFilter').value;
+            
+            const rows = document.querySelectorAll('#pending-tab tbody tr');
+            let visibleCount = 0;
+            
+            rows.forEach(row => {
+                let showRow = true;
+                
+                // فلتر حسب النوع
+                if (permissionType !== 'all') {
+                    const rowType = row.dataset.type || '';
+                    if (!rowType.includes(permissionType)) {
+                        showRow = false;
+                    }
+                }
+                
+                // فلتر حسب القسم
+                if (department !== 'all' && row.dataset.department !== department) {
+                    showRow = false;
+                }
+                
+                // فلتر حسب التاريخ
+                if (dateFilter !== 'all' && row.dataset.date) {
+                    const rowDate = new Date(row.dataset.date);
+                    const today = new Date();
+                    
+                    if (dateFilter === 'today') {
+                        if (!isSameDay(rowDate, today)) showRow = false;
+                    } else if (dateFilter === 'week') {
+                        if (!isWithinLastDays(rowDate, 7)) showRow = false;
+                    } else if (dateFilter === 'month') {
+                        if (!isWithinLastDays(rowDate, 30)) showRow = false;
+                    }
+                }
+                
+                row.style.display = showRow ? '' : 'none';
+                if (showRow) visibleCount++;
+            });
+            
+            updateTabBadge('pending', visibleCount);
+        }
+
+        function applyHistoryFilters() {
+            const statusFilter = document.getElementById('historyStatusFilter').value;
+            const periodFilter = document.getElementById('historyPeriodFilter').value;
+            const searchTerm = document.getElementById('historySearch').value.toLowerCase();
+            
+            const rows = document.querySelectorAll('#history-tab tbody tr');
+            let visibleCount = 0;
+            
+            rows.forEach(row => {
+                let showRow = true;
+                
+                // فلتر حسب الحالة
+                if (statusFilter !== 'all' && row.dataset.status !== statusFilter) {
+                    showRow = false;
+                }
+                
+                // فلتر حسب الفترة
+                if (periodFilter !== 'all' && row.dataset.date) {
+                    const rowDate = new Date(row.dataset.date);
+                    
+                    if (periodFilter === 'week') {
+                        if (!isWithinLastDays(rowDate, 7)) showRow = false;
+                    } else if (periodFilter === 'month') {
+                        if (!isWithinLastDays(rowDate, 30)) showRow = false;
+                    } else if (periodFilter === '3months') {
+                        if (!isWithinLastDays(rowDate, 90)) showRow = false;
+                    }
+                }
+                
+                // فلتر حسب البحث
+                if (searchTerm && !row.textContent.toLowerCase().includes(searchTerm)) {
+                    showRow = false;
+                }
+                
+                row.style.display = showRow ? '' : 'none';
+                if (showRow) visibleCount++;
+            });
+            
+            updateTabBadge('history', visibleCount);
+        }
+
+        function resetPendingFilters() {
+            document.getElementById('permissionTypeFilter').value = 'all';
+            document.getElementById('departmentFilter').value = 'all';
+            document.getElementById('dateFilter').value = 'all';
+            applyPendingFilters();
+        }
+
+        // ============ Date Pickers ============
+        function initDatePickers() {
+            const today = new Date();
+            const lastMonth = new Date();
+            lastMonth.setMonth(today.getMonth() - 1);
+            
+            const startDateInput = document.getElementById('startDate');
+            const endDateInput = document.getElementById('endDate');
+            
+            if (startDateInput) {
+                startDateInput.value = formatDate(lastMonth);
+                startDateInput.max = formatDate(today);
+            }
+            
+            if (endDateInput) {
+                endDateInput.value = formatDate(today);
+                endDateInput.max = formatDate(today);
+            }
+        }
+
+        // ============ Event Listeners ============
+        function initEventListeners() {
+            // زر التصدير
+            document.querySelector('.export-btn')?.addEventListener('click', exportReport);
+            
+            // زر الطباعة
+            document.querySelector('[onclick*="printReport"]')?.addEventListener('click', printReport);
+            
+            // تغيير الفترة في الرسوم البيانية
+            document.getElementById('chartPeriod')?.addEventListener('change', updateChartsPeriod);
+            document.getElementById('trendPeriod')?.addEventListener('change', updateTrendPeriod);
+        }
+
+        // ============ Data Loading ============
+        async function loadInitialData() {
+            await loadPendingRequests();
+            await updateStatisticsCards();
+        }
+
+        async function loadPendingRequests() {
+            try {
+                showLoading(true);
+                const response = await fetch('/api/manager/pending_permissions');
+                const data = await response.json();
+                
+                if (data.success && data.requests) {
+                    updatePendingTable(data.requests);
+                    updateTabBadge('pending', data.requests.length);
+                }
+            } catch (error) {
+                console.error('Error loading pending requests:', error);
+                showAlert('حدث خطأ في تحميل الطلبات المعلقة', 'error');
+            } finally {
+                showLoading(false);
+            }
+        }
+
+        async function loadHistoryRequests() {
+            try {
+                showLoading(true);
+                const response = await fetch('/api/manager/history_permissions');
+                const data = await response.json();
+                
+                if (data.success && data.requests) {
+                    updateHistoryTable(data.requests);
+                    updateTabBadge('history', data.requests.length);
+                }
+            } catch (error) {
+                console.error('Error loading history requests:', error);
+                showAlert('حدث خطأ في تحميل الطلبات السابقة', 'error');
+            } finally {
+                showLoading(false);
+            }
+        }
+
+        async function loadStatistics() {
+            try {
+                showLoading(true);
+                const response = await fetch('/api/manager/permission_statistics');
+                const data = await response.json();
+                
+                if (data.success && data.statistics) {
+                    appState.statistics = data.statistics;
+                    updateStatisticsCards();
+                    initializeCharts();
+                }
+            } catch (error) {
+                console.error('Error loading statistics:', error);
+                showAlert('حدث خطأ في تحميل الإحصائيات', 'error');
+            } finally {
+                showLoading(false);
+            }
+        }
+
+        async function loadReports() {
+            try {
+                showLoading(true);
+                const startDate = document.getElementById('startDate').value;
+                const endDate = document.getElementById('endDate').value;
+                
+                const response = await fetch(
+                    `/api/manager/permission_reports?start_date=${startDate}&end_date=${endDate}`
+                );
+                const data = await response.json();
+                
+                if (data.success) {
+                    appState.reports = data;
+                    updateReportsData();
+                }
+            } catch (error) {
+                console.error('Error loading reports:', error);
+                showAlert('حدث خطأ في تحميل التقارير', 'error');
+            } finally {
+                showLoading(false);
+            }
+        }
+
+        // ============ Charts Management ============
+        function initializeCharts() {
+            if (!appState.statistics) return;
+            
+            initializeTypesChart();
+            initializeTrendChart();
+        }
+
+        function initializeTypesChart() {
+            const chartElement = document.getElementById('permissionTypesChart');
+            if (!chartElement) return;
+            
+            const types = appState.statistics.permission_types || {};
+            const labels = Object.keys(types);
+            const series = labels.map(label => types[label].total);
+            
+            const colors = ['#3b82f6', '#10b981', '#f59e0b', '#8b5cf6', '#ec4899', '#6366f1', '#14b8a6'];
+            
+            const options = {
+                series: series,
+                chart: {
+                    type: 'donut',
+                    height: 300,
+                    fontFamily: 'inherit',
+                    toolbar: { show: false }
+                },
+                labels: labels,
+                colors: colors.slice(0, Math.min(labels.length, colors.length)),
+                legend: {
+                    position: 'bottom',
+                    fontSize: '14px',
+                    fontFamily: 'inherit',
+                    labels: { colors: '#6b7280' }
+                },
+                plotOptions: {
+                    pie: {
+                        donut: {
+                            size: '65%',
+                            labels: {
+                                show: true,
+                                total: {
+                                    show: true,
+                                    label: 'إجمالي الطلبات',
+                                    color: '#6b7280',
+                                    formatter: function (w) {
+                                        return w.globals.seriesTotals.reduce((a, b) => a + b, 0)
+                                    }
+                                }
+                            }
+                        }
+                    }
+                },
+                dataLabels: { enabled: false },
+                tooltip: {
+                    y: {
+                        formatter: function(val) {
+                            return val + " طلب"
+                        }
+                    }
+                }
+            };
+            
+            if (appState.charts.types) {
+                appState.charts.types.updateOptions(options);
+            } else {
+                appState.charts.types = new ApexCharts(chartElement, options);
+                appState.charts.types.render();
+            }
+        }
+
+        function initializeTrendChart() {
+            const chartElement = document.getElementById('monthlyTrendChart');
+            if (!chartElement) return;
+            
+            const stats = appState.statistics.monthly_stats || {};
+            const labels = Object.keys(stats).slice(-6); // آخر 6 أشهر
+            const approvedData = labels.map(month => stats[month]?.approved || 0);
+            const rejectedData = labels.map(month => stats[month]?.rejected || 0);
+            
+            const options = {
+                series: [
+                    { name: 'طلبات مقبولة', data: approvedData },
+                    { name: 'طلبات مرفوضة', data: rejectedData }
+                ],
+                chart: {
+                    type: 'line',
+                    height: 300,
+                    fontFamily: 'inherit',
+                    toolbar: { show: false }
+                },
+                colors: ['#10b981', '#ef4444'],
+                stroke: {
+                    width: 3,
+                    curve: 'smooth'
+                },
+                grid: {
+                    borderColor: '#e5e7eb',
+                    strokeDashArray: 4
+                },
+                xaxis: {
+                    categories: labels.map(label => formatMonthLabel(label)),
+                    labels: {
+                        style: { colors: '#6b7280', fontSize: '12px' }
+                    }
+                },
+                yaxis: {
+                    labels: {
+                        style: { colors: '#6b7280', fontSize: '12px' }
+                    }
+                },
+                legend: {
+                    position: 'top',
+                    horizontalAlign: 'left',
+                    fontSize: '14px',
+                    fontFamily: 'inherit',
+                    labels: { colors: '#6b7280' }
+                },
+                tooltip: {
+                    theme: 'light',
+                    y: {
+                        formatter: function(val) {
+                            return val + " طلب"
+                        }
+                    }
+                }
+            };
+            
+            if (appState.charts.trend) {
+                appState.charts.trend.updateOptions(options);
+            } else {
+                appState.charts.trend = new ApexCharts(chartElement, options);
+                appState.charts.trend.render();
+            }
+        }
+
+        function updateChartsPeriod() {
+            // يمكن إضافة منطق تحديث الفترة هنا
+            loadStatistics();
+        }
+
+        function updateTrendPeriod() {
+            // يمكن إضافة منطق تحديث الفترة هنا
+            loadStatistics();
+        }
+
+        // ============ Table Updates ============
+        function updatePendingTable(requests) {
+            const tbody = document.querySelector('#pending-tab tbody');
+            if (!tbody) return;
+            
+            tbody.innerHTML = '';
+            
+            requests.forEach(request => {
+                const row = createPendingRow(request);
+                tbody.appendChild(row);
+            });
+        }
+
+        function updateHistoryTable(requests) {
+            const tbody = document.querySelector('#history-tab tbody');
+            if (!tbody) return;
+            
+            tbody.innerHTML = '';
+            
+            requests.forEach(request => {
+                const row = createHistoryRow(request);
+                tbody.appendChild(row);
+            });
+        }
+
+        function createPendingRow(request) {
+            const row = document.createElement('tr');
+            
+            // إعداد بيانات الصف
+            row.dataset.type = request.permission_type || '';
+            row.dataset.department = request.department_id || '';
+            row.dataset.date = request.created_at || '';
+            
+            // بناء محتوى الصف
+            row.innerHTML = `
+                <td>
+                    <div class="d-flex align-items-center gap-3">
+                        <div class="user-avatar">
+                            ${(request.user?.name || '?')[0]}
+                        </div>
+                        <div>
+                            <h6 class="mb-1">${request.user?.name || 'غير معروف'}</h6>
+                            <small class="text-muted">${request.department?.name || 'غير معين'}</small>
+                        </div>
+                    </div>
+                </td>
+                <td>${createPermissionTypeBadge(request.permission_type)}</td>
+                <td>
+                    <div class="date-display">
+                        <strong class="d-block">${formatDate(request.date)}</strong>
+                        ${request.time ? `<small class="text-muted">${request.time}</small>` : ''}
+                        <small class="text-muted d-block mt-1">
+                            ${formatDateTime(request.created_at)}
+                        </small>
+                    </div>
+                </td>
+                <td>
+                    <span class="balance-badge ${getBalanceClass(request.user?.balance)}">
+                        ${(request.user?.balance || 0) + 1} إذن
+                    </span>
+                </td>
+                <td>${createShiftBadge(request.extra_data)}</td>
+                <td>
+                    <div class="details-tooltip">
+                        <span class="text-truncate d-inline-block" style="max-width: 150px;">
+                            ${request.reason ? request.reason.substring(0, 30) + '...' : '-'}
+                        </span>
+                        ${request.reason ? `
+                        <div class="tooltip-text">
+                            <strong>سبب الإذن:</strong><br>
+                            ${request.reason}
+                        </div>
+                        ` : ''}
+                    </div>
+                </td>
+                <td>${createAttendanceBadge(request.extra_data)}</td>
+                <td class="actions-cell">
+                    <div class="actions-container">
+                        <button class="action-btn approve" onclick="handleApprove(${request.id})" title="موافقة">
+                            <i class="fas fa-check"></i>
+                        </button>
+                        <button class="action-btn reject" onclick="handleReject(${request.id})" title="رفض">
+                            <i class="fas fa-times"></i>
+                        </button>
+                    </div>
+                </td>
+            `;
+            
+            return row;
+        }
+
+        function createHistoryRow(request) {
+            const row = document.createElement('tr');
+            
+            row.dataset.status = request.status || '';
+            row.dataset.date = request.created_at || '';
+            
+            row.innerHTML = `
+                <td>
+                    <div class="d-flex align-items-center gap-3">
+                        <div class="user-avatar">
+                            ${(request.user?.name || '?')[0]}
+                        </div>
+                        <div>
+                            <h6 class="mb-1">${request.user?.name || 'غير معروف'}</h6>
+                            <small class="text-muted">${request.department?.name || 'غير معين'}</small>
+                        </div>
+                    </div>
+                </td>
+                <td>${createPermissionTypeBadge(request.permission_type)}</td>
+                <td>
+                    <div class="date-display">
+                        <strong class="d-block">${formatDate(request.date)}</strong>
+                        ${request.time ? `<small class="text-muted">${request.time}</small>` : ''}
+                    </div>
+                </td>
+                <td>${createStatusBadge(request.status)}</td>
+                <td>
+                    ${request.approved_at ? `
+                    <div class="date-display">
+                        <small class="text-muted d-block">${formatDate(request.approved_at)}</small>
+                        <small class="text-success">${formatTime(request.approved_at)}</small>
+                    </div>
+                    ` : '<span class="text-muted">-</span>'}
+                </td>
+                <td>
+                    ${request.rejection_reason ? `
+                    <div class="details-tooltip">
+                        <span class="text-truncate d-inline-block" style="max-width: 150px;">
+                            ${request.rejection_reason.substring(0, 30)}...
+                        </span>
+                        <div class="tooltip-text">
+                            <strong>سبب الرفض:</strong><br>
+                            ${request.rejection_reason}
+                        </div>
+                    </div>
+                    ` : '<span class="text-muted">-</span>'}
+                </td>
+                <td>
+                    ${request.approved_by?.name || request.updated_by?.name || '<span class="text-muted">-</span>'}
+                </td>
+            `;
+            
+            return row;
+        }
+
+        // ============ Reports Management ============
+        function updateReportsData() {
+            if (!appState.reports) return;
+            
+            updateEmployeeReportTable();
+            updateReportSummary();
+        }
+
+        function updateEmployeeReportTable() {
+            const tbody = document.getElementById('employeeReportBody');
+            if (!tbody || !appState.reports.employees) return;
+            
+            tbody.innerHTML = '';
+            
+            appState.reports.employees.forEach(employee => {
+                const row = document.createElement('tr');
+                row.innerHTML = `
+                    <td>${employee.employee_name}</td>
+                    <td>${employee.department}</td>
+                    <td>${employee.total}</td>
+                    <td>${employee.approved}</td>
+                    <td>${employee.rejected}</td>
+                    <td>${employee.pending}</td>
+                    <td>
+                        <div class="d-flex align-items-center gap-2">
+                            <span>${employee.approval_rate || 0}%</span>
+                            <div class="progress" style="width: 100px; height: 8px;">
+                                <div class="progress-bar bg-success" style="width: ${employee.approval_rate || 0}%"></div>
+                            </div>
+                        </div>
+                    </td>
+                    <td>${employee.avg_hours || 0} ساعة</td>
+                `;
+                tbody.appendChild(row);
+            });
+        }
+
+        function updateReportSummary() {
+            if (!appState.reports.summary) return;
+            
+            document.getElementById('avgProcessingTime').textContent = 
+                appState.reports.summary.avg_processing_time || '0';
+            
+            document.getElementById('peakPermissionType').textContent = 
+                appState.reports.summary.peak_permission_type || 'لا توجد بيانات';
+        }
+
+
+        // Add this function to create mobile card view for pending requests
+        function createMobilePendingCard(request) {
+            const card = document.createElement('div');
+            card.className = `request-card ${request.status || 'pending'}`;
+            
+            // Parse extra data if available
+            let shiftData = {};
+            try {
+                if (request.extra_data) {
+                    shiftData = JSON.parse(request.extra_data);
+                }
+            } catch (e) {
+                console.error('Error parsing extra data:', e);
+            }
+            
+            const balanceClass = getBalanceClass(request.user?.balance);
+            const shiftName = shiftData.shift || '';
+            const attendanceType = shiftData.attendance_type || '';
+            const overtimeHours = shiftData.overtime_hours || 0;
+            
+            card.innerHTML = `
+                <div class="mobile-card-header">
+                    <div>
+                        <div class="d-flex align-items-center mb-2">
+                            <div class="user-avatar me-3">
+                                ${(request.user?.name || '?')[0]}
+                            </div>
+                            <div>
+                                <h6 class="mb-0">${request.user?.name || 'غير معروف'}</h6>
+                                <small class="text-muted">${request.department?.name || 'غير معين'}</small>
+                            </div>
+                        </div>
+                        <div>${createPermissionTypeBadge(request.permission_type)}</div>
+                    </div>
+                    <div class="text-end">
+                        <span class="balance-badge ${balanceClass}">
+                            ${request.user?.balance || 0} إذن
+                        </span>
+                    </div>
+                </div>
+                
+                <div class="row g-3">
+                    <div class="col-6">
+                        <div class="mobile-card-section">
+                            <div class="mobile-card-label">
+                                <i class="fas fa-calendar"></i>
+                                تاريخ الإذن
+                            </div>
+                            <div class="mobile-card-value">${formatDate(request.date)}</div>
+                        </div>
+                    </div>
+                    
+                    <div class="col-6">
+                        <div class="mobile-card-section">
+                            <div class="mobile-card-label">
+                                <i class="fas fa-clock"></i>
+                                وقت الإذن
+                            </div>
+                            <div class="mobile-card-value">${request.time || '-'}</div>
+                        </div>
+                    </div>
+                    
+                    ${shiftName ? `
+                    <div class="col-6">
+                        <div class="mobile-card-section">
+                            <div class="mobile-card-label">
+                                <i class="fas fa-clock"></i>
+                                الشيفت
+                            </div>
+                            <div class="mobile-card-value">
+                                ${createShiftBadge(request.extra_data)}
+                            </div>
+                        </div>
+                    </div>
+                    ` : ''}
+                    
+                    ${attendanceType ? `
+                    <div class="col-6">
+                        <div class="mobile-card-section">
+                            <div class="mobile-card-label">
+                                <i class="fas fa-stopwatch"></i>
+                                التوقيت
+                            </div>
+                            <div class="mobile-card-value">
+                                ${createAttendanceBadge(request.extra_data)}
+                            </div>
+                        </div>
+                    </div>
+                    ` : ''}
+                    
+                    ${overtimeHours > 0 ? `
+                    <div class="col-6">
+                        <div class="mobile-card-section">
+                            <div class="mobile-card-label">
+                                <i class="fas fa-hourglass-half"></i>
+                                ساعات اضافي
+                            </div>
+                            <div class="mobile-card-value">
+                                <div class="overtime-hours mt-1">
+                                    ${overtimeHours}<small>س</small>
+                                </div>
+                            </div>
+                        </div>
+                    </div>
+                    ` : ''}
+                    
+                    <div class="col-12">
+                        <div class="mobile-card-section">
+                            <div class="mobile-card-label">
+                                <i class="fas fa-comment"></i>
+                                سبب الإذن
+                            </div>
+                            <div class="mobile-card-value">
+                                ${request.reason ? request.reason.substring(0, 100) + (request.reason.length > 100 ? '...' : '') : '-'}
+                            </div>
+                        </div>
+                    </div>
+                    
+                    <div class="col-12">
+                        <div class="mobile-card-section">
+                            <div class="mobile-card-label">
+                                <i class="fas fa-calendar-plus"></i>
+                                تاريخ الطلب
+                            </div>
+                            <div class="mobile-card-value">
+                                ${formatDateTime(request.created_at)}
+                            </div>
+                        </div>
+                    </div>
+                </div>
+                
+                <div class="mobile-card-actions justify-content-center">
+                    <button class="action-btn approve" onclick="handleApprove(${request.id})" title="موافقة">
+                        <i class="fas fa-check"></i>
+                        <span class="d-none d-sm-inline"> موافقة</span>
+                    </button>
+                </div>
+                <div class="mobile-card-actions justify-content-center">
+                    <button class="action-btn reject" onclick="handleReject(${request.id})" title="رفض">
+                        <i class="fas fa-times"></i>
+                        <span class="d-none d-sm-inline"> رفض</span>
+                    </button>
+                </div>
+
+            `;
+            
+            return card;
+        }
+
+        // Add this function to create mobile card view for history requests
+        function createMobileHistoryCard(request) {
+            const card = document.createElement('div');
+            card.className = `request-card ${request.status || ''}`;
+            
+            // Parse extra data if available
+            let shiftData = {};
+            try {
+                if (request.extra_data) {
+                    shiftData = JSON.parse(request.extra_data);
+                }
+            } catch (e) {
+                console.error('Error parsing extra data:', e);
+            }
+            
+            const shiftName = shiftData.shift || '';
+            const attendanceType = shiftData.attendance_type || '';
+            const overtimeHours = shiftData.overtime_hours || 0;
+            
+            card.innerHTML = `
+                <div class="mobile-card-header">
+                    <div>
+                        <div class="d-flex align-items-center mb-2">
+                            <div class="user-avatar me-3">
+                                ${(request.user?.name || '?')[0]}
+                            </div>
+                            <div>
+                                <h6 class="mb-0">${request.user?.name || 'غير معروف'}</h6>
+                                <small class="text-muted">${request.department?.name || 'غير معين'}</small>
+                            </div>
+                        </div>
+                        <div>${createPermissionTypeBadge(request.permission_type)}</div>
+                    </div>
+                    <div class="text-end">
+                        ${createStatusBadge(request.status)}
+                    </div>
+                </div>
+                
+                <div class="row g-3">
+                    <div class="col-6">
+                        <div class="mobile-card-section">
+                            <div class="mobile-card-label">
+                                <i class="fas fa-calendar"></i>
+                                تاريخ الإذن
+                            </div>
+                            <div class="mobile-card-value">${formatDate(request.date)}</div>
+                        </div>
+                    </div>
+                    
+                    ${request.time ? `
+                    <div class="col-6">
+                        <div class="mobile-card-section">
+                            <div class="mobile-card-label">
+                                <i class="fas fa-clock"></i>
+                                وقت الإذن
+                            </div>
+                            <div class="mobile-card-value">${request.time}</div>
+                        </div>
+                    </div>
+                    ` : ''}
+                    
+                    ${shiftName ? `
+                    <div class="col-6">
+                        <div class="mobile-card-section">
+                            <div class="mobile-card-label">
+                                <i class="fas fa-clock"></i>
+                                الشيفت
+                            </div>
+                            <div class="mobile-card-value">
+                                ${createShiftBadge(request.extra_data)}
+                            </div>
+                        </div>
+                    </div>
+                    ` : ''}
+                    
+                    ${attendanceType ? `
+                    <div class="col-6">
+                        <div class="mobile-card-section">
+                            <div class="mobile-card-label">
+                                <i class="fas fa-stopwatch"></i>
+                                التوقيت
+                            </div>
+                            <div class="mobile-card-value">
+                                ${createAttendanceBadge(request.extra_data)}
+                            </div>
+                        </div>
+                    </div>
+                    ` : ''}
+                    
+                    ${overtimeHours > 0 ? `
+                    <div class="col-6">
+                        <div class="mobile-card-section">
+                            <div class="mobile-card-label">
+                                <i class="fas fa-hourglass-half"></i>
+                                ساعات اضافي
+                            </div>
+                            <div class="mobile-card-value">
+                                <div class="overtime-hours mt-1">
+                                    ${overtimeHours}<small>س</small>
+                                </div>
+                            </div>
+                        </div>
+                    </div>
+                    ` : ''}
+                    
+                    <div class="col-12">
+                        <div class="mobile-card-section">
+                            <div class="mobile-card-label">
+                                <i class="fas fa-comment"></i>
+                                سبب الإذن
+                            </div>
+                            <div class="mobile-card-value">
+                                ${request.reason ? request.reason.substring(0, 100) + (request.reason.length > 100 ? '...' : '') : '-'}
+                            </div>
+                        </div>
+                    </div>
+                    
+                    ${request.rejection_reason ? `
+                    <div class="col-12">
+                        <div class="mobile-card-section">
+                            <div class="mobile-card-label">
+                                <i class="fas fa-times-circle text-danger"></i>
+                                سبب الرفض
+                            </div>
+                            <div class="mobile-card-value text-danger">
+                                ${request.rejection_reason.substring(0, 100) + (request.rejection_reason.length > 100 ? '...' : '')}
+                            </div>
+                        </div>
+                    </div>
+                    ` : ''}
+                    
+                    <div class="col-6">
+                        <div class="mobile-card-section">
+                            <div class="mobile-card-label">
+                                <i class="fas fa-calendar-check"></i>
+                                تاريخ القرار
+                            </div>
+                            <div class="mobile-card-value">
+                                ${request.approved_at ? formatDate(request.approved_at) : '-'}
+                            </div>
+                        </div>
+                    </div>
+                    
+                    <div class="col-6">
+                        <div class="mobile-card-section">
+                            <div class="mobile-card-label">
+                                <i class="fas fa-user-check"></i>
+                                معالج بواسطة
+                            </div>
+                            <div class="mobile-card-value">
+                                ${request.approved_by?.username || request.updated_by?.username || '-'}
+                            </div>
+                        </div>
+                    </div>
+                </div>
+            `;
+            
+            return card;
+        }
+
+        // Add this function to update pending table with mobile cards
+        function updatePendingTable(requests) {
+            const tbody = document.querySelector('#pending-tab tbody');
+            const mobileContainer = document.querySelector('#pending-tab .d-lg-none');
+            
+            if (!tbody) return;
+            
+            // Clear existing content
+            tbody.innerHTML = '';
+            
+            if (mobileContainer) {
+                mobileContainer.innerHTML = '';
+            }
+            
+            requests.forEach(request => {
+                // Create table row for desktop
+                const row = createPendingRow(request);
+                tbody.appendChild(row);
+                
+                // Create mobile card
+                if (mobileContainer) {
+                    const card = createMobilePendingCard(request);
+                    mobileContainer.appendChild(card);
+                }
+            });
+        }
+
+        // Add this function to update history table with mobile cards
+        function updateHistoryTable(requests) {
+            const tbody = document.querySelector('#history-tab tbody');
+            const mobileContainer = document.querySelector('#history-tab .d-lg-none');
+            
+            if (!tbody) return;
+            
+            // Clear existing content
+            tbody.innerHTML = '';
+            
+            if (mobileContainer) {
+                mobileContainer.innerHTML = '';
+            }
+            
+            requests.forEach(request => {
+                // Create table row for desktop
+                const row = createHistoryRow(request);
+                tbody.appendChild(row);
+                
+                // Create mobile card
+                if (mobileContainer) {
+                    const card = createMobileHistoryCard(request);
+                    mobileContainer.appendChild(card);
+                }
+            });
+        }
+
+
+        // ============ Statistics Cards ============
+        async function updateStatisticsCards() {
+            try {
+                const response = await fetch('/api/manager/permission_stats_summary');
+                const data = await response.json();
+                
+                if (data.success) {
+                    const stats = data.statistics;
+                    
+                    // تحديث البطاقات
+                    updateStatCard('totalPermissions', stats.total_permissions);
+                    updateStatCard('pendingCount', stats.pending_permissions);
+                    updateStatCard('approvedCount', stats.approved_permissions);
+                    updateStatCard('rejectedCount', stats.rejected_permissions);
+                    
+                    // تحديث الاتجاهات
+                    updateStatTrend('totalTrend', stats.current_month_requests > 0, 
+                        `${stats.current_month_requests || 0} هذا الشهر`);
+                    updateStatTrend('pendingTrend', stats.pending_permissions > 0,
+                        `${stats.pending_permissions || 0} طلب`);
+                    updateStatTrend('approvalTrend', (stats.approval_rate || 0) > 50,
+                        `${stats.approval_rate || 0}% معدل القبول`);
+                    updateStatTrend('rejectedTrend', stats.rejected_permissions > 0,
+                        `${stats.rejected_permissions || 0} طلب`);
+                }
+            } catch (error) {
+                console.error('Error updating statistics cards:', error);
+            }
+        }
+
+        function updateStatCard(elementId, value) {
+            const element = document.getElementById(elementId);
+            if (element) {
+                element.textContent = value || 0;
+            }
+        }
+
+        function updateStatTrend(elementId, isUp, text) {
+            const element = document.getElementById(elementId);
+            if (!element) return;
+            
+            const icon = element.querySelector('i');
+            if (icon) {
+                icon.className = isUp ? 'fas fa-arrow-up' : 'fas fa-arrow-down';
+            }
+            
+            element.className = `stat-trend ${isUp ? 'up' : 'down'}`;
+            
+            const span = element.querySelector('span');
+            if (span) {
+                span.textContent = text;
+            }
+        }
+
+        // ============ Action Handlers ============
+        async function handleApprove(requestId) {
+            if (!confirm('هل تريد الموافقة على طلب الإذن؟')) return;
+            
+            try {
+                showLoading(true);
+                const response = await fetch(`/manager/approve_permission/${requestId}`);
+                
+                if (response.ok) {
+                    showAlert('تم الموافقة على الطلب بنجاح', 'success');
+                    await reloadCurrentTab();
+                } else {
+                    showAlert('حدث خطأ أثناء الموافقة', 'error');
+                }
+            } catch (error) {
+                console.error('Error approving request:', error);
+                showAlert('حدث خطأ في الاتصال', 'error');
+            } finally {
+                showLoading(false);
+            }
+        }
+
+        async function handleReject(requestId) {
+            const reason = prompt('يرجى كتابة سبب الرفض:');
+            if (!reason || reason.trim().length === 0) {
+                if (reason !== null) {
+                    alert('يرجى كتابة سبب الرفض');
+                }
+                return;
+            }
+            
+            if (!confirm('هل أنت متأكد من رفض هذا الطلب؟')) return;
+            
+            try {
+                showLoading(true);
+                const response = await fetch(`/manager/reject_permission/${requestId}`, {
+                    method: 'POST',
+                    headers: {
+                        'Content-Type': 'application/json',
+                    },
+                    body: JSON.stringify({ rejection_reason: reason.trim() })
+                });
+                
+                if (response.ok) {
+                    showAlert('تم رفض الطلب بنجاح', 'success');
+                    await reloadCurrentTab();
+                } else {
+                    showAlert('حدث خطأ أثناء رفض الطلب', 'error');
+                }
+            } catch (error) {
+                console.error('Error rejecting request:', error);
+                showAlert('حدث خطأ في الاتصال', 'error');
+            } finally {
+                showLoading(false);
+            }
+        }
+
+        // ============ Export & Print ============
+        async function exportReport() {
+            try {
+                showLoading(true);
+                const startDate = document.getElementById('startDate').value;
+                const endDate = document.getElementById('endDate').value;
+                
+                const response = await fetch(
+                    `/export/permission_report?start_date=${startDate}&end_date=${endDate}`
+                );
+                
+                if (response.ok) {
+                    const blob = await response.blob();
+                    const url = window.URL.createObjectURL(blob);
+                    const a = document.createElement('a');
+                    a.href = url;
+                    a.download = `تقرير_الإذونات_${startDate}_إلى_${endDate}.xlsx`;
+                    document.body.appendChild(a);
+                    a.click();
+                    window.URL.revokeObjectURL(url);
+                    document.body.removeChild(a);
+                    
+                    showAlert('تم تحميل التقرير بنجاح', 'success');
+                } else {
+                    showAlert('حدث خطأ في تحميل التقرير', 'error');
+                }
+            } catch (error) {
+                console.error('Error exporting report:', error);
+                showAlert('حدث خطأ في تصدير التقرير', 'error');
+            } finally {
+                showLoading(false);
+            }
+        }
+
+        function printReport() {
+            window.print();
+        }
+
+        // ============ Utility Functions ============
+        function showLoading(show = true) {
+            let overlay = document.getElementById('loadingOverlay');
+            
+            if (!overlay && show) {
+                overlay = document.createElement('div');
+                overlay.id = 'loadingOverlay';
+                overlay.className = 'loading-overlay';
+                overlay.innerHTML = `
+                    <div class="loading-spinner"></div>
+                    <div class="text-white">جاري المعالجة...</div>
+                `;
+                document.body.appendChild(overlay);
+            } else if (overlay) {
+                overlay.style.display = show ? 'flex' : 'none';
+            }
+        }
+
+        function showAlert(message, type = 'success') {
+            const alert = document.createElement('div');
+            alert.className = `alert alert-${type} alert-dismissible fade show mb-2`;
+            alert.innerHTML = `
+                <i class="fas fa-${getAlertIcon(type)} me-2"></i>
+                ${message}
+                <button type="button" class="btn-close" data-bs-dismiss="alert" aria-label="Close"></button>
+            `;
+            
+            const container = document.querySelector('.alert-container');
+            if (container) {
+                container.insertBefore(alert, container.firstChild);
+                
+                setTimeout(() => {
+                    if (alert.parentNode === container) {
+                        alert.remove();
+                    }
+                }, 5000);
+            }
+        }
+
+        function getAlertIcon(type) {
+            const icons = {
+                'success': 'check-circle',
+                'error': 'exclamation-triangle',
+                'warning': 'exclamation-circle',
+                'info': 'info-circle'
+            };
+            return icons[type] || 'info-circle';
+        }
+
+        function updateTabBadge(tabId, count) {
+            const badge = document.querySelector(`[data-tab="${tabId}"] .tab-badge`);
+            if (badge) {
+                badge.textContent = count;
+            }
+        }
+
+        async function reloadCurrentTab() {
+            await loadTabData(appState.currentTab);
+        }
+
+        // ============ Helper Functions ============
+        function createPermissionTypeBadge(type) {
+            if (!type) return '<span class="badge bg-secondary">غير محدد</span>';
+            
+            const badges = {
+                'اذن حضور': { class: 'badge-attendance', icon: 'fas fa-sign-in-alt', text: 'حضور' },
+                'اذن انصراف': { class: 'badge-leave', icon: 'fas fa-sign-out-alt', text: 'انصراف' },
+                'اذن نسيان': { class: 'badge-forgot', icon: 'fas fa-fingerprint', text: 'نسيان توقيع' },
+                'اذن تبديل': { class: 'badge-exchange', icon: 'fas fa-exchange-alt', text: 'تبديل وردية' },
+                'اذن طلب ساعات': { class: 'badge-overtime', icon: 'fas fa-clock', text: 'ساعات اضافي' }
+            };
+            
+            const match = Object.entries(badges).find(([key]) => type.includes(key));
+            
+            if (match) {
+                const [key, badge] = match;
+                return `
+                    <span class="permission-type-badge ${badge.class}">
+                        <i class="${badge.icon} me-1"></i>
+                        ${badge.text}
+                    </span>
+                `;
+            }
+            
+            return `<span class="badge bg-secondary">${type}</span>`;
+        }
+
+        function createStatusBadge(status) {
+            const badges = {
+                'approved': { class: 'badge-approved', icon: 'fas fa-check', text: 'مقبولة' },
+                'rejected': { class: 'badge-rejected', icon: 'fas fa-times', text: 'مرفوضة' },
+                'pending': { class: 'badge-pending', icon: 'fas fa-clock', text: 'معلقة' }
+            };
+            
+            const badge = badges[status] || { class: 'bg-secondary', icon: 'fas fa-question', text: status };
+            
+            return `
+                <span class="status-badge ${badge.class}">
+                    <i class="${badge.icon} me-1"></i>${badge.text}
+                </span>
+            `;
+        }
+
+        function createShiftBadge(extraData) {
+            if (!extraData) return '<span class="text-muted small">-</span>';
+            
+            try {
+                const data = JSON.parse(extraData);
+                const shift = data.shift;
+                
+                if (!shift) return '<span class="text-muted small">-</span>';
+                
+                if (shift.includes('صباحي')) {
+                    return '<span class="shift-badge morning"><i class="fas fa-sun"></i> صباحي</span>';
+                } else if (shift.includes('مسائي')) {
+                    return '<span class="shift-badge evening"><i class="fas fa-moon"></i> مسائي</span>';
+                } else if (shift.includes('ليلي')) {
+                    return '<span class="shift-badge evening"><i class="fas fa-moon-stars"></i> ليلي</span>';
+                }
+                
+                return `<span class="shift-badge">${shift}</span>`;
+            } catch {
+                return '<span class="text-muted small">-</span>';
+            }
+        }
+
+        function createAttendanceBadge(extraData) {
+            if (!extraData) return '<span class="text-muted small">-</span>';
+            
+            try {
+                const data = JSON.parse(extraData);
+                const attendanceType = data.attendance_type;
+                
+                if (!attendanceType) return '<span class="text-muted small">-</span>';
+                
+                const isCheckIn = attendanceType.includes('حضور');
+                return `
+                    <span class="attendance-type-badge ${isCheckIn ? 'check-in' : 'check-out'}">
+                        ${attendanceType}
+                    </span>
+                `;
+            } catch {
+                return '<span class="text-muted small">-</span>';
+            }
+        }
+
+        function getBalanceClass(balance) {
+            if (balance > 3) return 'high';
+            if (balance > 1) return 'medium';
+            return 'low';
+        }
+
+        function formatDate(dateString) {
+            if (!dateString) return '-';
+            const date = new Date(dateString);
+            return date.toLocaleDateString('ar-EG');
+        }
+
+        function formatDateTime(dateString) {
+            if (!dateString) return '';
+            const date = new Date(dateString);
+            return date.toLocaleString('ar-EG', {
+                year: 'numeric',
+                month: 'numeric',
+                day: 'numeric',
+                hour: '2-digit',
+                minute: '2-digit'
+            });
+        }
+
+        function formatTime(dateString) {
+            if (!dateString) return '';
+            const date = new Date(dateString);
+            return date.toLocaleTimeString('ar-EG', {
+                hour: '2-digit',
+                minute: '2-digit'
+            });
+        }
+
+        function formatMonthLabel(monthKey) {
+            const [year, month] = monthKey.split('-');
+            const monthNames = [
+                'يناير', 'فبراير', 'مارس', 'أبريل', 'مايو', 'يونيو',
+                'يوليو', 'أغسطس', 'سبتمبر', 'أكتوبر', 'نوفمبر', 'ديسمبر'
+            ];
+            return `${monthNames[parseInt(month) - 1]} ${year}`;
+        }
+
+        function isSameDay(date1, date2) {
+            return date1.getDate() === date2.getDate() &&
+                date1.getMonth() === date2.getMonth() &&
+                date1.getFullYear() === date2.getFullYear();
+        }
+
+        function isWithinLastDays(date, days) {
+            const today = new Date();
+            const daysAgo = new Date(today.getTime() - (days * 24 * 60 * 60 * 1000));
+            return date >= daysAgo;
+        }
+
+        // ============ Global Functions ============
+        window.handleApprove = handleApprove;
+        window.handleReject = handleReject;
+        window.openRejectModal = handleReject; // للتوافق مع الكود القديم
+        window.generateReport = exportReport;
+        window.printReport = printReport;
+    });
+    </script>
+
+</body>
+</html>

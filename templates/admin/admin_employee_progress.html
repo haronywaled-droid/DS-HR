@@ -1,0 +1,131 @@
+{% extends "layouts/admin_base.html" %}
+
+{% block title %}تقدم الموظفين{% endblock %}
+
+{% block admin_content %}
+<div class="d-flex justify-content-between flex-wrap flex-md-nowrap align-items-center pt-3 pb-2 mb-3 border-bottom">
+    <h1 class="h2">تقدم الموظفين في تعبئة البيانات</h1>
+</div>
+
+<div class="card">
+    <div class="card-header">
+        <h5 class="card-title mb-0">إحصائيات التقدم</h5>
+    </div>
+    <div class="card-body">
+        <div class="row">
+            <div class="col-md-3 text-center">
+                <div class="card bg-primary text-white">
+                    <div class="card-body">
+                        <h3>{{ employee_data_list | length }}</h3>
+                        <p>إجمالي الموظفين</p>
+                    </div>
+                </div>
+            </div>
+            <div class="col-md-3 text-center">
+                <div class="card bg-success text-white">
+                    <div class="card-body">
+                        <h3>{{ employee_data_list | selectattr('data.completion_percentage', 'equalto', 100) | list | length }}</h3>
+                        <p>مكتملو البيانات</p>
+                    </div>
+                </div>
+            </div>
+            <div class="col-md-3 text-center">
+                <div class="card bg-warning text-white">
+                    <div class="card-body">
+                        <h3>{{ employee_data_list | selectattr('data.completion_percentage', 'lessthan', 100) | selectattr('data.completion_percentage', 'greaterthan', 0) | list | length }}</h3>
+                        <p>غير مكتملين</p>
+                    </div>
+                </div>
+            </div>
+            <div class="col-md-3 text-center">
+                <div class="card bg-danger text-white">
+                    <div class="card-body">
+                        <h3>{{ employee_data_list | selectattr('data.completion_percentage', 'equalto', 0) | list | length }}</h3>
+                        <p>لم يبدؤوا</p>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </div>
+</div>
+
+<div class="card mt-4">
+    <div class="card-header">
+        <h5 class="card-title mb-0">تفاصيل تقدم الموظفين</h5>
+    </div>
+    <div class="card-body">
+        <div class="table-responsive">
+            <table class="table table-striped">
+                <thead>
+                    <tr>
+                        <th>الموظف</th>
+                        <th>نسبة الإكتمال</th>
+                        <th>الحقول المفقودة</th>
+                        <th>آخر تحديث</th>
+                        <th>الحالة</th>
+                        <th>الإجراءات</th>
+                    </tr>
+                </thead>
+                <tbody>
+                    {% for item in employee_data_list %}
+                    <tr>
+                        <td>{{ item.user.name }}</td>
+                        <td>
+                            <div class="progress" style="height: 20px;">
+                                <div class="progress-bar {% if item.data.completion_percentage == 100 %}bg-success{% elif item.data.completion_percentage > 50 %}bg-warning{% else %}bg-danger{% endif %}" 
+                                     style="width: {{ item.data.completion_percentage }}%">
+                                    {{ item.data.completion_percentage }}%
+                                </div>
+                            </div>
+                        </td>
+                        <td>
+                            {% if item.missing_fields %}
+                                <span class="badge bg-danger">{{ item.missing_fields | length }}</span>
+                            {% else %}
+                                <span class="badge bg-success">مكتمل</span>
+                            {% endif %}
+                        </td>
+                        <td>
+                            {% if item.data.last_updated %}
+                                {{ item.data.last_updated.strftime('%Y-%m-%d') }}
+                            {% else %}
+                                <span class="text-muted">لم يتم التحديث</span>
+                            {% endif %}
+                        </td>
+                        <td>
+                            {% if item.data.completion_percentage == 100 %}
+                                <span class="badge bg-success">مكتمل</span>
+                            {% elif item.data.completion_percentage > 0 %}
+                                <span class="badge bg-warning">غير مكتمل</span>
+                            {% else %}
+                                <span class="badge bg-danger">لم يبدأ</span>
+                            {% endif %}
+                        </td>
+                        <td>
+                            <div class="btn-group btn-group-sm">
+                                <a href="{{ url_for('view_user_data', user_id=item.user.id) }}" 
+                                   class="btn btn-outline-info" title="عرض البيانات">
+                                    <i class="fas fa-eye"></i>
+                                </a>
+                                {% if item.data.completion_percentage < 100 %}
+                                <a href="{{ url_for('request_data_update', user_id=item.user.id) }}" 
+                                   class="btn btn-outline-warning" title="طلب تحديث البيانات">
+                                    <i class="fas fa-sync-alt"></i>
+                                </a>
+                                {% endif %}
+                                {% if item.data %}
+                                <a href="{{ url_for('export_user_data', user_id=item.user.id) }}" 
+                                   class="btn btn-outline-success" title="تصدير البيانات">
+                                    <i class="fas fa-download"></i>
+                                </a>
+                                {% endif %}
+                            </div>
+                        </td>
+                    </tr>
+                    {% endfor %}
+                </tbody>
+            </table>
+        </div>
+    </div>
+</div>
+{% endblock %}

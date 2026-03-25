@@ -1,0 +1,150 @@
+{% extends "layouts/base.html" %}
+
+{% block content %}
+<div class="container-fluid">
+    <div class="row">
+        <!-- Sidebar -->
+        <nav class="col-md-3 col-lg-2 d-md-block sidebar collapse">
+            <div class="position-sticky pt-3">
+                <div class="text-center mb-4">
+                    <h4>نظام الموارد البشرية</h4>
+                    <p class="text-light">لوحة المدير</p>
+                </div>
+                
+                <ul class="nav flex-column">
+                    <li class="nav-item">
+                        <a class="nav-link {% if request.endpoint == 'manager_dashboard' %}active{% endif %}" 
+                           href="{{ url_for('manager_dashboard') }}">
+                            <i class="fas fa-tachometer-alt me-2"></i>
+                            لوحة التحكم
+                        </a>
+                    </li>
+                    <li class="nav-item">
+                        <a class="nav-link {% if request.endpoint == 'manager_employees' %}active{% endif %}" 
+                           href="{{ url_for('manager_employees') }}">
+                            <i class="fas fa-users me-2"></i>
+                            موظفي القسم
+                        </a>
+                    </li>
+                    <li class="nav-item">
+                        <a class="nav-link {% if request.endpoint == 'manager_schedule' %}active{% endif %}" 
+                           href="{{ url_for('manager_schedule') }}">
+                            <i class="fas fa-calendar-alt me-2"></i>
+                            جدولة الموظفين
+                        </a>
+                    </li>
+                    <li class="nav-item">
+                        <a class="nav-link {% if request.endpoint == 'manager_leave_requests' %}active{% endif %}" 
+                           href="{{ url_for('manager_leave_requests') }}">
+                            <i class="fas fa-calendar-minus me-2"></i>
+                            طلبات الإجازات
+                            {% if stats and stats.pending_leaves > 0 %}
+                            <span class="badge bg-danger notification-badge">{{ stats.pending_leaves }}</span>
+                            {% endif %}
+                        </a>
+                    </li>
+                    <li class="nav-item">
+                        <a class="nav-link {% if request.endpoint == 'manager_permission_requests' %}active{% endif %}" 
+                           href="{{ url_for('manager_permission_requests') }}">
+                            <i class="fas fa-clock me-2"></i>
+                            طلبات الإذونات
+                            {% if stats and 'pending_permissions' in stats and stats['pending_permissions'] > 0 %}
+                            <span class="badge bg-danger notification-badge">{{ stats.pending_permissions }}</span>
+                            {% endif %}
+                        </a>
+                    </li>
+                    <li class="nav-item">
+                        <a class="nav-link {% if request.endpoint == 'manager_advance_requests' %}active{% endif %}" 
+                           href="{{ url_for('manager_advance_requests') }}">
+                            <i class="fas fa-money-bill-wave me-2"></i>
+                            طلبات السلف
+                            {% if stats and stats.pending_advances > 0 %}
+                            <span class="badge bg-danger notification-badge">{{ stats.pending_advances }}</span>
+                            {% endif %}
+                        </a>
+                    </li>
+                    <li class="nav-item">
+                        <a class="nav-link {% if request.endpoint == 'manager_rewards_penalties' %}active{% endif %}" 
+                           href="{{ url_for('manager_rewards_penalties') }}">
+                            <i class="fas fa-award me-2"></i>
+                            المكافآت والخصومات
+                        </a>
+                    </li>
+                    {% if current_user.is_admin %}
+                    <li class="nav-item mt-3">
+                        <a class="nav-link text-warning" href="{{ url_for('admin_dashboard') }}">
+                            <i class="fas fa-user-shield me-2"></i>
+                            لوحة المسؤول
+                        </a>
+                    </li>
+                    {% endif %}
+                </ul>
+            </div>
+        </nav>
+
+        <!-- Main content -->
+        <main class="col-md-9 ms-sm-auto col-lg-10 main-content">
+            <!-- Navbar -->
+            <nav class="navbar navbar-expand-lg navbar-light bg-white shadow-sm">
+                <div class="container-fluid">
+                    <button class="navbar-toggler" type="button" data-bs-toggle="collapse" 
+                            data-bs-target="#navbarSupportedContent">
+                        <span class="navbar-toggler-icon"></span>
+                    </button>
+                    
+                    <div class="collapse navbar-collapse" id="navbarSupportedContent">
+                        <ul class="navbar-nav me-auto mb-2 mb-lg-0">
+                            <li class="nav-item">
+                                <span class="navbar-text">
+                                    مرحباً، {{ current_user.name }}
+                                    <small class="text-muted">(مدير)</small>
+                                </span>
+                            </li>
+                        </ul>
+                        
+                        <div class="d-flex align-items-center">
+                            <!-- Notifications -->
+                            {% include 'shared/components/notification_bell.html' %}
+                            
+                            <!-- User menu -->
+                            <div class="dropdown">
+                                <button class="btn btn-outline-secondary dropdown-toggle" type="button" 
+                                        data-bs-toggle="dropdown">
+                                    <i class="fas fa-user me-2"></i>
+                                    {{ current_user.username }}
+                                </button>
+                                <ul class="dropdown-menu">
+                                    <li><a class="dropdown-item" href="{{ url_for('notifications') }}">
+                                        <i class="fas fa-bell me-2"></i>الإشعارات
+                                    </a></li>
+                                    <li><hr class="dropdown-divider"></li>
+                                    <li><a class="dropdown-item" href="{{ url_for('logout') }}">
+                                        <i class="fas fa-sign-out-alt me-2"></i>تسجيل الخروج
+                                    </a></li>
+                                </ul>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+            </nav>
+
+            <!-- Page content -->
+            <div class="container-fluid mt-4">
+                <!-- Flash messages -->
+                {% with messages = get_flashed_messages() %}
+                    {% if messages %}
+                        {% for message in messages %}
+                            <div class="alert alert-info alert-dismissible fade show" role="alert">
+                                {{ message }}
+                                <button type="button" class="btn-close" data-bs-dismiss="alert"></button>
+                            </div>
+                        {% endfor %}
+                    {% endif %}
+                {% endwith %}
+
+                {% block manager_content %}{% endblock %}
+            </div>
+        </main>
+    </div>
+</div>
+{% endblock %}

@@ -1,0 +1,3324 @@
+<!DOCTYPE html>
+<html lang="ar" dir="rtl">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>جداول الموظفين - نظام إدارة الموارد البشرية</title>
+    
+    <!-- Bootstrap 5 CSS -->
+    <link href="https://cdn.jsdelivr.net/npm/bootstrap@5.3.0/dist/css/bootstrap.min.css" rel="stylesheet">
+    
+    <!-- Bootstrap Icons -->
+    <link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/bootstrap-icons@1.10.0/font/bootstrap-icons.css">
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.0.0/css/all.min.css">
+    
+
+    <style>
+        .week-action-btn.copy {
+            background: linear-gradient(135deg, #8b5cf6 0%, #7c3aed 100%);
+            color: white;
+        }
+
+        .week-action-btn.copy:hover {
+            background: linear-gradient(135deg, #7c3aed 0%, #6d28d9 100%);
+            transform: translateY(-2px);
+            box-shadow: 0 5px 15px rgba(124, 58, 237, 0.3);
+        }
+
+        :root {
+            --primary-green: #10b981;
+            --dark-green: #059669;
+            --light-green: #34d399;
+            --accent-green: #a7f3d0;
+            --gradient-primary: linear-gradient(135deg, #10b981 0%, #059669 100%);
+            --gradient-secondary: linear-gradient(135deg, #34d399 0%, #10b981 100%);
+            --gradient-dark: linear-gradient(135deg, #065f46 0%, #047857 100%);
+            --gradient-success: linear-gradient(135deg, #a7f3d0 0%, #6ee7b7 100%);
+            --header-height: 130px;
+        }
+        
+        * {
+            margin: 0;
+            padding: 0;
+            box-sizing: border-box;
+        }
+        
+        body {
+            font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif;
+            background: #f8fdf9;
+            min-height: 100vh;
+            overflow-x: hidden;
+            padding-top: var(--header-height);
+            color: #1a4731;
+        }
+        
+        /* Unified Navigation Bar */
+        .unified-nav {
+            background: var(--gradient-dark);
+            color: white;
+            position: fixed;
+            top: 0;
+            right: 0;
+            left: 0;
+            height: var(--header-height);
+            z-index: 1000;
+            box-shadow: 0 4px 20px rgba(5, 150, 105, 0.25);
+            border-bottom: 1px solid rgba(255, 255, 255, 0.1);
+        }
+        
+        .unified-nav-container {
+            display: flex;
+            flex-direction: column;
+            height: 100%;
+            padding: 0 1rem;
+        }
+        
+        .nav-top-section {
+            display: flex;
+            align-items: center;
+            justify-content: space-between;
+            height: 70px;
+            flex-shrink: 0;
+            padding: 0.5rem 0;
+        }
+        
+        .nav-bottom-section {
+            display: flex;
+            align-items: center;
+            justify-content: space-between;
+            height: 60px;
+            flex-shrink: 0;
+            border-top: 1px solid rgba(255, 255, 255, 0.15);
+            position: relative;
+        }
+        
+        .nav-brand-section {
+            display: flex;
+            align-items: center;
+            flex-shrink: 0;
+            min-width: 0;
+        }
+        
+        .logo-container {
+            width: 45px;
+            height: 45px;
+            background: var(--gradient-primary);
+            border-radius: 10px;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            box-shadow: 0 4px 12px rgba(16, 185, 129, 0.4);
+            margin-left: 0.5rem;
+            flex-shrink: 0;
+        }
+        
+        .welcome-section {
+            display: flex;
+            align-items: center;
+            flex-grow: 1;
+            justify-content: center;
+            color: white;
+            text-align: center;
+            min-width: 0;
+            overflow: hidden;
+        }
+        
+        .welcome-content {
+            min-width: 0;
+            overflow: hidden;
+        }
+        
+        .welcome-content h4 {
+            margin-bottom: 0.2rem;
+            font-weight: 600;
+            font-size: 1.1rem;
+            white-space: nowrap;
+            overflow: hidden;
+            text-overflow: ellipsis;
+        }
+        
+        .welcome-content p {
+            margin-bottom: 0;
+            font-size: 0.85rem;
+            opacity: 0.9;
+            white-space: nowrap;
+            overflow: hidden;
+            text-overflow: ellipsis;
+        }
+        
+        .nav-user-section {
+            display: flex;
+            align-items: center;
+            flex-shrink: 0;
+            min-width: 0;
+        }
+        
+        .nav-menu-section {
+            display: flex;
+            align-items: center;
+            flex-grow: 1;
+            height: 100%;
+            position: relative;
+            min-width: 0;
+        }
+        
+        .nav-menu-wrapper {
+            display: flex;
+            align-items: center;
+            height: 100%;
+            overflow-x: auto;
+            overflow-y: hidden;
+            scroll-behavior: smooth;
+            -webkit-overflow-scrolling: touch;
+            width: 100%;
+            padding: 0 0.5rem;
+            scrollbar-width: thin;
+            scrollbar-color: var(--primary-green) rgba(255, 255, 255, 0.1);
+            min-width: 0;
+        }
+        
+        /* Custom scrollbar for nav menu */
+        .nav-menu-wrapper::-webkit-scrollbar {
+            height: 6px;
+        }
+        
+        .nav-menu-wrapper::-webkit-scrollbar-track {
+            background: rgba(255, 255, 255, 0.1);
+            border-radius: 10px;
+        }
+        
+        .nav-menu-wrapper::-webkit-scrollbar-thumb {
+            background: var(--primary-green);
+            border-radius: 10px;
+        }
+        
+        .nav-menu-wrapper::-webkit-scrollbar-thumb:hover {
+            background: var(--light-green);
+        }
+        
+        .unified-nav .nav-link {
+            color: rgba(255, 255, 255, 0.9);
+            padding: 0.7rem 1.2rem;
+            margin: 0 0.2rem;
+            border-radius: 10px;
+            transition: all 0.3s ease;
+            font-weight: 500;
+            position: relative;
+            border: 1px solid transparent;
+            display: flex;
+            align-items: center;
+            text-decoration: none;
+            font-size: 0.9rem;
+            white-space: nowrap;
+            height: 80%;
+            flex-shrink: 0;
+            background: rgba(255, 255, 255, 0.05);
+            min-width: max-content;
+        }
+        
+        .unified-nav .nav-link:hover {
+            color: white;
+            background: rgba(255, 255, 255, 0.12);
+            border: 1px solid rgba(255, 255, 255, 0.2);
+            transform: translateY(-2px);
+            box-shadow: 0 4px 12px rgba(0, 0, 0, 0.15);
+        }
+        
+        .unified-nav .nav-link.active {
+            background: rgba(255, 255, 255, 0.15);
+            color: white;
+            border: 1px solid rgba(255, 255, 255, 0.25);
+            box-shadow: 0 4px 12px rgba(0, 0, 0, 0.2);
+        }
+        
+        .unified-nav .nav-link.active::after {
+            content: '';
+            position: absolute;
+            bottom: -10px;
+            right: 50%;
+            transform: translateX(50%);
+            width: 70%;
+            height: 3px;
+            background: var(--accent-green);
+            border-radius: 4px 4px 0 0;
+        }
+        
+        .nav-badge {
+            background: var(--accent-green);
+            color: #065f46;
+            padding: 0.2rem 0.4rem;
+            border-radius: 8px;
+            font-size: 0.65rem;
+            font-weight: bold;
+            margin-right: 0.3rem;
+            position: absolute;
+            top: 5px;
+            right: 5px;
+            box-shadow: 0 2px 4px rgba(0, 0, 0, 0.1);
+        }
+        
+        .nav-link-with-badge {
+            position: relative;
+        }
+        
+        .notification-badge {
+            position: absolute;
+            top: -5px;
+            right: -5px;
+            font-size: 0.7rem;
+            background: var(--gradient-secondary);
+            border: 2px solid white;
+            box-shadow: 0 2px 8px rgba(16, 185, 129, 0.4);
+        }
+        
+        .user-avatar {
+            width: 38px;
+            height: 38px;
+            background: var(--gradient-primary);
+            border-radius: 50%;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            color: white;
+            font-weight: bold;
+            font-size: 1rem;
+            box-shadow: 0 4px 10px rgba(16, 185, 129, 0.4);
+            transition: all 0.3s ease;
+            flex-shrink: 0;
+        }
+        
+        .user-avatar:hover {
+            transform: scale(1.08);
+            box-shadow: 0 6px 15px rgba(16, 185, 129, 0.5);
+        }
+        
+        .dropdown-menu {
+            background: white;
+            border: none;
+            border-radius: 12px;
+            box-shadow: 0 10px 30px rgba(16, 185, 129, 0.2);
+            overflow: hidden;
+            border: 1px solid rgba(16, 185, 129, 0.15);
+        }
+        
+        .dropdown-item {
+            padding: 0.8rem 1.2rem;
+            border-radius: 8px;
+            margin: 0.2rem 0.5rem;
+            transition: all 0.2s ease;
+            color: #065f46;
+        }
+        
+        .dropdown-item:hover {
+            background: rgba(16, 185, 129, 0.1);
+            color: #065f46;
+            transform: translateX(-5px);
+        }
+        
+        .nav-controls {
+            display: flex;
+            align-items: center;
+            position: absolute;
+            left: 0;
+            top: 0;
+            height: 100%;
+            background: linear-gradient(90deg, rgba(6, 95, 70, 0.9) 0%, transparent 100%);
+            padding: 0 0.5rem;
+            z-index: 5;
+        }
+        
+        .nav-prev, .nav-next {
+            background: rgba(255, 255, 255, 0.2);
+            border: 1px solid rgba(255, 255, 255, 0.3);
+            color: white;
+            width: 28px;
+            height: 28px;
+            border-radius: 50%;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            cursor: pointer;
+            transition: all 0.3s ease;
+            font-size: 0.8rem;
+            margin-left: 0.3rem;
+        }
+        
+        .nav-prev:hover, .nav-next:hover {
+            background: rgba(255, 255, 255, 0.3);
+            transform: scale(1.1);
+        }
+        
+        .nav-controls-right {
+            display: flex;
+            align-items: center;
+            position: absolute;
+            right: 0;
+            top: 0;
+            height: 100%;
+            background: linear-gradient(270deg, rgba(6, 95, 70, 0.9) 0%, transparent 100%);
+            padding: 0 0.5rem;
+            z-index: 5;
+        }
+        
+        /* Mobile Menu Button */
+        .mobile-menu-btn {
+            display: none;
+            background: transparent;
+            border: 1px solid rgba(255, 255, 255, 0.3);
+            color: white;
+            width: 40px;
+            height: 40px;
+            border-radius: 8px;
+            align-items: center;
+            justify-content: center;
+            cursor: pointer;
+            transition: all 0.3s ease;
+            margin-right: 0.5rem;
+        }
+        
+        .mobile-menu-btn:hover {
+            background: rgba(255, 255, 255, 0.1);
+        }
+        
+        /* Mobile Menu */
+        .mobile-nav-menu {
+            position: fixed;
+            top: var(--header-height);
+            right: 0;
+            left: 0;
+            background: var(--gradient-dark);
+            z-index: 999;
+            padding: 1rem;
+            box-shadow: 0 4px 20px rgba(0, 0, 0, 0.2);
+            display: none;
+            flex-direction: column;
+            max-height: calc(100vh - var(--header-height));
+            overflow-y: auto;
+        }
+        
+        .mobile-nav-menu.active {
+            display: flex;
+        }
+        
+        .mobile-nav-link {
+            color: white;
+            padding: 1rem;
+            margin: 0.2rem 0;
+            border-radius: 8px;
+            text-decoration: none;
+            display: flex;
+            align-items: center;
+            transition: all 0.3s ease;
+            border: 1px solid transparent;
+            position: relative;
+        }
+        
+        .mobile-nav-link:hover,
+        .mobile-nav-link.active {
+            background: rgba(255, 255, 255, 0.1);
+            border: 1px solid rgba(255, 255, 255, 0.2);
+        }
+        
+        .mobile-nav-link i {
+            margin-left: 0.5rem;
+            width: 20px;
+            text-align: center;
+        }
+        
+        /* Mobile Responsive */
+        @media (max-width: 992px) {
+            :root {
+                --header-height: 100px;
+            }
+            
+            .unified-nav {
+                height: auto;
+                min-height: var(--header-height);
+            }
+            
+            .unified-nav-container {
+                padding: 0.5rem;
+            }
+            
+            .nav-top-section {
+                height: 60px;
+                flex-wrap: nowrap;
+                padding: 0;
+            }
+            
+            .nav-brand-section {
+                order: 1;
+                width: auto;
+                flex: 0 0 auto;
+            }
+            
+            .welcome-section {
+                order: 2;
+                flex: 1;
+                justify-content: flex-start;
+                padding: 0 0.5rem;
+                display: none;
+            }
+            
+            .nav-user-section {
+                order: 3;
+                width: auto;
+                flex: 0 0 auto;
+                justify-content: flex-end;
+            }
+            
+            .nav-bottom-section {
+                display: none;
+            }
+            
+            .mobile-menu-btn {
+                display: flex;
+            }
+            
+            .welcome-content h4 {
+                font-size: 0.9rem;
+            }
+            
+            .welcome-content p {
+                display: none;
+            }
+            
+            #live-clock {
+                display: none;
+            }
+            
+            body {
+                padding-top: var(--header-height);
+            }
+            
+            .nav-controls, .nav-controls-right {
+                display: none;
+            }
+            
+            /* Mobile specific fixes */
+            .nav-user-section .dropdown .btn {
+                padding: 0.3rem 0.6rem;
+            }
+            
+            .user-avatar {
+                width: 32px;
+                height: 32px;
+                font-size: 0.9rem;
+                margin-left: 0.3rem;
+            }
+            
+            .nav-brand-section .d-none.d-md-block {
+                display: none !important;
+            }
+        }
+        
+        @media (max-width: 768px) {
+            :root {
+                --header-height: 80px;
+            }
+            
+            .nav-top-section {
+                height: 50px;
+            }
+            
+            .logo-container {
+                width: 35px;
+                height: 35px;
+            }
+            
+            .logo-container i {
+                font-size: 1rem;
+            }
+            
+            .user-avatar {
+                width: 32px;
+                height: 32px;
+                font-size: 0.9rem;
+            }
+            
+            .mobile-menu-btn {
+                width: 35px;
+                height: 35px;
+            }
+            
+            .notification-badge {
+                font-size: 0.6rem;
+                top: -3px;
+                right: -3px;
+            }
+        }
+        
+        @media (max-width: 576px) {
+            :root {
+                --header-height: 70px;
+            }
+            
+            .nav-top-section {
+                height: 45px;
+            }
+            
+            .logo-container {
+                width: 30px;
+                height: 30px;
+                margin-left: 0.3rem;
+            }
+            
+            .user-avatar {
+                width: 28px;
+                height: 28px;
+                font-size: 0.8rem;
+            }
+            
+            .notification-badge {
+                font-size: 0.6rem;
+                top: -3px;
+                right: -3px;
+            }
+            
+            .btn {
+                padding: 0.3rem 0.6rem;
+                font-size: 0.8rem;
+            }
+            
+            .mobile-menu-btn {
+                width: 32px;
+                height: 32px;
+                margin-right: 0.3rem;
+            }
+            
+            .nav-user-section .dropdown .btn {
+                padding: 0.2rem 0.5rem;
+            }
+            
+            .dropdown .btn-outline-light {
+                font-size: 0.75rem;
+            }
+        }
+    
+        /* Custom Scrollbar for whole page */
+        ::-webkit-scrollbar {
+            width: 8px;
+            height: 8px;
+        }
+        
+        ::-webkit-scrollbar-track {
+            background: rgba(16, 185, 129, 0.1);
+            border-radius: 10px;
+        }
+        
+        ::-webkit-scrollbar-thumb {
+            background: var(--gradient-primary);
+            border-radius: 10px;
+        }
+        
+        ::-webkit-scrollbar-thumb:hover {
+            background: var(--dark-green);
+        }
+        
+        /* Green accent elements */
+        .text-success {
+            color: var(--primary-green) !important;
+        }
+        
+        .bg-success {
+            background-color: var(--primary-green) !important;
+        }
+        
+        #live-clock {
+            font-size: 0.9rem;
+            background: rgba(255, 255, 255, 0.1);
+            padding: 0.3rem 0.7rem;
+            border-radius: 20px;
+            border: 1px solid rgba(255, 255, 255, 0.2);
+            flex-shrink: 0;
+        }
+        
+        /* Ensure text doesn't overflow */
+        .text-truncate {
+            overflow: hidden;
+            text-overflow: ellipsis;
+            white-space: nowrap;
+        }
+        
+        /* Page Specific Styles */
+        .admin-container {
+            max-width: 1400px;
+            margin: 0 auto;
+            padding: 20px;
+        }
+        
+        .header-card {
+            background: linear-gradient(135deg, #065f46 0%, #047857 100%);
+            border: none;
+            border-radius: 20px;
+            color: white;
+            box-shadow: 0 15px 35px rgba(5, 150, 105, 0.2);
+            margin-bottom: 30px;
+        }
+        
+        .content-card {
+            border: none;
+            border-radius: 20px;
+            box-shadow: 0 15px 35px rgba(16, 185, 129, 0.1);
+            background: rgba(255, 255, 255, 0.95);
+            margin-bottom: 25px;
+        }
+        
+        .card-header {
+            border-radius: 20px 20px 0 0 !important;
+            border-bottom: 2px solid rgba(255, 255, 255, 0.1);
+            padding: 20px 25px;
+        }
+        
+        .card-header-primary {
+            background: var(--gradient-primary);
+            color: white;
+        }
+        
+        .card-header-info {
+            background: linear-gradient(135deg, #0ea5e9 0%, #0284c7 100%);
+            color: white;
+        }
+        
+        .btn-primary {
+            background: var(--gradient-primary);
+            border: none;
+            border-radius: 15px;
+            padding: 12px 30px;
+            font-weight: 600;
+            transition: all 0.3s ease;
+        }
+        
+        .back-btn {
+            background: rgba(255, 255, 255, 0.2);
+            border: 2px solid rgba(255, 255, 255, 0.3);
+            color: white;
+            border-radius: 15px;
+            padding: 10px 20px;
+            transition: all 0.3s ease;
+            font-weight: 600;
+        }
+        
+        .back-btn:hover {
+            background: rgba(255, 255, 255, 0.3);
+            border-color: rgba(255, 255, 255, 0.5);
+            color: white;
+        }
+    
+        .schedule-table {
+            width: 100%;
+            border-collapse: separate;
+            border-spacing: 0 8px;
+        }
+        
+        .schedule-table th {
+            color: var(--dark-green);
+            font-weight: 600;
+            padding: 15px;
+            background: rgba(16, 185, 129, 0.05);
+        }
+        
+        .schedule-table td {
+            padding: 15px;
+            background: rgba(255, 255, 255, 0.9);
+            border: 1px solid rgba(16, 185, 129, 0.1);
+            vertical-align: middle;
+        }
+        
+        .badge {
+            font-size: 0.8rem;
+            padding: 6px 12px;
+            border-radius: 10px;
+            font-weight: 500;
+        }
+        
+        .stats-card {
+            background: rgba(255, 255, 255, 0.9);
+            border-radius: 15px;
+            padding: 20px;
+            text-align: center;
+            border: 1px solid rgba(16, 185, 129, 0.1);
+            transition: all 0.3s ease;
+            height: 100%;
+        }
+        
+        .stats-card:hover {
+            transform: translateY(-3px);
+            box-shadow: 0 8px 25px rgba(16, 185, 129, 0.15);
+        }
+        
+        .stats-value {
+            font-size: 2rem;
+            font-weight: 700;
+            color: var(--dark-green);
+            margin: 10px 0;
+        }
+        
+        .stats-label {
+            color: #6b7280;
+            font-size: 0.9rem;
+        }
+        
+        .schedule-actions {
+            display: flex;
+            gap: 8px;
+            flex-wrap: wrap;
+            justify-content: center;
+        }
+        
+        .empty-state {
+            text-align: center;
+            padding: 40px 20px;
+            color: #6b7280;
+        }
+        
+        .export-btn {
+            background: linear-gradient(135deg, #10b981 0%, #059669 100%);
+            border: none;
+            border-radius: 10px;
+            padding: 8px 16px;
+            color: white;
+            font-weight: 600;
+        }
+        
+        .view-btn {
+            background: linear-gradient(135deg, #3b82f6 0%, #1d4ed8 100%);
+            border: none;
+            border-radius: 10px;
+            padding: 8px 16px;
+            color: white;
+            font-weight: 600;
+        }
+        
+        .edit-btn {
+            background: linear-gradient(135deg, #f59e0b 0%, #d97706 100%);
+            border: none;
+            border-radius: 10px;
+            padding: 8px 16px;
+            color: white;
+            font-weight: 600;
+        }
+        
+        .month-section {
+            background: linear-gradient(135deg, #f8fafc 0%, #f1f5f9 100%);
+            border-radius: 15px;
+            padding: 20px;
+            margin-bottom: 25px;
+            border: 2px solid rgba(16, 185, 129, 0.1);
+        }
+        
+        .month-header {
+            background: linear-gradient(135deg, #e0f2fe 0%, #bae6fd 100%);
+            border-radius: 10px;
+            padding: 15px 20px;
+            margin-bottom: 15px;
+            border-right: 4px solid #0ea5e9;
+        }
+        
+        .period-badge {
+            background: linear-gradient(135deg, #7dd3fc 0%, #0ea5e9 100%);
+            color: white;
+            font-size: 1.1rem;
+            padding: 8px 16px;
+            border-radius: 10px;
+        }
+        
+        .current-week {
+            background: linear-gradient(135deg, #dcfce7 0%, #bbf7d0 100%) !important;
+            border: 2px solid #22c55e;
+        }
+        
+        .floating-shape {
+            position: fixed;
+            width: 200px;
+            height: 200px;
+            background: var(--gradient-primary);
+            opacity: 0.1;
+            border-radius: 50%;
+            z-index: -1;
+            animation: float 6s ease-in-out infinite;
+        }
+        
+        .shape-1 {
+            top: 10%;
+            left: 10%;
+        }
+        
+        .shape-2 {
+            bottom: 10%;
+            right: 10%;
+            animation-delay: 2s;
+        }
+        
+        @keyframes float {
+            0%, 100% { transform: translateY(0px) rotate(0deg); }
+            50% { transform: translateY(-20px) rotate(10deg); }
+        }
+        
+        .loading-overlay {
+            position: fixed;
+            top: 0;
+            left: 0;
+            width: 100%;
+            height: 100%;
+            background: rgba(0, 0, 0, 0.5);
+            display: flex;
+            justify-content: center;
+            align-items: center;
+            z-index: 9999;
+            display: none;
+        }
+        
+        .alert-container {
+            position: fixed;
+            top: calc(var(--header-height) + 20px);
+            right: 20px;
+            z-index: 9999;
+            min-width: 300px;
+        }
+        
+        .timeline-connector {
+            position: relative;
+        }
+        
+        .timeline-connector::before {
+            content: '';
+            position: absolute;
+            left: -15px;
+            top: 0;
+            bottom: 0;
+            width: 2px;
+            background: linear-gradient(to bottom, #10b981, #34d399);
+        }
+        
+        .filter-card {
+            background: rgba(255, 255, 255, 0.95);
+            border-radius: 15px;
+            padding: 20px;
+            margin-bottom: 20px;
+            border: 2px solid rgba(16, 185, 129, 0.1);
+        }
+        
+        .filter-section {
+            background: linear-gradient(135deg, #f0fdf4 0%, #dcfce7 100%);
+            border-radius: 10px;
+            padding: 15px;
+            margin-bottom: 15px;
+        }
+        
+        .error-state {
+            text-align: center;
+            padding: 60px 20px;
+            color: #dc2626;
+        }
+        
+        /* أنماط التقويم الجديدة */
+        .calendar-section {
+            background: linear-gradient(135deg, #f8fafc 0%, #f1f5f9 100%);
+            border: 2px solid rgba(16, 185, 129, 0.15);
+            border-radius: 20px;
+            padding: 20px;
+            margin-bottom: 30px;
+            box-shadow: 0 10px 25px rgba(0, 0, 0, 0.05);
+        }
+        
+        .calendar-header {
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            margin-bottom: 20px;
+            padding-bottom: 15px;
+            border-bottom: 2px solid rgba(16, 185, 129, 0.1);
+        }
+        
+        .calendar-title {
+            color: var(--dark-green);
+            font-weight: 700;
+            font-size: 1.4rem;
+            margin: 0;
+        }
+        
+        .calendar-nav {
+            display: flex;
+            align-items: center;
+            gap: 10px;
+        }
+        
+        .calendar-nav-btn {
+            width: 40px;
+            height: 40px;
+            border-radius: 10px;
+            background: white;
+            border: 2px solid rgba(16, 185, 129, 0.2);
+            color: var(--dark-green);
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            cursor: pointer;
+            transition: all 0.3s ease;
+        }
+        
+        .calendar-nav-btn:hover {
+            background: var(--light-green);
+            color: white;
+            border-color: var(--light-green);
+            transform: scale(1.05);
+        }
+        
+        .calendar-nav-btn:disabled {
+            opacity: 0.5;
+            cursor: not-allowed;
+        }
+        
+        .calendar-nav-btn:disabled:hover {
+            background: white;
+            color: var(--dark-green);
+            border-color: rgba(16, 185, 129, 0.2);
+            transform: none;
+        }
+        
+        .calendar-month-year {
+            font-weight: 600;
+            color: var(--dark-green);
+            font-size: 1.1rem;
+            min-width: 150px;
+            text-align: center;
+        }
+        
+        .calendar-weekdays {
+            display: grid;
+            grid-template-columns: repeat(7, 1fr);
+            gap: 5px;
+            margin-bottom: 10px;
+        }
+        
+        .weekday {
+            text-align: center;
+            font-weight: 600;
+            color: var(--dark-green);
+            padding: 12px 5px;
+            background: rgba(16, 185, 129, 0.08);
+            border-radius: 8px;
+            font-size: 0.9rem;
+        }
+        
+        .calendar-days {
+            display: grid;
+            grid-template-columns: repeat(7, 1fr);
+            gap: 5px;
+        }
+        
+        .calendar-day {
+            position: relative;
+            min-height: 80px;
+            background: white;
+            border: 2px solid rgba(16, 185, 129, 0.1);
+            border-radius: 10px;
+            padding: 8px;
+            cursor: pointer;
+            transition: all 0.3s ease;
+            overflow: hidden;
+        }
+        
+        .calendar-day:hover {
+            transform: translateY(-3px);
+            box-shadow: 0 5px 15px rgba(16, 185, 129, 0.15);
+            border-color: var(--light-green);
+        }
+        
+        .calendar-day.other-month {
+            background: #f8f9fa;
+            color: #adb5bd;
+        }
+        
+        .calendar-day.current-day {
+            background: linear-gradient(135deg, #dcfce7 0%, #bbf7d0 100%);
+            border-color: var(--primary-green);
+            border-width: 3px;
+        }
+        
+        .calendar-day.selected-day {
+            background: linear-gradient(135deg, var(--primary-green) 0%, var(--dark-green) 100%);
+            color: white;
+            border-color: var(--dark-green);
+        }
+        
+        .calendar-day.has-schedule {
+            border-color: var(--light-green);
+            border-width: 2px;
+        }
+        
+        .day-number {
+            font-weight: 700;
+            font-size: 1.1rem;
+            margin-bottom: 5px;
+        }
+        
+        .day-content {
+            font-size: 0.75rem;
+            line-height: 1.3;
+        }
+        
+        .schedule-indicator {
+            display: inline-block;
+            width: 8px;
+            height: 8px;
+            border-radius: 50%;
+            background: var(--primary-green);
+            margin-left: 2px;
+        }
+        
+        .schedule-count {
+            font-size: 0.7rem;
+            background: rgba(16, 185, 129, 0.15);
+            padding: 2px 6px;
+            border-radius: 10px;
+            margin-top: 3px;
+            display: inline-block;
+        }
+        
+        .calendar-legend {
+            display: flex;
+            justify-content: center;
+            flex-wrap: wrap;
+            gap: 15px;
+            margin-top: 20px;
+            padding-top: 15px;
+            border-top: 1px solid rgba(16, 185, 129, 0.1);
+        }
+        
+        .legend-item {
+            display: flex;
+            align-items: center;
+            gap: 8px;
+            font-size: 0.85rem;
+        }
+        
+        .legend-color {
+            width: 16px;
+            height: 16px;
+            border-radius: 4px;
+        }
+        
+        .legend-color.current {
+            background: linear-gradient(135deg, #dcfce7 0%, #bbf7d0 100%);
+            border: 2px solid var(--primary-green);
+        }
+        
+        .legend-color.selected {
+            background: linear-gradient(135deg, var(--primary-green) 0%, var(--dark-green) 100%);
+        }
+        
+        .legend-color.has-schedule {
+            background: white;
+            border: 2px solid var(--light-green);
+        }
+        
+        .legend-color.other-month {
+            background: #f8f9fa;
+            border: 2px solid rgba(16, 185, 129, 0.1);
+        }
+        
+        .selected-week-info {
+            background: linear-gradient(135deg, #f0fdf4 0%, #dcfce7 100%);
+            border-radius: 15px;
+            padding: 20px;
+            margin-top: 20px;
+            border: 2px solid var(--primary-green);
+            display: none;
+        }
+        
+        .selected-week-info.show {
+            display: block;
+            animation: fadeIn 0.5s ease;
+        }
+        
+        .week-info-header {
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            margin-bottom: 15px;
+            padding-bottom: 10px;
+            border-bottom: 1px solid rgba(16, 185, 129, 0.2);
+        }
+        
+        .week-info-title {
+            color: var(--dark-green);
+            font-weight: 700;
+            margin: 0;
+            font-size: 1.2rem;
+        }
+        
+        .week-dates {
+            display: flex;
+            align-items: center;
+            gap: 15px;
+            flex-wrap: wrap;
+            margin-bottom: 15px;
+        }
+        
+        .week-date-item {
+            background: white;
+            padding: 8px 15px;
+            border-radius: 10px;
+            border: 1px solid rgba(16, 185, 129, 0.2);
+            font-weight: 500;
+        }
+        
+        .week-date-item.selected {
+            background: var(--primary-green);
+            color: white;
+            border-color: var(--primary-green);
+        }
+        
+        .week-actions {
+            display: flex;
+            gap: 10px;
+            margin-top: 15px;
+            flex-wrap: wrap;
+        }
+        
+        .week-action-btn {
+            padding: 10px 20px;
+            border-radius: 10px;
+            border: none;
+            font-weight: 600;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            gap: 8px;
+            transition: all 0.3s ease;
+            text-decoration: none;
+        }
+        
+        .week-action-btn.view {
+            background: linear-gradient(135deg, #3b82f6 0%, #1d4ed8 100%);
+            color: white;
+        }
+        
+        .week-action-btn.edit {
+            background: linear-gradient(135deg, #f59e0b 0%, #d97706 100%);
+            color: white;
+        }
+        
+        .week-action-btn.export {
+            background: linear-gradient(135deg, #10b981 0%, #059669 100%);
+            color: white;
+        }
+        
+        .week-action-btn.duplicate {
+            background: linear-gradient(135deg, #8b5cf6 0%, #7c3aed 100%);
+            color: white;
+        }
+        
+        .week-action-btn:hover {
+            transform: translateY(-2px);
+            box-shadow: 0 5px 15px rgba(0, 0, 0, 0.1);
+            color: white;
+        }
+        
+        .schedule-status-badge {
+            font-size: 0.8rem;
+            padding: 4px 10px;
+            border-radius: 6px;
+            margin-right: 5px;
+        }
+        
+        @keyframes fadeIn {
+            from { opacity: 0; transform: translateY(-10px); }
+            to { opacity: 1; transform: translateY(0); }
+        }
+        
+        /* Modal Styles */
+        .modal-content {
+            border-radius: 20px;
+            border: none;
+            box-shadow: 0 15px 35px rgba(16, 185, 129, 0.2);
+        }
+        
+        .modal-header {
+            background: var(--gradient-primary);
+            color: white;
+            border-radius: 20px 20px 0 0;
+            border-bottom: 1px solid rgba(255, 255, 255, 0.2);
+        }
+        
+        .modal-body {
+            padding: 25px;
+        }
+        
+        .modal-footer {
+            border-top: 1px solid rgba(16, 185, 129, 0.1);
+            padding: 20px 25px;
+        }
+        
+        .schedule-list {
+            max-height: 400px;
+            overflow-y: auto;
+            border: 1px solid rgba(16, 185, 129, 0.1);
+            border-radius: 10px;
+            padding: 10px;
+        }
+        
+        .schedule-item {
+            padding: 15px;
+            border-bottom: 1px solid rgba(16, 185, 129, 0.1);
+            cursor: pointer;
+            transition: all 0.3s ease;
+            border-radius: 8px;
+            margin-bottom: 8px;
+        }
+        
+        .schedule-item:hover {
+            background: rgba(16, 185, 129, 0.05);
+            transform: translateX(-5px);
+        }
+        
+        .schedule-item.selected {
+            background: rgba(16, 185, 129, 0.1);
+            border-left: 4px solid var(--primary-green);
+        }
+        
+        .schedule-item-header {
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            margin-bottom: 8px;
+        }
+        
+        .schedule-date {
+            font-weight: 600;
+            color: var(--dark-green);
+        }
+        
+        .schedule-details {
+            color: #6b7280;
+            font-size: 0.9rem;
+        }
+        
+        .loading-schedules {
+            text-align: center;
+            padding: 30px;
+            color: #6b7280;
+        }
+        
+        .no-schedules {
+            text-align: center;
+            padding: 30px;
+            color: #6b7280;
+        }
+        
+        /* Department Management Styles */
+        .department-manager {
+            background: rgba(255, 255, 255, 0.95);
+            border-radius: 20px;
+            padding: 25px;
+            margin-bottom: 30px;
+            border: 2px solid rgba(16, 185, 129, 0.15);
+            box-shadow: 0 10px 25px rgba(0, 0, 0, 0.05);
+        }
+        
+        .department-tabs {
+            display: flex;
+            gap: 10px;
+            margin-bottom: 20px;
+            flex-wrap: wrap;
+        }
+        
+        .department-tab {
+            padding: 12px 24px;
+            background: white;
+            border: 2px solid rgba(16, 185, 129, 0.2);
+            border-radius: 12px;
+            cursor: pointer;
+            transition: all 0.3s ease;
+            display: flex;
+            align-items: center;
+            gap: 10px;
+            font-weight: 600;
+            color: var(--dark-green);
+            text-decoration: none;
+            min-width: 200px;
+        }
+        
+        .department-tab:hover {
+            transform: translateY(-3px);
+            box-shadow: 0 5px 15px rgba(16, 185, 129, 0.15);
+            border-color: var(--light-green);
+        }
+        
+        .department-tab.active {
+            background: linear-gradient(135deg, var(--primary-green) 0%, var(--dark-green) 100%);
+            color: white;
+            border-color: var(--dark-green);
+        }
+        
+        .department-tab i {
+            font-size: 1.2rem;
+        }
+        
+        .department-info {
+            background: linear-gradient(135deg, #f0fdf4 0%, #dcfce7 100%);
+            border-radius: 15px;
+            padding: 20px;
+            margin-bottom: 20px;
+            border: 2px solid var(--primary-green);
+        }
+        
+        .department-header {
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            margin-bottom: 15px;
+        }
+        
+        .department-name {
+            color: var(--dark-green);
+            font-weight: 700;
+            font-size: 1.5rem;
+            margin: 0;
+        }
+        
+        .department-stats {
+            display: flex;
+            gap: 20px;
+            flex-wrap: wrap;
+        }
+        
+        .stat-item {
+            text-align: center;
+            min-width: 120px;
+        }
+        
+        .stat-value {
+            font-size: 1.8rem;
+            font-weight: 700;
+            color: var(--dark-green);
+            margin-bottom: 5px;
+        }
+        
+        .stat-label {
+            color: #6b7280;
+            font-size: 0.9rem;
+        }
+        
+        .department-actions {
+            display: flex;
+            gap: 10px;
+            margin-top: 20px;
+            flex-wrap: wrap;
+        }
+        
+        .action-btn {
+            padding: 10px 20px;
+            border-radius: 10px;
+            border: none;
+            font-weight: 600;
+            display: flex;
+            align-items: center;
+            gap: 8px;
+            transition: all 0.3s ease;
+            cursor: pointer;
+            text-decoration: none;
+        }
+        
+        .action-btn.primary {
+            background: linear-gradient(135deg, #10b981 0%, #059669 100%);
+            color: white;
+        }
+        
+        .action-btn.secondary {
+            background: linear-gradient(135deg, #3b82f6 0%, #1d4ed8 100%);
+            color: white;
+        }
+        
+        .action-btn.warning {
+            background: linear-gradient(135deg, #f59e0b 0%, #d97706 100%);
+            color: white;
+        }
+        
+        .action-btn:hover {
+            transform: translateY(-2px);
+            box-shadow: 0 5px 15px rgba(0, 0, 0, 0.1);
+        }
+        
+        /* مقارنة الأقسام */
+        .comparison-grid {
+            display: grid;
+            grid-template-columns: repeat(auto-fit, minmax(300px, 1fr));
+            gap: 20px;
+            margin-top: 20px;
+        }
+        
+        .comparison-card {
+            background: white;
+            border-radius: 15px;
+            padding: 20px;
+            border: 2px solid rgba(16, 185, 129, 0.1);
+            transition: all 0.3s ease;
+        }
+        
+        .comparison-card:hover {
+            transform: translateY(-5px);
+            box-shadow: 0 10px 25px rgba(16, 185, 129, 0.15);
+            border-color: var(--light-green);
+        }
+        
+        .comparison-header {
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            margin-bottom: 15px;
+            padding-bottom: 10px;
+            border-bottom: 1px solid rgba(16, 185, 129, 0.2);
+        }
+        
+        .comparison-title {
+            color: var(--dark-green);
+            font-weight: 700;
+            margin: 0;
+        }
+        
+        .comparison-badge {
+            background: var(--gradient-primary);
+            color: white;
+            padding: 4px 12px;
+            border-radius: 20px;
+            font-size: 0.8rem;
+            font-weight: 600;
+        }
+        
+        .comparison-stats {
+            display: grid;
+            grid-template-columns: repeat(2, 1fr);
+            gap: 10px;
+        }
+        
+        .comparison-stat {
+            text-align: center;
+            padding: 10px;
+            background: rgba(16, 185, 129, 0.05);
+            border-radius: 8px;
+        }
+        
+        @media (max-width: 768px) {
+            .department-tab {
+                min-width: 100%;
+            }
+            
+            .department-stats {
+                justify-content: center;
+            }
+            
+            .stat-item {
+                min-width: 100px;
+            }
+            
+            .department-actions {
+                flex-direction: column;
+            }
+            
+            .action-btn {
+                width: 100%;
+                justify-content: center;
+            }
+            
+            .comparison-grid {
+                grid-template-columns: 1fr;
+            }
+            
+            .week-actions {
+                flex-direction: column;
+            }
+            
+            .week-action-btn {
+                width: 100%;
+                justify-content: center;
+            }
+        }
+        
+        @media (max-width: 576px) {
+            .calendar-day {
+                min-height: 50px;
+            }
+            
+            .day-number {
+                font-size: 0.8rem;
+            }
+            
+            .schedule-count {
+                font-size: 0.6rem;
+                padding: 1px 4px;
+            }
+            
+            .week-dates {
+                gap: 8px;
+            }
+            
+            .week-date-item {
+                flex: 1;
+                min-width: calc(50% - 8px);
+                text-align: center;
+            }
+            
+            .weekday {
+                font-size: 0.8rem;
+                padding: 8px 3px;
+            }
+        }
+    </style>
+    
+</head>
+<body>
+    <!-- Unified Navigation Bar -->
+    <nav class="unified-nav">
+        <div class="unified-nav-container">
+            <!-- Top Section: Brand, Welcome, User -->
+            <div class="nav-top-section">
+                <!-- Brand Section -->
+                <div class="nav-brand-section">
+                    <div class="logo-container">
+                        <i class="bi bi-person-gear text-white"></i>
+                    </div>
+                    <div class="d-none d-md-block ms-2">
+                        <h6 class="text-white mb-0 fw-bold text-truncate">نظام الموارد البشرية</h6>
+                        <small class="text-white-50">لوحة المدير</small>
+                    </div>
+                </div>
+                
+                <!-- Welcome Section - Hidden on mobile -->
+                <div class="welcome-section d-none d-lg-flex">
+                    <div class="welcome-content">
+                        <h4 class="text-white mb-1 text-truncate">مرحباً، {{ current_user.name if current_user else 'المدير' }}</h4>
+                        <p class="text-white-50 mb-0 text-truncate">نظام الموارد البشرية - لوحة تحكم المدير</p>
+                    </div>
+                    <div class="text-white fw-bold me-3" id="live-clock">
+                        <i class="bi bi-clock me-2"></i>
+                        جاري التحميل...
+                    </div>
+                </div>
+                
+                <!-- User Section -->
+                <div class="nav-user-section">
+                    <!-- Notifications -->
+                    <div class="dropdown me-2">
+                        <button class="btn btn-light position-relative rounded-pill" 
+                                type="button" data-bs-toggle="dropdown" 
+                                style="padding: 0.4rem 0.8rem; border: 1px solid rgba(255, 255, 255, 0.3); background: rgba(255, 255, 255, 0.15); color: white;">
+                            <i class="bi bi-bell"></i>
+                            {% if notifications and notifications|length > 0 %}
+                            <span class="notification-badge badge">{{ notifications|length }}</span>
+                            {% endif %}
+                        </button>
+                        <ul class="dropdown-menu dropdown-menu-end">
+                            {% if notifications and notifications|length > 0 %}
+                                {% for notification in notifications[:3] %}
+                                <li>
+                                    <a class="dropdown-item" href="#">
+                                        <div class="d-flex align-items-start">
+                                            <div class="bg-success bg-opacity-10 rounded-circle p-2 me-3">
+                                                <i class="bi bi-bell text-success"></i>
+                                            </div>
+                                            <div>
+                                                <strong class="d-block text-dark">{{ notification.title }}</strong>
+                                                <small class="text-muted">{{ notification.message|truncate(30) }}</small>
+                                            </div>
+                                        </div>
+                                    </a>
+                                </li>
+                                {% endfor %}
+                                <li><hr class="dropdown-divider my-2"></li>
+                            {% else %}
+                                <li>
+                                    <a class="dropdown-item text-muted text-center" href="#">
+                                        <i class="bi bi-bell-slash fs-4 d-block mb-2 text-success"></i>
+                                        لا توجد إشعارات جديدة
+                                    </a>
+                                </li>
+                                <li><hr class="dropdown-divider my-2"></li>
+                            {% endif %}
+                            <li>
+                                <a class="dropdown-item text-center text-success fw-bold" href="#">
+                                    <i class="bi bi-arrow-left me-2"></i>
+                                    عرض جميع الإشعارات
+                                </a>
+                            </li>
+                        </ul>
+                    </div>
+                    
+                    <!-- User Menu -->
+                    <div class="dropdown">
+                        <button class="btn btn-outline-light dropdown-toggle rounded-pill d-flex align-items-center" 
+                                type="button" data-bs-toggle="dropdown"
+                                style="padding: 0.4rem 0.9rem; border: 1px solid rgba(255, 255, 255, 0.4);">
+                            <div class="user-avatar me-2">
+                                {{ current_user.name[0] if current_user else 'م' }}
+                            </div>
+                            <span class="d-none d-md-inline text-truncate" style="max-width: 80px;">{{ current_user.username if current_user else 'مدير' }}</span>
+                        </button>
+                        <ul class="dropdown-menu dropdown-menu-end">
+                            <li>
+                                <a class="dropdown-item" href="#">
+                                    <i class="bi bi-bell me-2 text-success"></i>الإشعارات
+                                </a>
+                            </li>
+                            <li>
+                                <a class="dropdown-item" href="#">
+                                    <i class="bi bi-key me-2 text-success"></i>تغير كلمة المرور
+                                </a>
+                            </li>
+                            <li><hr class="dropdown-divider my-2"></li>
+                            <li>
+                                <a class="dropdown-item text-danger fw-bold" href="{{ url_for('logout') }}">
+                                    <i class="bi bi-box-arrow-right me-2"></i>تسجيل الخروج
+                                </a>
+                            </li>
+                        </ul>
+                    </div>
+                    
+                    <!-- Mobile Menu Button -->
+                    <button class="mobile-menu-btn d-lg-none" id="mobileMenuBtn">
+                        <i class="bi bi-list"></i>
+                    </button>
+                </div>
+            </div>
+            
+            <!-- Bottom Section: Navigation Menu - Hidden on mobile -->
+            <!-- Bottom Section: Navigation Menu - Hidden on mobile -->
+            <div class="nav-bottom-section d-none d-lg-flex">
+                <div class="nav-controls"></div>
+                
+                <div class="nav-menu-section">
+                    <div class="nav-menu-wrapper">
+                        <a class="nav-link" href="{{ url_for('manager_dashboard') }}">
+                            <i class="bi bi-speedometer2 me-2"></i>
+                            لوحة التحكم
+                        </a>
+                        <a class="nav-link" href="{{ url_for('manager_employees') }}">
+                            <i class="bi bi-people me-2"></i>
+                            موظفي القسم
+                        </a>
+                        <a class="nav-link active" href="{{ url_for('manager_schedules') }}">
+                            <i class="bi bi-calendar-check me-2"></i>
+                            جدولة الموظفين
+                        </a>
+                        <!-- Add Messages Link Here -->
+                        <a class="nav-link nav-link-with-badge" href="{{ url_for('messages_inbox') }}">
+                            <i class="bi bi-envelope me-2"></i>
+                            الرسائل
+                            {% if unread_count and unread_count > 0 %}
+                            <span class="nav-badge">{{ unread_count }}</span>
+                            {% endif %}
+                        </a>
+                        <a class="nav-link nav-link-with-badge" href="{{ url_for('manager_leave_requests') }}">
+                            <i class="bi bi-calendar-minus me-2"></i>
+                            طلبات الإجازات
+                            {% if stats and stats.pending_leaves > 0 %}
+                            <span class="nav-badge">{{ stats.pending_leaves }}</span>
+                            {% endif %}
+                        </a>
+                        <a class="nav-link nav-link-with-badge" href="{{ url_for('manager_permission_requests') }}">
+                            <i class="bi bi-clock me-2"></i>
+                            طلبات الإذونات
+                            {% if stats and stats.pending_permissions > 0 %}
+                            <span class="nav-badge">{{ stats.pending_permissions }}</span>
+                            {% endif %}
+                        </a>
+                        <a class="nav-link nav-link-with-badge" href="{{ url_for('user_salary_slips') }}">
+                            <i class="bi bi-file-earmark-text me-2"></i>
+                            شيت المرتب
+                            {% if new_salary_slips and new_salary_slips > 0 %}
+                            <span class="nav-badge">{{ new_salary_slips }}</span>
+                            {% endif %}
+                        </a>
+                        <a class="nav-link nav-link-with-badge" href="{{ url_for('manager_advance_requests') }}">
+                            <i class="bi bi-cash-coin me-2"></i>
+                            طلبات السلف
+                            {% if stats and stats.pending_advances > 0 %}
+                            <span class="nav-badge">{{ stats.pending_advances }}</span>
+                            {% endif %}
+                        </a>
+                        <a class="nav-link" href="{{ url_for('manager_rewards_penalties') }}">
+                            <i class="bi bi-award me-2"></i>
+                            المكافآت والخصومات
+                        </a>
+                        <a class="nav-link" href="{{ url_for('manager_excel_data') }}">
+                            <i class="fas fa-file-excel me-2"></i>
+                            الحضور والانصراف
+                        </a>
+                        {% if current_user and current_user.is_admin %}
+                        <a class="nav-link text-warning" href="{{ url_for('admin_dashboard') }}">
+                            <i class="bi bi-person-shield me-2"></i>
+                            لوحة المسؤول
+                        </a>
+                        {% endif %}
+                    </div>
+                </div>
+                
+                <div class="nav-controls-right"></div>
+            </div>
+        </div>
+    </nav>
+
+    <!-- Mobile Navigation Menu -->
+    <!-- Mobile Navigation Menu -->
+    <div class="mobile-nav-menu" id="mobileNavMenu">
+        <a class="mobile-nav-link" href="{{ url_for('manager_dashboard') }}">
+            <i class="bi bi-speedometer2"></i>
+            لوحة التحكم
+        </a>
+        <a class="mobile-nav-link" href="{{ url_for('manager_employees') }}">
+            <i class="bi bi-people"></i>
+            موظفي القسم
+        </a>
+        <a class="mobile-nav-link active" href="{{ url_for('manager_schedules') }}">
+            <i class="bi bi-calendar-check"></i>
+            جدولة الموظفين
+        </a>
+        <!-- Add Messages Link Here -->
+        <a class="mobile-nav-link nav-link-with-badge" href="{{ url_for('messages_inbox') }}">
+            <i class="bi bi-envelope"></i>
+            الرسائل
+            {% if unread_count and unread_count > 0 %}
+            <span class="nav-badge">{{ unread_count }}</span>
+            {% endif %}
+        </a>
+        <a class="mobile-nav-link" href="{{ url_for('manager_leave_requests') }}">
+            <i class="bi bi-calendar-minus"></i>
+            طلبات الإجازات
+            {% if stats and stats.pending_leaves > 0 %}
+            <span class="nav-badge">{{ stats.pending_leaves }}</span>
+            {% endif %}
+        </a>
+        <a class="mobile-nav-link" href="{{ url_for('manager_permission_requests') }}">
+            <i class="bi bi-clock"></i>
+            طلبات الإذونات
+            {% if stats and stats.pending_permissions > 0 %}
+            <span class="nav-badge">{{ stats.pending_permissions }}</span>
+            {% endif %}
+        </a>
+        <a class="mobile-nav-link" href="{{ url_for('user_salary_slips') }}">
+            <i class="bi bi-file-earmark-text"></i>
+            شيت المرتب
+            {% if new_salary_slips and new_salary_slips > 0 %}
+            <span class="nav-badge">{{ new_salary_slips }}</span>
+            {% endif %}
+        </a>
+        <a class="mobile-nav-link" href="{{ url_for('manager_advance_requests') }}">
+            <i class="bi bi-cash-coin"></i>
+            طلبات السلف
+            {% if stats and stats.pending_advances > 0 %}
+            <span class="nav-badge">{{ stats.pending_advances }}</span>
+            {% endif %}
+        </a>
+        <a class="mobile-nav-link" href="{{ url_for('manager_rewards_penalties') }}">
+            <i class="bi bi-award"></i>
+            المكافآت والخصومات
+        </a>
+        <a class="mobile-nav-link" href="{{ url_for('manager_excel_data') }}">
+            <i class="fas fa-file-excel me-2"></i>
+            الحضور والانصراف
+        </a>
+        {% if current_user and current_user.is_admin %}
+        <a class="mobile-nav-link text-warning" href="{{ url_for('admin_dashboard') }}">
+            <i class="bi bi-person-shield"></i>
+            لوحة المسؤول
+        </a>
+        {% endif %}
+    </div>
+
+    <!-- Main Content -->
+    <main class="main-content">
+        <!-- Background Shapes -->
+        <div class="floating-shape shape-1"></div>
+        <div class="floating-shape shape-2"></div>
+        
+        <!-- Loading Overlay -->
+        <div class="loading-overlay" id="loadingOverlay">
+            <div class="text-white text-center">
+                <i class="bi bi-arrow-repeat spinner display-4 d-block mb-3"></i>
+                <span>جاري التحميل...</span>
+            </div>
+        </div>
+        
+        <!-- Alert Container -->
+        <div class="alert-container"></div>
+        
+        <div class="admin-container">
+            <!-- Department Management Section -->
+            {% if departments and departments|length > 1 %}
+            <div class="department-manager">
+                <h3 class="mb-4 text-dark-green">
+                    <i class="bi bi-building me-2"></i>
+                    إدارة الأقسام
+                </h3>
+                
+                <div class="department-tabs">
+                    {% for dept in departments %}
+                    <a href="?dept_id={{ dept.id }}" 
+                       class="department-tab {% if current_department and dept.id == current_department.id %}active{% endif %}">
+                        <i class="bi bi-building"></i>
+                        {{ dept.name }}
+                        <span class="badge bg-light text-dark ms-2">{{ dept.employees_count }}</span>
+                    </a>
+                    {% endfor %}
+                </div>
+                
+                {% if current_department %}
+                <div class="department-info">
+                    <div class="department-header">
+                        <h3 class="department-name">
+                            <i class="bi bi-building me-2"></i>
+                            {{ current_department.name }}
+                        </h3>
+                        <span class="badge bg-success fs-6">قسم نشط</span>
+                    </div>
+                    
+                    <p class="mb-4 text-muted">
+                        {{ current_department.description or 'لا يوجد وصف للقسم' }}
+                    </p>
+                    
+                    <div class="department-stats">
+                        <div class="stat-item">
+                            <div class="stat-value">{{ current_department.employees_count }}</div>
+                            <div class="stat-label">موظف</div>
+                        </div>
+                        <div class="stat-item">
+                            <div class="stat-value">
+                                {% if current_department.active_schedules %}
+                                {{ current_department.active_schedules }}
+                                {% else %}
+                                0
+                                {% endif %}
+                            </div>
+                            <div class="stat-label">جدول نشط</div>
+                        </div>
+                        <div class="stat-item">
+                            <div class="stat-value">
+                                {% if current_department.pending_leaves %}
+                                {{ current_department.pending_leaves }}
+                                {% else %}
+                                0
+                                {% endif %}
+                            </div>
+                            <div class="stat-label">إجازة قيد المراجعة</div>
+                        </div>
+                        <div class="stat-item">
+                            <div class="stat-value">
+                                {% if current_department.avg_attendance %}
+                                {{ current_department.avg_attendance }}%
+                                {% else %}
+                                N/A
+                                {% endif %}
+                            </div>
+                            <div class="stat-label">متوسط الحضور</div>
+                        </div>
+                    </div>
+                    
+                    <div class="department-actions">
+                        <a href="{{ url_for('manager_employees') }}?dept_id={{ current_department.id }}" 
+                           class="action-btn primary">
+                            <i class="bi bi-people me-1"></i>
+                            عرض موظفي القسم
+                        </a>
+                        <a href="{{ url_for('manager_leave_requests') }}?dept_id={{ current_department.id }}" 
+                           class="action-btn secondary">
+                            <i class="bi bi-calendar-minus me-1"></i>
+                            طلبات الإجازات
+                        </a>
+                        <a href="{{ url_for('manager_schedules') }}?dept_id={{ current_department.id }}" 
+                           class="action-btn warning">
+                            <i class="bi bi-calendar-check me-1"></i>
+                            جداول العمل
+                        </a>
+                    </div>
+                </div>
+                
+                <!-- Department Comparison -->
+                <div class="mt-4">
+                    <h5 class="mb-3 text-dark-green">
+                        <i class="bi bi-bar-chart me-2"></i>
+                        مقارنة بين الأقسام
+                    </h5>
+                    <div class="comparison-grid">
+                        {% for dept in departments[:3] %}
+                        <div class="comparison-card">
+                            <div class="comparison-header">
+                                <h6 class="comparison-title">{{ dept.name }}</h6>
+                                {% if current_department and dept.id == current_department.id %}
+                                <span class="comparison-badge">نشط</span>
+                                {% endif %}
+                            </div>
+                            <div class="comparison-stats">
+                                <div class="comparison-stat">
+                                    <div class="stat-value">{{ dept.employees_count }}</div>
+                                    <div class="stat-label">الموظفين</div>
+                                </div>
+                                <div class="comparison-stat">
+                                    <div class="stat-value">
+                                        {% if dept.active_schedules %}
+                                        {{ dept.active_schedules }}
+                                        {% else %}
+                                        0
+                                        {% endif %}
+                                    </div>
+                                    <div class="stat-label">الجداول</div>
+                                </div>
+                                <div class="comparison-stat">
+                                    <div class="stat-value">
+                                        {% if dept.pending_leaves %}
+                                        {{ dept.pending_leaves }}
+                                        {% else %}
+                                        0
+                                        {% endif %}
+                                    </div>
+                                    <div class="stat-label">طلبات الإجازة</div>
+                                </div>
+                                <div class="comparison-stat">
+                                    <div class="stat-value">
+                                        {% if dept.avg_attendance %}
+                                        {{ dept.avg_attendance }}%
+                                        {% else %}
+                                        N/A
+                                        {% endif %}
+                                    </div>
+                                    <div class="stat-label">الحضور</div>
+                                </div>
+                            </div>
+                            {% if not (current_department and dept.id == current_department.id) %}
+                            <div class="mt-3 text-center">
+                                <a href="?dept_id={{ dept.id }}" class="btn btn-sm btn-outline-success">
+                                    <i class="bi bi-arrow-left me-1"></i>
+                                    الانتقال للقسم
+                                </a>
+                            </div>
+                            {% endif %}
+                        </div>
+                        {% endfor %}
+                    </div>
+                </div>
+                {% endif %}
+            </div>
+            {% else %}
+            <div class="header-card mb-4">
+                <div class="card-body text-center">
+                    <h3 class="text-white mb-2">
+                        <i class="bi bi-calendar-check me-2"></i>
+                        جدولة الموظفين
+                    </h3>
+                    <p class="text-white-50 mb-0">إدارة وتعديل جداول العمل للموظفين</p>
+                </div>
+            </div>
+            {% endif %}
+            
+            <!-- Calendar Section -->
+            <div class="calendar-section">
+                <div class="calendar-header">
+                    <h3 class="calendar-title">
+                        <i class="bi bi-calendar3 me-2"></i>
+                        تقويم جداول العمل
+                        {% if current_department %}
+                        <small class="text-muted">- {{ current_department.name }}</small>
+                        {% endif %}
+                    </h3>
+                    <div class="calendar-nav">
+                        <button class="calendar-nav-btn" id="prevYear">
+                            <i class="bi bi-chevron-double-right"></i>
+                        </button>
+                        <button class="calendar-nav-btn" id="prevMonth">
+                            <i class="bi bi-chevron-right"></i>
+                        </button>
+                        <div class="calendar-month-year" id="currentMonthYear">
+                            جاري التحميل...
+                        </div>
+                        <button class="calendar-nav-btn" id="nextMonth">
+                            <i class="bi bi-chevron-left"></i>
+                        </button>
+                        <button class="calendar-nav-btn" id="nextYear">
+                            <i class="bi bi-chevron-double-left"></i>
+                        </button>
+                    </div>
+                </div>
+                
+                <div class="calendar-weekdays">
+                    <div class="weekday arabic-day">السبت</div>
+                    <div class="weekday arabic-day">الأحد</div>
+                    <div class="weekday arabic-day">الإثنين</div>
+                    <div class="weekday arabic-day">الثلاثاء</div>
+                    <div class="weekday arabic-day">الأربعاء</div>
+                    <div class="weekday arabic-day">الخميس</div>
+                    <div class="weekday arabic-day">الجمعة</div>
+                </div>
+                
+                <div class="calendar-days" id="calendarDays">
+                    <!-- سيتم ملء التقويم بواسطة JavaScript -->
+                </div>
+            </div>
+            
+            <!-- Selected Week Information -->
+            <div class="selected-week-info" id="selectedWeekInfo">
+                <div class="week-info-header">
+                    <h4 class="week-info-title">
+                        <i class="bi bi-calendar-week me-2"></i>
+                        <span id="weekTitle">تفاصيل الأسبوع المحدد</span>
+                        {% if current_department %}
+                        <small class="text-muted">- {{ current_department.name }}</small>
+                        {% endif %}
+                    </h4>
+                    <div id="weekStatusBadges"></div>
+                </div>
+                
+                <div class="week-dates" id="weekDatesList">
+                    <!-- سيتم ملء أيام الأسبوع هنا -->
+                </div>
+
+                <div class="week-actions">
+                    <!-- الأزرار الموجودة -->
+                    <a href="#" class="week-action-btn edit" id="editScheduleBtn">تعديل الجدول</a>
+                    <a href="#" class="week-action-btn copy" id="copyScheduleBtn">نسخ الجدول</a>
+                    <button class="week-action-btn duplicate" id="duplicateScheduleBtn">إعادة ملء من جدول سابق</button>
+                    
+                    <!-- زر فتح الجدول - يظهر فقط للمستخدمين الخاصين إذا كان الجدول مقفلاً -->
+                    {% if current_user.username in ['98', '510', '100'] %}
+                    <a href="#" class="week-action-btn unlock" id="unlockScheduleBtn" style="display: none; background: linear-gradient(135deg, #f97316 0%, #ea580c 100%);">
+                        <i class="bi bi-unlock me-1"></i>فتح الجدول
+                    </a>
+                    {% endif %}
+                    
+                    {% if current_department %}
+                    <a href="{{ url_for('manager_employees') }}?dept_id={{ current_department.id }}" class="week-action-btn view">
+                        عرض موظفي القسم
+                    </a>
+                    {% endif %}
+                </div>
+            </div>
+
+            <div class="filter-card">
+                <div class="row align-items-center">
+                    {% if current_department and departments|length > 1 %}
+                    <div class="col-md-4 mb-3 mb-md-0">
+                        <div class="filter-section">
+                            <h6 class="mb-3 text-dark-green">
+                                <i class="bi bi-building me-2"></i>
+                                تبديل القسم
+                            </h6>
+                            <form method="GET" action="{{ url_for('manager_schedules') }}" class="row g-2">
+                                <div class="col-9">
+                                    <select name="dept_id" class="form-select" onchange="this.form.submit()">
+                                        {% for dept in departments %}
+                                        <option value="{{ dept.id }}" {% if current_department and dept.id == current_department.id %}selected{% endif %}>
+                                            {{ dept.name }} ({{ dept.employees_count }} موظف)
+                                        </option>
+                                        {% endfor %}
+                                    </select>
+                                </div>
+                                <div class="col-3">
+                                    <button type="submit" class="btn btn-success w-100">
+                                        <i class="bi bi-check-lg"></i>
+                                    </button>
+                                </div>
+                            </form>
+                        </div>
+                    </div>
+                    {% endif %}
+                    
+                    <div class="{% if current_department and departments|length > 1 %}col-md-8{% else %}col-md-12{% endif %}">
+                        <div class="row g-3">
+                            <div class="col-md-6">
+                                <div class="filter-section">
+                                    <form method="POST" action="{{ url_for('manager_create_future_schedules') }}" 
+                                        onsubmit="return confirm('هل تريد إنشاء الجداول السنوية الجديدة بناءً على آخر جدول؟')">
+                                        {% if current_department %}
+                                        <input type="hidden" name="department_id" value="{{ current_department.id }}">
+                                        {% endif %}
+                                        <button type="submit" class="btn btn-warning w-100">
+                                            <i class="bi bi-calendar-plus me-2"></i>
+                                            إنشاء الجداول السنوية
+                                        </button>
+                                    </form>
+                                </div>
+                            </div>
+                            <div class="col-md-6">
+                                <div class="filter-section">
+                                    <button class="btn btn-info w-100" id="quickCopyBtn">
+                                        <i class="bi bi-lightning me-2"></i>
+                                        نسخ سريع من آخر جدول
+                                    </button>
+                                </div>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+            </div>
+
+        </div>
+    </main>
+
+    <!-- Copy Schedule Modal -->
+    <div class="modal fade" id="copyScheduleModal" tabindex="-1" aria-labelledby="copyScheduleModalLabel" aria-hidden="true">
+        <div class="modal-dialog">
+            <div class="modal-content">
+                <div class="modal-header">
+                    <h5 class="modal-title" id="copyScheduleModalLabel">
+                        <i class="bi bi-files me-2"></i>
+                        نسخ الجدول
+                    </h5>
+                    <button type="button" class="btn-close btn-close-white" data-bs-dismiss="modal" aria-label="Close"></button>
+                </div>
+                <div class="modal-body">
+                    <div id="sourceScheduleInfo" class="mb-4 p-3 bg-light rounded">
+                        <h6>الجدول المصدر:</h6>
+                        <div class="row">
+                            <div class="col-md-6">
+                                <strong>القسم:</strong> <span id="sourceDeptName">جاري التحميل...</span>
+                            </div>
+                            <div class="col-md-6">
+                                <strong>الفترة:</strong> <span id="sourceScheduleDates">جاري التحميل...</span>
+                            </div>
+                        </div>
+                    </div>
+                    
+                    <div class="mb-4">
+                        <h6>اختر التاريخ للجدول الجديد:</h6>
+                        <p class="text-muted">اختر تاريخ بداية الأسبوع للجدول الجديد (يجب أن يكون يوم سبت)</p>
+                        
+                        <div class="mb-3">
+                            <label class="form-label">تاريخ بداية الأسبوع:</label>
+                            <input type="date" id="targetDate" class="form-control" 
+                                onchange="validateTargetDate(this)">
+                            <div class="form-text text-muted" id="dateValidationMessage"></div>
+                        </div>
+                        
+                        <div class="alert alert-info">
+                            <i class="bi bi-info-circle me-2"></i>
+                            <strong>ملاحظة:</strong> سيتم نسخ جميع تفاصيل الجدول بما في ذلك توزيع الموظفين على الشيفتات.
+                            سيتم تعديل التواريخ تلقائياً لتتناسب مع الأسبوع المستهدف.
+                        </div>
+                    </div>
+                    
+                    <div class="alert alert-warning" id="existingScheduleWarning" style="display: none;">
+                        <i class="bi bi-exclamation-triangle me-2"></i>
+                        يوجد جدول بالفعل لهذا الأسبوع. النسخ سيحل محل الجدول الحالي.
+                    </div>
+                </div>
+                <div class="modal-footer">
+                    <button type="button" class="btn btn-secondary" data-bs-dismiss="modal">إلغاء</button>
+                    <button type="button" class="btn btn-success" id="confirmCopyBtn" disabled>
+                        <i class="bi bi-files me-1"></i>
+                        نسخ الجدول
+                    </button>
+                </div>
+            </div>
+        </div>
+    </div>
+
+
+    <!-- Duplicate Schedule Modal -->
+    <div class="modal fade" id="duplicateScheduleModal" tabindex="-1" aria-labelledby="duplicateScheduleModalLabel" aria-hidden="true">
+        <div class="modal-dialog modal-lg">
+            <div class="modal-content">
+                <div class="modal-header">
+                    <h5 class="modal-title" id="duplicateScheduleModalLabel">
+                        <i class="bi bi-files me-2"></i>
+                        إعادة ملء الجدول من جدول سابق
+                    </h5>
+                    <button type="button" class="btn-close btn-close-white" data-bs-dismiss="modal" aria-label="Close"></button>
+                </div>
+                <div class="modal-body">
+                    <div id="currentScheduleInfo" class="mb-4 p-3 bg-light rounded">
+                        <h6>الجــــــدول الحالي:</h6>
+                        <div class="row">
+                            <div class="col-md-6">
+                                <strong>القسم:</strong> <span id="currentDeptName">جاري التحميل...</span>
+                            </div>
+                            <div class="col-md-6">
+                                <strong>الفترة:</strong> <span id="currentScheduleDates">جاري التحميل...</span>
+                            </div>
+                        </div>
+                    </div>
+                    
+                    <div class="mb-4">
+                        <h6>اختر جدول المصـدر:</h6>
+                        <p class="text-muted">اختر جدولاً سابقاً لنسخ تفاصيله إلى الجدول الحالي</p>
+                        
+                        <div class="input-group mb-3">
+                            <span class="input-group-text">
+                                <i class="bi bi-search"></i>
+                            </span>
+                            <input type="text" id="scheduleSearch" class="form-control" placeholder="ابحث عن جدول...">
+                        </div>
+                    </div>
+                    
+                    <div class="schedule-list" id="availableSchedulesList">
+                        <div class="loading-schedules">
+                            <div class="spinner-border text-success mb-3" role="status">
+                                <span class="visually-hidden">جاري التحميل...</span>
+                            </div>
+                            <p>جاري تحميل الجداول المتاحة...</p>
+                        </div>
+                    </div>
+                    
+                    <div class="alert alert-warning mt-3">
+                        <i class="bi bi-exclamation-triangle me-2"></i>
+                        ملاحظة: سيتم استبدال جميع تفاصيل الجدول الحالي بالتفاصيل من الجدول المختار.
+                    </div>
+                </div>
+                <div class="modal-footer">
+                    <button type="button" class="btn btn-secondary" data-bs-dismiss="modal">إلغاء</button>
+                    <button type="button" class="btn btn-success" id="confirmDuplicateBtn" disabled>
+                        <i class="bi bi-files me-1"></i>
+                        إعادة الملء
+                    </button>
+                </div>
+            </div>
+        </div>
+    </div>
+
+    <!-- Quick Copy Modal -->
+    <div class="modal fade" id="quickCopyModal" tabindex="-1" aria-labelledby="quickCopyModalLabel" aria-hidden="true">
+        <div class="modal-dialog">
+            <div class="modal-content">
+                <div class="modal-header">
+                    <h5 class="modal-title" id="quickCopyModalLabel">
+                        <i class="bi bi-lightning me-2"></i>
+                        النسخ السريع
+                    </h5>
+                    <button type="button" class="btn-close btn-close-white" data-bs-dismiss="modal" aria-label="Close"></button>
+                </div>
+                <div class="modal-body">
+                    <div class="text-center mb-4">
+                        <i class="bi bi-lightning-charge-fill text-warning display-4 mb-3"></i>
+                        <h5>نسخ آخر جدول معتمد</h5>
+                        <p class="text-muted">
+                            سيتم نسخ آخر جدول معتمد تلقائياً إلى الجدول الحالي
+                        </p>
+                    </div>
+                    
+                    <div id="quickCopyInfo" class="p-3 bg-light rounded mb-3">
+                        <div class="text-center">
+                            <div class="spinner-border text-success" role="status">
+                                <span class="visually-hidden">جاري البحث...</span>
+                            </div>
+                            <p class="mt-2">جاري البحث عن آخر جدول معتمد...</p>
+                        </div>
+                    </div>
+                    
+                    <div class="alert alert-info">
+                        <i class="bi bi-info-circle me-2"></i>
+                        سيتم استبدال جميع تفاصيل الجدول الحالي بآخر جدول معتمد تلقائياً.
+                    </div>
+                </div>
+                <div class="modal-footer">
+                    <button type="button" class="btn btn-secondary" data-bs-dismiss="modal">إلغاء</button>
+                    <button type="button" class="btn btn-warning" id="confirmQuickCopyBtn">
+                        <i class="bi bi-lightning me-1"></i>
+                        نسخ سريع
+                    </button>
+                </div>
+            </div>
+        </div>
+    </div>
+
+    <!-- Bootstrap 5 JS -->
+    <script src="https://cdn.jsdelivr.net/npm/bootstrap@5.3.0/dist/js/bootstrap.bundle.min.js"></script>
+
+    <script>
+        // ============================================
+        // الكود الرئيسي للتطبيق - يعمل بعد تحميل الصفحة
+        // ============================================
+        document.addEventListener('DOMContentLoaded', function() {
+            'use strict';
+            
+            // ========== المتغيرات العامة ==========
+            let currentDate = new Date();
+            let selectedWeekStart = null;
+            let selectedSchedule = null;
+            
+            // بيانات الجداول من الخادم
+            const schedulesData = {};
+            {% if schedules_by_period %}
+                {% for period_key, period_data in schedules_by_period.items() %}
+                    {% for schedule in period_data.schedules %}
+                        schedulesData["{{ schedule.week_start_date.strftime('%Y-%m-%d') }}"] = {
+                            id: "{{ schedule.id }}",
+                            startDate: "{{ schedule.week_start_date.strftime('%Y-%m-%d') }}",
+                            endDate: "{{ schedule.week_end_date.strftime('%Y-%m-%d') }}",
+                            isApproved: {{ schedule.is_approved|lower }},
+                            isLocked: {{ schedule.is_locked|lower }},
+                            status: "{{ schedule.status }}",
+                            hasSchedule: true
+                        };
+                    {% endfor %}
+                {% endfor %}
+            {% endif %}
+            
+            // ========== الثوابت ==========
+            const arabicMonths = [
+                'يناير', 'فبراير', 'مارس', 'أبريل', 'مايو', 'يونيو',
+                'يوليو', 'أغسطس', 'سبتمبر', 'أكتوبر', 'نوفمبر', 'ديسمبر'
+            ];
+            
+            const arabicDays = ['السبت', 'الأحد', 'الإثنين', 'الثلاثاء', 'الأربعاء', 'الخميس', 'الجمعة'];
+            
+            // ========== العناصر DOM ==========
+            const elements = {
+                mobileMenuBtn: document.getElementById('mobileMenuBtn'),
+                mobileNavMenu: document.getElementById('mobileNavMenu'),
+                liveClock: document.getElementById('live-clock'),
+                loadingOverlay: document.getElementById('loadingOverlay'),
+                alertContainer: document.querySelector('.alert-container'),
+                calendarDays: document.getElementById('calendarDays'),
+                currentMonthYear: document.getElementById('currentMonthYear'),
+                selectedWeekInfo: document.getElementById('selectedWeekInfo'),
+                weekTitle: document.getElementById('weekTitle'),
+                weekStatusBadges: document.getElementById('weekStatusBadges'),
+                weekDatesList: document.getElementById('weekDatesList'),
+                editScheduleBtn: document.getElementById('editScheduleBtn'),
+                copyScheduleBtn: document.getElementById('copyScheduleBtn'),
+                duplicateScheduleBtn: document.getElementById('duplicateScheduleBtn'),
+                
+                // أزرار التنقل في التقويم
+                prevYear: document.getElementById('prevYear'),
+                prevMonth: document.getElementById('prevMonth'),
+                nextMonth: document.getElementById('nextMonth'),
+                nextYear: document.getElementById('nextYear'),
+                
+                // عناصر مودال النسخ
+                copyScheduleModal: document.getElementById('copyScheduleModal'),
+                confirmCopyBtn: document.getElementById('confirmCopyBtn'),
+                targetDateInput: document.getElementById('targetDate'),
+                sourceDeptName: document.getElementById('sourceDeptName'),
+                sourceScheduleDates: document.getElementById('sourceScheduleDates'),
+                existingScheduleWarning: document.getElementById('existingScheduleWarning'),
+                dateValidationMessage: document.getElementById('dateValidationMessage'),
+                
+                // عناصر مودال إعادة الملء
+                duplicateScheduleModal: document.getElementById('duplicateScheduleModal'),
+                confirmDuplicateBtn: document.getElementById('confirmDuplicateBtn'),
+                scheduleSearch: document.getElementById('scheduleSearch'),
+                availableSchedulesList: document.getElementById('availableSchedulesList'),
+                currentDeptName: document.getElementById('currentDeptName'),
+                currentScheduleDates: document.getElementById('currentScheduleDates'),
+                
+                // عناصر مودال النسخ السريع
+                quickCopyBtn: document.getElementById('quickCopyBtn'),
+                quickCopyModal: document.getElementById('quickCopyModal'),
+                confirmQuickCopyBtn: document.getElementById('confirmQuickCopyBtn'),
+                quickCopyInfo: document.getElementById('quickCopyInfo')
+            };
+            
+            // ========== دوال مساعدة للتواريخ ==========
+            function formatDate(date) {
+                if (!date) return '';
+                const year = date.getFullYear();
+                const month = String(date.getMonth() + 1).padStart(2, '0');
+                const day = String(date.getDate()).padStart(2, '0');
+                return `${year}-${month}-${day}`;
+            }
+            
+            function parseDate(dateStr) {
+                if (!dateStr) return null;
+                const [year, month, day] = dateStr.split('-').map(Number);
+                return new Date(year, month - 1, day);
+            }
+            
+            function isSameDay(date1, date2) {
+                if (!date1 || !date2) return false;
+                return date1.getDate() === date2.getDate() &&
+                    date1.getMonth() === date2.getMonth() &&
+                    date1.getFullYear() === date2.getFullYear();
+            }
+            
+            function getArabicDayIndex(date) {
+                const day = date.getDay(); // 0=Sunday, 1=Monday, ..., 6=Saturday
+                return (day + 1) % 7; // 0=Saturday, 1=Sunday, ..., 6=Friday
+            }
+            
+            function getArabicDayName(date) {
+                return arabicDays[getArabicDayIndex(date)];
+            }
+            
+            function getWeekStart(date) {
+                const clonedDate = new Date(date);
+                const dayIndex = getArabicDayIndex(date); // 0 for Saturday
+                clonedDate.setDate(clonedDate.getDate() - dayIndex);
+                clonedDate.setHours(0, 0, 0, 0);
+                return clonedDate;
+            }
+            
+            function getWeekEnd(date) {
+                const start = getWeekStart(date);
+                const end = new Date(start);
+                end.setDate(start.getDate() + 6);
+                end.setHours(23, 59, 59, 999);
+                return end;
+            }
+            
+            // ========== دوال البحث عن الجداول ==========
+            function getScheduleForDate(date) {
+                const dateStr = formatDate(date);
+                
+                for (const scheduleKey in schedulesData) {
+                    const schedule = schedulesData[scheduleKey];
+                    const startDate = parseDate(schedule.startDate);
+                    const endDate = parseDate(schedule.endDate);
+                    const targetDate = parseDate(dateStr);
+                    
+                    if (targetDate >= startDate && targetDate <= endDate) {
+                        return schedule;
+                    }
+                }
+                return null;
+            }
+            
+            function getScheduleForWeek(weekStart) {
+                const weekStartStr = formatDate(weekStart);
+                return schedulesData[weekStartStr] || null;
+            }
+            
+            // ========== دوال عرض التقويم ==========
+            function addCalendarDay(date, isOtherMonth, isToday = false) {
+                if (!elements.calendarDays) return;
+                
+                const dayDiv = document.createElement('div');
+                dayDiv.className = 'calendar-day';
+                
+                const dayNumber = date.getDate();
+                const schedule = getScheduleForDate(date);
+                const hasSchedule = schedule !== null;
+                
+                // تحديد إذا كان اليوم ضمن الأسبوع المحدد
+                const isInSelectedWeek = selectedWeekStart && 
+                    date >= selectedWeekStart && 
+                    date < new Date(selectedWeekStart.getTime() + 7 * 24 * 60 * 60 * 1000);
+                
+                // إضافة الفئات المناسبة
+                if (isOtherMonth) dayDiv.classList.add('other-month');
+                if (isToday) dayDiv.classList.add('current-day');
+                if (isInSelectedWeek) dayDiv.classList.add('selected-day');
+                if (hasSchedule) dayDiv.classList.add('has-schedule');
+                
+                // محتوى اليوم
+                let content = '';
+                content += `<div class="day-number">${dayNumber}</div>`;
+                content += `<div class="day-content text-muted" style="font-size: 0.7rem;">${getArabicDayName(date).charAt(0)}</div>`;
+                
+                if (hasSchedule && schedule) {
+                    content += `<div class="day-content mt-1">`;
+                    if (schedule.isApproved) {
+                        content += `<span class="schedule-indicator" title="جدول معتمد"></span>`;
+                    } else if (schedule.status === 'pending') {
+                        content += `<span class="schedule-indicator" style="background: #f59e0b;" title="جدول بانتظار الاعتماد"></span>`;
+                    } else {
+                        content += `<span class="schedule-indicator" style="background: #9ca3af;" title="مسودة جدول"></span>`;
+                    }
+                    content += `</div>`;
+                }
+                
+                dayDiv.innerHTML = content;
+                
+                // إضافة حدث النقر
+                dayDiv.addEventListener('click', function() {
+                    handleDayClick(date);
+                });
+                
+                elements.calendarDays.appendChild(dayDiv);
+            }
+            
+            function renderCalendar() {
+                if (!elements.calendarDays || !elements.currentMonthYear) return;
+                
+                const year = currentDate.getFullYear();
+                const month = currentDate.getMonth();
+                elements.currentMonthYear.textContent = `${arabicMonths[month]} ${year}`;
+                
+                const firstDay = new Date(year, month, 1);
+                const weekStart = getWeekStart(firstDay);
+                
+                elements.calendarDays.innerHTML = '';
+                
+                let currentDay = new Date(weekStart);
+                for (let i = 0; i < 42; i++) {
+                    const date = new Date(currentDay);
+                    const isOtherMonth = date.getMonth() !== month;
+                    const isToday = isSameDay(date, new Date());
+                    
+                    addCalendarDay(date, isOtherMonth, isToday);
+                    
+                    currentDay.setDate(currentDay.getDate() + 1);
+                }
+            }
+            
+            // ========== التعامل مع نقر اليوم ==========
+            function handleDayClick(date) {
+                selectedWeekStart = getWeekStart(date);
+                selectedSchedule = getScheduleForWeek(selectedWeekStart);
+                
+                // تحديث المتغيرات العامة
+                window.selectedSchedule = selectedSchedule;
+                window.selectedWeekStart = selectedWeekStart;
+                
+                renderCalendar();
+                updateWeekInfo();
+            }
+            
+            // ========== تحديث معلومات الأسبوع المحدد ==========
+            function updateWeekInfo() {
+                if (!elements.selectedWeekInfo || !selectedWeekStart) {
+                    if (elements.selectedWeekInfo) elements.selectedWeekInfo.classList.remove('show');
+                    return;
+                }
+                
+                const weekEnd = getWeekEnd(selectedWeekStart);
+                
+                // تحديث العنوان
+                if (selectedSchedule) {
+                    elements.weekTitle.textContent = `جدول الأسبوع (${formatDate(selectedWeekStart)} → ${formatDate(weekEnd)})`;
+                } else {
+                    elements.weekTitle.textContent = `الأسبوع (${formatDate(selectedWeekStart)} → ${formatDate(weekEnd)})`;
+                }
+                
+                // تحديث شارات الحالة
+                elements.weekStatusBadges.innerHTML = '';
+                if (selectedSchedule) {
+                    let statusHTML = '';
+                    if (selectedSchedule.isApproved) {
+                        statusHTML += `<span class="badge bg-success schedule-status-badge">معتمد</span>`;
+                    } else if (selectedSchedule.status === 'pending') {
+                        statusHTML += `<span class="badge bg-warning schedule-status-badge">بانتظار الاعتماد</span>`;
+                    } else {
+                        statusHTML += `<span class="badge bg-secondary schedule-status-badge">مسودة</span>`;
+                    }
+                    
+                    if (selectedSchedule.isLocked) {
+                        statusHTML += `<span class="badge bg-danger schedule-status-badge">مقفل</span>`;
+                    }
+                    elements.weekStatusBadges.innerHTML = statusHTML;
+                } else {
+                    elements.weekStatusBadges.innerHTML = `<span class="badge bg-info schedule-status-badge">لا يوجد جدول</span>`;
+                }
+                
+                // تحديث قائمة أيام الأسبوع
+                elements.weekDatesList.innerHTML = '';
+                for (let i = 0; i < 7; i++) {
+                    const dayDate = new Date(selectedWeekStart);
+                    dayDate.setDate(selectedWeekStart.getDate() + i);
+                    
+                    const dayDiv = document.createElement('div');
+                    dayDiv.className = 'week-date-item';
+                    
+                    if (isSameDay(dayDate, new Date())) {
+                        dayDiv.classList.add('selected');
+                    }
+                    
+                    dayDiv.innerHTML = `
+                        <div>${getArabicDayName(dayDate)}</div>
+                        <div class="fw-bold">${formatDate(dayDate)}</div>
+                    `;
+                    
+                    elements.weekDatesList.appendChild(dayDiv);
+                }
+                
+                // تحديث أزرار الإجراءات
+                // تحديث أزرار الإجراءات
+                if (selectedSchedule) {
+                    elements.editScheduleBtn.href = `/manager/edit_schedule/${selectedSchedule.id}`;
+                    elements.editScheduleBtn.style.display = 'flex';
+                    
+                    if (elements.copyScheduleBtn) {
+                        elements.copyScheduleBtn.setAttribute('data-schedule-id', selectedSchedule.id);
+                        elements.copyScheduleBtn.setAttribute('data-start-date', selectedSchedule.startDate);
+                        elements.copyScheduleBtn.setAttribute('data-end-date', selectedSchedule.endDate);
+                        elements.copyScheduleBtn.style.display = 'flex';
+                    }
+                    
+                    elements.duplicateScheduleBtn.disabled = false;
+                    elements.duplicateScheduleBtn.style.display = 'flex';
+                    
+                    // ====== إظهار/إخفاء زر فتح الجدول ======
+                    const unlockBtn = document.getElementById('unlockScheduleBtn');
+                    if (unlockBtn) {
+                        const isSpecialUser = {{ 'true' if current_user.username in ['98', '510', '100'] else 'false' }};
+                        // تحويل القيمة إلى Boolean صريح (احتياطاً)
+                        const isLocked = selectedSchedule.isLocked === true || selectedSchedule.isLocked === 'true';
+                        
+                        console.log('Unlock check:', { isSpecialUser, isLocked, selectedSchedule });
+                        
+                        if (isSpecialUser && isLocked) {
+                            unlockBtn.style.display = 'flex';
+                            // استخدم route مخصص للمديرين لفتح الجدول (سننشئه لاحقاً)
+                            unlockBtn.href = `/manager/unlock_schedule/${selectedSchedule.id}`;
+                        } else {
+                            unlockBtn.style.display = 'none';
+                        }
+                    }
+                } else {
+                    const startDateStr = formatDate(selectedWeekStart);
+                    const endDateStr = formatDate(weekEnd);
+                    elements.editScheduleBtn.href = `/manager/create_schedule?start_date=${startDateStr}&end_date=${endDateStr}{% if current_department %}&dept_id={{ current_department.id }}{% endif %}`;
+                    elements.editScheduleBtn.style.display = 'flex';
+                    
+                    elements.duplicateScheduleBtn.disabled = true;
+                    elements.duplicateScheduleBtn.style.display = 'flex';
+                    
+                    // إخفاء زر فتح الجدول إذا لم يكن هناك جدول محدد
+                    const unlockBtn = document.getElementById('unlockScheduleBtn');
+                    if (unlockBtn) unlockBtn.style.display = 'none';
+                }
+                
+                elements.selectedWeekInfo.classList.add('show');
+            }
+            
+            // ========== دوال التحميل والإشعارات ==========
+            function showLoading() {
+                if (elements.loadingOverlay) elements.loadingOverlay.style.display = 'flex';
+            }
+            
+            function hideLoading() {
+                if (elements.loadingOverlay) elements.loadingOverlay.style.display = 'none';
+            }
+            
+            function showAlert(message, type = 'success') {
+                if (!elements.alertContainer) return;
+                
+                const alertId = 'alert-' + Date.now();
+                const icon = type === 'success' ? 'check-circle' : 
+                             type === 'warning' ? 'exclamation-triangle' : 
+                             type === 'error' ? 'x-circle' : 'info-circle';
+                
+                const alertHTML = `
+                    <div id="${alertId}" class="alert alert-${type} alert-dismissible fade show" role="alert">
+                        <i class="bi bi-${icon} me-2"></i>
+                        ${message}
+                        <button type="button" class="btn-close" data-bs-dismiss="alert" aria-label="Close"></button>
+                    </div>
+                `;
+                
+                elements.alertContainer.insertAdjacentHTML('beforeend', alertHTML);
+                
+                setTimeout(() => {
+                    const alert = document.getElementById(alertId);
+                    if (alert) alert.remove();
+                }, 5000);
+            }
+            
+            // ========== تهيئة التقويم ==========
+            function initCalendar() {
+                const today = new Date();
+                selectedWeekStart = getWeekStart(today);
+                selectedSchedule = getScheduleForWeek(selectedWeekStart);
+                
+                window.selectedSchedule = selectedSchedule;
+                window.schedulesData = schedulesData;
+                
+                renderCalendar();
+                updateWeekInfo();
+            }
+            
+            // ========== أحداث التنقل في التقويم ==========
+            if (elements.prevMonth) {
+                elements.prevMonth.addEventListener('click', function() {
+                    currentDate.setMonth(currentDate.getMonth() - 1);
+                    renderCalendar();
+                });
+            }
+            
+            if (elements.nextMonth) {
+                elements.nextMonth.addEventListener('click', function() {
+                    currentDate.setMonth(currentDate.getMonth() + 1);
+                    renderCalendar();
+                });
+            }
+            
+            if (elements.prevYear) {
+                elements.prevYear.addEventListener('click', function() {
+                    currentDate.setFullYear(currentDate.getFullYear() - 1);
+                    renderCalendar();
+                });
+            }
+            
+            if (elements.nextYear) {
+                elements.nextYear.addEventListener('click', function() {
+                    currentDate.setFullYear(currentDate.getFullYear() + 1);
+                    renderCalendar();
+                });
+            }
+            
+            // ========== الساعة المباشرة ==========
+            function updateClock() {
+                if (!elements.liveClock) return;
+                
+                const now = new Date();
+                const timeString = now.toLocaleTimeString('ar-EG');
+                
+                const gregorianOptions = {
+                    weekday: 'long',
+                    year: 'numeric',
+                    month: 'long',
+                    day: 'numeric'
+                };
+                
+                const dateString = now.toLocaleDateString('ar-EG', gregorianOptions);
+                
+                elements.liveClock.innerHTML = `
+                    <i class="bi bi-clock me-2"></i>
+                    ${timeString}
+                    <small class="text-white-50 ms-2 d-none d-md-inline">${dateString}</small>
+                `;
+            }
+            
+            updateClock();
+            setInterval(updateClock, 1000);
+            
+            // ========== القائمة المتنقلة ==========
+            if (elements.mobileMenuBtn && elements.mobileNavMenu) {
+                elements.mobileMenuBtn.addEventListener('click', function() {
+                    elements.mobileNavMenu.classList.toggle('active');
+                });
+                
+                document.addEventListener('click', function(event) {
+                    if (!elements.mobileMenuBtn.contains(event.target) && 
+                        !elements.mobileNavMenu.contains(event.target)) {
+                        elements.mobileNavMenu.classList.remove('active');
+                    }
+                });
+            }
+            
+            // ========== تهيئة الصفحة ==========
+            initCalendar();
+            
+            // ========== دوال مودال النسخ ==========
+            function initCopyScheduleModal() {
+                if (!elements.copyScheduleBtn || !elements.copyScheduleModal) return;
+                
+                const copyModal = new bootstrap.Modal(elements.copyScheduleModal);
+                
+                // فتح المودال
+                elements.copyScheduleBtn.addEventListener('click', function() {
+                    // التحقق من وجود جدول محدد
+                    if (!window.selectedSchedule) {
+                        // محاولة الحصول من data attributes
+                        const scheduleId = this.getAttribute('data-schedule-id');
+                        const startDate = this.getAttribute('data-start-date');
+                        
+                        if (scheduleId && startDate) {
+                            window.selectedSchedule = {
+                                id: scheduleId,
+                                startDate: startDate,
+                                endDate: this.getAttribute('data-end-date')
+                            };
+                        } else {
+                            showAlert('الرجاء تحديد جدول أولاً من التقويم', 'warning');
+                            return;
+                        }
+                    }
+                    
+                    if (!window.selectedSchedule || !window.selectedSchedule.id) {
+                        showAlert('الرجاء تحديد جدول أولاً من التقويم', 'warning');
+                        return;
+                    }
+                    
+                    // عرض معلومات الجدول المصدر
+                    if (elements.sourceDeptName) {
+                        elements.sourceDeptName.textContent = '{{ current_department.name if current_department else "القسم الحالي" }}';
+                    }
+                    
+                    const weekStart = parseDate(window.selectedSchedule.startDate);
+                    const weekEnd = parseDate(window.selectedSchedule.endDate);
+                    
+                    if (elements.sourceScheduleDates) {
+                        elements.sourceScheduleDates.textContent = `${formatDate(weekStart)} - ${formatDate(weekEnd)}`;
+                    }
+                    
+                    // تعيين التاريخ الافتراضي
+                    const today = new Date();
+                    const nextSaturday = getWeekStart(new Date(today.getTime() + 7 * 24 * 60 * 60 * 1000));
+                    
+                    if (elements.targetDateInput) {
+                        elements.targetDateInput.value = formatDate(nextSaturday);
+                        
+                        //const minDate = new Date(today);
+                        //minDate.setDate(today.getDate() + 1);
+                        //elements.targetDateInput.min = formatDate(minDate);
+                    }
+                    
+                    // التحقق من صحة التاريخ
+                    validateTargetDate();
+                    
+                    copyModal.show();
+                });
+                
+                // التحقق من صحة التاريخ
+                function validateTargetDate() {
+                    if (!elements.targetDateInput || !elements.confirmCopyBtn) return;
+                    
+                    const targetDate = parseDate(elements.targetDateInput.value);
+                    if (!targetDate) {
+                        elements.confirmCopyBtn.disabled = true;
+                        return;
+                    }
+                    
+                    const arabicDayIndex = getArabicDayIndex(targetDate);
+                    
+                    if (arabicDayIndex !== 0) {
+                        if (elements.dateValidationMessage) {
+                            elements.dateValidationMessage.innerHTML = '⚠️ يجب أن يكون تاريخ البداية يوم سبت';
+                            elements.dateValidationMessage.classList.add('text-danger');
+                        }
+                        elements.confirmCopyBtn.disabled = true;
+                        
+                        // اقتراح أقرب سبت
+                        const nextSaturday = new Date(targetDate);
+                        nextSaturday.setDate(targetDate.getDate() + ((7 - arabicDayIndex) % 7));
+                        
+                        if (elements.dateValidationMessage) {
+                            elements.dateValidationMessage.innerHTML += `<br>أقرب سبت: ${formatDate(nextSaturday)}`;
+                        }
+                        return false;
+                    }
+                    
+                    // التحقق من وجود جدول
+                    const dateStr = formatDate(targetDate);
+                    if (window.schedulesData && window.schedulesData[dateStr]) {
+                        if (elements.existingScheduleWarning) {
+                            elements.existingScheduleWarning.style.display = 'block';
+                        }
+                    } else {
+                        if (elements.existingScheduleWarning) {
+                            elements.existingScheduleWarning.style.display = 'none';
+                        }
+                    }
+                    
+                    if (elements.dateValidationMessage) {
+                        elements.dateValidationMessage.innerHTML = '✓ تاريخ صحيح';
+                        elements.dateValidationMessage.classList.remove('text-danger');
+                        elements.dateValidationMessage.classList.add('text-success');
+                    }
+                    
+                    elements.confirmCopyBtn.disabled = false;
+                    return true;
+                }
+                
+                // حدث تغيير التاريخ
+                if (elements.targetDateInput) {
+                    elements.targetDateInput.addEventListener('change', validateTargetDate);
+                }
+                
+                // تأكيد النسخ
+                if (elements.confirmCopyBtn) {
+                    elements.confirmCopyBtn.addEventListener('click', function() {
+                        const targetDateStr = elements.targetDateInput.value;
+                        
+                        if (!targetDateStr) {
+                            showAlert('الرجاء اختيار تاريخ بداية الأسبوع', 'warning');
+                            return;
+                        }
+                        
+                        const targetDate = parseDate(targetDateStr);
+                        if (getArabicDayIndex(targetDate) !== 0) {
+                            showAlert('يجب أن يكون تاريخ البداية يوم سبت', 'warning');
+                            return;
+                        }
+                        
+                        if (!window.selectedSchedule || !window.selectedSchedule.id) {
+                            showAlert('الرجاء تحديد جدول مصدر أولاً', 'warning');
+                            return;
+                        }
+                        
+                        const targetEndDate = new Date(targetDate);
+                        targetEndDate.setDate(targetDate.getDate() + 6);
+                        
+                        if (!confirm(`هل تريد نسخ الجدول إلى الأسبوع ${targetDateStr} - ${formatDate(targetEndDate)}؟`)) {
+                            return;
+                        }
+                        
+                        showLoading();
+                        
+                        fetch(`/manager/copy_schedule/${window.selectedSchedule.id}`, {
+                            method: 'POST',
+                            headers: {
+                                'Content-Type': 'application/x-www-form-urlencoded',
+                            },
+                            body: new URLSearchParams({
+                                'target_date': targetDateStr
+                            })
+                        })
+                        .then(response => {
+                            if (response.redirected) {
+                                showAlert('تم نسخ الجدول بنجاح', 'success');
+                                copyModal.hide();
+                                setTimeout(() => {
+                                    window.location.href = response.url;
+                                }, 1500);
+                                return;
+                            }
+                            return response.json();
+                        })
+                        .then(data => {
+                            hideLoading();
+                            if (data) {
+                                if (data.success === false) {
+                                    showAlert(data.message, 'error');
+                                } else if (data.success === true) {
+                                    showAlert(data.message, 'success');
+                                    copyModal.hide();
+                                    if (data.redirect_url) {
+                                        setTimeout(() => {
+                                            window.location.href = data.redirect_url;
+                                        }, 1500);
+                                    } else {
+                                        setTimeout(() => {
+                                            window.location.reload();
+                                        }, 1500);
+                                    }
+                                }
+                            }
+                        })
+                        .catch(error => {
+                            hideLoading();
+                            copyModal.hide();
+                            showAlert(error.message || 'حدث خطأ أثناء نسخ الجدول', 'error');
+                            console.error('Error:', error);
+                        });
+                    });
+                }
+                
+                // إعادة تعيين عند الإغلاق
+                if (elements.copyScheduleModal) {
+                    elements.copyScheduleModal.addEventListener('hidden.bs.modal', function() {
+                        if (elements.confirmCopyBtn) elements.confirmCopyBtn.disabled = true;
+                        if (elements.existingScheduleWarning) elements.existingScheduleWarning.style.display = 'none';
+                        if (elements.dateValidationMessage) elements.dateValidationMessage.innerHTML = '';
+                    });
+                }
+            }
+            
+            // ========== دوال مودال إعادة الملء ==========
+            function initDuplicateScheduleModal() {
+                if (!elements.duplicateScheduleBtn || !elements.duplicateScheduleModal) return;
+                
+                const duplicateModal = new bootstrap.Modal(elements.duplicateScheduleModal);
+                
+                elements.duplicateScheduleBtn.addEventListener('click', function() {
+                    if (!selectedSchedule || !selectedSchedule.id) {
+                        showAlert('الرجاء تحديد جدول أولاً', 'warning');
+                        return;
+                    }
+                    
+                    loadAvailableSchedules(selectedSchedule.id);
+                    duplicateModal.show();
+                });
+                
+                function loadAvailableSchedules(scheduleId) {
+                    showLoading();
+                    
+                    fetch(`/api/schedule/${scheduleId}/available_source_schedules`)
+                        .then(response => response.json())
+                        .then(data => {
+                            hideLoading();
+                            
+                            if (data.success) {
+                                if (elements.currentDeptName) {
+                                    elements.currentDeptName.textContent = data.current_schedule.department_name;
+                                }
+                                if (elements.currentScheduleDates) {
+                                    elements.currentScheduleDates.textContent = `${data.current_schedule.week_start_date} - ${data.current_schedule.week_end_date}`;
+                                }
+                                
+                                displayAvailableSchedules(data.schedules);
+                            } else {
+                                showAlert(data.message, 'error');
+                            }
+                        })
+                        .catch(error => {
+                            hideLoading();
+                            showAlert('حدث خطأ أثناء تحميل الجداول', 'error');
+                            console.error('Error:', error);
+                        });
+                }
+                
+                function displayAvailableSchedules(schedules) {
+                    if (!elements.availableSchedulesList) return;
+                    
+                    elements.availableSchedulesList.innerHTML = '';
+                    
+                    if (schedules.length === 0) {
+                        elements.availableSchedulesList.innerHTML = `
+                            <div class="no-schedules">
+                                <i class="bi bi-calendar-x display-4 text-muted mb-3"></i>
+                                <p>لا توجد جداول متاحة للإعادة الملء</p>
+                            </div>
+                        `;
+                        return;
+                    }
+                    
+                    let selectedSourceId = null;
+                    
+                    schedules.forEach(schedule => {
+                        const scheduleItem = document.createElement('div');
+                        scheduleItem.className = 'schedule-item';
+                        scheduleItem.dataset.id = schedule.id;
+                        
+                        const approvedBadge = schedule.is_approved ? 
+                            '<span class="badge bg-success ms-2">معتمد</span>' : 
+                            '<span class="badge bg-warning ms-2">غير معتمد</span>';
+                        
+                        scheduleItem.innerHTML = `
+                            <div class="schedule-item-header">
+                                <div class="schedule-date">
+                                    أسبوع ${schedule.week_number}
+                                    ${approvedBadge}
+                                </div>
+                                <div class="text-muted">
+                                    <small>${schedule.detail_count} تفصيلة</small>
+                                </div>
+                            </div>
+                            <div class="schedule-details">
+                                ${schedule.week_start_date} - ${schedule.week_end_date}
+                            </div>
+                            <div class="schedule-details">
+                                <small>تم الإنشاء: ${schedule.created_at}</small>
+                            </div>
+                        `;
+                        
+                        scheduleItem.addEventListener('click', function() {
+                            document.querySelectorAll('.schedule-item').forEach(item => {
+                                item.classList.remove('selected');
+                            });
+                            
+                            this.classList.add('selected');
+                            selectedSourceId = schedule.id;
+                            if (elements.confirmDuplicateBtn) {
+                                elements.confirmDuplicateBtn.disabled = false;
+                            }
+                        });
+                        
+                        elements.availableSchedulesList.appendChild(scheduleItem);
+                    });
+                    
+                    if (elements.scheduleSearch) {
+                        elements.scheduleSearch.addEventListener('input', function() {
+                            const searchTerm = this.value.toLowerCase();
+                            document.querySelectorAll('.schedule-item').forEach(item => {
+                                const text = item.textContent.toLowerCase();
+                                item.style.display = text.includes(searchTerm) ? 'block' : 'none';
+                            });
+                        });
+                    }
+                    
+                    if (elements.confirmDuplicateBtn) {
+                        elements.confirmDuplicateBtn.addEventListener('click', function() {
+                            if (!selectedSourceId) {
+                                showAlert('الرجاء اختيار جدول المصدر', 'warning');
+                                return;
+                            }
+                            
+                            if (confirm('هل تريد تأكيد إعادة ملء الجدول؟ سيتم استبدال جميع التفاصيل الحالية.')) {
+                                duplicateSchedule(selectedSchedule.id, selectedSourceId, duplicateModal);
+                            }
+                        });
+                    }
+                }
+                
+                function duplicateSchedule(targetId, sourceId, modal) {
+                    showLoading();
+                    
+                    fetch(`/api/schedule/${targetId}/duplicate/${sourceId}`, {
+                        method: 'POST',
+                        headers: {
+                            'Content-Type': 'application/json',
+                        }
+                    })
+                    .then(response => response.json())
+                    .then(data => {
+                        hideLoading();
+                        modal.hide();
+                        
+                        if (data.success) {
+                            showAlert('تم إعادة ملء الجدول بنجاح', 'success');
+                            setTimeout(() => {
+                                window.location.reload();
+                            }, 1500);
+                        } else {
+                            showAlert(data.message, 'error');
+                        }
+                    })
+                    .catch(error => {
+                        hideLoading();
+                        modal.hide();
+                        showAlert('حدث خطأ أثناء الإعادة الملء', 'error');
+                        console.error('Error:', error);
+                    });
+                }
+            }
+            
+            // ========== دوال مودال النسخ السريع ==========
+            function initQuickCopyModal() {
+                if (!elements.quickCopyBtn || !elements.quickCopyModal) return;
+                
+                const quickModal = new bootstrap.Modal(elements.quickCopyModal);
+                
+                elements.quickCopyBtn.addEventListener('click', function() {
+                    if (!selectedSchedule || !selectedSchedule.id) {
+                        showAlert('الرجاء تحديد جدول أولاً', 'warning');
+                        return;
+                    }
+                    
+                    findLastApprovedSchedule(selectedSchedule.id);
+                    quickModal.show();
+                });
+                
+                function findLastApprovedSchedule(scheduleId) {
+                    if (elements.quickCopyInfo) {
+                        elements.quickCopyInfo.innerHTML = `
+                            <div class="text-center">
+                                <div class="spinner-border text-success" role="status">
+                                    <span class="visually-hidden">جاري البحث...</span>
+                                </div>
+                                <p class="mt-2">جاري البحث عن آخر جدول معتمد...</p>
+                            </div>
+                        `;
+                    }
+                    
+                    fetch(`/api/schedule/${scheduleId}/available_source_schedules`)
+                        .then(response => response.json())
+                        .then(data => {
+                            if (data.success && data.schedules.length > 0) {
+                                const approvedSchedules = data.schedules.filter(s => s.is_approved);
+                                
+                                if (approvedSchedules.length > 0) {
+                                    const lastApproved = approvedSchedules[0];
+                                    
+                                    if (elements.quickCopyInfo) {
+                                        elements.quickCopyInfo.innerHTML = `
+                                            <h6 class="text-success">تم العثور على آخر جدول معتمد:</h6>
+                                            <div class="mt-3">
+                                                <p><strong>الأسبوع:</strong> ${lastApproved.week_number}</p>
+                                                <p><strong>الفترة:</strong> ${lastApproved.week_start_date} - ${lastApproved.week_end_date}</p>
+                                                <p><strong>التفاصيل:</strong> ${lastApproved.detail_count} تفصيلة</p>
+                                            </div>
+                                        `;
+                                    }
+                                    
+                                    window.selectedSourceSchedule = lastApproved.id;
+                                    if (elements.confirmQuickCopyBtn) {
+                                        elements.confirmQuickCopyBtn.disabled = false;
+                                    }
+                                } else {
+                                    if (elements.quickCopyInfo) {
+                                        elements.quickCopyInfo.innerHTML = `
+                                            <div class="text-center text-warning">
+                                                <i class="bi bi-exclamation-triangle display-4 mb-3"></i>
+                                                <p>لا توجد جداول معتمدة سابقة</p>
+                                            </div>
+                                        `;
+                                    }
+                                    if (elements.confirmQuickCopyBtn) {
+                                        elements.confirmQuickCopyBtn.disabled = true;
+                                    }
+                                }
+                            } else {
+                                if (elements.quickCopyInfo) {
+                                    elements.quickCopyInfo.innerHTML = `
+                                        <div class="text-center text-danger">
+                                            <i class="bi bi-calendar-x display-4 mb-3"></i>
+                                            <p>لا توجد جداول متاحة</p>
+                                        </div>
+                                    `;
+                                }
+                                if (elements.confirmQuickCopyBtn) {
+                                    elements.confirmQuickCopyBtn.disabled = true;
+                                }
+                            }
+                        })
+                        .catch(error => {
+                            if (elements.quickCopyInfo) {
+                                elements.quickCopyInfo.innerHTML = `
+                                    <div class="text-center text-danger">
+                                        <i class="bi bi-x-circle display-4 mb-3"></i>
+                                        <p>حدث خطأ أثناء البحث</p>
+                                    </div>
+                                `;
+                            }
+                            if (elements.confirmQuickCopyBtn) {
+                                elements.confirmQuickCopyBtn.disabled = true;
+                            }
+                            console.error('Error:', error);
+                        });
+                }
+                
+                if (elements.confirmQuickCopyBtn) {
+                    elements.confirmQuickCopyBtn.addEventListener('click', function() {
+                        if (!window.selectedSourceSchedule || !selectedSchedule || !selectedSchedule.id) {
+                            showAlert('لا يوجد جدول معتمد للنسخ', 'warning');
+                            return;
+                        }
+                        
+                        if (confirm('هل تريد تأكيد النسخ السريع؟ سيتم استبدال جميع التفاصيل الحالية بآخر جدول معتمد.')) {
+                            duplicateSchedule(selectedSchedule.id, window.selectedSourceSchedule, quickModal);
+                        }
+                    });
+                }
+                
+                function duplicateSchedule(targetId, sourceId, modal) {
+                    showLoading();
+                    
+                    fetch(`/api/schedule/${targetId}/duplicate/${sourceId}`, {
+                        method: 'POST',
+                        headers: {
+                            'Content-Type': 'application/json',
+                        }
+                    })
+                    .then(response => response.json())
+                    .then(data => {
+                        hideLoading();
+                        modal.hide();
+                        
+                        if (data.success) {
+                            showAlert('تم النسخ السريع بنجاح', 'success');
+                            setTimeout(() => {
+                                window.location.reload();
+                            }, 1500);
+                        } else {
+                            showAlert(data.message, 'error');
+                        }
+                    })
+                    .catch(error => {
+                        hideLoading();
+                        modal.hide();
+                        showAlert('حدث خطأ أثناء النسخ السريع', 'error');
+                        console.error('Error:', error);
+                    });
+                }
+            }
+            
+            // ========== تهيئة جميع المودالات ==========
+            initCopyScheduleModal();
+            initDuplicateScheduleModal();
+            initQuickCopyModal();
+            
+            // ========== أحداث إضافية ==========
+            document.querySelectorAll('select').forEach(select => {
+                select.addEventListener('change', function() {
+                    showLoading();
+                    setTimeout(() => {
+                        const form = this.closest('form');
+                        if (form) form.submit();
+                    }, 500);
+                });
+            });
+            
+            document.querySelectorAll('.department-tab').forEach(tab => {
+                tab.addEventListener('click', function(e) {
+                    if (!this.classList.contains('active')) {
+                        showLoading();
+                    }
+                });
+            });
+            
+            console.log('✅ Application initialized successfully');
+        });
+    </script>
+
+</body>
+</html>

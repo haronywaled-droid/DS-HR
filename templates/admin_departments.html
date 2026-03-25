@@ -1,0 +1,91 @@
+{% extends "layouts/admin_base.html" %}
+
+{% block title %}إدارة الأقسام{% endblock %}
+
+{% block admin_content %}
+<div class="d-flex justify-content-between flex-wrap flex-md-nowrap align-items-center pt-3 pb-2 mb-3 border-bottom">
+    <h1 class="h2">إدارة الأقسام</h1>
+</div>
+
+<div class="row">
+    <div class="col-md-6">
+        <div class="card">
+            <div class="card-header">
+                <h5 class="card-title mb-0">إضافة قسم جديد</h5>
+            </div>
+            <div class="card-body">
+                <form method="POST">
+                    <div class="mb-3">
+                        <label for="name" class="form-label">اسم القسم</label>
+                        <input type="text" class="form-control" id="name" name="name" required>
+                    </div>
+                    
+                    <div class="mb-3">
+                        <label for="manager_id" class="form-label">مدير القسم</label>
+                        <select class="form-select" id="manager_id" name="manager_id">
+                            <option value="">اختر مدير القسم</option>
+                            {% for manager in managers %}
+                            <option value="{{ manager.id }}">{{ manager.name }}</option>
+                            {% endfor %}
+                        </select>
+                    </div>
+
+                    <button type="submit" class="btn btn-primary">إضافة القسم</button>
+                </form>
+            </div>
+        </div>
+    </div>
+
+    <div class="col-md-6">
+        <div class="card">
+            <div class="card-header">
+                <h5 class="card-title mb-0">قائمة الأقسام</h5>
+            </div>
+            <div class="card-body">
+                <div class="table-responsive">
+                    <table class="table table-striped">
+                        <thead>
+                            <tr>
+                                <th>اسم القسم</th>
+                                <th>المدير</th>
+                                <th>عدد الموظفين</th>
+                                <th>الإجراءات</th>
+                            </tr>
+                        </thead>
+                        <tbody>
+                            {% for department in departments %}
+                            <tr>
+                                <td>{{ department.name }}</td>
+                                <td>
+                                    {% if department.manager_id %}
+                                        {% for user in users %}
+                                            {% if user.id == department.manager_id %}
+                                                {{ user.name }}
+                                            {% endif %}
+                                        {% endfor %}
+                                    {% else %}
+                                        <span class="text-muted">لا يوجد</span>
+                                    {% endif %}
+                                </td>
+                                <td>
+                                    {% set employee_count = users | selectattr("department_id", "equalto", department.id) | list | length %}
+                                    <span class="badge bg-primary">{{ employee_count }}</span>
+                                </td>
+                                <td>
+                                    <div class="btn-group btn-group-sm">
+                                        <a href="{{ url_for('admin_schedule_structure', dept_id=department.id) }}" 
+                                           class="btn btn-outline-primary" title="هيكل الجدول">
+                                            <i class="fas fa-calendar-alt"></i>
+                                        </a>
+                                    </div>
+                                </td>
+                            </tr>
+                            {% endfor %}
+                        </tbody>
+                    </table>
+                </div>
+            </div>
+        </div>
+    </div>
+</div>
+{% endblock %}

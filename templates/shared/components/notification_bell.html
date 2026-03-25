@@ -1,0 +1,31 @@
+<div class="dropdown me-3">
+    <button class="btn btn-outline-secondary position-relative dropdown-toggle" 
+            type="button" data-bs-toggle="dropdown">
+        <i class="fas fa-bell"></i>
+        {% if notifications %}
+        <span class="position-absolute top-0 start-100 translate-middle badge rounded-pill bg-danger">
+            {{ notifications|length }}
+        </span>
+        {% endif %}
+    </button>
+    <ul class="dropdown-menu dropdown-menu-end" style="min-width: 300px;">
+        <li><h6 class="dropdown-header">الإشعارات</h6></li>
+        {% if notifications %}
+            {% for notification in notifications[:5] %}
+            <li>
+                <a class="dropdown-item" href="{% if notification.action_url %}{{ notification.action_url }}{% else %}{{ url_for('notifications') }}{% endif %}">
+                    <div class="d-flex w-100 justify-content-between">
+                        <h6 class="mb-1">{{ notification.title }}</h6>
+                        <small>{{ notification.created_at.strftime('%H:%M') }}</small>
+                    </div>
+                    <p class="mb-1 small">{{ notification.message }}</p>
+                </a>
+            </li>
+            {% if not loop.last %}<li><hr class="dropdown-divider"></li>{% endif %}
+            {% endfor %}
+            <li><a class="dropdown-item text-center" href="{{ url_for('notifications') }}">عرض الكل</a></li>
+        {% else %}
+            <li><a class="dropdown-item text-center text-muted" href="#">لا توجد إشعارات جديدة</a></li>
+        {% endif %}
+    </ul>
+</div>

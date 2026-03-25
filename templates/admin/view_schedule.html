@@ -1,0 +1,854 @@
+<!DOCTYPE html>
+<html lang="ar" dir="rtl">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>عرض الجدول - {{ department.name }}</title>
+    <link href="https://cdn.jsdelivr.net/npm/bootstrap@5.3.0-alpha1/dist/css/bootstrap.min.css" rel="stylesheet">
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.0.0/css/all.min.css">
+    <script src="https://cdnjs.cloudflare.com/ajax/libs/xlsx/0.18.5/xlsx.full.min.js"></script>
+    <style>
+        :root {
+            --primary-green: #10b981;
+            --dark-green: #059669;
+            --light-green: #34d399;
+            --accent-green: #a7f3d0;
+            --gradient-primary: linear-gradient(135deg, #10b981 0%, #059669 100%);
+            --gradient-secondary: linear-gradient(135deg, #34d399 0%, #10b981 100%);
+            --gradient-dark: linear-gradient(135deg, #065f46 0%, #047857 100%);
+            --gradient-card: linear-gradient(135deg, #ecfdf5 0%, #d1fae5 100%);
+        }
+        
+        body {
+            font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif;
+            background: var(--gradient-card);
+            min-height: 100vh;
+            padding: 20px;
+        }
+        
+        .header-card {
+            background: var(--gradient-dark);
+            border: none;
+            border-radius: 20px;
+            color: white;
+            box-shadow: 0 15px 35px rgba(5, 150, 105, 0.2);
+            margin-bottom: 30px;
+        }
+        
+        .content-card {
+            border: none;
+            border-radius: 20px;
+            box-shadow: 0 15px 35px rgba(16, 185, 129, 0.1);
+            background: rgba(255, 255, 255, 0.95);
+            margin-bottom: 25px;
+            overflow: hidden;
+        }
+        
+        .card-header {
+            border-radius: 20px 20px 0 0 !important;
+            border-bottom: 2px solid rgba(255, 255, 255, 0.1);
+            padding: 20px 25px;
+        }
+        
+        .card-header-primary {
+            background: var(--gradient-primary);
+            color: white;
+        }
+        
+        .card-header-success {
+            background: var(--gradient-secondary);
+            color: white;
+        }
+        
+        .card-header-info {
+            background: linear-gradient(135deg, #0ea5e9 0%, #0284c7 100%);
+            color: white;
+        }
+        
+        .btn-primary {
+            background: var(--gradient-primary);
+            border: none;
+            border-radius: 15px;
+            padding: 12px 30px;
+            font-weight: 600;
+            transition: all 0.3s ease;
+        }
+        
+        .btn-success {
+            background: linear-gradient(135deg, #22c55e 0%, #16a34a 100%);
+            border: none;
+            border-radius: 15px;
+            padding: 12px 30px;
+            font-weight: 600;
+            transition: all 0.3s ease;
+        }
+        
+        .btn-warning {
+            background: linear-gradient(135deg, #f59e0b 0%, #d97706 100%);
+            border: none;
+            border-radius: 15px;
+            padding: 12px 30px;
+            font-weight: 600;
+            transition: all 0.3s ease;
+        }
+        
+        .btn-excel {
+            background: linear-gradient(135deg, #217346 0%, #1e6640 100%);
+            border: none;
+            border-radius: 15px;
+            color: white;
+            font-weight: 600;
+            padding: 10px 20px;
+            transition: all 0.3s ease;
+        }
+        
+        .btn-excel:hover {
+            background: linear-gradient(135deg, #1e6640 0%, #1a5639 100%);
+            color: white;
+            transform: translateY(-2px);
+            box-shadow: 0 5px 15px rgba(33, 115, 70, 0.3);
+        }
+        
+        .back-btn {
+            background: rgba(255, 255, 255, 0.2);
+            border: 2px solid rgba(255, 255, 255, 0.3);
+            color: white;
+            border-radius: 15px;
+            padding: 10px 20px;
+            transition: all 0.3s ease;
+            font-weight: 600;
+        }
+        
+        .back-btn:hover {
+            background: rgba(255, 255, 255, 0.3);
+            border-color: rgba(255, 255, 255, 0.5);
+            color: white;
+        }
+
+        .form-control, .form-select {
+            border: 2px solid rgba(16, 185, 129, 0.1);
+            border-radius: 15px;
+            padding: 12px 15px;
+            transition: all 0.3s ease;
+        }
+        
+        .form-control:focus, .form-select:focus {
+            border-color: var(--primary-green);
+            box-shadow: 0 0 0 0.2rem rgba(16, 185, 129, 0.15);
+        }
+        
+        .excel-grid {
+            overflow: auto;
+            max-height: 60vh;
+            border: 1px solid rgba(16, 185, 129, 0.1);
+            border-radius: 0 0 20px 20px;
+        }
+
+        .excel-table {
+            width: 100%;
+            border-collapse: separate;
+            border-spacing: 0;
+            font-size: 14px;
+            min-width: 800px;
+            table-layout: fixed;
+        }
+
+        .excel-table th:nth-child(1), .excel-table td:nth-child(1) { width: 40px; }
+        .excel-table th:nth-child(2), .excel-table td:nth-child(2) { width: 12%; }
+        .excel-table th:nth-child(3), .excel-table td:nth-child(3) { width: 12%; }
+        .excel-table th:nth-child(4), .excel-table td:nth-child(4) { width: 12%; }
+        .excel-table th:nth-child(5), .excel-table td:nth-child(5) { width: 25%; }
+        .excel-table th:nth-child(6), .excel-table td:nth-child(6) { width: 12%; }
+        .excel-table th:nth-child(7), .excel-table td:nth-child(7) { width: 12%; }
+        .excel-table th:nth-child(8), .excel-table td:nth-child(8) { width: 12%; }
+
+        .excel-table th {
+            background: var(--gradient-primary);
+            color: white;
+            font-weight: 600;
+            text-align: center;
+            padding: 12px 8px;
+            border: 1px solid rgba(255, 255, 255, 0.1);
+            position: sticky;
+            top: 0;
+            z-index: 10;
+            white-space: nowrap;
+            overflow: hidden;
+            text-overflow: ellipsis;
+        }
+
+        .excel-table td {
+            padding: 10px 8px;
+            border: 1px solid rgba(16, 185, 129, 0.1);
+            text-align: center;
+            vertical-align: middle;
+            background-color: white;
+            overflow: hidden;
+            text-overflow: ellipsis;
+            white-space: nowrap;
+            transition: all 0.2s ease;
+        }
+
+        .excel-table tr:hover td {
+            background-color: rgba(16, 185, 129, 0.05);
+        }
+
+        .excel-table .cell-content {
+            width: 100%;
+            text-align: center;
+            padding: 6px 4px;
+            font-size: 14px;
+            font-family: inherit;
+            background: transparent;
+            border: none;
+            outline: none;
+        }
+        
+        .row-numbers {
+            background-color: rgba(16, 185, 129, 0.1);
+            border-right: 1px solid rgba(16, 185, 129, 0.2);
+            text-align: center;
+            font-weight: bold;
+            color: var(--dark-green);
+            width: 40px;
+            position: sticky;
+            left: 0;
+            z-index: 5;
+        }
+        
+        .column-headers {
+            background: var(--gradient-primary);
+            color: white;
+            position: sticky;
+            top: 0;
+            z-index: 15;
+        }
+        
+        .badge-filter {
+            cursor: pointer;
+            margin: 2px;
+            border-radius: 10px;
+            padding: 6px 12px;
+            font-weight: 500;
+            transition: all 0.3s ease;
+        }
+        
+        .badge-filter:hover {
+            transform: translateY(-2px);
+            box-shadow: 0 4px 8px rgba(0, 0, 0, 0.1);
+        }
+        
+        .empty-table-message {
+            text-align: center;
+            padding: 40px;
+            color: #6c757d;
+        }
+        
+        .alert-container {
+            position: fixed;
+            top: 20px;
+            right: 20px;
+            z-index: 1000;
+            min-width: 300px;
+        }
+        
+        .read-only-banner {
+            background: var(--gradient-secondary);
+            color: white;
+            padding: 15px 25px;
+            text-align: center;
+            border-bottom: 1px solid rgba(255, 255, 255, 0.2);
+        }
+        
+        .read-only-banner i {
+            margin-left: 8px;
+        }
+        
+        .locked-schedule {
+            background-color: rgba(108, 117, 125, 0.1) !important;
+            color: #6c757d;
+        }
+
+        .download-disabled {
+            background-color: #6c757d !important;
+            border-color: #6c757d !important;
+            cursor: not-allowed !important;
+            opacity: 0.6;
+        }
+        
+        .excel-header {
+            background: var(--gradient-primary);
+            color: white;
+            padding: 15px 25px;
+            display: flex;
+            align-items: center;
+            justify-content: space-between;
+            flex-wrap: wrap;
+        }
+        
+        .excel-toolbar {
+            background-color: rgba(16, 185, 129, 0.05);
+            border-bottom: 1px solid rgba(16, 185, 129, 0.1);
+            padding: 10px 25px;
+            display: flex;
+            align-items: center;
+            gap: 10px;
+            flex-wrap: wrap;
+        }
+        
+        .filter-bar {
+            background-color: rgba(16, 185, 129, 0.08);
+            border-bottom: 1px solid rgba(16, 185, 129, 0.1);
+            padding: 15px 25px;
+            display: flex;
+            align-items: center;
+            gap: 20px;
+            flex-wrap: wrap;
+        }
+        
+        .filter-group {
+            display: flex;
+            align-items: center;
+            gap: 10px;
+        }
+        
+        .floating-shape {
+            position: fixed;
+            width: 200px;
+            height: 200px;
+            background: var(--gradient-primary);
+            opacity: 0.1;
+            border-radius: 50%;
+            z-index: -1;
+            animation: float 6s ease-in-out infinite;
+        }
+        
+        .shape-1 {
+            top: 10%;
+            left: 10%;
+        }
+        
+        .shape-2 {
+            bottom: 10%;
+            right: 10%;
+            animation-delay: 2s;
+        }
+        
+        @keyframes float {
+            0%, 100% { transform: translateY(0px) rotate(0deg); }
+            50% { transform: translateY(-20px) rotate(10deg); }
+        }
+        
+        .schedule-info {
+            background: rgba(255, 255, 255, 0.2);
+            border-radius: 10px;
+            padding: 10px 15px;
+            margin-top: 10px;
+        }
+        
+        .modal-content {
+            border-radius: 20px;
+            border: none;
+        }
+        
+        .modal-header {
+            border-radius: 20px 20px 0 0;
+            background: var(--gradient-primary);
+            color: white;
+            border-bottom: none;
+        }
+        
+        @media (max-width: 768px) {
+            .excel-grid {
+                font-size: 12px;
+            }
+            
+            .excel-table th, 
+            .excel-table td {
+                padding: 6px 4px;
+            }
+            
+            .filter-bar {
+                flex-direction: column;
+                align-items: flex-start;
+                gap: 10px;
+            }
+            
+            .excel-header, .excel-toolbar, .filter-bar {
+                padding: 10px 15px;
+            }
+        }
+    </style>
+</head>
+<body>
+    <!-- Background Shapes -->
+    <div class="floating-shape shape-1"></div>
+    <div class="floating-shape shape-2"></div>
+    
+    <!-- Navigation -->
+    <div class="header-card card">
+        <div class="card-body">
+            <div class="row align-items-center">
+                <div class="col-md-8">
+                    <h1 class="h2 fw-bold mb-2">
+                        <i class="fas fa-file-excel me-3"></i>
+                        جدول العمل الأسبوعي
+                    </h1>
+                    <div class="schedule-info">
+                        <p class="mb-0">
+                            <strong>القسم:</strong> {{ department.name }} | 
+                            <strong>الفترة:</strong> {{ schedule.week_start_date }} إلى {{ schedule.week_end_date }}
+                            <span class="badge bg-{{ 'success' if schedule.is_approved else 'warning' if schedule.status == 'pending' else 'info' }} ms-2">
+                                {{ 'معتمد' if schedule.is_approved else 'في انتظار الاعتماد' if schedule.status == 'pending' else 'مسودة' }}
+                            </span>
+                            {% if schedule.is_locked %}
+                            <span class="badge bg-danger ms-1">
+                                <i class="fas fa-lock me-1"></i>مقفل
+                            </span>
+                            {% endif %}
+                        </p>
+                    </div>
+                </div>
+                <div class="col-md-4 text-start">
+                    <a href="{% if current_user.is_admin %}{{ url_for('admin_dashboard') }}{% else %}{{ url_for('manager_dashboard') }}{% endif %}" class="btn back-btn">
+                        <i class="fas fa-arrow-right me-2"></i>
+                        العودة للوحة التحكم
+                    </a>
+                </div>
+            </div>
+        </div>
+    </div>
+
+    <!-- Flash Messages -->
+    {% with messages = get_flashed_messages() %}
+        {% if messages %}
+            <div class="alert-container">
+                {% for message in messages %}
+                    <div class="alert alert-success alert-dismissible fade show" role="alert">
+                        <i class="fas fa-check-circle me-2"></i>{{ message }}
+                        <button type="button" class="btn-close" data-bs-dismiss="alert"></button>
+                    </div>
+                {% endfor %}
+            </div>
+        {% endif %}
+    {% endwith %}
+
+    <div class="content-card card">
+        <!-- Read Only Banner -->
+        <div class="read-only-banner">
+            <i class="fas fa-eye"></i>
+            <strong>وضع القراءة فقط</strong> - هذا الجدول للعرض والتحميل فقط
+            {% if not current_user.is_admin %}
+            <br><small>التنزيل متاح للمسؤولين فقط</small>
+            {% endif %}
+        </div>
+
+        <!-- Excel-style Toolbar -->
+        <div class="excel-toolbar">
+            <div class="d-flex gap-2">
+                {% if current_user.is_admin %}
+                <button type="button" id="downloadExcel" class="btn btn-excel">
+                    <i class="fas fa-download me-1"></i>تحميل Excel
+                </button>
+                {% else %}
+                <button type="button" id="downloadExcel" class="btn btn-excel download-disabled" disabled title="التنزيل متاح للمسؤولين فقط">
+                    <i class="fas fa-download me-1"></i>تحميل Excel
+                </button>
+                {% endif %}
+                <button type="button" id="clearFilters" class="btn btn-warning">
+                    <i class="fas fa-filter me-1"></i>مسح الفلاتر
+                </button>
+            </div>
+        </div>
+        
+        <!-- Filter Bar -->
+        <div class="filter-bar">
+            <div class="filter-group">
+                <label class="form-label mb-0 fw-bold">فلترة حسب اليوم:</label>
+                <div id="dayFilters">
+                    <!-- Day filters will be added here dynamically -->
+                </div>
+            </div>
+            
+            <div class="filter-group">
+                <label class="form-label mb-0 fw-bold">فلترة حسب الوظيفة:</label>
+                <select class="form-select form-select-sm" id="jobFilter" style="min-width: 200px;">
+                    <option value="">جميع الوظائف</option>
+                    <!-- Job options will be added dynamically -->
+                </select>
+            </div>
+        </div>
+        
+        <!-- Excel Grid -->
+        <div class="excel-grid" id="excelGrid">
+            <table class="excel-table" id="excelTable">
+                <thead>
+                    <tr>
+                        <th class="column-headers row-numbers"></th>
+                        <th>شيفت السهر</th>
+                        <th>الشيفت المسائي</th>
+                        <th>الشيفت الصباحي</th>
+                        <th>الوظيفة</th>
+                        <th>القسم</th>
+                        <th>التاريخ</th>
+                        <th>اليوم</th>
+                    </tr>
+                </thead>
+                <tbody id="tableBody">
+                    <!-- Rows will be populated here -->
+                </tbody>
+            </table>
+            <div id="emptyMessage" class="empty-table-message" style="display: none;">
+                <i class="fas fa-table fa-3x mb-3 text-muted"></i>
+                <h5 class="text-muted">لا توجد بيانات</h5>
+                <p class="text-muted">لا توجد بيانات في هذا الجدول</p>
+            </div>
+        </div>
+    </div>
+
+    <!-- JSON Preview Modal -->
+    <div class="modal fade" id="jsonModal" tabindex="-1" aria-labelledby="jsonModalLabel" aria-hidden="true">
+        <div class="modal-dialog modal-lg">
+            <div class="modal-content">
+                <div class="modal-header">
+                    <h5 class="modal-title" id="jsonModalLabel">معاينة JSON</h5>
+                    <button type="button" class="btn-close" data-bs-dismiss="modal" aria-label="Close"></button>
+                </div>
+                <div class="modal-body">
+                    <pre id="jsonPreview" class="p-3 bg-light border rounded" style="max-height: 400px; overflow: auto;"></pre>
+                </div>
+                <div class="modal-footer">
+                    <button type="button" class="btn btn-secondary" data-bs-dismiss="modal">إغلاق</button>
+                    <button type="button" class="btn btn-primary" id="copyJson">نسخ JSON</button>
+                </div>
+            </div>
+        </div>
+    </div>
+
+    <script src="https://cdn.jsdelivr.net/npm/bootstrap@5.3.0-alpha1/dist/js/bootstrap.bundle.min.js"></script>
+    <script>
+        // Days of the week in Arabic - Saturday first
+        const daysOfWeek = ['السبت', 'الأحد', 'الاثنين', 'الثلاثاء', 'الأربعاء', 'الخميس', 'الجمعة'];
+        
+        // Initialize with data from backend or empty array
+        let tableData = [];
+        let currentDepartment = "{{ department.name }}";
+        let availableJobs = new Set();
+        let selectedDays = new Set(daysOfWeek);
+        let selectedJob = '';
+
+        // Convert schedule data to the structure format
+        function convertScheduleToStructure(scheduleData) {
+            console.log('Converting schedule data:', scheduleData);
+            
+            if (!scheduleData || Object.keys(scheduleData).length === 0) {
+                console.log('No schedule data found');
+                return [];
+            }
+            
+            const structureData = [];
+            
+            // Handle the schedule structure format
+            if (scheduleData.schedule && Array.isArray(scheduleData.schedule)) {
+                console.log('Processing schedule structure format with', scheduleData.schedule.length, 'entries');
+                
+                // Process each schedule entry
+                scheduleData.schedule.forEach((entry, index) => {
+                    const { night_shift, evening_shift, morning_shift, job, department, date, day } = entry;
+                    
+                    structureData.push([
+                        night_shift || '',
+                        evening_shift || '',
+                        morning_shift || '',
+                        job || 'موظف',
+                        department || currentDepartment,
+                        date || '',
+                        day || ''
+                    ]);
+                    
+                    // Add job to available jobs
+                    if (job) {
+                        availableJobs.add(job);
+                    }
+                });
+            }
+            
+            console.log('Converted structure data length:', structureData.length);
+            return structureData;
+        }
+
+        // Initialize the application
+        document.addEventListener('DOMContentLoaded', function() {
+            // Debug: Check what data we're receiving
+            const scheduleData = {{ current_schedule | tojson | safe }} || {};
+            console.log('=== SCHEDULE DATA ===');
+            console.log('Full schedule data:', scheduleData);
+            
+            // Convert schedule data to structure format
+            tableData = convertScheduleToStructure(scheduleData);
+            console.log('Table data for rendering:', tableData);
+            
+            // Extract jobs from existing data
+            tableData.forEach((row, index) => {
+                if (row[3]) {
+                    availableJobs.add(row[3]);
+                }
+            });
+            
+            console.log('Available jobs:', Array.from(availableJobs));
+            
+            initializeApp();
+            
+            // Set up event listeners - only for admins
+            {% if current_user.is_admin %}
+            document.getElementById('downloadExcel').addEventListener('click', downloadAsExcel);
+            document.getElementById('copyJson').addEventListener('click', copyJsonToClipboard);
+            {% else %}
+            // Show message for non-admins when they try to download
+            document.getElementById('downloadExcel').addEventListener('click', function() {
+                alert('التنزيل متاح للمسؤولين فقط');
+            });
+            {% endif %}
+            
+            document.getElementById('clearFilters').addEventListener('click', clearAllFilters);
+            
+            // Filter event listeners
+            document.getElementById('jobFilter').addEventListener('change', handleJobFilter);
+            
+            // Show empty message if no data
+            showEmptyMessage();
+            
+            // Add animation to table rows
+            animateTableRows();
+        });
+
+        // Initialize the application
+        function initializeApp() {
+            createDayFilters();
+            updateJobFilter();
+            renderExcelTable();
+        }
+
+        // Show/hide empty message
+        function showEmptyMessage() {
+            const emptyMessage = document.getElementById('emptyMessage');
+            const tableBody = document.getElementById('tableBody');
+            
+            if (tableData.length === 0) {
+                emptyMessage.style.display = 'block';
+                tableBody.style.display = 'none';
+            } else {
+                emptyMessage.style.display = 'none';
+                tableBody.style.display = '';
+            }
+        }
+
+        // Create day filter badges
+        function createDayFilters() {
+            const dayFiltersContainer = document.getElementById('dayFilters');
+            dayFiltersContainer.innerHTML = '';
+            
+            daysOfWeek.forEach(day => {
+                const badge = document.createElement('span');
+                badge.className = 'badge bg-primary badge-filter';
+                badge.textContent = day;
+                badge.dataset.day = day;
+                
+                badge.addEventListener('click', function() {
+                    toggleDayFilter(day, badge);
+                });
+                
+                dayFiltersContainer.appendChild(badge);
+            });
+        }
+
+        // Toggle day filter
+        function toggleDayFilter(day, badge) {
+            if (selectedDays.has(day)) {
+                selectedDays.delete(day);
+                badge.classList.remove('bg-primary');
+                badge.classList.add('bg-secondary');
+            } else {
+                selectedDays.add(day);
+                badge.classList.remove('bg-secondary');
+                badge.classList.add('bg-primary');
+            }
+            
+            renderExcelTable();
+        }
+
+        // Handle job filter change
+        function handleJobFilter(e) {
+            selectedJob = e.target.value;
+            renderExcelTable();
+        }
+
+        // Render the Excel-like table with filters applied
+        function renderExcelTable() {
+            const tableBody = document.getElementById('tableBody');
+            
+            // Clear existing content
+            tableBody.innerHTML = '';
+            
+            // Show empty message if no data
+            showEmptyMessage();
+            
+            if (tableData.length === 0) return;
+            
+            // Apply filters
+            const filteredData = tableData.filter(row => {
+                // Filter by day
+                const day = row[6] || '';
+                if (selectedDays.size > 0 && !selectedDays.has(day)) {
+                    return false;
+                }
+                
+                // Filter by job
+                const job = row[3] || '';
+                if (selectedJob && job !== selectedJob) {
+                    return false;
+                }
+                
+                return true;
+            });
+            
+            // Create table rows
+            filteredData.forEach((row, rowIndex) => {
+                const tr = document.createElement('tr');
+                
+                // Add row number
+                let rowHTML = `<td class="row-numbers">${rowIndex + 1}</td>`;
+                
+                // Add data cells (plain text content - no inputs)
+                for (let colIndex = 0; colIndex < 7; colIndex++) {
+                    const cellValue = row[colIndex] || '';
+                    
+                    rowHTML += `
+                        <td data-row="${rowIndex}" data-col="${colIndex}">
+                            <div class="cell-content">${cellValue}</div>
+                        </td>
+                    `;
+                }
+                
+                tr.innerHTML = rowHTML;
+                tableBody.appendChild(tr);
+            });
+            
+            // Re-apply animations
+            animateTableRows();
+        }
+
+        // Animate table rows
+        function animateTableRows() {
+            const rows = document.querySelectorAll('#tableBody tr');
+            rows.forEach((row, index) => {
+                row.style.opacity = '0';
+                row.style.transform = 'translateY(10px)';
+                row.style.transition = 'all 0.5s ease';
+                
+                setTimeout(() => {
+                    row.style.opacity = '1';
+                    row.style.transform = 'translateY(0)';
+                }, index * 50);
+            });
+        }
+
+        // Download table as Excel - Only for admins
+        function downloadAsExcel() {
+            if (tableData.length === 0) {
+                alert('لا توجد بيانات لتحميلها');
+                return;
+            }
+            
+            // Prepare data with headers
+            const headers = ['شيفت السهر', 'الشيفت المسائي', 'الشيفت الصباحي', 'الوظيفة', 'القسم', 'التاريخ', 'اليوم'];
+            const excelData = [headers, ...tableData];
+            
+            // Convert to worksheet
+            const worksheet = XLSX.utils.aoa_to_sheet(excelData);
+            
+            // Create workbook
+            const workbook = XLSX.utils.book_new();
+            XLSX.utils.book_append_sheet(workbook, worksheet, "جدول {{ department.name }}");
+            
+            // Generate and download file
+            const fileName = `جدول_{{ department.name }}_${'{{ schedule.week_start_date }}'}.xlsx`;
+            XLSX.writeFile(workbook, fileName);
+        }
+
+        // Export table data to JSON - Only for admins
+        function exportToJson() {
+            if (tableData.length === 0) {
+                alert('لا توجد بيانات لتصديرها');
+                return;
+            }
+            
+            const scheduleStructure = {
+                department: currentDepartment,
+                schedule: tableData.map(row => ({
+                    night_shift: row[0],
+                    evening_shift: row[1],
+                    morning_shift: row[2],
+                    job: row[3],
+                    department: row[4],
+                    date: row[5],
+                    day: row[6]
+                }))
+            };
+            
+            const jsonPreview = document.getElementById('jsonPreview');
+            jsonPreview.textContent = JSON.stringify(scheduleStructure, null, 2);
+            
+            const jsonModal = new bootstrap.Modal(document.getElementById('jsonModal'));
+            jsonModal.show();
+        }
+
+        // Clear all filters
+        function clearAllFilters() {
+            selectedDays = new Set(daysOfWeek);
+            selectedJob = '';
+            
+            // Reset UI
+            document.getElementById('jobFilter').value = '';
+            
+            // Reset day badges
+            document.querySelectorAll('.badge-filter').forEach(badge => {
+                badge.classList.remove('bg-secondary');
+                badge.classList.add('bg-primary');
+            });
+            
+            renderExcelTable();
+        }
+
+        // Copy JSON to clipboard - Only for admins
+        function copyJsonToClipboard() {
+            const jsonPreview = document.getElementById('jsonPreview');
+            navigator.clipboard.writeText(jsonPreview.textContent)
+                .then(() => {
+                    alert('تم نسخ JSON إلى الحافظة');
+                })
+                .catch(err => {
+                    console.error('Failed to copy: ', err);
+                });
+        }
+
+        // Update job filter dropdown
+        function updateJobFilter() {
+            const jobFilter = document.getElementById('jobFilter');
+            
+            // Clear existing options except the first one
+            while (jobFilter.options.length > 1) {
+                jobFilter.remove(1);
+            }
+            
+            // Add available jobs
+            availableJobs.forEach(job => {
+                const option = document.createElement('option');
+                option.value = job;
+                option.textContent = job;
+                jobFilter.appendChild(option);
+            });
+        }
+    </script>
+</body>
+</html>

@@ -1,0 +1,52 @@
+<!DOCTYPE html>
+<html lang="ar" dir="rtl">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>404 - الصفحة غير موجودة</title>
+    <style>
+        body {
+            font-family: 'Arial', sans-serif;
+            direction: rtl;
+            text-align: center;
+            padding: 50px;
+            background-color: #f8f9fa;
+        }
+        .container {
+            max-width: 600px;
+            margin: 0 auto;
+            background: white;
+            padding: 30px;
+            border-radius: 10px;
+            box-shadow: 0 0 20px rgba(0,0,0,0.1);
+        }
+        h1 {
+            color: #dc3545;
+            font-size: 48px;
+        }
+        p {
+            font-size: 18px;
+            margin: 20px 0;
+        }
+        .btn {
+            display: inline-block;
+            background: #007bff;
+            color: white;
+            padding: 10px 20px;
+            text-decoration: none;
+            border-radius: 5px;
+            margin-top: 20px;
+        }
+    </style>
+</head>
+<body>
+    <div class="container">
+        <h1>404</h1>
+        <h2>الصفحة غير موجودة</h2>
+        <p>عذراً، الصفحة التي تبحث عنها غير موجودة.</p>
+        <a href="{{ url_for('user_dashboard' if current_user.is_authenticated else 'login') }}" class="btn">
+            العودة إلى الصفحة الرئيسية
+        </a>
+    </div>
+</body>
+</html>

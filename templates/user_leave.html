@@ -1,0 +1,2152 @@
+<!DOCTYPE html>
+<html lang="ar" dir="rtl">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>طلب إجازة - نظام إدارة الموارد البشرية</title>
+    
+    <!-- Bootstrap 5 CSS -->
+    <link href="https://cdn.jsdelivr.net/npm/bootstrap@5.3.0/dist/css/bootstrap.min.css" rel="stylesheet">
+    
+    <!-- Bootstrap Icons -->
+    <link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/bootstrap-icons@1.10.0/font/bootstrap-icons.css">
+    
+    <!-- Font Awesome -->
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.0.0/css/all.min.css">
+    
+    <!-- Select2 CSS -->
+    <link href="https://cdn.jsdelivr.net/npm/select2@4.1.0-rc.0/dist/css/select2.min.css" rel="stylesheet" />
+    <link href="https://cdn.jsdelivr.net/npm/select2-bootstrap-5-theme@1.3.0/dist/select2-bootstrap-5-theme.min.css" rel="stylesheet" />
+    
+    <style>
+        :root {
+            --primary-green: #10b981;
+            --dark-green: #059669;
+            --light-green: #34d399;
+            --accent-green: #a7f3d0;
+            --gradient-primary: linear-gradient(135deg, #10b981 0%, #059669 100%);
+            --gradient-secondary: linear-gradient(135deg, #34d399 0%, #10b981 100%);
+            --gradient-dark: linear-gradient(135deg, #065f46 0%, #047857 100%);
+            --gradient-success: linear-gradient(135deg, #a7f3d0 0%, #6ee7b7 100%);
+            --gradient-warning: linear-gradient(135deg, #f59e0b 0%, #d97706 100%);
+            --gradient-danger: linear-gradient(135deg, #ef4444 0%, #dc2626 100%);
+            --gradient-info: linear-gradient(135deg, #0ea5e9 0%, #0284c7 100%);
+            --header-height: 130px;
+        }
+        
+        * {
+            margin: 0;
+            padding: 0;
+            box-sizing: border-box;
+        }
+        
+        body {
+            font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif;
+            background: linear-gradient(135deg, #ecfdf5 0%, #d1fae5 100%);
+            min-height: 100vh;
+            overflow-x: hidden;
+            padding-top: var(--header-height);
+            color: #1a4731;
+        }
+        
+        /* Unified Navigation Bar */
+        .unified-nav {
+            background: var(--gradient-dark);
+            color: white;
+            position: fixed;
+            top: 0;
+            right: 0;
+            left: 0;
+            height: var(--header-height);
+            z-index: 1000;
+            box-shadow: 0 4px 20px rgba(5, 150, 105, 0.25);
+            border-bottom: 1px solid rgba(255, 255, 255, 0.1);
+        }
+        
+        .unified-nav-container {
+            display: flex;
+            flex-direction: column;
+            height: 100%;
+            padding: 0 1rem;
+        }
+        
+        .nav-top-section {
+            display: flex;
+            align-items: center;
+            justify-content: space-between;
+            height: 70px;
+            flex-shrink: 0;
+            padding: 0.5rem 0;
+        }
+        
+        .nav-bottom-section {
+            display: flex;
+            align-items: center;
+            justify-content: space-between;
+            height: 60px;
+            flex-shrink: 0;
+            border-top: 1px solid rgba(255, 255, 255, 0.15);
+            position: relative;
+        }
+        
+        .nav-brand-section {
+            display: flex;
+            align-items: center;
+            flex-shrink: 0;
+            min-width: 0;
+        }
+        
+        .logo-container {
+            width: 45px;
+            height: 45px;
+            background: var(--gradient-primary);
+            border-radius: 10px;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            box-shadow: 0 4px 12px rgba(16, 185, 129, 0.4);
+            margin-left: 0.5rem;
+            flex-shrink: 0;
+        }
+        
+        .welcome-section {
+            display: flex;
+            align-items: center;
+            flex-grow: 1;
+            justify-content: center;
+            color: white;
+            text-align: center;
+            min-width: 0;
+            overflow: hidden;
+        }
+        
+        .welcome-content {
+            min-width: 0;
+            overflow: hidden;
+        }
+        
+        .welcome-content h4 {
+            margin-bottom: 0.2rem;
+            font-weight: 600;
+            font-size: 1.1rem;
+            white-space: nowrap;
+            overflow: hidden;
+            text-overflow: ellipsis;
+        }
+        
+        .welcome-content p {
+            margin-bottom: 0;
+            font-size: 0.85rem;
+            opacity: 0.9;
+            white-space: nowrap;
+            overflow: hidden;
+            text-overflow: ellipsis;
+        }
+        /* Ensure shift section is always visible */
+        .shift-section {
+            display: block !important; /* Force display */
+        }
+        .nav-user-section {
+            display: flex;
+            align-items: center;
+            flex-shrink: 0;
+            min-width: 0;
+        }
+        
+        .nav-menu-section {
+            display: flex;
+            align-items: center;
+            flex-grow: 1;
+            height: 100%;
+            position: relative;
+            min-width: 0;
+        }
+        
+        .nav-menu-wrapper {
+            display: flex;
+            align-items: center;
+            height: 100%;
+            overflow-x: auto;
+            overflow-y: hidden;
+            scroll-behavior: smooth;
+            -webkit-overflow-scrolling: touch;
+            width: 100%;
+            padding: 0 0.5rem;
+            scrollbar-width: thin;
+            scrollbar-color: var(--primary-green) rgba(255, 255, 255, 0.1);
+            min-width: 0;
+        }
+        
+        /* Custom scrollbar for nav menu */
+        .nav-menu-wrapper::-webkit-scrollbar {
+            height: 6px;
+        }
+        
+        .nav-menu-wrapper::-webkit-scrollbar-track {
+            background: rgba(255, 255, 255, 0.1);
+            border-radius: 10px;
+        }
+        
+        .nav-menu-wrapper::-webkit-scrollbar-thumb {
+            background: var(--primary-green);
+            border-radius: 10px;
+        }
+        
+        .nav-menu-wrapper::-webkit-scrollbar-thumb:hover {
+            background: var(--light-green);
+        }
+        
+        .unified-nav .nav-link {
+            color: rgba(255, 255, 255, 0.9);
+            padding: 0.7rem 1.2rem;
+            margin: 0 0.2rem;
+            border-radius: 10px;
+            transition: all 0.3s ease;
+            font-weight: 500;
+            position: relative;
+            border: 1px solid transparent;
+            display: flex;
+            align-items: center;
+            text-decoration: none;
+            font-size: 0.9rem;
+            white-space: nowrap;
+            height: 80%;
+            flex-shrink: 0;
+            background: rgba(255, 255, 255, 0.05);
+            min-width: max-content;
+        }
+        
+        .unified-nav .nav-link:hover {
+            color: white;
+            background: rgba(255, 255, 255, 0.12);
+            border: 1px solid rgba(255, 255, 255, 0.2);
+            transform: translateY(-2px);
+            box-shadow: 0 4px 12px rgba(0, 0, 0, 0.15);
+        }
+        
+        .unified-nav .nav-link.active {
+            background: rgba(255, 255, 255, 0.15);
+            color: white;
+            border: 1px solid rgba(255, 255, 255, 0.25);
+            box-shadow: 0 4px 12px rgba(0, 0, 0, 0.2);
+        }
+        
+        .unified-nav .nav-link.active::after {
+            content: '';
+            position: absolute;
+            bottom: -10px;
+            right: 50%;
+            transform: translateX(50%);
+            width: 70%;
+            height: 3px;
+            background: var(--accent-green);
+            border-radius: 4px 4px 0 0;
+        }
+        
+        .nav-badge {
+            background: var(--accent-green);
+            color: #065f46;
+            padding: 0.2rem 0.4rem;
+            border-radius: 8px;
+            font-size: 0.65rem;
+            font-weight: bold;
+            margin-right: 0.3rem;
+            position: absolute;
+            top: 5px;
+            right: 5px;
+            box-shadow: 0 2px 4px rgba(0, 0, 0, 0.1);
+        }
+        
+        .nav-link-with-badge {
+            position: relative;
+        }
+        
+        .notification-badge {
+            position: absolute;
+            top: -5px;
+            right: -5px;
+            font-size: 0.7rem;
+            background: var(--gradient-secondary);
+            border: 2px solid white;
+            box-shadow: 0 2px 8px rgba(16, 185, 129, 0.4);
+        }
+        
+        .user-avatar {
+            width: 38px;
+            height: 38px;
+            background: var(--gradient-primary);
+            border-radius: 50%;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            color: white;
+            font-weight: bold;
+            font-size: 1rem;
+            box-shadow: 0 4px 10px rgba(16, 185, 129, 0.4);
+            transition: all 0.3s ease;
+            flex-shrink: 0;
+        }
+        
+        .user-avatar:hover {
+            transform: scale(1.08);
+            box-shadow: 0 6px 15px rgba(16, 185, 129, 0.5);
+        }
+        
+        .dropdown-menu {
+            background: white;
+            border: none;
+            border-radius: 12px;
+            box-shadow: 0 10px 30px rgba(16, 185, 129, 0.2);
+            overflow: hidden;
+            border: 1px solid rgba(16, 185, 129, 0.15);
+        }
+        
+        .dropdown-item {
+            padding: 0.8rem 1.2rem;
+            border-radius: 8px;
+            margin: 0.2rem 0.5rem;
+            transition: all 0.2s ease;
+            color: #065f46;
+        }
+        
+        .dropdown-item:hover {
+            background: rgba(16, 185, 129, 0.1);
+            color: #065f46;
+            transform: translateX(-5px);
+        }
+        
+        .nav-controls {
+            display: flex;
+            align-items: center;
+            position: absolute;
+            left: 0;
+            top: 0;
+            height: 100%;
+            background: linear-gradient(90deg, rgba(6, 95, 70, 0.9) 0%, transparent 100%);
+            padding: 0 0.5rem;
+            z-index: 5;
+        }
+        
+        .nav-prev, .nav-next {
+            background: rgba(255, 255, 255, 0.2);
+            border: 1px solid rgba(255, 255, 255, 0.3);
+            color: white;
+            width: 28px;
+            height: 28px;
+            border-radius: 50%;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            cursor: pointer;
+            transition: all 0.3s ease;
+            font-size: 0.8rem;
+            margin-left: 0.3rem;
+        }
+        
+        .nav-prev:hover, .nav-next:hover {
+            background: rgba(255, 255, 255, 0.3);
+            transform: scale(1.1);
+        }
+        
+        .nav-controls-right {
+            display: flex;
+            align-items: center;
+            position: absolute;
+            right: 0;
+            top: 0;
+            height: 100%;
+            background: linear-gradient(270deg, rgba(6, 95, 70, 0.9) 0%, transparent 100%);
+            padding: 0 0.5rem;
+            z-index: 5;
+        }
+        
+        /* Main Content */
+        .main-content {
+            min-height: 100vh;
+            background: transparent;
+            position: relative;
+        }
+        
+        /* Leave Request Styles */
+        .header-card {
+            background: var(--gradient-primary);
+            border: none;
+            border-radius: 20px;
+            color: white;
+            box-shadow: 0 15px 35px rgba(5, 150, 105, 0.2);
+            margin-bottom: 2rem;
+        }
+        
+        .form-section-card {
+            background: white;
+            border-radius: 15px;
+            padding: 25px;
+            margin-bottom: 25px;
+            border: 1px solid rgba(16, 185, 129, 0.1);
+            box-shadow: 0 5px 15px rgba(0, 0, 0, 0.08);
+            transition: all 0.3s ease;
+        }
+        
+        .form-section-card:hover {
+            transform: translateY(-2px);
+            box-shadow: 0 8px 25px rgba(0, 0, 0, 0.12);
+        }
+        
+        .section-header {
+            background: var(--gradient-primary);
+            color: white;
+            padding: 15px 20px;
+            border-radius: 12px;
+            margin: -25px -25px 25px -25px;
+        }
+        
+        .section-header-success {
+            background: var(--gradient-success);
+        }
+        
+        .section-header-info {
+            background: var(--gradient-info);
+        }
+        
+        .form-label {
+            font-weight: 600;
+            color: #374151;
+            margin-bottom: 8px;
+        }
+        
+        .form-control, .form-select {
+            border-radius: 10px;
+            padding: 12px 15px;
+            border: 2px solid #e5e7eb;
+            transition: all 0.3s ease;
+        }
+        
+        .form-control:focus, .form-select:focus {
+            border-color: var(--primary-green);
+            box-shadow: 0 0 0 3px rgba(16, 185, 129, 0.1);
+        }
+        
+        .btn-primary {
+            background: var(--gradient-primary);
+            border: none;
+            border-radius: 12px;
+            padding: 12px 30px;
+            font-weight: 600;
+            transition: all 0.3s ease;
+        }
+        
+        .btn-primary:hover {
+            transform: translateY(-2px);
+            box-shadow: 0 8px 25px rgba(16, 185, 129, 0.3);
+        }
+        
+        .balance-badge {
+            background: var(--gradient-info);
+            color: white;
+            padding: 12px 20px;
+            border-radius: 25px;
+            font-weight: 600;
+            font-size: 1.1rem;
+            box-shadow: 0 5px 15px rgba(14, 165, 233, 0.2);
+        }
+        
+        .instructions-card {
+            background: white;
+            border-radius: 15px;
+            padding: 25px;
+            border: 1px solid rgba(14, 165, 233, 0.1);
+            box-shadow: 0 5px 15px rgba(0, 0, 0, 0.08);
+            height: 100%;
+        }
+        
+        .alert-info-custom {
+            background: linear-gradient(135deg, #e0f2fe 0%, #bae6fd 100%);
+            border: 2px solid #0ea5e9;
+            border-radius: 15px;
+            color: #075985;
+            padding: 20px;
+            margin-bottom: 25px;
+        }
+        
+        .required::after {
+            content: " *";
+            color: #ef4444;
+        }
+        
+        .card {
+            background: white;
+            border: none;
+            border-radius: 12px;
+            box-shadow: 0 6px 15px rgba(16, 185, 129, 0.1);
+            transition: all 0.3s ease;
+            margin-bottom: 1.5rem;
+            border: 1px solid rgba(16, 185, 129, 0.1);
+        }
+        
+        .card:hover {
+            transform: translateY(-5px);
+            box-shadow: 0 12px 25px rgba(16, 185, 129, 0.15);
+        }
+        
+        .alert-success {
+            background-color: rgba(16, 185, 129, 0.1);
+            border-color: rgba(16, 185, 255, 0.2);
+            color: #065f46;
+            border-radius: 10px;
+        }
+        
+        /* Enhanced Select2 Styles */
+        .select2-container--bootstrap-5 {
+            width: 100% !important;
+        }
+        
+        .select2-container--bootstrap-5 .select2-selection {
+            border-radius: 10px;
+            border: 2px solid #e5e7eb;
+            padding: 10px;
+            min-height: 50px;
+            transition: all 0.3s ease;
+        }
+        
+        .select2-container--bootstrap-5.select2-container--focus .select2-selection,
+        .select2-container--bootstrap-5.select2-container--open .select2-selection {
+            border-color: var(--primary-green) !important;
+            box-shadow: 0 0 0 3px rgba(16, 185, 129, 0.1) !important;
+        }
+        
+        .select2-container--bootstrap-5 .select2-selection--multiple {
+            padding: 5px;
+        }
+        
+        .select2-container--bootstrap-5 .select2-search .select2-search__field {
+            border-radius: 6px;
+            border: 1px solid #d1d5db;
+        }
+        
+        .select2-container--bootstrap-5 .select2-selection__choice {
+            background: var(--gradient-primary) !important;
+            border: none !important;
+            border-radius: 8px !important;
+            color: white !important;
+            padding: 4px 10px !important;
+            margin: 3px !important;
+        }
+        
+        .select2-container--bootstrap-5 .select2-selection__choice__remove {
+            color: white !important;
+            margin-left: 8px;
+            border-left: 1px solid rgba(255, 255, 255, 0.3) !important;
+            padding-left: 8px;
+        }
+        
+        .select2-dropdown {
+            border-radius: 10px !important;
+            border: 2px solid var(--primary-green) !important;
+            box-shadow: 0 10px 25px rgba(16, 185, 129, 0.15) !important;
+            overflow: hidden;
+        }
+        
+        .select2-results__option {
+            padding: 12px 15px !important;
+            transition: all 0.2s ease;
+            border-bottom: 1px solid #f3f4f6;
+        }
+        
+        .select2-results__option:last-child {
+            border-bottom: none;
+        }
+        
+        .select2-results__option--selected {
+            background: var(--gradient-primary) !important;
+            color: white !important;
+        }
+        
+        .select2-results__option--highlighted {
+            background: rgba(16, 185, 129, 0.1) !important;
+            color: #065f46 !important;
+        }
+        
+        .custom-select2-icon {
+            position: absolute;
+            left: 15px;
+            top: 50%;
+            transform: translateY(-50%);
+            color: var(--primary-green);
+            z-index: 1000;
+            pointer-events: none;
+        }
+        
+        .select2-container--bootstrap-5 .select2-selection--single .select2-selection__rendered {
+            padding-right: 40px !important;
+        }
+        
+        /* Shift styles */
+        .shift-container {
+            background: #f8fafc;
+            border-radius: 10px;
+            padding: 15px;
+            margin-bottom: 15px;
+            border: 2px solid #e5e7eb;
+            transition: all 0.3s ease;
+            cursor: pointer;
+        }
+        
+        .shift-container.active {
+            background: #d1fae5;
+            border-color: var(--primary-green);
+            box-shadow: 0 5px 15px rgba(16, 185, 129, 0.1);
+        }
+        
+        .shift-container:hover:not(.active) {
+            background: #f0fdf4;
+            border-color: #a7f3d0;
+        }
+        
+        .shift-checkbox {
+            width: 20px;
+            height: 20px;
+            cursor: pointer;
+            accent-color: var(--primary-green);
+        }
+        
+        .shift-label {
+            font-weight: 600;
+            color: #374151;
+            cursor: pointer;
+            margin-right: 10px;
+            flex-grow: 1;
+        }
+        
+        .shift-info {
+            display: flex;
+            align-items: center;
+            justify-content: space-between;
+        }
+        
+        .shift-icon {
+            width: 40px;
+            height: 40px;
+            border-radius: 10px;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            background: rgba(16, 185, 129, 0.1);
+            color: var(--primary-green);
+            margin-left: 10px;
+            flex-shrink: 0;
+        }
+        
+        .shift-container.active .shift-icon {
+            background: var(--gradient-primary);
+            color: white;
+        }
+        
+        .job-select-section {
+            margin-top: 15px;
+            padding-top: 15px;
+            border-top: 1px dashed #d1d5db;
+            display: none;
+        }
+        
+        .job-select-section.show {
+            display: block;
+            animation: fadeIn 0.3s ease;
+        }
+        
+        @keyframes fadeIn {
+            from { opacity: 0; transform: translateY(-10px); }
+            to { opacity: 1; transform: translateY(0); }
+        }
+        
+        /* Date info */
+        .date-info {
+            background: #f0fdf4;
+            border: 1px solid #a7f3d0;
+            border-radius: 8px;
+            padding: 10px 15px;
+            margin-top: 5px;
+            font-size: 0.85rem;
+            color: #065f46;
+        }
+        
+        /* Mobile Menu Button */
+        .mobile-menu-btn {
+            display: none;
+            background: transparent;
+            border: 1px solid rgba(255, 255, 255, 0.3);
+            color: white;
+            width: 40px;
+            height: 40px;
+            border-radius: 8px;
+            align-items: center;
+            justify-content: center;
+            cursor: pointer;
+            transition: all 0.3s ease;
+        }
+        
+        .mobile-menu-btn:hover {
+            background: rgba(255, 255, 255, 0.1);
+        }
+        
+        /* Mobile Menu */
+        .mobile-nav-menu {
+            position: fixed;
+            top: var(--header-height);
+            right: 0;
+            left: 0;
+            background: var(--gradient-dark);
+            z-index: 999;
+            padding: 1rem;
+            box-shadow: 0 4px 20px rgba(0, 0, 0, 0.2);
+            display: none;
+            flex-direction: column;
+            max-height: calc(100vh - var(--header-height));
+            overflow-y: auto;
+        }
+        
+        .mobile-nav-menu.active {
+            display: flex;
+        }
+        
+        .mobile-nav-link {
+            color: white;
+            padding: 1rem;
+            margin: 0.2rem 0;
+            border-radius: 8px;
+            text-decoration: none;
+            display: flex;
+            align-items: center;
+            transition: all 0.3s ease;
+            border: 1px solid transparent;
+        }
+        
+        .mobile-nav-link:hover,
+        .mobile-nav-link.active {
+            background: rgba(255, 255, 255, 0.1);
+            border: 1px solid rgba(255, 255, 255, 0.2);
+        }
+        
+        .mobile-nav-link i {
+            margin-left: 0.5rem;
+            width: 20px;
+            text-align: center;
+        }
+        
+        /* Custom Scrollbar for whole page */
+        ::-webkit-scrollbar {
+            width: 8px;
+            height: 8px;
+        }
+        
+        ::-webkit-scrollbar-track {
+            background: rgba(16, 185, 129, 0.1);
+            border-radius: 10px;
+        }
+        
+        ::-webkit-scrollbar-thumb {
+            background: var(--gradient-primary);
+            border-radius: 10px;
+        }
+        
+        ::-webkit-scrollbar-thumb:hover {
+            background: var(--dark-green);
+        }
+        
+        /* Green accent elements */
+        .text-success {
+            color: var(--primary-green) !important;
+        }
+        
+        .bg-success {
+            background-color: var(--primary-green) !important;
+        }
+        
+        #live-clock {
+            font-size: 0.9rem;
+            background: rgba(255, 255, 255, 0.1);
+            padding: 0.3rem 0.7rem;
+            border-radius: 20px;
+            border: 1px solid rgba(255, 255, 255, 0.2);
+            flex-shrink: 0;
+        }
+        
+        /* Ensure text doesn't overflow */
+        .text-truncate {
+            overflow: hidden;
+            text-overflow: ellipsis;
+            white-space: nowrap;
+        }
+        
+        /* Mobile Responsive */
+        @media (max-width: 1200px) {
+            :root {
+                --header-height: 120px;
+            }
+            
+            .unified-nav .nav-link {
+                padding: 0.6rem 1rem;
+                font-size: 0.85rem;
+            }
+        }
+        
+        @media (max-width: 992px) {
+            :root {
+                --header-height: 100px;
+            }
+            
+            .unified-nav {
+                height: auto;
+                min-height: var(--header-height);
+            }
+            
+            .unified-nav-container {
+                padding: 0.5rem;
+            }
+            
+            .nav-top-section {
+                height: 60px;
+                flex-wrap: nowrap;
+                padding: 0;
+            }
+            
+            .nav-brand-section {
+                order: 1;
+                width: auto;
+                flex: 0 0 auto;
+            }
+            
+            .welcome-section {
+                order: 2;
+                flex: 1;
+                justify-content: flex-start;
+                padding: 0 0.5rem;
+                display: none;
+            }
+            
+            .nav-user-section {
+                order: 3;
+                width: auto;
+                flex: 0 0 auto;
+                justify-content: flex-end;
+            }
+            
+            .nav-bottom-section {
+                order: 4;
+                height: 40px;
+                margin-top: 0;
+                display: none;
+            }
+            
+            .mobile-menu-btn {
+                display: flex;
+                margin-left: 0.5rem;
+            }
+            
+            .welcome-content h4 {
+                font-size: 0.9rem;
+            }
+            
+            .welcome-content p {
+                display: none;
+            }
+            
+            #live-clock {
+                display: none;
+            }
+            
+            body {
+                padding-top: var(--header-height);
+            }
+            
+            .nav-controls, .nav-controls-right {
+                display: none;
+            }
+        }
+        
+        @media (max-width: 768px) {
+            :root {
+                --header-height: 80px;
+            }
+            
+            .nav-top-section {
+                height: 50px;
+            }
+            
+            .logo-container {
+                width: 35px;
+                height: 35px;
+            }
+            
+            .logo-container i {
+                font-size: 1rem;
+            }
+            
+            .user-avatar {
+                width: 32px;
+                height: 32px;
+                font-size: 0.9rem;
+            }
+            
+            .nav-brand-section .d-none.d-md-block {
+                display: none !important;
+            }
+            
+            .mobile-menu-btn {
+                width: 35px;
+                height: 35px;
+            }
+        }
+        
+        @media (max-width: 576px) {
+            :root {
+                --header-height: 70px;
+            }
+            
+            .nav-top-section {
+                height: 45px;
+            }
+            
+            .logo-container {
+                width: 30px;
+                height: 30px;
+                margin-left: 0.3rem;
+            }
+            
+            .user-avatar {
+                width: 28px;
+                height: 28px;
+                font-size: 0.8rem;
+            }
+            
+            .notification-badge {
+                font-size: 0.6rem;
+                top: -3px;
+                right: -3px;
+            }
+            
+            .btn {
+                padding: 0.3rem 0.6rem;
+                font-size: 0.8rem;
+            }
+        }
+    </style>
+</head>
+<body>
+    <div class="container-fluid p-0">
+        <!-- Unified Navigation Bar -->
+    <div class="container-fluid p-0">
+        <!-- Unified Navigation Bar -->
+        <nav class="unified-nav">
+            <div class="unified-nav-container">
+                <!-- Top Section: Brand, Welcome, User -->
+                <div class="nav-top-section">
+                    <!-- Brand Section -->
+                    <div class="nav-brand-section">
+                        <div class="logo-container">
+                            {% if current_user.is_admin %}
+                                <i class="bi bi-person-shield text-white"></i>
+                            {% elif current_user.is_manager %}
+                                <i class="bi bi-person-gear text-white"></i>
+                            {% else %}
+                                <i class="bi bi-person-circle text-white"></i>
+                            {% endif %}
+                        </div>
+                        <div class="d-none d-md-block ms-2">
+                            <h6 class="text-white mb-0 fw-bold text-truncate">نظام الموارد البشرية</h6>
+                            <small class="text-white-50">
+                                {% if current_user.is_admin %}
+                                    لوحة المسؤول
+                                {% elif current_user.is_manager %}
+                                    لوحة المدير
+                                {% else %}
+                                    لوحة الموظف
+                                {% endif %}
+                            </small>
+                        </div>
+                    </div>
+                    
+                    <!-- Welcome Section - Hidden on mobile -->
+                    <div class="welcome-section d-none d-lg-flex">
+                        <div class="welcome-content">
+                            <h4 class="text-white mb-1 text-truncate">مرحباً، {{ current_user.name }}</h4>
+                            <p class="text-white-50 mb-0 text-truncate">
+                                نظام الموارد البشرية - 
+                                {% if current_user.is_admin %}
+                                    لوحة تحكم المسؤول
+                                {% elif current_user.is_manager %}
+                                    لوحة تحكم المدير
+                                {% else %}
+                                    لوحة تحكم الموظف
+                                {% endif %}
+                            </p>
+                        </div>
+                        <div class="text-white fw-bold me-3" id="live-clock">
+                            <i class="bi bi-clock me-2"></i>
+                            جاري التحميل...
+                        </div>
+                    </div>
+                    
+                    <!-- User Section -->
+                    <div class="nav-user-section">
+                        <!-- Notifications -->
+                        <div class="dropdown me-2">
+                            <button class="btn btn-light position-relative rounded-pill" 
+                                    type="button" data-bs-toggle="dropdown" 
+                                    style="padding: 0.4rem 0.8rem; border: 1px solid rgba(255, 255, 255, 0.3); background: rgba(255, 255, 255, 0.15); color: white;">
+                                <i class="bi bi-bell"></i>
+                                {% if notifications and notifications|length > 0 %}
+                                <span class="notification-badge badge">{{ notifications|length }}</span>
+                                {% endif %}
+                            </button>
+                            <ul class="dropdown-menu dropdown-menu-end">
+                                {% if notifications and notifications|length > 0 %}
+                                    {% for notification in notifications[:3] %}
+                                    <li>
+                                        <a class="dropdown-item" href="#">
+                                            <div class="d-flex align-items-start">
+                                                <div class="bg-success bg-opacity-10 rounded-circle p-2 me-3">
+                                                    <i class="bi bi-bell text-success"></i>
+                                                </div>
+                                                <div>
+                                                    <strong class="d-block text-dark">{{ notification.title }}</strong>
+                                                    <small class="text-muted">{{ notification.message|truncate(30) }}</small>
+                                                </div>
+                                            </div>
+                                        </a>
+                                    </li>
+                                    {% endfor %}
+                                    <li><hr class="dropdown-divider my-2"></li>
+                                {% else %}
+                                    <li>
+                                        <a class="dropdown-item text-muted text-center" href="#">
+                                            <i class="bi bi-bell-slash fs-4 d-block mb-2 text-success"></i>
+                                            لا توجد إشعارات جديدة
+                                        </a>
+                                    </li>
+                                    <li><hr class="dropdown-divider my-2"></li>
+                                {% endif %}
+                                <li>
+                                    <a class="dropdown-item text-center text-success fw-bold" href="{{ url_for('notifications') }}">
+                                        <i class="bi bi-arrow-left me-2"></i>
+                                        عرض جميع الإشعارات
+                                    </a>
+                                </li>
+                            </ul>
+                        </div>
+                        
+                        <!-- User Menu -->
+                        <div class="dropdown">
+                            <button class="btn btn-outline-light dropdown-toggle rounded-pill d-flex align-items-center" 
+                                    type="button" data-bs-toggle="dropdown"
+                                    style="padding: 0.4rem 0.9rem; border: 1px solid rgba(255, 255, 255, 0.4);">
+                                <div class="user-avatar me-2">
+                                    {{ current_user.name[0] }}
+                                </div>
+                                <span class="d-none d-md-inline text-truncate" style="max-width: 80px;">{{ current_user.username }}</span>
+                            </button>
+                            <ul class="dropdown-menu dropdown-menu-end">
+                                <li>
+                                    <a class="dropdown-item" href="{{ url_for('notifications') }}">
+                                        <i class="bi bi-bell me-2 text-success"></i>الإشعارات
+                                    </a>
+                                </li>
+                                <li>
+                                    <a class="dropdown-item" href="{{ url_for('edit_user', user_id=current_user.id) }}">
+                                        <i class="bi bi-key me-2 text-success"></i>تغير كلمة المرور
+                                    </a>
+                                </li>
+                                <li><hr class="dropdown-divider my-2"></li>
+                                <li>
+                                    <a class="dropdown-item text-danger fw-bold" href="{{ url_for('logout') }}">
+                                        <i class="bi bi-box-arrow-right me-2"></i>تسجيل الخروج
+                                    </a>
+                                </li>
+                            </ul>
+                        </div>
+                        
+                        <!-- Mobile Menu Button -->
+                        <button class="mobile-menu-btn d-lg-none" id="mobileMenuBtn">
+                            <i class="bi bi-list"></i>
+                        </button>
+                    </div>
+                </div>
+                
+                <!-- Bottom Section: Navigation Menu - Hidden on mobile -->
+                <div class="nav-bottom-section d-none d-lg-flex">
+                    <div class="nav-controls">
+                        <!-- Navigation scroll controls -->
+                        <button class="nav-prev">
+                            <i class="bi bi-chevron-right"></i>
+                        </button>
+                        <button class="nav-next">
+                            <i class="bi bi-chevron-left"></i>
+                        </button>
+                    </div>
+                    
+                    <div class="nav-menu-section">
+                        <div class="nav-menu-wrapper">
+                            {% if current_user.is_admin %}
+                                <!-- Admin Navigation -->
+                                <a class="nav-link {% if request.endpoint == 'admin_dashboard' %}active{% endif %}" href="{{ url_for('admin_dashboard') }}">
+                                    <i class="bi bi-speedometer2 me-2"></i>
+                                    لوحة التحكم
+                                </a>
+                                <a class="nav-link {% if request.endpoint == 'admin_users' %}active{% endif %}" href="{{ url_for('admin_users') }}">
+                                    <i class="bi bi-people me-2"></i>
+                                    إدارة المستخدمين
+                                </a>
+                                <a class="nav-link {% if request.endpoint == 'admin_departments' %}active{% endif %}" href="{{ url_for('admin_departments') }}">
+                                    <i class="bi bi-building me-2"></i>
+                                    إدارة الأقسام
+                                </a>
+                                
+                                <!-- الرسائل - للمسؤول -->
+                                <a class="nav-link nav-link-with-badge {% if request.endpoint == 'messages_inbox' %}active{% endif %}" href="{{ url_for('messages_inbox') }}">
+                                    <i class="bi bi-envelope me-2"></i>
+                                    الرسائل
+                                    {% if unread_count and unread_count > 0 %}
+                                    <span class="nav-badge">{{ unread_count }}</span>
+                                    {% endif %}
+                                </a>
+                                
+                                <a class="nav-link {% if request.endpoint == 'admin_employee_progress' %}active{% endif %}" href="{{ url_for('admin_employee_progress') }}">
+                                    <i class="bi bi-graph-up me-2"></i>
+                                    تقدم الموظفين
+                                </a>
+                                <a class="nav-link {% if request.endpoint == 'admin_schedules' %}active{% endif %}" href="{{ url_for('admin_schedules') }}">
+                                    <i class="bi bi-calendar-check me-2"></i>
+                                    اعتماد الجداول
+                                </a>
+                                <a class="nav-link" href="{{ url_for('admin_all_leaves') }}">
+                                    <i class="bi bi-calendar-minus me-2"></i>
+                                    طلبات الإجازات
+                                </a>
+                                <a class="nav-link" href="{{ url_for('admin_all_permissions') }}">
+                                    <i class="bi bi-clock me-2"></i>
+                                    طلبات الإذونات
+                                </a>
+                                <a class="nav-link" href="{{ url_for('manager_advance_requests') }}">
+                                    <i class="bi bi-cash-coin me-2"></i>
+                                    طلبات السلف
+                                </a>
+                                
+                            {% elif current_user.is_manager %}
+                                <!-- Manager Navigation -->
+                                <a class="nav-link {% if request.endpoint == 'manager_dashboard' %}active{% endif %}" href="{{ url_for('manager_dashboard') }}">
+                                    <i class="bi bi-speedometer2 me-2"></i>
+                                    لوحة التحكم
+                                </a>
+                                <a class="nav-link {% if request.endpoint == 'manager_employees' %}active{% endif %}" href="{{ url_for('manager_employees') }}">
+                                    <i class="bi bi-people me-2"></i>
+                                    موظفي القسم
+                                </a>
+                                <a class="nav-link {% if request.endpoint == 'manager_schedules' %}active{% endif %}" href="{{ url_for('manager_schedules') }}">
+                                    <i class="bi bi-calendar-check me-2"></i>
+                                    جدولة الموظفين
+                                </a>
+                                
+                                <!-- الرسائل - للمدير -->
+                                <a class="nav-link nav-link-with-badge {% if request.endpoint == 'messages_inbox' %}active{% endif %}" href="{{ url_for('messages_inbox') }}">
+                                    <i class="bi bi-envelope me-2"></i>
+                                    الرسائل
+                                    {% if unread_count and unread_count > 0 %}
+                                    <span class="nav-badge">{{ unread_count }}</span>
+                                    {% endif %}
+                                </a>
+                                
+                                <a class="nav-link nav-link-with-badge {% if request.endpoint == 'manager_leave_requests' %}active{% endif %}" href="{{ url_for('manager_leave_requests') }}">
+                                    <i class="bi bi-calendar-minus me-2"></i>
+                                    طلبات الإجازات
+                                    {% if stats and stats.pending_leaves > 0 %}
+                                    <span class="nav-badge">{{ stats.pending_leaves }}</span>
+                                    {% endif %}
+                                </a>
+                                <a class="nav-link nav-link-with-badge {% if request.endpoint == 'manager_permission_requests' %}active{% endif %}" href="{{ url_for('manager_permission_requests') }}">
+                                    <i class="bi bi-clock me-2"></i>
+                                    طلبات الإذونات
+                                    {% if stats and stats.pending_permissions > 0 %}
+                                    <span class="nav-badge">{{ stats.pending_permissions }}</span>
+                                    {% endif %}
+                                </a>
+                                <a class="nav-link nav-link-with-badge {% if request.endpoint == 'user_salary_slips' %}active{% endif %}" href="{{ url_for('user_salary_slips') }}">
+                                    <i class="bi bi-file-earmark-text me-2"></i>
+                                    شيت المرتب
+                                    {% if new_salary_slips and new_salary_slips > 0 %}
+                                    <span class="nav-badge">{{ new_salary_slips }}</span>
+                                    {% endif %}
+                                </a>
+                                <a class="nav-link nav-link-with-badge {% if request.endpoint == 'manager_advance_requests' %}active{% endif %}" href="{{ url_for('manager_advance_requests') }}">
+                                    <i class="bi bi-cash-coin me-2"></i>
+                                    طلبات السلف
+                                    {% if stats and stats.pending_advances > 0 %}
+                                    <span class="nav-badge">{{ stats.pending_advances }}</span>
+                                    {% endif %}
+                                </a>
+                                <a class="nav-link {% if request.endpoint == 'manager_rewards_penalties' %}active{% endif %}" href="{{ url_for('manager_rewards_penalties') }}">
+                                    <i class="bi bi-award me-2"></i>
+                                    المكافآت والخصومات
+                                </a>
+                                <a class="nav-link {% if request.endpoint == 'manager_excel_data' %}active{% endif %}" href="{{ url_for('manager_excel_data') }}">
+                                    <i class="fas fa-file-excel me-2"></i>
+                                    الحضور والانصراف
+                                </a>
+                                {% if current_user.is_admin %}
+                                <a class="nav-link text-warning" href="{{ url_for('admin_dashboard') }}">
+                                    <i class="bi bi-person-shield me-2"></i>
+                                    لوحة المسؤول
+                                </a>
+                                {% endif %}
+                                
+                            {% else %}
+                                <!-- User Navigation -->
+                                <a class="nav-link {% if request.endpoint == 'user_dashboard' %}active{% endif %}" href="{{ url_for('user_dashboard') }}">
+                                    <i class="bi bi-speedometer2 me-2"></i>
+                                    لوحة التحكم
+                                </a>
+                                <a class="nav-link {% if request.endpoint == 'user_form' %}active{% endif %}" href="{{ url_for('user_form') }}">
+                                    <i class="bi bi-person-lines-fill me-2"></i>
+                                    البيانات الشخصية
+                                </a>
+                                
+                                <!-- الرسائل - للموظف -->
+                                <a class="nav-link nav-link-with-badge {% if request.endpoint == 'messages_inbox' %}active{% endif %}" href="{{ url_for('messages_inbox') }}">
+                                    <i class="bi bi-envelope me-2"></i>
+                                    الرسائل
+                                    {% if unread_count and unread_count > 0 %}
+                                    <span class="nav-badge">{{ unread_count }}</span>
+                                    {% endif %}
+                                </a>
+                                
+                                <a class="nav-link {% if request.endpoint == 'user_leave' %}active{% endif %}" href="{{ url_for('user_leave') }}">
+                                    <i class="bi bi-calendar-minus me-2"></i>
+                                    طلب إجازة
+                                </a>
+                                <a class="nav-link {% if request.endpoint == 'user_permission' %}active{% endif %}" href="{{ url_for('user_permission') }}">
+                                    <i class="bi bi-clock me-2"></i>
+                                    طلب إذن
+                                </a>
+                                <a class="nav-link nav-link-with-badge {% if request.endpoint == 'user_salary_slips' %}active{% endif %}" href="{{ url_for('user_salary_slips') }}">
+                                    <i class="bi bi-file-earmark-text me-2"></i>
+                                    شيت المرتب
+                                    {% if new_salary_slips and new_salary_slips > 0 %}
+                                    <span class="nav-badge">{{ new_salary_slips }}</span>
+                                    {% endif %}
+                                </a>
+                                <a class="nav-link {% if request.endpoint == 'user_schedule' %}active{% endif %}" href="{{ url_for('user_schedule') }}">
+                                    <i class="bi bi-calendar-week me-2"></i>
+                                    الجدول الأسبوعي
+                                </a>
+                                <a class="nav-link {% if request.endpoint == 'user_leave_requests' %}active{% endif %}" href="{{ url_for('user_leave_requests') }}">
+                                    <i class="bi bi-clock-history me-2"></i>
+                                    طلباتي السابقة
+                                </a>
+                                <a class="nav-link {% if request.endpoint == 'user_excel_data' %}active{% endif %}" href="{{ url_for('user_excel_data') }}">
+                                    <i class="fas fa-file-excel me-2"></i>
+                                    الحضور والانصراف
+                                </a>
+                            {% endif %}
+                        </div>
+                    </div>
+                    
+                    <div class="nav-controls-right">
+                        <!-- Navigation scroll controls -->
+                        <button class="nav-next">
+                            <i class="bi bi-chevron-left"></i>
+                        </button>
+                        <button class="nav-prev">
+                            <i class="bi bi-chevron-right"></i>
+                        </button>
+                    </div>
+                </div>
+            </div>
+        </nav>
+
+        <!-- Mobile Navigation Menu -->
+        <div class="mobile-nav-menu" id="mobileNavMenu">
+            {% if current_user.is_admin %}
+                <!-- Admin Mobile Navigation -->
+                <a class="mobile-nav-link {% if request.endpoint == 'admin_dashboard' %}active{% endif %}" href="{{ url_for('admin_dashboard') }}">
+                    <i class="bi bi-speedometer2"></i>
+                    لوحة التحكم
+                </a>
+                <a class="mobile-nav-link {% if request.endpoint == 'admin_users' %}active{% endif %}" href="{{ url_for('admin_users') }}">
+                    <i class="bi bi-people"></i>
+                    إدارة المستخدمين
+                </a>
+                <a class="mobile-nav-link {% if request.endpoint == 'admin_departments' %}active{% endif %}" href="{{ url_for('admin_departments') }}">
+                    <i class="bi bi-building"></i>
+                    إدارة الأقسام
+                </a>
+                
+                <!-- الرسائل - للمسؤول (موبايل) -->
+                <a class="mobile-nav-link nav-link-with-badge {% if request.endpoint == 'messages_inbox' %}active{% endif %}" href="{{ url_for('messages_inbox') }}">
+                    <i class="bi bi-envelope"></i>
+                    الرسائل
+                    {% if unread_count and unread_count > 0 %}
+                    <span class="nav-badge">{{ unread_count }}</span>
+                    {% endif %}
+                </a>
+                
+                <a class="mobile-nav-link {% if request.endpoint == 'admin_employee_progress' %}active{% endif %}" href="{{ url_for('admin_employee_progress') }}">
+                    <i class="bi bi-graph-up"></i>
+                    تقدم الموظفين
+                </a>
+                <a class="mobile-nav-link {% if request.endpoint == 'admin_schedules' %}active{% endif %}" href="{{ url_for('admin_schedules') }}">
+                    <i class="bi bi-calendar-check"></i>
+                    اعتماد الجداول
+                </a>
+                <a class="mobile-nav-link" href="{{ url_for('admin_all_leaves') }}">
+                    <i class="bi bi-calendar-minus"></i>
+                    طلبات الإجازات
+                </a>
+                <a class="mobile-nav-link" href="{{ url_for('admin_all_permissions') }}">
+                    <i class="bi bi-clock"></i>
+                    طلبات الإذونات
+                </a>
+                <a class="mobile-nav-link" href="{{ url_for('manager_advance_requests') }}">
+                    <i class="bi bi-cash-coin"></i>
+                    طلبات السلف
+                </a>
+                
+            {% elif current_user.is_manager %}
+                <!-- Manager Mobile Navigation -->
+                <a class="mobile-nav-link {% if request.endpoint == 'manager_dashboard' %}active{% endif %}" href="{{ url_for('manager_dashboard') }}">
+                    <i class="bi bi-speedometer2"></i>
+                    لوحة التحكم
+                </a>
+                <a class="mobile-nav-link {% if request.endpoint == 'manager_employees' %}active{% endif %}" href="{{ url_for('manager_employees') }}">
+                    <i class="bi bi-people"></i>
+                    موظفي القسم
+                </a>
+                <a class="mobile-nav-link {% if request.endpoint == 'manager_schedules' %}active{% endif %}" href="{{ url_for('manager_schedules') }}">
+                    <i class="bi bi-calendar-check"></i>
+                    جدولة الموظفين
+                </a>
+                
+                <!-- الرسائل - للمدير (موبايل) -->
+                <a class="mobile-nav-link nav-link-with-badge {% if request.endpoint == 'messages_inbox' %}active{% endif %}" href="{{ url_for('messages_inbox') }}">
+                    <i class="bi bi-envelope"></i>
+                    الرسائل
+                    {% if unread_count and unread_count > 0 %}
+                    <span class="nav-badge">{{ unread_count }}</span>
+                    {% endif %}
+                </a>
+                
+                <a class="mobile-nav-link {% if request.endpoint == 'manager_leave_requests' %}active{% endif %}" href="{{ url_for('manager_leave_requests') }}">
+                    <i class="bi bi-calendar-minus"></i>
+                    طلبات الإجازات
+                    {% if stats and stats.pending_leaves > 0 %}
+                    <span class="nav-badge">{{ stats.pending_leaves }}</span>
+                    {% endif %}
+                </a>
+                <a class="mobile-nav-link {% if request.endpoint == 'manager_permission_requests' %}active{% endif %}" href="{{ url_for('manager_permission_requests') }}">
+                    <i class="bi bi-clock"></i>
+                    طلبات الإذونات
+                    {% if stats and stats.pending_permissions > 0 %}
+                    <span class="nav-badge">{{ stats.pending_permissions }}</span>
+                    {% endif %}
+                </a>
+                <a class="mobile-nav-link {% if request.endpoint == 'user_salary_slips' %}active{% endif %}" href="{{ url_for('user_salary_slips') }}">
+                    <i class="bi bi-file-earmark-text"></i>
+                    شيت المرتب
+                    {% if new_salary_slips and new_salary_slips > 0 %}
+                    <span class="nav-badge">{{ new_salary_slips }}</span>
+                    {% endif %}
+                </a>
+                <a class="mobile-nav-link {% if request.endpoint == 'manager_advance_requests' %}active{% endif %}" href="{{ url_for('manager_advance_requests') }}">
+                    <i class="bi bi-cash-coin"></i>
+                    طلبات السلف
+                    {% if stats and stats.pending_advances > 0 %}
+                    <span class="nav-badge">{{ stats.pending_advances }}</span>
+                    {% endif %}
+                </a>
+                <a class="mobile-nav-link {% if request.endpoint == 'manager_rewards_penalties' %}active{% endif %}" href="{{ url_for('manager_rewards_penalties') }}">
+                    <i class="bi bi-award"></i>
+                    المكافآت والخصومات
+                </a>
+                <a class="mobile-nav-link {% if request.endpoint == 'manager_excel_data' %}active{% endif %}" href="{{ url_for('manager_excel_data') }}">
+                    <i class="fas fa-file-excel"></i>
+                    الحضور والانصراف
+                </a>
+                {% if current_user.is_admin %}
+                <a class="mobile-nav-link text-warning" href="{{ url_for('admin_dashboard') }}">
+                    <i class="bi bi-person-shield"></i>
+                    لوحة المسؤول
+                </a>
+                {% endif %}
+                
+            {% else %}
+                <!-- User Mobile Navigation -->
+                <a class="mobile-nav-link {% if request.endpoint == 'user_dashboard' %}active{% endif %}" href="{{ url_for('user_dashboard') }}">
+                    <i class="bi bi-speedometer2"></i>
+                    لوحة التحكم
+                </a>
+                <a class="mobile-nav-link {% if request.endpoint == 'user_form' %}active{% endif %}" href="{{ url_for('user_form') }}">
+                    <i class="bi bi-person-lines-fill"></i>
+                    البيانات الشخصية
+                </a>
+                
+                <!-- الرسائل - للموظف (موبايل) -->
+                <a class="mobile-nav-link nav-link-with-badge {% if request.endpoint == 'messages_inbox' %}active{% endif %}" href="{{ url_for('messages_inbox') }}">
+                    <i class="bi bi-envelope"></i>
+                    الرسائل
+                    {% if unread_count and unread_count > 0 %}
+                    <span class="nav-badge">{{ unread_count }}</span>
+                    {% endif %}
+                </a>
+                
+                <a class="mobile-nav-link {% if request.endpoint == 'user_leave' %}active{% endif %}" href="{{ url_for('user_leave') }}">
+                    <i class="bi bi-calendar-minus"></i>
+                    طلب إجازة
+                </a>
+                <a class="mobile-nav-link {% if request.endpoint == 'user_permission' %}active{% endif %}" href="{{ url_for('user_permission') }}">
+                    <i class="bi bi-clock"></i>
+                    طلب إذن
+                </a>
+                <a class="mobile-nav-link {% if request.endpoint == 'user_salary_slips' %}active{% endif %}" href="{{ url_for('user_salary_slips') }}">
+                    <i class="bi bi-file-earmark-text"></i>
+                    شيت المرتب
+                    {% if new_salary_slips and new_salary_slips > 0 %}
+                    <span class="nav-badge">{{ new_salary_slips }}</span>
+                    {% endif %}
+                </a>
+                <a class="mobile-nav-link {% if request.endpoint == 'user_schedule' %}active{% endif %}" href="{{ url_for('user_schedule') }}">
+                    <i class="bi bi-calendar-week"></i>
+                    الجدول الأسبوعي
+                </a>
+                <a class="mobile-nav-link {% if request.endpoint == 'user_leave_requests' %}active{% endif %}" href="{{ url_for('user_leave_requests') }}">
+                    <i class="bi bi-clock-history"></i>
+                    طلباتي السابقة
+                </a>
+                <a class="mobile-nav-link {% if request.endpoint == 'user_excel_data' %}active{% endif %}" href="{{ url_for('user_excel_data') }}">
+                    <i class="fas fa-file-excel"></i>
+                    الحضور والانصراف
+                </a>
+            {% endif %}
+        </div>
+
+        <!-- Main Content -->
+        <main class="main-content">
+            <!-- Page Content -->
+            <div class="container py-4">
+                <!-- Flash messages -->
+                {% with messages = get_flashed_messages() %}
+                    {% if messages %}
+                        {% for message in messages %}
+                            <div class="alert alert-success alert-dismissible fade show mb-4" role="alert">
+                                <div class="d-flex align-items-center">
+                                    <i class="bi bi-check-circle me-2 fs-5"></i>
+                                    <div class="flex-grow-1">{{ message }}</div>
+                                    <button type="button" class="btn-close" data-bs-dismiss="alert"></button>
+                                </div>
+                            </div>
+                        {% endfor %}
+                    {% endif %}
+                {% endwith %}
+                
+                <!-- Welcome Card for Mobile -->
+                <div class="card p-3 d-lg-none mb-4">
+                    <div class="d-flex justify-content-between align-items-center">
+                        <div>
+                            <h4 class="text-success mb-1">مرحباً، {{ current_user.name }}</h4>
+                            <p class="text-muted mb-0">نظام الموارد البشرية - لوحة تحكم الموظف</p>
+                        </div>
+                        <div class="text-success fw-bold" id="mobile-clock">
+                            <i class="bi bi-clock me-2"></i>
+                            جاري التحميل...
+                        </div>
+                    </div>
+                </div>
+                
+                <!-- Leave Request Content -->
+                <div class="row">
+                    <!-- Leave Request Form -->
+                    <div class="col-lg-8">
+                        <div class="form-section-card">
+                            <div class="section-header">
+                                <h5 class="card-title mb-0">
+                                    <i class="fas fa-paper-plane me-2"></i>
+                                    تقديم طلب إجازة
+                                </h5>
+                            </div>
+                            
+                            <form method="POST" id="leaveForm">
+                                <div class="row">
+                                    <div class="col-md-6 mb-3">
+                                        <label for="leave_type" class="form-label required">نوع الإجازة</label>
+                                        <select class="form-select select2-enhanced" id="leave_type" name="leave_type" required>
+                                            <option value="">اختر نوع الإجازة</option>
+                                            <option value="من رصيد الإجازات">من رصيد الإجازات</option>
+                                            <option value="من الراتب">من الراتب</option>
+                                            <option value="إجازة مرضية">إجازة مرضية</option>
+                                            <option value="إجازة زواج">إجازة زواج</option>
+                                            <option value="إجازة عارضة">إجازة عارضة</option>
+                                            <option value="إجازة وضع">إجازة وضع</option>
+                                        </select>
+                                    </div>
+                                    <div class="col-md-6 mb-3">
+                                        <label for="leave_date" class="form-label required">تاريخ الإجازة</label>
+                                        <input type="date" class="form-control" id="leave_date" name="leave_date" required>
+                                        <div class="date-info">
+                                            <i class="fas fa-calendar-alt me-1"></i>
+                                            يمكن اختيار التواريخ من {{ financial_month_start.strftime('%Y-%m-%d') }} إلى {{ financial_month_end.strftime('%Y-%m-%d') }}
+                                        </div>
+                                    </div>
+                                </div>
+
+                                <!-- قسم الشيفتات -->
+                                <div class="mb-4 shift-section">
+                                    <label class="form-label required">اختر الشيفت</label>
+                                    <div class="row">
+                                        <div class="col-md-6 mb-3">
+                                            <div class="shift-container" id="morning_shift_container">
+                                                <div class="shift-info">
+                                                    <div class="d-flex align-items-center">
+                                                        <input class="form-check-input shift-checkbox" type="checkbox" id="morning_shift" name="shifts[]" value="صباحي">
+                                                        <label class="shift-label ms-2" for="morning_shift">
+                                                            صباحي
+                                                        </label>
+                                                    </div>
+                                                    <div class="shift-icon">
+                                                        <i class="fas fa-sun"></i>
+                                                    </div>
+                                                </div>
+                                                <div class="job-select-section" id="morning_job_section">
+                                                    <label for="job_morning" class="form-label mt-2 required">اختر الوظيفة لهذه الشيفت</label>
+                                                    <select class="form-select select2-enhanced job-select" id="job_morning" name="job_صباحي">
+                                                        <option value="">اختر الوظيفة</option>
+                                                        {% for job in department_jobs %}
+                                                        <option value="{{ job }}">{{ job }}</option>
+                                                        {% endfor %}
+                                                    </select>
+                                                </div>
+                                            </div>
+                                        </div>
+                                        <div class="col-md-6 mb-3">
+                                            <div class="shift-container" id="evening_shift_container">
+                                                <div class="shift-info">
+                                                    <div class="d-flex align-items-center">
+                                                        <input class="form-check-input shift-checkbox" type="checkbox" id="evening_shift" name="shifts[]" value="مسائي">
+                                                        <label class="shift-label ms-2" for="evening_shift">
+                                                            مسائي
+                                                        </label>
+                                                    </div>
+                                                    <div class="shift-icon">
+                                                        <i class="fas fa-moon"></i>
+                                                    </div>
+                                                </div>
+                                                <div class="job-select-section" id="evening_job_section">
+                                                    <label for="job_evening" class="form-label mt-2 required">اختر الوظيفة لهذه الشيفت</label>
+                                                    <select class="form-select select2-enhanced job-select" id="job_evening" name="job_مسائي">
+                                                        <option value="">اختر الوظيفة</option>
+                                                        {% for job in department_jobs %}
+                                                        <option value="{{ job }}">{{ job }}</option>
+                                                        {% endfor %}
+                                                    </select>
+                                                </div>
+                                            </div>
+                                        </div>
+                                    </div>
+                                    <small class="text-muted d-block mt-2">
+                                        <i class="fas fa-info-circle me-1"></i>
+                                        يمكنك اختيار شيفت واحد أو كليهما
+                                    </small>
+                                </div>
+
+                                <!-- ملخص الأيام المطلوبة -->
+                                <div class="mb-4">
+                                    <div class="alert alert-info">
+                                        <div class="d-flex align-items-center">
+                                            <i class="fas fa-calculator fa-lg me-3 text-primary"></i>
+                                            <div>
+                                                <h6 class="fw-bold mb-1">ملخص الأيام المطلوبة</h6>
+                                                <div id="required_days_display" class="mb-1">0 يوم (بناءً على 0 شيفت)</div>
+                                                <small class="text-muted">كل شيفت = يوم واحد</small>
+                                            </div>
+                                        </div>
+                                    </div>
+                                </div>
+
+                                <div class="mb-4">
+                                    <label for="reason" class="form-label">سبب الإجازة</label>
+                                    <textarea class="form-control" id="reason" name="reason" rows="3" placeholder="أدخل سبب الإجازة (اختياري)"></textarea>
+                                </div>
+
+                                <div class="alert-info-custom">
+                                    <div class="d-flex align-items-center">
+                                        <i class="fas fa-info-circle fa-2x me-3"></i>
+                                        <div>
+                                            <h5 class="fw-bold mb-1">معلومات الرصيد</h5>
+                                            <p class="mb-0">سيتم خصم عدد أيام الإجازة من رصيدك البالغ <strong>{{ balance.leave_balance }} يوم</strong>. تأكد من أن عدد الأيام لا يتجاوز الرصيد المتاح.</p>
+                                        </div>
+                                    </div>
+                                </div>
+
+                                <div class="text-center mt-4">
+                                    <button type="submit" class="btn btn-primary btn-lg" id="submitBtn">
+                                        <i class="fas fa-paper-plane me-2"></i>تقديم الطلب
+                                    </button>
+                                </div>
+                            </form>
+                        </div>
+                    </div>
+
+                    <!-- Instructions Section -->
+                    <div class="col-lg-4">
+                        <div class="instructions-card">
+                            <div class="section-header section-header-success">
+                                <h5 class="card-title mb-0">
+                                    <i class="fas fa-clipboard-list me-2"></i>
+                                    تعليمات هامة
+                                </h5>
+                            </div>
+                            
+                            <div class="mt-4">
+                                <div class="d-flex align-items-start mb-4">
+                                    <div class="flex-shrink-0">
+                                        <i class="fas fa-calendar-check text-success fa-lg me-3 mt-1"></i>
+                                    </div>
+                                    <div class="flex-grow-1">
+                                        <h6 class="fw-bold mb-1">تواريخ الإجازة</h6>
+                                        <p class="text-muted mb-0">يمكن اختيار التواريخ فقط من 26 من الشهر الحالي إلى 25 من الشهر التالي</p>
+                                    </div>
+                                </div>
+                                
+                                <div class="d-flex align-items-start mb-4">
+                                    <div class="flex-shrink-0">
+                                        <i class="fas fa-clock text-success fa-lg me-3 mt-1"></i>
+                                    </div>
+                                    <div class="flex-grow-1">
+                                        <h6 class="fw-bold mb-1">اختيار الشيفت</h6>
+                                        <p class="text-muted mb-0">يمكن اختيار شيفت صباحي أو مسائي أو كليهما معاً</p>
+                                    </div>
+                                </div>
+                                
+                                <div class="d-flex align-items-start mb-4">
+                                    <div class="flex-shrink-0">
+                                        <i class="fas fa-briefcase text-success fa-lg me-3 mt-1"></i>
+                                    </div>
+                                    <div class="flex-grow-1">
+                                        <h6 class="fw-bold mb-1">اختيار الوظيفة</h6>
+                                        <p class="text-muted mb-0">يجب اختيار الوظيفة المناسبة لكل شيفت تم تحديده</p>
+                                    </div>
+                                </div>
+                                
+                                <div class="d-flex align-items-start">
+                                    <div class="flex-shrink-0">
+                                        <i class="fas fa-credit-card text-success fa-lg me-3 mt-1"></i>
+                                    </div>
+                                    <div class="flex-grow-1">
+                                        <h6 class="fw-bold mb-1">الرصيد المتاح</h6>
+                                        <p class="text-muted mb-0">لا يمكن طلب إجازة برصيد غير كافي</p>
+                                    </div>
+                                </div>
+                            </div>
+                            
+                            <div class="mt-5 pt-3 border-top">
+                                <div class="text-center">
+                                    <i class="fas fa-headset fa-2x text-info mb-3"></i>
+                                    <h6 class="fw-bold">لديك استفسار؟</h6>
+                                    <p class="text-muted small">تواصل مع مدير القسم أو قسم الموارد البشرية</p>
+                                </div>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </main>
+    </div>
+
+    <!-- jQuery -->
+    <script src="https://code.jquery.com/jquery-3.6.0.min.js"></script>
+    
+    <!-- Bootstrap 5 JS -->
+    <script src="https://cdn.jsdelivr.net/npm/bootstrap@5.3.0/dist/js/bootstrap.bundle.min.js"></script>
+    
+    <!-- Select2 JS -->
+    <script src="https://cdn.jsdelivr.net/npm/select2@4.1.0-rc.0/dist/js/select2.min.js"></script>
+    <script src="https://cdn.jsdelivr.net/npm/select2@4.1.0-rc.0/dist/js/i18n/ar.js"></script>
+
+
+    <script>
+        document.addEventListener('DOMContentLoaded', function() {
+            // Mobile menu functionality
+            const mobileMenuBtn = document.getElementById('mobileMenuBtn');
+            const mobileNavMenu = document.getElementById('mobileNavMenu');
+            
+            if (mobileMenuBtn && mobileNavMenu) {
+                mobileMenuBtn.addEventListener('click', function() {
+                    mobileNavMenu.classList.toggle('active');
+                });
+                
+                document.addEventListener('click', function(event) {
+                    if (!mobileMenuBtn.contains(event.target) && !mobileNavMenu.contains(event.target)) {
+                        mobileNavMenu.classList.remove('active');
+                    }
+                });
+            }
+
+            // Real-time clock
+            function updateClock() {
+                const now = new Date();
+                const timeString = now.toLocaleTimeString('ar-EG');
+                const dateString = now.toLocaleDateString('ar-EG', {
+                    weekday: 'long',
+                    year: 'numeric',
+                    month: 'long',
+                    day: 'numeric'
+                });
+                
+                const clockElement = document.getElementById('live-clock');
+                const mobileClockElement = document.getElementById('mobile-clock');
+                
+                if (clockElement) {
+                    clockElement.innerHTML = `
+                        <i class="bi bi-clock me-2"></i>
+                        ${timeString}
+                        <small class="text-white-50 ms-2 d-none d-md-inline">${dateString}</small>
+                    `;
+                }
+                
+                if (mobileClockElement) {
+                    mobileClockElement.innerHTML = `
+                        <i class="bi bi-clock me-2"></i>
+                        ${timeString}
+                    `;
+                }
+            }
+            
+            updateClock();
+            setInterval(updateClock, 1000);
+
+            // DOM Elements
+            const startDate = document.getElementById('leave_date');
+            const morningShift = document.getElementById('morning_shift');
+            const eveningShift = document.getElementById('evening_shift');
+            const morningShiftContainer = document.getElementById('morning_shift_container');
+            const eveningShiftContainer = document.getElementById('evening_shift_container');
+            const morningJobSection = document.getElementById('morning_job_section');
+            const eveningJobSection = document.getElementById('evening_job_section');
+            const morningJobSelect = document.getElementById('job_morning');
+            const eveningJobSelect = document.getElementById('job_evening');
+            const leaveTypeSelect = document.getElementById('leave_type');
+
+            // Initialize Select2 only once
+            function initializeSelect2() {
+                // Initialize leave type select
+                if ($('#leave_type').length) {
+                    $('#leave_type').select2({
+                        theme: 'bootstrap-5',
+                        language: 'ar',
+                        width: '100%',
+                        placeholder: 'اختر نوع الإجازة',
+                        allowClear: false,
+                        minimumResultsForSearch: 5
+                    });
+                }
+
+                // Initialize job selects but keep them hidden
+                if ($('#job_morning').length) {
+                    $('#job_morning').select2({
+                        theme: 'bootstrap-5',
+                        language: 'ar',
+                        width: '100%',
+                        placeholder: 'اختر الوظيفة',
+                        allowClear: false,
+                        minimumResultsForSearch: 5
+                    });
+                }
+
+                if ($('#job_evening').length) {
+                    $('#job_evening').select2({
+                        theme: 'bootstrap-5',
+                        language: 'ar',
+                        width: '100%',
+                        placeholder: 'اختر الوظيفة',
+                        allowClear: false,
+                        minimumResultsForSearch: 5
+                    });
+                }
+            }
+
+            // Initialize Select2 after a short delay
+            setTimeout(initializeSelect2, 300);
+
+            // Calculate financial month range
+            function getFinancialMonthRange() {
+                const today = new Date();
+                const currentMonth = today.getMonth() + 1;
+                const currentYear = today.getFullYear();
+                
+                let startMonth, startYear, endMonth, endYear;
+                
+                if (today.getDate() >= 26) {
+                    // From 26th of current month to 25th of next month
+                    startMonth = currentMonth;
+                    startYear = currentYear;
+                    endMonth = currentMonth === 12 ? 1 : currentMonth + 1;
+                    endYear = currentMonth === 12 ? currentYear + 1 : currentYear;
+                } else {
+                    // From 26th of previous month to 25th of current month
+                    startMonth = currentMonth === 1 ? 12 : currentMonth - 1;
+                    startYear = currentMonth === 1 ? currentYear - 1 : currentYear;
+                    endMonth = currentMonth;
+                    endYear = currentYear;
+                }
+                
+                const startDate = new Date(startYear, startMonth - 1, 26);
+                const endDate = new Date(endYear, endMonth, 25);
+                
+                return { startDate, endDate };
+            }
+
+            // Format date for input
+            function formatDateForInput(date) {
+                const year = date.getFullYear();
+                const month = String(date.getMonth() + 1).padStart(2, '0');
+                const day = String(date.getDate()).padStart(2, '0');
+                return `${year}-${month}-${day}`;
+            }
+
+            // Set date constraints
+            function setDateConstraints() {
+                const range = getFinancialMonthRange();
+                const minDate = formatDateForInput(range.startDate);
+                const maxDate = formatDateForInput(range.endDate);
+                
+                if (startDate) {
+                    startDate.min = minDate;
+                    startDate.max = maxDate;
+                    
+                    // Set today as default if within range
+                    const today = new Date();
+                    const todayStr = formatDateForInput(today);
+                    if (todayStr >= minDate && todayStr <= maxDate) {
+                        startDate.value = todayStr;
+                    }
+                }
+            }
+
+            // Calculate required days based on selected shifts
+            function calculateRequiredDays() {
+                let selectedShifts = 0;
+                
+                if (morningShift && morningShift.checked) selectedShifts++;
+                if (eveningShift && eveningShift.checked) selectedShifts++;
+                
+                return selectedShifts;
+            }
+
+            // Update required days display
+            function updateRequiredDaysDisplay() {
+                const selectedShifts = calculateRequiredDays();
+                const requiredDays = selectedShifts;
+                
+                const displayElement = document.getElementById('required_days_display');
+                if (displayElement) {
+                    const shiftText = selectedShifts === 1 ? 'شيفت' : 'شيفت';
+                    displayElement.textContent = `${requiredDays} يوم (بناءً على ${selectedShifts} ${shiftText})`;
+                    
+                    // Check balance
+                    const balance = {{ balance.leave_balance }};
+                    if (requiredDays > balance) {
+                        displayElement.style.color = '#ef4444';
+                        displayElement.innerHTML = `${requiredDays} يوم (بناءً على ${selectedShifts} ${shiftText}) <span class="badge bg-danger ms-2">يتجاوز الرصيد</span>`;
+                    } else {
+                        displayElement.style.color = '#10b981';
+                    }
+                }
+            }
+
+            // Handle shift selection
+            function handleShiftSelection(shiftCheckbox, shiftContainer, jobSection, jobSelect) {
+                if (!shiftCheckbox || !shiftContainer || !jobSection || !jobSelect) return;
+                
+                if (shiftCheckbox.checked) {
+                    shiftContainer.classList.add('active');
+                    jobSection.classList.add('show');
+                    jobSelect.required = true;
+                } else {
+                    shiftContainer.classList.remove('active');
+                    jobSection.classList.remove('show');
+                    jobSelect.required = false;
+                    
+                    // Clear Select2 value without destroying
+                    if ($(jobSelect).data('select2')) {
+                        $(jobSelect).val(null).trigger('change');
+                    } else {
+                        jobSelect.value = '';
+                    }
+                }
+                updateRequiredDaysDisplay();
+            }
+
+            // Validate form
+            function validateForm() {
+                let isValid = true;
+                const errorMessages = [];
+                
+                // Check leave type
+                if (leaveTypeSelect && !leaveTypeSelect.value) {
+                    errorMessages.push('يرجى اختيار نوع الإجازة');
+                    isValid = false;
+                }
+                
+                // Check date
+                if (startDate && !startDate.value) {
+                    errorMessages.push('يرجى اختيار تاريخ الإجازة');
+                    isValid = false;
+                }
+                
+                // Check if date is not in the past
+                if (startDate && startDate.value) {
+                    const selectedDate = new Date(startDate.value);
+                    const today = new Date();
+                    today.setHours(0, 0, 0, 0);
+                    
+                }
+                
+                // Check shift selection only for "من رصيد الإجازات"
+                if (leaveTypeSelect && leaveTypeSelect.value === 'من رصيد الإجازات') {
+                    if ((!morningShift || !morningShift.checked) && (!eveningShift || !eveningShift.checked)) {
+                        errorMessages.push('يرجى اختيار شيفت واحد على الأقل (صباحي أو مسائي)');
+                        isValid = false;
+                    }
+                    
+                    // Check job selection for selected shifts
+                    if (morningShift && morningShift.checked && morningJobSelect && !morningJobSelect.value) {
+                        errorMessages.push('يرجى اختيار وظيفة للشيفت الصباحي');
+                        isValid = false;
+                    }
+                    
+                    if (eveningShift && eveningShift.checked && eveningJobSelect && !eveningJobSelect.value) {
+                        errorMessages.push('يرجى اختيار وظيفة للشيفت المسائي');
+                        isValid = false;
+                    }
+                    
+                    // Check balance
+                    const requiredDays = calculateRequiredDays();
+                    const balance = {{ balance.leave_balance }};
+                    
+                    if (requiredDays > balance) {
+                        errorMessages.push(`رصيد الإجازات غير كافي. تحتاج ${requiredDays} يوم ورصيدك ${balance} يوم`);
+                        isValid = false;
+                    }
+                }
+                
+                return { isValid, errorMessages };
+            }
+
+            // Handle leave type change
+            function handleLeaveTypeChange() {
+                if (!leaveTypeSelect) return;
+                
+                const leaveType = leaveTypeSelect.value;
+                const shiftSection = document.querySelector('.shift-section');
+                
+                if (!shiftSection) return;
+                
+                if (leaveType === 'من رصيد الإجازات') {
+                    // Show shift section
+                    shiftSection.style.display = 'block';
+                    
+                    // Set required for selected shifts
+                    if (morningShift && morningShift.checked) {
+                        morningJobSelect.required = true;
+                    }
+                    
+                    if (eveningShift && eveningShift.checked) {
+                        eveningJobSelect.required = true;
+                    }
+                } else {
+                    // Hide shift section
+                    shiftSection.style.display = 'none';
+                    
+                    // Reset shift values
+                    if (morningShift) {
+                        morningShift.checked = false;
+                        morningShift.required = false;
+                    }
+                    
+                    if (eveningShift) {
+                        eveningShift.checked = false;
+                        eveningShift.required = false;
+                    }
+                    
+                    // Hide containers
+                    if (morningShiftContainer) {
+                        morningShiftContainer.classList.remove('active');
+                    }
+                    
+                    if (eveningShiftContainer) {
+                        eveningShiftContainer.classList.remove('active');
+                    }
+                    
+                    // Hide job sections
+                    if (morningJobSection) {
+                        morningJobSection.classList.remove('show');
+                    }
+                    
+                    if (eveningJobSection) {
+                        eveningJobSection.classList.remove('show');
+                    }
+                    
+                    // Reset job selects
+                    if (morningJobSelect) {
+                        morningJobSelect.required = false;
+                        if ($(morningJobSelect).data('select2')) {
+                            $(morningJobSelect).val(null).trigger('change');
+                        } else {
+                            morningJobSelect.value = '';
+                        }
+                    }
+                    
+                    if (eveningJobSelect) {
+                        eveningJobSelect.required = false;
+                        if ($(eveningJobSelect).data('select2')) {
+                            $(eveningJobSelect).val(null).trigger('change');
+                        } else {
+                            eveningJobSelect.value = '';
+                        }
+                    }
+                }
+                
+                updateRequiredDaysDisplay();
+            }
+
+            // Add event listeners
+            if (startDate) {
+                startDate.addEventListener('change', updateRequiredDaysDisplay);
+            }
+
+            if (morningShift) {
+                morningShift.addEventListener('change', function() {
+                    handleShiftSelection(morningShift, morningShiftContainer, morningJobSection, morningJobSelect);
+                });
+            }
+
+            if (eveningShift) {
+                eveningShift.addEventListener('change', function() {
+                    handleShiftSelection(eveningShift, eveningShiftContainer, eveningJobSection, eveningJobSelect);
+                });
+            }
+
+            if (leaveTypeSelect) {
+                leaveTypeSelect.addEventListener('change', handleLeaveTypeChange);
+            }
+
+            // Handle shift containers click
+            if (morningShiftContainer) {
+                morningShiftContainer.addEventListener('click', function(e) {
+                    if (morningShift && e.target !== morningShift && 
+                        !e.target.classList.contains('select2-container') &&
+                        !e.target.closest('.select2-container')) {
+                        morningShift.checked = !morningShift.checked;
+                        morningShift.dispatchEvent(new Event('change'));
+                    }
+                });
+            }
+
+            if (eveningShiftContainer) {
+                eveningShiftContainer.addEventListener('click', function(e) {
+                    if (eveningShift && e.target !== eveningShift && 
+                        !e.target.classList.contains('select2-container') &&
+                        !e.target.closest('.select2-container')) {
+                        eveningShift.checked = !eveningShift.checked;
+                        eveningShift.dispatchEvent(new Event('change'));
+                    }
+                });
+            }
+
+            // Form submission
+            const leaveForm = document.getElementById('leaveForm');
+            if (leaveForm) {
+                leaveForm.addEventListener('submit', function(e) {
+                    const validation = validateForm();
+                    
+                    if (!validation.isValid) {
+                        e.preventDefault();
+                        
+                        // Create error alert
+                        const alertDiv = document.createElement('div');
+                        alertDiv.className = 'alert alert-danger alert-dismissible fade show position-fixed';
+                        alertDiv.style.top = '20px';
+                        alertDiv.style.right = '20px';
+                        alertDiv.style.left = '20px';
+                        alertDiv.style.zIndex = '9999';
+                        alertDiv.style.maxWidth = '500px';
+                        alertDiv.style.margin = '0 auto';
+                        alertDiv.style.boxShadow = '0 5px 20px rgba(0,0,0,0.2)';
+                        
+                        let alertContent = '<div class="d-flex align-items-center">';
+                        alertContent += '<i class="fas fa-exclamation-triangle fa-2x me-3"></i>';
+                        alertContent += '<div><h5 class="fw-bold mb-1">خطأ في تقديم الطلب</h5>';
+                        alertContent += '<ul class="mb-0">';
+                        validation.errorMessages.forEach(msg => {
+                            alertContent += `<li>${msg}</li>`;
+                        });
+                        alertContent += '</ul></div>';
+                        alertContent += '<button type="button" class="btn-close ms-auto" data-bs-dismiss="alert"></button>';
+                        alertContent += '</div>';
+                        
+                        alertDiv.innerHTML = alertContent;
+                        
+                        // Remove existing alerts
+                        document.querySelectorAll('.alert-danger.position-fixed').forEach(alert => alert.remove());
+                        
+                        document.body.appendChild(alertDiv);
+                        
+                        // Auto remove after 10 seconds
+                        setTimeout(() => {
+                            if (alertDiv.parentNode) {
+                                alertDiv.remove();
+                            }
+                        }, 10000);
+                        
+                        return;
+                    }
+                    
+                    // Create hidden field for calculated days
+                    const requiredDays = calculateRequiredDays();
+                    let daysInput = this.querySelector('input[name="calculated_days"]');
+                    if (!daysInput) {
+                        daysInput = document.createElement('input');
+                        daysInput.type = 'hidden';
+                        daysInput.name = 'calculated_days';
+                        this.appendChild(daysInput);
+                    }
+                    daysInput.value = requiredDays;
+                    
+                    // Show loading state
+                    const submitBtn = document.getElementById('submitBtn');
+                    if (submitBtn) {
+                        const originalText = submitBtn.innerHTML;
+                        submitBtn.innerHTML = '<i class="fas fa-spinner fa-spin me-2"></i>جاري التقديم...';
+                        submitBtn.disabled = true;
+                        
+                        // Restore button after 5 seconds (in case submission fails)
+                        setTimeout(() => {
+                            submitBtn.innerHTML = originalText;
+                            submitBtn.disabled = false;
+                        }, 5000);
+                    }
+                });
+            }
+
+            // Initialize page
+            setDateConstraints();
+            updateRequiredDaysDisplay();
+            
+            // Set initial state based on leave type
+            if (leaveTypeSelect) {
+                // Trigger initial state after Select2 is initialized
+                setTimeout(() => {
+                    handleLeaveTypeChange();
+                }, 500);
+            }
+        });
+    </script>
+
+
+</body>
+</html>

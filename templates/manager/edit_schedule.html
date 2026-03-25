@@ -1,0 +1,4579 @@
+<!DOCTYPE html>
+<html lang="ar" dir="rtl">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>تعديل الجدول - {{ schedule.department.name }}</title>
+    
+
+    <!-- CSS -->
+    <link href="/static/css/bootstrap.min.css" rel="stylesheet">
+    <link href="/static/css/bootstrap-icons.css" rel="stylesheet">
+    <link href="/static/css/select2.min.css" rel="stylesheet">
+    <link href="/static/css/sweetalert2.min.css" rel="stylesheet">
+    <link href="/static/css/sweetalert2-bootstrap-4.css" rel="stylesheet">
+
+    <!-- JS في HEAD -->
+    <script src="/static/js/xlsx.full.min.js"></script>
+    
+    <style>
+        /* CSS Variables */
+        /* Limit dropdown to max 4 items */
+        .select2-results__options {
+            max-height: 200px !important; /* ارتفاع مناسب لعرض 4 عناصر */
+            overflow-y: auto !important;
+        }
+
+        /* تحديد عدد العناصر المرئية */
+        .select2-results__option {
+            max-height: 40px !important; /* ارتفاع كل عنصر */
+            overflow: hidden !important;
+            white-space: nowrap !important;
+            text-overflow: ellipsis !important;
+        }
+        /* زر ارسال اليوم */
+        .approve-day-btn {
+            background: linear-gradient(135deg, #059669 0%, #047857 100%);
+            border: 1px solid #047857;
+            color: white;
+            transition: all 0.3s ease;
+        }
+
+        .approve-day-btn:hover {
+            background: linear-gradient(135deg, #047857 0%, #065f46 100%);
+            transform: translateY(-2px);
+            box-shadow: 0 4px 12px rgba(5, 150, 105, 0.3);
+        }
+
+        /* حالة اليوم المقفل */
+        .day-approved {
+            background-color: rgba(5, 150, 105, 0.1) !important;
+            border-left: 3px solid #059669 !important;
+            opacity: 0.9;
+        }
+
+        /* الخلايا المقفلة */
+        .approved-cell .select2-selection {
+            background-color: rgba(5, 150, 105, 0.2) !important;
+            border: 1px solid #059669 !important;
+            cursor: not-allowed !important;
+        }
+
+        .approved-cell .select2-selection__arrow {
+            display: none !important;
+        }
+
+        /* Enhanced Random Fill Modal Styles */
+        .days-checkbox-container {
+            background-color: rgba(16, 185, 129, 0.05);
+            border: 1px solid rgba(16, 185, 129, 0.2) !important;
+        }
+
+        .days-checkbox-container::-webkit-scrollbar {
+            width: 6px;
+        }
+
+        .days-checkbox-container::-webkit-scrollbar-thumb {
+            background: var(--primary-green);
+            border-radius: 3px;
+        }
+
+        .form-check-input:checked {
+            background-color: var(--primary-green);
+            border-color: var(--primary-green);
+        }
+
+        #previewCard {
+            border: 2px solid var(--primary-green);
+            background-color: rgba(16, 185, 129, 0.05);
+        }
+
+        #previewCard .badge {
+            min-width: 60px;
+            font-size: 11px;
+        }
+
+
+        :root {
+            --primary-green: #10b981;
+            --dark-green: #059669;
+            --light-green: #34d399;
+            --accent-green: #a7f3d0;
+            --gradient-primary: linear-gradient(135deg, #10b981 0%, #059669 100%);
+            --gradient-secondary: linear-gradient(135deg, #34d399 0%, #10b981 100%);
+            --gradient-dark: linear-gradient(135deg, #065f46 0%, #047857 100%);
+            --gradient-success: linear-gradient(135deg, #a7f3d0 0%, #6ee7b7 100%);
+            --header-height: 130px;
+        }
+    
+        /* Reset & Base Styles */
+        * {
+            margin: 0;
+            padding: 0;
+            box-sizing: border-box;
+        }
+    
+        body {
+            font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif;
+            background: #f8fdf9;
+            min-height: 100vh;
+            overflow-x: hidden;
+            padding-top: var(--header-height);
+            color: #1a4731;
+        }
+    
+        /* Custom Scrollbar */
+        ::-webkit-scrollbar {
+            width: 8px;
+            height: 8px;
+        }
+    
+        ::-webkit-scrollbar-track {
+            background: rgba(16, 185, 129, 0.1);
+            border-radius: 10px;
+        }
+    
+        ::-webkit-scrollbar-thumb {
+            background: var(--gradient-primary);
+            border-radius: 10px;
+        }
+    
+        ::-webkit-scrollbar-thumb:hover {
+            background: var(--dark-green);
+        }
+    
+        /* Text & Background Utilities */
+        .text-success {
+            color: var(--primary-green) !important;
+        }
+    
+        .bg-success {
+            background-color: var(--primary-green) !important;
+        }
+    
+        .text-truncate {
+            overflow: hidden;
+            text-overflow: ellipsis;
+            white-space: nowrap;
+        }
+    
+        /* Live Clock */
+        #live-clock {
+            font-size: 0.9rem;
+            background: rgba(255, 255, 255, 0.1);
+            padding: 0.3rem 0.7rem;
+            border-radius: 20px;
+            border: 1px solid rgba(255, 255, 255, 0.2);
+            flex-shrink: 0;
+        }
+    
+        /* Unified Navigation Bar */
+        .unified-nav {
+            background: var(--gradient-dark);
+            color: white;
+            position: fixed;
+            top: 0;
+            right: 0;
+            left: 0;
+            height: var(--header-height);
+            z-index: 1000;
+            box-shadow: 0 4px 20px rgba(5, 150, 105, 0.25);
+            border-bottom: 1px solid rgba(255, 255, 255, 0.1);
+        }
+    
+        .unified-nav-container {
+            display: flex;
+            flex-direction: column;
+            height: 100%;
+            padding: 0 1rem;
+        }
+    
+        .nav-top-section {
+            display: flex;
+            align-items: center;
+            justify-content: space-between;
+            height: 70px;
+            flex-shrink: 0;
+            padding: 0.5rem 0;
+        }
+    
+        .nav-bottom-section {
+            display: flex;
+            align-items: center;
+            justify-content: space-between;
+            height: 60px;
+            flex-shrink: 0;
+            border-top: 1px solid rgba(255, 255, 255, 0.15);
+            position: relative;
+        }
+    
+        .nav-brand-section {
+            display: flex;
+            align-items: center;
+            flex-shrink: 0;
+            min-width: 0;
+        }
+    
+        .logo-container {
+            width: 45px;
+            height: 45px;
+            background: var(--gradient-primary);
+            border-radius: 10px;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            box-shadow: 0 4px 12px rgba(16, 185, 129, 0.4);
+            margin-left: 0.5rem;
+            flex-shrink: 0;
+        }
+    
+        .welcome-section {
+            display: flex;
+            align-items: center;
+            flex-grow: 1;
+            justify-content: center;
+            color: white;
+            text-align: center;
+            min-width: 0;
+            overflow: hidden;
+        }
+    
+        .welcome-content {
+            min-width: 0;
+            overflow: hidden;
+        }
+    
+        .welcome-content h4 {
+            margin-bottom: 0.2rem;
+            font-weight: 600;
+            font-size: 1.1rem;
+            white-space: nowrap;
+            overflow: hidden;
+            text-overflow: ellipsis;
+        }
+    
+        .welcome-content p {
+            margin-bottom: 0;
+            font-size: 0.85rem;
+            opacity: 0.9;
+            white-space: nowrap;
+            overflow: hidden;
+            text-overflow: ellipsis;
+        }
+    
+        .nav-user-section {
+            display: flex;
+            align-items: center;
+            flex-shrink: 0;
+            min-width: 0;
+        }
+    
+        .nav-menu-section {
+            display: flex;
+            align-items: center;
+            flex-grow: 1;
+            height: 100%;
+            position: relative;
+            min-width: 0;
+        }
+    
+        .nav-menu-wrapper {
+            display: flex;
+            align-items: center;
+            height: 100%;
+            overflow-x: auto;
+            overflow-y: hidden;
+            scroll-behavior: smooth;
+            -webkit-overflow-scrolling: touch;
+            width: 100%;
+            padding: 0 0.5rem;
+            scrollbar-width: thin;
+            scrollbar-color: var(--primary-green) rgba(255, 255, 255, 0.1);
+            min-width: 0;
+        }
+    
+        /* Custom scrollbar for nav menu */
+        .nav-menu-wrapper::-webkit-scrollbar {
+            height: 6px;
+        }
+    
+        .nav-menu-wrapper::-webkit-scrollbar-track {
+            background: rgba(255, 255, 255, 0.1);
+            border-radius: 10px;
+        }
+    
+        .nav-menu-wrapper::-webkit-scrollbar-thumb {
+            background: var(--primary-green);
+            border-radius: 10px;
+        }
+    
+        .nav-menu-wrapper::-webkit-scrollbar-thumb:hover {
+            background: var(--light-green);
+        }
+    
+        /* Navigation Links */
+        .unified-nav .nav-link {
+            color: rgba(255, 255, 255, 0.9);
+            padding: 0.7rem 1.2rem;
+            margin: 0 0.2rem;
+            border-radius: 10px;
+            transition: all 0.3s ease;
+            font-weight: 500;
+            position: relative;
+            border: 1px solid transparent;
+            display: flex;
+            align-items: center;
+            text-decoration: none;
+            font-size: 0.9rem;
+            white-space: nowrap;
+            height: 80%;
+            flex-shrink: 0;
+            background: rgba(255, 255, 255, 0.05);
+            min-width: max-content;
+        }
+    
+        .unified-nav .nav-link:hover {
+            color: white;
+            background: rgba(255, 255, 255, 0.12);
+            border: 1px solid rgba(255, 255, 255, 0.2);
+            transform: translateY(-2px);
+            box-shadow: 0 4px 12px rgba(0, 0, 0, 0.15);
+        }
+    
+        .unified-nav .nav-link.active {
+            background: rgba(255, 255, 255, 0.15);
+            color: white;
+            border: 1px solid rgba(255, 255, 255, 0.25);
+            box-shadow: 0 4px 12px rgba(0, 0, 0, 0.2);
+        }
+    
+        .unified-nav .nav-link.active::after {
+            content: '';
+            position: absolute;
+            bottom: -10px;
+            right: 50%;
+            transform: translateX(50%);
+            width: 70%;
+            height: 3px;
+            background: var(--accent-green);
+            border-radius: 4px 4px 0 0;
+        }
+    
+        /* Badges */
+        .nav-badge {
+            background: var(--accent-green);
+            color: #065f46;
+            padding: 0.2rem 0.4rem;
+            border-radius: 8px;
+            font-size: 0.65rem;
+            font-weight: bold;
+            margin-right: 0.3rem;
+            position: absolute;
+            top: 5px;
+            right: 5px;
+            box-shadow: 0 2px 4px rgba(0, 0, 0, 0.1);
+        }
+    
+        .nav-link-with-badge {
+            position: relative;
+        }
+    
+        .notification-badge {
+            position: absolute;
+            top: -5px;
+            right: -5px;
+            font-size: 0.7rem;
+            background: var(--gradient-secondary);
+            border: 2px solid white;
+            box-shadow: 0 2px 8px rgba(16, 185, 129, 0.4);
+        }
+    
+        /* User Avatar */
+        .user-avatar {
+            width: 38px;
+            height: 38px;
+            background: var(--gradient-primary);
+            border-radius: 50%;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            color: white;
+            font-weight: bold;
+            font-size: 1rem;
+            box-shadow: 0 4px 10px rgba(16, 185, 129, 0.4);
+            transition: all 0.3s ease;
+            flex-shrink: 0;
+        }
+    
+        .user-avatar:hover {
+            transform: scale(1.08);
+            box-shadow: 0 6px 15px rgba(16, 185, 129, 0.5);
+        }
+    
+        /* Dropdowns */
+        .dropdown-menu {
+            background: white;
+            border: none;
+            border-radius: 12px;
+            box-shadow: 0 10px 30px rgba(16, 185, 129, 0.2);
+            overflow: hidden;
+            border: 1px solid rgba(16, 185, 129, 0.15);
+        }
+    
+        .dropdown-item {
+            padding: 0.8rem 1.2rem;
+            border-radius: 8px;
+            margin: 0.2rem 0.5rem;
+            transition: all 0.2s ease;
+            color: #065f46;
+        }
+    
+        .dropdown-item:hover {
+            background: rgba(16, 185, 129, 0.1);
+            color: #065f46;
+            transform: translateX(-5px);
+        }
+    
+        /* Navigation Controls */
+        .nav-controls {
+            display: flex;
+            align-items: center;
+            position: absolute;
+            left: 0;
+            top: 0;
+            height: 100%;
+            background: linear-gradient(90deg, rgba(6, 95, 70, 0.9) 0%, transparent 100%);
+            padding: 0 0.5rem;
+            z-index: 5;
+        }
+    
+        .nav-prev, .nav-next {
+            background: rgba(255, 255, 255, 0.2);
+            border: 1px solid rgba(255, 255, 255, 0.3);
+            color: white;
+            width: 28px;
+            height: 28px;
+            border-radius: 50%;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            cursor: pointer;
+            transition: all 0.3s ease;
+            font-size: 0.8rem;
+            margin-left: 0.3rem;
+        }
+    
+        .nav-prev:hover, .nav-next:hover {
+            background: rgba(255, 255, 255, 0.3);
+            transform: scale(1.1);
+        }
+    
+        .nav-controls-right {
+            display: flex;
+            align-items: center;
+            position: absolute;
+            right: 0;
+            top: 0;
+            height: 100%;
+            background: linear-gradient(270deg, rgba(6, 95, 70, 0.9) 0%, transparent 100%);
+            padding: 0 0.5rem;
+            z-index: 5;
+        }
+    
+        /* Mobile Navigation */
+        .mobile-menu-btn {
+            display: none;
+            background: transparent;
+            border: 1px solid rgba(255, 255, 255, 0.3);
+            color: white;
+            width: 40px;
+            height: 40px;
+            border-radius: 8px;
+            align-items: center;
+            justify-content: center;
+            cursor: pointer;
+            transition: all 0.3s ease;
+            margin-right: 0.5rem;
+        }
+    
+        .mobile-menu-btn:hover {
+            background: rgba(255, 255, 255, 0.1);
+        }
+    
+        .mobile-nav-menu {
+            position: fixed;
+            top: var(--header-height);
+            right: 0;
+            left: 0;
+            background: var(--gradient-dark);
+            z-index: 999;
+            padding: 1rem;
+            box-shadow: 0 4px 20px rgba(0, 0, 0, 0.2);
+            display: none;
+            flex-direction: column;
+            max-height: calc(100vh - var(--header-height));
+            overflow-y: auto;
+        }
+    
+        .mobile-nav-menu.active {
+            display: flex;
+        }
+    
+        .mobile-nav-link {
+            color: white;
+            padding: 1rem;
+            margin: 0.2rem 0;
+            border-radius: 8px;
+            text-decoration: none;
+            display: flex;
+            align-items: center;
+            transition: all 0.3s ease;
+            border: 1px solid transparent;
+            position: relative;
+        }
+    
+        .mobile-nav-link:hover,
+        .mobile-nav-link.active {
+            background: rgba(255, 255, 255, 0.1);
+            border: 1px solid rgba(255, 255, 255, 0.2);
+        }
+    
+        .mobile-nav-link i {
+            margin-left: 0.5rem;
+            width: 20px;
+            text-align: center;
+        }
+    
+        /* Notifications */
+        .notification-container {
+            position: fixed;
+            top: calc(var(--header-height) + 20px);
+            right: 20px;
+            z-index: 9999;
+            min-width: 300px;
+            max-width: 400px;
+        }
+    
+        .notification-container .alert {
+            border-radius: 12px;
+            border: 1px solid rgba(16, 185, 129, 0.2);
+            box-shadow: 0 5px 20px rgba(16, 185, 129, 0.15);
+            backdrop-filter: blur(10px);
+            background: rgba(255, 255, 255, 0.95);
+        }
+    
+        .notification-container .alert-success {
+            background: linear-gradient(135deg, rgba(16, 185, 129, 0.1) 0%, rgba(52, 211, 153, 0.05) 100%);
+            border-left: 4px solid var(--primary-green);
+            color: #065f46;
+        }
+    
+        .notification-container .alert-danger {
+            background: linear-gradient(135deg, rgba(239, 68, 68, 0.1) 0%, rgba(252, 165, 165, 0.05) 100%);
+            border-left: 4px solid #dc2626;
+            color: #7f1d1d;
+        }
+    
+        .notification-container .alert-warning {
+            background: linear-gradient(135deg, rgba(245, 158, 11, 0.1) 0%, rgba(251, 191, 36, 0.05) 100%);
+            border-left: 4px solid #f59e0b;
+            color: #78350f;
+        }
+    
+        .notification-container .alert-info {
+            background: linear-gradient(135deg, rgba(59, 130, 246, 0.1) 0%, rgba(147, 197, 253, 0.05) 100%);
+            border-left: 4px solid #3b82f6;
+            color: #1e3a8a;
+        }
+    
+        .notification-container .alert .btn-close {
+            padding: 0.8rem;
+            filter: brightness(0.8);
+        }
+    
+        .notification-container .alert .btn-close:hover {
+            filter: brightness(0.6);
+        }
+    
+        /* Schedule Container */
+        .schedule-container {
+            max-width: 1400px;
+            margin: 0 auto;
+            padding: 20px;
+        }
+    
+        /* Excel Grid */
+        .excel-grid {
+            border: 2px solid rgba(16, 185, 129, 0.1);
+            border-radius: 15px;
+            overflow: hidden;
+            background: white;
+            box-shadow: 0 5px 15px rgba(0, 0, 0, 0.05);
+            max-height: 60vh;
+            overflow: auto;
+        }
+    
+        .excel-table {
+            width: 100%;
+            border-collapse: collapse;
+            font-size: 14px;
+            min-width: 800px;
+            table-layout: fixed;
+        }
+    
+        /* Column widths */
+        .excel-table th:nth-child(1),
+        .excel-table td:nth-child(1) { width: 15%; }
+        .excel-table th:nth-child(2),
+        .excel-table td:nth-child(2) { width: 12%; }
+        .excel-table th:nth-child(3),
+        .excel-table td:nth-child(3) { width: 12%; }
+        .excel-table th:nth-child(4),
+        .excel-table td:nth-child(4) { width: 15%; }
+        .excel-table th:nth-child(5),
+        .excel-table td:nth-child(5) { width: 15%; }
+        .excel-table th:nth-child(6),
+        .excel-table td:nth-child(6) { width: 15%; }
+        .excel-table th:nth-child(7),
+        .excel-table td:nth-child(7) { width: 16%; }
+    
+        .excel-table th {
+            background: var(--gradient-primary);
+            color: white;
+            font-weight: 600;
+            text-align: center;
+            padding: 12px 8px;
+            border: 1px solid rgba(255, 255, 255, 0.2);
+            position: sticky;
+            top: 0;
+            z-index: 10;
+            min-width: 120px;
+            white-space: nowrap;
+        }
+    
+        .excel-table td {
+            padding: 0;
+            border: 1px solid rgba(16, 185, 129, 0.1);
+            text-align: center;
+            vertical-align: middle;
+            min-width: 120px;
+            height: 40px;
+            position: relative;
+            background-color: white;
+            transition: all 0.2s ease;
+        }
+    
+        .excel-table td:hover {
+            background-color: rgba(16, 185, 129, 0.05);
+        }
+    
+        /* Combined Search & Dropdown Cell */
+        .combined-search-cell {
+            position: relative;
+            width: 100%;
+            height: 100%;
+        }
+    
+        .combined-search-cell .select2-container {
+            width: 100% !important;
+            height: 100%;
+        }
+    
+        .combined-search-cell .select2-selection {
+            border: none;
+            background: transparent;
+            height: 100% !important;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+        }
+    
+        .combined-search-cell .select2-selection__rendered {
+            padding: 0 !important;
+            line-height: normal !important;
+            color: #1a4731 !important;
+            font-weight: 500;
+            text-align: center;
+            width: 100%;
+        }
+    
+        .combined-search-cell .select2-selection__placeholder {
+            color: #6c757d !important;
+            font-style: italic;
+            font-size: 13px;
+        }
+    
+        .combined-search-cell .select2-selection__arrow {
+            display: none;
+        }
+    
+        .combined-search-cell .select2-selection--single {
+            border-radius: 0 !important;
+        }
+    
+        .combined-search-cell .select2-search--dropdown {
+            padding: 8px;
+            border-bottom: 1px solid rgba(16, 185, 129, 0.1);
+            background: rgba(16, 185, 129, 0.05);
+        }
+    
+        .combined-search-cell .select2-search__field {
+            width: 100% !important;
+            padding: 10px 15px !important;
+            border: 2px solid rgba(16, 185, 129, 0.2) !important;
+            border-radius: 8px !important;
+            font-size: 14px !important;
+            text-align: right !important;
+            transition: all 0.3s ease !important;
+        }
+    
+        .combined-search-cell .select2-search__field:focus {
+            outline: none !important;
+            border-color: var(--primary-green) !important;
+            box-shadow: 0 0 0 3px rgba(16, 185, 129, 0.1) !important;
+        }
+    
+        .combined-search-cell .select2-results__option {
+            text-align: right !important;
+            padding: 12px 15px !important;
+            transition: all 0.2s ease !important;
+            border-bottom: 1px solid #f3f4f6 !important;
+            color: #1a4731 !important;
+            font-size: 14px !important;
+        }
+    
+        .combined-search-cell .select2-results__option--highlighted {
+            background: rgba(16, 185, 129, 0.1) !important;
+            color: #065f46 !important;
+        }
+    
+        .combined-search-cell .select2-results__option--selected {
+            background: var(--gradient-primary) !important;
+            color: white !important;
+        }
+    
+        .combined-search-cell .select2-results__message {
+            text-align: center !important;
+            padding: 20px !important;
+            color: #6c757d !important;
+            font-style: italic !important;
+        }
+    
+        .excel-table input.job-input {
+            background-color: rgba(16, 185, 129, 0.05);
+            color: #6c757d;
+            cursor: not-allowed;
+            font-weight: 500;
+        }
+    
+        .excel-table input[readonly] {
+            background-color: rgba(16, 185, 129, 0.05);
+            color: #6c757d;
+            cursor: not-allowed;
+        }
+    
+        /* Table Cell Styles */
+        .date-cell {
+            font-weight: 500;
+            color: #1a4731;
+        }
+    
+        .day-cell {
+            font-weight: bold;
+            color: #065f46;
+        }
+    
+        .today-row {
+            background-color: rgba(245, 158, 11, 0.1) !important;
+            border-left: 3px solid #f59e0b !important;
+        }
+    
+        .new-row {
+            background-color: rgba(255, 193, 7, 0.1) !important;
+            border-left: 3px solid #f59e0b !important;
+        }
+    
+        /* Duplicate Detection Styles */
+        .duplicate-shift {
+            background-color: rgba(255, 193, 7, 0.2) !important;
+            border-left: 3px solid #ffc107 !important;
+            animation: duplicatePulse 2s ease-in-out;
+        }
+    
+        @keyframes duplicatePulse {
+            0% { background-color: rgba(255, 193, 7, 0.2); }
+            50% { background-color: rgba(255, 193, 7, 0.4); }
+            100% { background-color: rgba(255, 193, 7, 0.2); }
+        }
+    
+        .duplicate-cell {
+            background-color: rgba(255, 193, 7, 0.4) !important;
+            border: 2px solid #ffc107 !important;
+            position: relative;
+        }
+    
+        .duplicate-cell::after {
+            content: "مكرر";
+            position: absolute;
+            top: 2px;
+            left: 5px;
+            background-color: #ffc107;
+            color: #856404;
+            font-size: 10px;
+            padding: 1px 4px;
+            border-radius: 3px;
+            z-index: 100;
+            font-weight: bold;
+        }
+    
+        .duplicate-warning {
+            position: absolute;
+            top: 2px;
+            left: 5px;
+            background-color: #ffc107;
+            color: #856404;
+            font-size: 10px;
+            padding: 2px 5px;
+            border-radius: 3px;
+            z-index: 100;
+            animation: warningPulse 1.5s infinite;
+        }
+    
+        @keyframes warningPulse {
+            0% { opacity: 0.7; }
+            50% { opacity: 1; }
+            100% { opacity: 0.7; }
+        }
+    
+        /* Cell Changed State */
+        .cell-changed .combined-search-cell .select2-selection {
+            background-color: rgba(245, 158, 11, 0.05) !important;
+            border: 2px solid #f59e0b !important;
+            border-radius: 4px !important;
+        }
+    
+        /* Button Styles */
+        .btn-primary {
+            background: var(--gradient-primary);
+            border: none;
+            border-radius: 15px;
+            padding: 12px 30px;
+            font-weight: 600;
+            transition: all 0.3s ease;
+            box-shadow: 0 4px 15px rgba(16, 185, 129, 0.3);
+        }
+    
+        .btn-primary:hover {
+            transform: translateY(-3px);
+            box-shadow: 0 8px 25px rgba(16, 185, 129, 0.4);
+        }
+    
+        .btn-success {
+            background: var(--gradient-secondary);
+            border: none;
+            border-radius: 15px;
+            padding: 12px 30px;
+            font-weight: 600;
+            transition: all 0.3s ease;
+            box-shadow: 0 4px 15px rgba(52, 211, 153, 0.3);
+        }
+    
+        .btn-success:hover {
+            transform: translateY(-3px);
+            box-shadow: 0 8px 25px rgba(52, 211, 153, 0.4);
+        }
+    
+        .btn-outline-warning {
+            color: #f59e0b;
+            border-color: #f59e0b;
+        }
+    
+        .btn-outline-warning:hover {
+            background-color: #f59e0b;
+            border-color: #f59e0b;
+            color: white;
+        }
+    
+        /* Card Styles */
+        .card-header {
+            border-radius: 20px 20px 0 0 !important;
+            border-bottom: 2px solid rgba(255, 255, 255, 0.1);
+            padding: 20px 25px;
+        }
+    
+        .card-header-primary {
+            background: var(--gradient-primary);
+            color: white;
+        }
+    
+        /* Loading Overlay */
+        .loading-overlay {
+            position: fixed;
+            top: 0;
+            left: 0;
+            width: 100%;
+            height: 100%;
+            background: rgba(0, 0, 0, 0.5);
+            display: flex;
+            justify-content: center;
+            align-items: center;
+            z-index: 9999;
+            display: none;
+        }
+    
+        .loading-spinner {
+            color: white;
+            font-size: 24px;
+            background: var(--gradient-primary);
+            padding: 20px 30px;
+            border-radius: 15px;
+            box-shadow: 0 10px 30px rgba(0, 0, 0, 0.3);
+        }
+    
+        /* Empty State */
+        .empty-state {
+            text-align: center;
+            padding: 40px 20px;
+            color: #6c757d;
+        }
+    
+        /* Random Fill Styles */
+        .random-fill-option {
+            border-left: 3px solid #f59e0b;
+            background-color: rgba(245, 158, 11, 0.05);
+        }
+    
+        .random-filled {
+            background-color: rgba(245, 158, 11, 0.1) !important;
+            border: 1px dashed #f59e0b !important;
+        }
+    
+        /* Mobile Responsive */
+        @media (max-width: 992px) {
+            :root {
+                --header-height: 100px;
+            }
+    
+            .unified-nav {
+                height: auto;
+                min-height: var(--header-height);
+            }
+    
+            .unified-nav-container {
+                padding: 0.5rem;
+            }
+    
+            .nav-top-section {
+                height: 60px;
+                flex-wrap: nowrap;
+                padding: 0;
+            }
+    
+            .nav-brand-section {
+                order: 1;
+                width: auto;
+                flex: 0 0 auto;
+            }
+    
+            .welcome-section {
+                order: 2;
+                flex: 1;
+                justify-content: flex-start;
+                padding: 0 0.5rem;
+                display: none;
+            }
+    
+            .nav-user-section {
+                order: 3;
+                width: auto;
+                flex: 0 0 auto;
+                justify-content: flex-end;
+            }
+    
+            .nav-bottom-section {
+                display: none;
+            }
+    
+            .mobile-menu-btn {
+                display: flex;
+            }
+    
+            .welcome-content h4 {
+                font-size: 0.9rem;
+            }
+    
+            .welcome-content p {
+                display: none;
+            }
+    
+            #live-clock {
+                display: none;
+            }
+    
+            body {
+                padding-top: var(--header-height);
+            }
+    
+            .nav-controls, .nav-controls-right {
+                display: none;
+            }
+    
+            .nav-user-section .dropdown .btn {
+                padding: 0.3rem 0.6rem;
+            }
+    
+            .user-avatar {
+                width: 32px;
+                height: 32px;
+                font-size: 0.9rem;
+                margin-left: 0.3rem;
+            }
+    
+            .nav-brand-section .d-none.d-md-block {
+                display: none !important;
+            }
+        }
+    
+        @media (max-width: 768px) {
+            :root {
+                --header-height: 80px;
+            }
+    
+            .nav-top-section {
+                height: 50px;
+            }
+    
+            .logo-container {
+                width: 35px;
+                height: 35px;
+            }
+    
+            .logo-container i {
+                font-size: 1rem;
+            }
+    
+            .user-avatar {
+                width: 32px;
+                height: 32px;
+                font-size: 0.9rem;
+            }
+    
+            .mobile-menu-btn {
+                width: 35px;
+                height: 35px;
+            }
+    
+            .notification-badge {
+                font-size: 0.6rem;
+                top: -3px;
+                right: -3px;
+            }
+    
+            .excel-grid {
+                font-size: 12px;
+            }
+    
+            .excel-table th,
+            .excel-table td {
+                padding: 6px 4px;
+            }
+        }
+    
+        @media (max-width: 576px) {
+            :root {
+                --header-height: 70px;
+            }
+    
+            .nav-top-section {
+                height: 45px;
+            }
+    
+            .logo-container {
+                width: 30px;
+                height: 30px;
+                margin-left: 0.3rem;
+            }
+    
+            .user-avatar {
+                width: 28px;
+                height: 28px;
+                font-size: 0.8rem;
+            }
+    
+            .notification-badge {
+                font-size: 0.6rem;
+                top: -3px;
+                right: -3px;
+            }
+    
+            .btn {
+                padding: 0.3rem 0.6rem;
+                font-size: 0.8rem;
+            }
+    
+            .mobile-menu-btn {
+                width: 32px;
+                height: 32px;
+                margin-right: 0.3rem;
+            }
+    
+            .nav-user-section .dropdown .btn {
+                padding: 0.2rem 0.5rem;
+            }
+    
+            .dropdown .btn-outline-light {
+                font-size: 0.75rem;
+            }
+        }
+    </style>
+</head>
+<body>
+    
+    <!-- Unified Navigation Bar -->
+    <nav class="unified-nav">
+        <div class="unified-nav-container">
+            <!-- Top Section: Brand, Welcome, User -->
+            <div class="nav-top-section">
+                <!-- Brand Section -->
+                <div class="nav-brand-section">
+                    <div class="logo-container">
+                        <i class="bi bi-person-gear text-white"></i>
+                    </div>
+                    <div class="d-none d-md-block ms-2">
+                        <h6 class="text-white mb-0 fw-bold text-truncate">نظام الموارد البشرية</h6>
+                        <small class="text-white-50">لوحة المدير</small>
+                    </div>
+                </div>
+                
+                <!-- Welcome Section - Hidden on mobile -->
+                <div class="welcome-section d-none d-lg-flex">
+                    <div class="welcome-content">
+                        <h4 class="text-white mb-1 text-truncate">مرحباً، {{ current_user.name if current_user else 'المدير' }}</h4>
+                        <p class="text-white-50 mb-0 text-truncate">نظام الموارد البشرية - لوحة تحكم المدير</p>
+                    </div>
+                    <div class="text-white fw-bold me-3" id="live-clock">
+                        <i class="bi bi-clock me-2"></i>
+                        جاري التحميل...
+                    </div>
+                </div>
+                
+                <!-- User Section -->
+                <div class="nav-user-section">
+                    <!-- Notifications -->
+                    <div class="dropdown me-2">
+                        <button class="btn btn-light position-relative rounded-pill" 
+                                type="button" data-bs-toggle="dropdown" 
+                                style="padding: 0.4rem 0.8rem; border: 1px solid rgba(255, 255, 255, 0.3); background: rgba(255, 255, 255, 0.15); color: white;">
+                            <i class="bi bi-bell"></i>
+                            {% if notifications and notifications|length > 0 %}
+                            <span class="notification-badge badge">{{ notifications|length }}</span>
+                            {% endif %}
+                        </button>
+                        <ul class="dropdown-menu dropdown-menu-end">
+                            {% if notifications and notifications|length > 0 %}
+                                {% for notification in notifications[:3] %}
+                                <li>
+                                    <a class="dropdown-item" href="#">
+                                        <div class="d-flex align-items-start">
+                                            <div class="bg-success bg-opacity-10 rounded-circle p-2 me-3">
+                                                <i class="bi bi-bell text-success"></i>
+                                            </div>
+                                            <div>
+                                                <strong class="d-block text-dark">{{ notification.title }}</strong>
+                                                <small class="text-muted">{{ notification.message|truncate(30) }}</small>
+                                            </div>
+                                        </div>
+                                    </a>
+                                </li>
+                                {% endfor %}
+                                <li><hr class="dropdown-divider my-2"></li>
+                            {% else %}
+                                <li>
+                                    <a class="dropdown-item text-muted text-center" href="#">
+                                        <i class="bi bi-bell-slash fs-4 d-block mb-2 text-success"></i>
+                                        لا توجد إشعارات جديدة
+                                    </a>
+                                </li>
+                                <li><hr class="dropdown-divider my-2"></li>
+                            {% endif %}
+                            <li>
+                                <a class="dropdown-item text-center text-success fw-bold" href="#">
+                                    <i class="bi bi-arrow-left me-2"></i>
+                                    عرض جميع الإشعارات
+                                </a>
+                            </li>
+                        </ul>
+                    </div>
+                    
+                    <!-- User Menu -->
+                    <div class="dropdown">
+                        <button class="btn btn-outline-light dropdown-toggle rounded-pill d-flex align-items-center" 
+                                type="button" data-bs-toggle="dropdown"
+                                style="padding: 0.4rem 0.9rem; border: 1px solid rgba(255, 255, 255, 0.4);">
+                            <div class="user-avatar me-2">
+                                {{ current_user.name[0] if current_user else 'م' }}
+                            </div>
+                            <span class="d-none d-md-inline text-truncate" style="max-width: 80px;">{{ current_user.username if current_user else 'مدير' }}</span>
+                        </button>
+                        <ul class="dropdown-menu dropdown-menu-end">
+                            <li>
+                                <a class="dropdown-item" href="#">
+                                    <i class="bi bi-bell me-2 text-success"></i>الإشعارات
+                                </a>
+                            </li>
+                            <li>
+                                <a class="dropdown-item" href="#">
+                                    <i class="bi bi-key me-2 text-success"></i>تغير كلمة المرور
+                                </a>
+                            </li>
+                            <li><hr class="dropdown-divider my-2"></li>
+                            <li>
+                                <a class="dropdown-item text-danger fw-bold" href="{{ url_for('logout') }}">
+                                    <i class="bi bi-box-arrow-right me-2"></i>تسجيل الخروج
+                                </a>
+                            </li>
+                        </ul>
+                    </div>
+                    
+                    <!-- Mobile Menu Button -->
+                    <button class="mobile-menu-btn d-lg-none" id="mobileMenuBtn">
+                        <i class="bi bi-list"></i>
+                    </button>
+                </div>
+            </div>
+            
+            <!-- Bottom Section: Navigation Menu - Hidden on mobile -->
+            <!-- Bottom Section: Navigation Menu - Hidden on mobile -->
+            <div class="nav-bottom-section d-none d-lg-flex">
+                <div class="nav-controls"></div>
+                
+                <div class="nav-menu-section">
+                    <div class="nav-menu-wrapper">
+                        <a class="nav-link" href="{{ url_for('manager_dashboard') }}">
+                            <i class="bi bi-speedometer2 me-2"></i>
+                            لوحة التحكم
+                        </a>
+                        <a class="nav-link" href="{{ url_for('manager_employees') }}">
+                            <i class="bi bi-people me-2"></i>
+                            موظفي القسم
+                        </a>
+                        <a class="nav-link active" href="{{ url_for('manager_schedules') }}">
+                            <i class="bi bi-calendar-check me-2"></i>
+                            جدولة الموظفين
+                        </a>
+                        <a class="nav-link nav-link-with-badge" href="{{ url_for('messages_inbox') }}">
+                            <i class="bi bi-envelope me-2"></i>
+                            الرسائل
+                            {% if unread_count and unread_count > 0 %}
+                            <span class="nav-badge">{{ unread_count }}</span>
+                            {% endif %}
+                        </a>
+                        <a class="nav-link nav-link-with-badge" href="{{ url_for('manager_leave_requests') }}">
+                            <i class="bi bi-calendar-minus me-2"></i>
+                            طلبات الإجازات
+                            {% if stats and stats.pending_leaves > 0 %}
+                            <span class="nav-badge">{{ stats.pending_leaves }}</span>
+                            {% endif %}
+                        </a>
+                        <a class="nav-link nav-link-with-badge" href="{{ url_for('manager_permission_requests') }}">
+                            <i class="bi bi-clock me-2"></i>
+                            طلبات الإذونات
+                            {% if stats and stats.pending_permissions > 0 %}
+                            <span class="nav-badge">{{ stats.pending_permissions }}</span>
+                            {% endif %}
+                        </a>
+                        <a class="nav-link nav-link-with-badge" href="{{ url_for('user_salary_slips') }}">
+                            <i class="bi bi-file-earmark-text me-2"></i>
+                            شيت المرتب
+                            {% if new_salary_slips and new_salary_slips > 0 %}
+                            <span class="nav-badge">{{ new_salary_slips }}</span>
+                            {% endif %}
+                        </a>
+                        <a class="nav-link nav-link-with-badge" href="{{ url_for('manager_advance_requests') }}">
+                            <i class="bi bi-cash-coin me-2"></i>
+                            طلبات السلف
+                            {% if stats and stats.pending_advances > 0 %}
+                            <span class="nav-badge">{{ stats.pending_advances }}</span>
+                            {% endif %}
+                        </a>
+                        <a class="nav-link" href="{{ url_for('manager_rewards_penalties') }}">
+                            <i class="bi bi-award me-2"></i>
+                            المكافآت والخصومات
+                        </a>
+                        <a class="nav-link" href="{{ url_for('manager_excel_data') }}">
+                            <i class="fas fa-file-excel me-2"></i>
+                            الحضور والانصراف
+                        </a>
+                        {% if current_user and current_user.is_admin %}
+                        <a class="nav-link text-warning" href="{{ url_for('admin_dashboard') }}">
+                            <i class="bi bi-person-shield me-2"></i>
+                            لوحة المسؤول
+                        </a>
+                        {% endif %}
+                    </div>
+                </div>
+                
+                <div class="nav-controls-right"></div>
+            </div>
+        </div>
+    </nav>
+
+    <!-- Mobile Navigation Menu -->
+    <!-- Mobile Navigation Menu -->
+    <div class="mobile-nav-menu" id="mobileNavMenu">
+        <a class="mobile-nav-link" href="{{ url_for('manager_dashboard') }}">
+            <i class="bi bi-speedometer2"></i>
+            لوحة التحكم
+        </a>
+        <a class="mobile-nav-link" href="{{ url_for('manager_employees') }}">
+            <i class="bi bi-people"></i>
+            موظفي القسم
+        </a>
+        <a class="mobile-nav-link active" href="{{ url_for('manager_schedules') }}">
+            <i class="bi bi-calendar-check"></i>
+            جدولة الموظفين
+        </a>
+        <a class="mobile-nav-link nav-link-with-badge" href="{{ url_for('messages_inbox') }}">
+            <i class="bi bi-envelope"></i>
+            الرسائل
+            {% if unread_count and unread_count > 0 %}
+            <span class="nav-badge">{{ unread_count }}</span>
+            {% endif %}
+        </a>
+        <a class="mobile-nav-link" href="{{ url_for('manager_leave_requests') }}">
+            <i class="bi bi-calendar-minus"></i>
+            طلبات الإجازات
+            {% if stats and stats.pending_leaves > 0 %}
+            <span class="nav-badge">{{ stats.pending_leaves }}</span>
+            {% endif %}
+        </a>
+        <a class="mobile-nav-link" href="{{ url_for('manager_permission_requests') }}">
+            <i class="bi bi-clock"></i>
+            طلبات الإذونات
+            {% if stats and stats.pending_permissions > 0 %}
+            <span class="nav-badge">{{ stats.pending_permissions }}</span>
+            {% endif %}
+        </a>
+        <a class="mobile-nav-link" href="{{ url_for('user_salary_slips') }}">
+            <i class="bi bi-file-earmark-text"></i>
+            شيت المرتب
+            {% if new_salary_slips and new_salary_slips > 0 %}
+            <span class="nav-badge">{{ new_salary_slips }}</span>
+            {% endif %}
+        </a>
+        <a class="mobile-nav-link" href="{{ url_for('manager_advance_requests') }}">
+            <i class="bi bi-cash-coin"></i>
+            طلبات السلف
+            {% if stats and stats.pending_advances > 0 %}
+            <span class="nav-badge">{{ stats.pending_advances }}</span>
+            {% endif %}
+        </a>
+        <a class="mobile-nav-link" href="{{ url_for('manager_rewards_penalties') }}">
+            <i class="bi bi-award"></i>
+            المكافآت والخصومات
+        </a>
+        <a class="mobile-nav-link" href="{{ url_for('manager_excel_data') }}">
+            <i class="fas fa-file-excel me-2"></i>
+            الحضور والانصراف
+        </a>
+        {% if current_user and current_user.is_admin %}
+        <a class="mobile-nav-link text-warning" href="{{ url_for('admin_dashboard') }}">
+            <i class="bi bi-person-shield"></i>
+            لوحة المسؤول
+        </a>
+        {% endif %}
+    </div>
+
+    <!-- Flash Notifications Container -->
+    <div class="notification-container">
+        {% with messages = get_flashed_messages(with_categories=true) %}
+            {% if messages %}
+                {% for category, message in messages %}
+                    <div class="alert alert-{{ category if category in ['success', 'danger', 'warning', 'info'] else 'info' }} alert-dismissible fade show mb-2" role="alert">
+                        <i class="bi bi-{{ 'check-circle' if category == 'success' else 'exclamation-triangle' if category == 'danger' else 'info-circle' if category == 'info' else 'exclamation-circle' }} me-2"></i>
+                        {{ message }}
+                        <button type="button" class="btn-close" data-bs-dismiss="alert" aria-label="Close"></button>
+                    </div>
+                {% endfor %}
+            {% endif %}
+        {% endwith %}
+    </div>
+
+    <!-- Loading Overlay -->
+    <div class="loading-overlay" id="loadingOverlay">
+        <div class="loading-spinner">
+            <i class="bi bi-arrow-repeat me-2"></i>جاري الحفظ...
+        </div>
+    </div>
+
+    <div class="schedule-container">
+        <!-- Flash Messages -->
+        {% with messages = get_flashed_messages() %}
+            {% if messages %}
+                <div class="alert-container">
+                    {% for message in messages %}
+                        <div class="alert alert-success alert-dismissible fade show" role="alert">
+                            <i class="bi bi-check-circle me-2"></i>{{ message }}
+                            <button type="button" class="btn-close" data-bs-dismiss="alert"></button>
+                        </div>
+                    {% endfor %}
+                </div>
+            {% endif %}
+        {% endwith %}
+
+        <div class="row">
+            <!-- Left Sidebar - Controls -->
+            <div class="col-lg-12">
+                <div class="card border shadow-sm">
+                    <div class="card-header bg-success text-white py-2">
+                        <div class="d-flex align-items-center justify-content-between">
+                            <h4 class="h4 fw-bold mb-2">
+                                <i class="bi bi-calendar-week me-3"></i>
+                                الجدول الاسبوعي - {{ schedule.department.name }}
+                            </h4>
+                            <p class="mb-0 opacity-75">
+                                {{ schedule.week_start_date.strftime('%Y-%m-%d') }} إلى {{ schedule.week_end_date.strftime('%Y-%m-%d') }}
+                            </p>
+                            <button type="button" onclick="downloadAsExcel()" class="btn btn-success btn-sm" style="background-color: #217346; border-color: #1a5c38;">
+                                <i class="bi bi-file-earmark-excel me-1"></i>
+                                Excel
+                            </button>
+                        </div>
+                    </div>
+                    
+                    <div class="card-body p-3">
+                        <div class="row g-3">
+                            <!-- Move the buttons column to the left -->
+                            <div class="col-lg-6">
+                                {% if not schedule.is_locked and not schedule.is_approved %}
+                                <div class="d-flex gap-1">
+                                    <button type="button" class="btn btn-sm btn-primary px-6" onclick="saveAsDraft()">
+                                        <i class="bi bi-save me-1"></i>
+                                        حفظ التغييرات
+                                    </button>
+                                    <button type="button" class="btn btn-sm btn-success px-6" onclick="submitForApproval()">
+                                        <i class="bi bi-send-check me-1"></i>
+                                        إرسال الاسبوع
+                                    </button>
+                                </div>
+                                {% endif %}
+                            </div>
+                            
+                            <!-- Move the actions column to the right -->
+                            <div class="col-lg-6">
+                                <div>
+                                    <div class="d-flex gap-2">
+                                        <button type="button" class="btn btn-outline-primary btn-sm flex-fill" id="repopulateFromAnotherBtn">
+                                            <i class="bi bi-arrow-clockwise me-1"></i>
+                                            إعادة الملء من اسبوع الي آخر
+                                        </button>
+                                        <button type="button" class="btn btn-outline-success btn-sm flex-fill" onclick="addNewRow()">
+                                            <i class="bi bi-plus-circle me-1"></i>
+                                            إضافة سطر
+                                        </button>
+                                        <button type="button" class="btn btn-outline-warning btn-sm flex-fill" onclick="showEnhancedRandomFillModal()">
+                                            <i class="bi bi-shuffle me-1"></i>
+                                            إعادة الملء من يوم الي آخر
+                                        </button>
+                                    </div>
+                                </div>
+                            </div>
+                            
+                            <!-- Rest of your code remains the same -->
+                            <!-- Day Filters -->
+                            <div class="col-lg-6">
+                                <div class="mb-2">
+                                    <small class="fw-bold text-success d-block mb-1">
+                                        <i class="bi bi-filter me-1"></i>
+                                        فلترة الأيام
+                                    </small>
+                                    <div id="dayFilters" class="d-flex flex-wrap gap-1">
+                                        <!-- Day filters will be added here dynamically -->
+                                    </div>
+                                </div>
+                            </div>
+                            
+                            <!-- Job Filter -->
+                            <div class="col-lg-6">
+                                <div class="mb-2">
+                                    <small class="fw-bold text-success d-block mb-1">
+                                        <i class="bi bi-person-badge me-1"></i>
+                                        فلترة الوظائف
+                                    </small>
+                                    <select class="form-select form-select-sm" id="jobFilter">
+                                        <option value="">جميع الوظائف</option>
+                                        <!-- Job options will be added dynamically -->
+                                    </select>
+                                </div>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+            </div>  
+
+            <!-- Main Content - Excel Grid -->
+            <div class="col-lg-12">
+                <div class="border rounded p-2 mb-3 bg-light">
+                    <div class="card-body p-0">
+                        <!-- Excel Grid -->
+                        <div class="excel-grid" id="excelGrid">
+                            <table class="excel-table" id="excelTable">
+                                <thead>
+                                    <tr>
+                                        <th>الوظيفة</th>
+                                        <th>اليوم</th>
+                                        <th>التاريخ</th>
+                                        <th>الصباحي</th>
+                                        <th>المسائي</th>
+                                        <th>السهر</th>
+                                        <th>الإجراءات</th>
+                                    </tr>
+                                </thead>
+                                <tbody id="tableBody">
+                                    {% set today_str = today.strftime('%Y-%m-%d') %}
+                                    
+                                    {% for day_key, day_data in details_by_day.items() %}
+                                        {% set day_date = day_data.date %}
+                                        {% set day_date_str = day_date.strftime('%Y-%m-%d') %}
+                                        {% set is_today = (day_date_str == today_str) %}
+                                        
+                                        {% for detail in day_data.details %}
+                                        <tr class="schedule-row {% if is_today %}today-row{% endif %}"
+                                            data-job="{{ detail.job_title }}"
+                                            data-day="{{ day_data.day_name }}"
+                                            data-date="{{ day_date_str }}"
+                                            data-detail-id="{{ detail.id }}"
+                                            data-row-index="{{ loop.index }}">
+                                            
+                                            <!-- Job Column -->
+                                            <td class="job-column">
+                                                <div class="job-title-wrapper">
+                                                    <input type="text" 
+                                                           class="form-control form-control-sm border-0 text-center job-input" 
+                                                           value="{{ detail.job_title }}" 
+                                                           readonly
+                                                           title="{{ detail.job_title }}">
+                                                </div>
+                                            </td>
+                                            
+                                            <!-- Day Column -->
+                                            <td class="day-cell" title="{{ day_data.day_name }}">
+                                                <span class="day-text">{{ day_data.day_name }}</span>
+                                            </td>
+                                            
+                                            <!-- Date Column -->
+                                            <td class="date-cell" title="{{ day_date_str }}">
+                                                <span class="date-text">{{ day_date_str }}</span>
+                                            </td>
+                                            
+                                            <!-- Morning Shift Column with Combined Search -->
+                                            <td class="shift-column morning-shift" data-shift-type="morning">
+                                                <div class="combined-search-cell">
+                                                    <select name="shift_{{ detail.id }}_morning" 
+                                                            class="employee-combined-select"
+                                                            data-original="{{ detail.morning_shift or '' }}"
+                                                            data-detail-id="{{ detail.id }}"
+                                                            data-shift="morning"
+                                                            title="اكتب للبحث أو اختر موظف للشيفت الصباحي">
+                                                        <option value=""></option>
+                                                        {% if department_employees %}
+                                                            {% for employee in department_employees %}
+                                                            <option value="{{ employee.name }}" 
+                                                                    {% if detail.morning_shift == employee.name %}selected{% endif %}
+                                                                    data-employee-id="{{ employee.id }}">
+                                                                {{ employee.name }}
+                                                            </option>
+                                                            {% endfor %}
+                                                        {% endif %}
+                                                    </select>
+                                                </div>
+                                            </td>
+                                            
+                                            <!-- Evening Shift Column with Combined Search -->
+                                            <td class="shift-column evening-shift" data-shift-type="evening">
+                                                <div class="combined-search-cell">
+                                                    <select name="shift_{{ detail.id }}_evening" 
+                                                            class="employee-combined-select"
+                                                            data-original="{{ detail.evening_shift or '' }}"
+                                                            data-detail-id="{{ detail.id }}"
+                                                            data-shift="evening"
+                                                            title="اكتب للبحث أو اختر موظف للشيفت المسائي">
+                                                        <option value=""></option>
+                                                        {% if department_employees %}
+                                                            {% for employee in department_employees %}
+                                                            <option value="{{ employee.name }}" 
+                                                                    {% if detail.evening_shift == employee.name %}selected{% endif %}
+                                                                    data-employee-id="{{ employee.id }}">
+                                                                {{ employee.name }}
+                                                            </option>
+                                                            {% endfor %}
+                                                        {% endif %}
+                                                    </select>
+                                                </div>
+                                            </td>
+                                            
+                                            <!-- Night Shift Column with Combined Search -->
+                                            <td class="shift-column night-shift" data-shift-type="night">
+                                                <div class="combined-search-cell">
+                                                    <select name="shift_{{ detail.id }}_night" 
+                                                            class="employee-combined-select"
+                                                            data-original="{{ detail.night_shift or '' }}"
+                                                            data-detail-id="{{ detail.id }}"
+                                                            data-shift="night"
+                                                            title="اكتب للبحث أو اختر موظف للشيفت الليلي">
+                                                        <option value=""></option>
+                                                        {% if department_employees %}
+                                                            {% for employee in department_employees %}
+                                                            <option value="{{ employee.name }}" 
+                                                                    {% if detail.night_shift == employee.name %}selected{% endif %}
+                                                                    data-employee-id="{{ employee.id }}">
+                                                                {{ employee.name }}
+                                                            </option>
+                                                            {% endfor %}
+                                                        {% endif %}
+                                                    </select>
+                                                </div>
+                                            </td>
+                                            
+                                            <!-- Actions Column -->
+                                            <!-- Actions Column -->
+                                            <!-- Actions Column -->
+                                            <td class="actions-column">
+                                                {% if not schedule.is_locked and not schedule.is_approved %}
+                                                <div class="action-buttons d-flex gap-1">
+                                                    <!-- زر الحذف - يظهر فقط إذا لم يكن اليوم مقفلاً -->
+                                                    <button type="button" 
+                                                            class="btn btn-sm btn-danger remove-row-btn" 
+                                                            onclick="removeExistingRow({{ detail.id }})" 
+                                                            title="حذف هذا الصف"
+                                                            data-detail-id="{{ detail.id }}"
+                                                            style="display: {% if day_date_str in approved_days %}none{% else %}block{% endif %};">
+                                                        <i class="bi bi-trash"></i>
+                                                        <span class="btn-text">حذف</span>
+                                                    </button>
+
+                                                    {% if loop.index == 1 %}
+                                                    <button type="button" 
+                                                            class="btn btn-sm btn-success approve-day-btn" 
+                                                            onclick="approveDay('{{ day_date_str }}', this)" 
+                                                            title="ارسال اليوم وجميع الصفوف في هذا التاريخ"
+                                                            data-date="{{ day_date_str }}">
+                                                        <i class="bi bi-check-circle"></i>
+                                                        <span class="btn-text">ارسال اليوم</span>
+                                                    </button>
+                                                    {% endif %}
+                                                </div>
+                                                {% else %}
+                                                <!-- حالة الجدول المقفل بالكامل -->
+                                                <span class="badge bg-secondary">
+                                                    <i class="bi bi-lock me-1"></i>مقفل
+                                                </span>
+                                                {% endif %}
+                                            </td>
+
+
+
+                                        </tr>
+                                        {% endfor %}
+                                    {% endfor %}
+                                    
+                                </tbody>
+                            </table>
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </div>
+
+    <!-- Quick Fill Modal -->
+    <div class="modal fade" id="quickFillModal" tabindex="-1">
+        <div class="modal-dialog">
+            <div class="modal-content">
+                <div class="modal-header">
+                    <h5 class="modal-title">
+                        <i class="bi bi-magic me-2"></i>
+                        التعبئة السريعة
+                    </h5>
+                    <button type="button" class="btn-close" data-bs-dismiss="modal"></button>
+                </div>
+                <div class="modal-body">
+                    <div class="mb-3">
+                        <label class="form-label">اختر الشيفت الافتراضي:</label>
+                        <select class="form-select" id="defaultShift">
+                            <option value="morning">شيفت صباحي</option>
+                            <option value="evening">شيفت مسائي</option>
+                            <option value="night">شيفت ليلي</option>
+                            <option value="vacation">إجازة</option>
+                        </select>
+                    </div>
+                </div>
+                <div class="modal-footer">
+                    <button type="button" class="btn btn-secondary" data-bs-dismiss="modal">
+                        <i class="bi bi-x-circle me-2"></i>
+                        إلغاء
+                    </button>
+                    <button type="button" class="btn btn-primary" onclick="applyQuickFill()">
+                        <i class="bi bi-check-circle me-2"></i>
+                        تطبيق
+                    </button>
+                </div>
+            </div>
+        </div>
+    </div>
+
+    <!-- Random Fill Modal -->
+    <div class="modal fade" id="randomFillModal" tabindex="-1">
+        <div class="modal-dialog">
+            <div class="modal-content">
+                <div class="modal-header">
+                    <h5 class="modal-title">
+                        <i class="bi bi-shuffle me-2"></i>
+                        التعبئة العشوائية
+                    </h5>
+                    <button type="button" class="btn-close" data-bs-dismiss="modal"></button>
+                </div>
+                <div class="modal-body">
+                    <div class="mb-3">
+                        <label class="form-label fw-bold">اختر اليوم المصدر:</label>
+                        <select class="form-select mb-3" id="sourceDay">
+                            <option value="">اختر اليوم</option>
+                            {% for wd in week_dates %}
+                            <option value="{{ wd.date_str }}" data-day-name="{{ wd.day_name }}">
+                                {{ wd.day_name }} ({{ wd.date_str }})
+                            </option>
+                            {% endfor %}
+                        </select>
+                    </div>
+                    
+                    <div class="mb-3">
+                        <label class="form-label fw-bold">نطاق التطبيق:</label>
+                        <div class="form-check mb-2">
+                            <input class="form-check-input" type="radio" name="applyRange" id="applySameDay" value="same_day" checked>
+                            <label class="form-check-label" for="applySameDay">
+                                تطبيق في نفس اليوم فقط
+                            </label>
+                        </div>
+                        <div class="form-check">
+                            <input class="form-check-input" type="radio" name="applyRange" id="applyAllDays" value="all_days">
+                            <label class="form-check-label" for="applyAllDays">
+                                تطبيق على جميع أيام الأسبوع
+                            </label>
+                        </div>
+                    </div>
+                    
+                    <div class="alert alert-info">
+                        <i class="bi bi-info-circle me-2"></i>
+                        سيتم نسخ نفس الموظفين في نفس الوظائف من اليوم المحدد.
+                    </div>
+                </div>
+                <div class="modal-footer">
+                    <button type="button" class="btn btn-secondary" data-bs-dismiss="modal">
+                        <i class="bi bi-x-circle me-2"></i>
+                        إلغاء
+                    </button>
+                    <button type="button" class="btn btn-primary" onclick="applyRandomFill()">
+                        <i class="bi bi-check-circle me-2"></i>
+                        تطبيق التعبئة
+                    </button>
+                </div>
+            </div>
+        </div>
+    </div>
+
+    <!-- Modal لإعادة الملء -->
+    <div class="modal fade" id="repopulateModal" tabindex="-1" aria-labelledby="repopulateModalLabel" aria-hidden="true">
+        <div class="modal-dialog modal-lg">
+            <div class="modal-content">
+                <div class="modal-header">
+                    <h5 class="modal-title" id="repopulateModalLabel">
+                        <i class="bi bi-copy me-2"></i> إعادة ملء الجدول من جدول آخر
+                    </h5>
+                    <button type="button" class="btn-close" data-bs-dismiss="modal" aria-label="Close"></button>
+                </div>
+                <div class="modal-body">
+                    <div class="alert alert-info">
+                        <i class="bi bi-info-circle me-2"></i> سيتم حذف جميع الصفوف المضافة يدوياً واستبدالها ببيانات الجدول المحدد.
+                    </div>
+                    
+                    <div class="mb-3">
+                        <label for="sourceScheduleSelect" class="form-label">اختر الجدول المصدر:</label>
+                        <select id="sourceScheduleSelect" class="form-select">
+                            <option value="">جاري تحميل الجداول...</option>
+                        </select>
+                        <div class="form-text">اختر جدولاً مقفلاً لنسخ موظفيه إلى هذا الجدول</div>
+                    </div>
+                    
+                    <div id="sourceScheduleInfo" class="card" style="display: none;">
+                        <div class="card-body">
+                            <h6>معلومات الجدول المصدر:</h6>
+                            <p id="sourceScheduleDetails"></p>
+                            <div class="alert alert-warning">
+                                <i class="bi bi-exclamation-triangle me-2"></i> 
+                                <strong>تحذير:</strong> سيتم حذف جميع الصفوف المضافة يدوياً في هذا الجدول واستبدالها ببيانات الجدول المحدد.
+                            </div>
+                        </div>
+                    </div>
+                </div>
+                <div class="modal-footer">
+                    <button type="button" class="btn btn-secondary" data-bs-dismiss="modal">إلغاء</button>
+                    <button type="button" class="btn btn-primary" id="confirmRepopulateBtn" disabled>
+                        <i class="bi bi-check me-2"></i> تأكيد إعادة الملء
+                    </button>
+                </div>
+            </div>
+        </div>
+    </div>
+    
+
+    <!-- JS في نهاية BODY -->
+    <script src="/static/js/jquery-3.6.0.min.js"></script>
+    <script src="/static/js/bootstrap.bundle.min.js"></script>
+    <script src="/static/js/select2.min.js"></script>
+    <script src="/static/js/sweetalert2.min.js"></script>
+    
+    <script>
+        /* ===========================================
+           GLOBAL VARIABLES AND CONSTANTS
+           =========================================== */
+        let changesMade = false;
+        let changeCount = 0;
+        let selectedDays = new Set();
+        let availableJobs = new Set();
+        let activeSelect2 = null;
+        
+        // Employees data from backend
+        const departmentEmployees = {{ department_employees|tojson|safe if department_employees else '[]' }};
+        
+        // Get week days from Python backend
+        const weekDaysArabic = [
+            {% for wd in week_dates %}
+            "{{ wd.day_name }}",
+            {% endfor %}
+        ];
+        
+        const weekDates = [
+            {% for wd in week_dates %}
+            {
+                date: "{{ wd.date_str }}",
+                day_name: "{{ wd.day_name }}",
+                day_index: {{ wd.day_index }}
+            },
+            {% endfor %}
+        ];
+    
+        /* ===========================================
+           CORE UTILITY FUNCTIONS
+           =========================================== */
+    
+        /**
+         * Display alert messages
+         */
+        function showAlert(message, type = 'success') {
+            // Remove existing alerts
+            $('.alert').remove();
+            
+            // Create new alert
+            const alertHTML = `
+                <div class="alert alert-${type} alert-dismissible fade show position-fixed top-0 end-0 m-3" 
+                     role="alert" style="z-index: 99999; max-width: 400px;">
+                    <div class="d-flex align-items-center">
+                        <i class="bi bi-${type === 'success' ? 'check-circle' : 
+                                          type === 'danger' ? 'exclamation-triangle' : 
+                                          type === 'warning' ? 'exclamation-circle' : 
+                                          'info-circle'} me-2 fs-5"></i>
+                        <div class="flex-grow-1">${message}</div>
+                        <button type="button" class="btn-close" data-bs-dismiss="alert"></button>
+                    </div>
+                </div>
+            `;
+            
+            $('body').append(alertHTML);
+            
+            // Auto-remove after 5 seconds
+            setTimeout(() => {
+                $('.alert').alert('close');
+            }, 5000);
+        }
+    
+        /**
+         * Show loading overlay
+         */
+        function showLoading(message = 'جاري الحفظ...') {
+            const loadingOverlay = $('#loadingOverlay');
+            const loadingSpinner = $('.loading-spinner');
+            
+            loadingOverlay.show();
+            loadingSpinner.html(`<i class="bi bi-arrow-repeat me-2"></i>${message}`);
+        }
+    
+        /**
+         * Hide loading overlay
+         */
+        function hideLoading() {
+            $('#loadingOverlay').hide();
+        }
+    
+        /**
+         * Update change count display
+         */
+        function updateChangeCount() {
+            const changeStatus = $('#changeStatus');
+            const changeCountElement = $('#changeCount');
+            
+            changeCountElement.text(changeCount);
+            
+        }
+    
+        /**
+         * Update duplicate count display
+         */
+        function updateDuplicateCount(count) {
+            let duplicateCounter = $('#duplicateCounter');
+            
+            if (count > 0) {
+                if (!duplicateCounter.length) {
+                    duplicateCounter = $(`
+                        <span class="badge bg-warning text-dark ms-2" id="duplicateCounter">
+                            <i class="bi bi-exclamation-triangle me-1"></i>
+                            <span id="duplicateCount">0</span> تكرار
+                        </span>
+                    `);
+                    $('.status-indicator').append(duplicateCounter);
+                }
+                
+                duplicateCounter.find('#duplicateCount').text(count).parent().show();
+            } else if (duplicateCounter.length) {
+                duplicateCounter.hide();
+            }
+        }
+    
+        /**
+         * Track select changes
+         */
+        function trackSelectChange(select) {
+            const $select = $(select);
+            if (!$select.length) return;
+            
+            const currentValue = $select.val() || '';
+            const originalValue = $select.data('original') || '';
+            const wasChanged = $select.hasClass('cell-changed');
+            const isChanged = currentValue !== originalValue;
+            
+            if (isChanged && !wasChanged) {
+                $select.addClass('cell-changed');
+                changeCount++;
+                updateChangeCount();
+            } else if (!isChanged && wasChanged) {
+                $select.removeClass('cell-changed');
+                changeCount--;
+                updateChangeCount();
+            }
+            
+            // Check for duplicates after change
+            setTimeout(checkForDuplicates, 50);
+        }
+    
+        /* ===========================================
+        DAY APPROVAL FUNCTIONS
+        =========================================== */
+
+        // متغير لتخزين الأيام المقفلة
+        const approvedDays = new Set();
+
+        /**
+         * اعتماد جميع الصفوف في تاريخ محدد
+         */
+        /**
+         * اعتماد جميع الصفوف في تاريخ محدد
+         */
+        function approveDay(date, button) {
+            if (!confirm(`هل تريد اعتماد جميع الصفوات في تاريخ ${date}؟\n\nبعد الاعتماد لن يمكن تعديل أي صف في هذا التاريخ.`)) {
+                return;
+            }
+            
+            // إضافة التاريخ إلى الأيام المقفلة
+            approvedDays.add(date);
+
+            disableLockedDayOptions();
+            
+            // تعطيل جميع الصفوف في هذا التاريخ
+            $(`tr[data-date="${date}"]`).each(function() {
+                const $row = $(this);
+                
+                // إضافة فئة اليوم المقفل
+                $row.addClass('day-approved');
+                
+                // تعطيل جميع حقول التحديد في الصف
+                $row.find('.employee-combined-select').each(function() {
+                    const $select = $(this);
+                    
+                    // إضافة فئة للخلية المقفلة
+                    $select.closest('td').addClass('approved-cell');
+                    
+                    // تعطيل Select2
+                    $select.prop('disabled', true).select2('destroy');
+                    
+                    // إضافة زر مقفل في الخلية
+                    const $cell = $select.closest('td');
+                    $cell.append(`
+                        <div class="lock-btn-cell" style="position: absolute; top: 50%; left: 50%; 
+                            transform: translate(-50%, -50%); z-index: 100;">
+                            <span class="badge bg-secondary" style="font-size: 11px; padding: 4px 8px;">
+                                <i class="bi bi-lock me-1"></i>مقفل
+                            </span>
+                        </div>
+                    `);
+                });
+                
+                // إخفاء زر الحذف في هذا الصف
+                $row.find('.remove-row-btn, .remove-row').hide();
+            });
+            
+            // تعطيل زر الاعتماد
+            $(button).prop('disabled', true)
+                    .html('<i class="bi bi-check-circle"></i> مقفل')
+                    .removeClass('btn-success')
+                    .addClass('btn-secondary');
+            
+            // إظهار رسالة نجاح
+            showAlert(`تم اعتماد جميع الصفوات في تاريخ ${date}`, 'success');
+            
+            // حفظ حالة الاعتماد في LocalStorage
+            saveApprovedDays();
+            saveAsDraft();
+        }
+
+
+
+        /**
+         * حفظ الأيام المقفلة في LocalStorage
+         */
+        function saveApprovedDays() {
+            const approvedDaysArray = Array.from(approvedDays);
+            localStorage.setItem('approvedDays_' + {{ schedule.id }}, JSON.stringify(approvedDaysArray));
+        }
+
+        /**
+         * تحميل الأيام المقفلة من LocalStorage
+         */
+
+        /**
+         * تحميل الأيام المقفلة من LocalStorage
+         */
+        function loadApprovedDays() {
+            try {
+                const savedDays = localStorage.getItem('approvedDays_' + {{ schedule.id }});
+                if (savedDays) {
+                    const daysArray = JSON.parse(savedDays);
+                    daysArray.forEach(date => {
+                        approvedDays.add(date);
+                        // تعطيل الصفوط لهذا التاريخ
+                        disableApprovedDay(date);
+                    });
+                    
+                    // تعطيل خيارات الأيام المقفلة في select
+                    setTimeout(() => {
+                        disableLockedDayOptions();
+                    }, 100);
+                }
+            } catch (error) {
+                console.error('Error loading approved days:', error);
+            }
+        }
+
+
+
+        /**
+         * تعطيل يوم مقفل تم تحميله
+         */
+         
+        /**
+         * تعطيل يوم مقفل تم تحميله
+         */
+        function disableApprovedDay(date) {
+            $(`tr[data-date="${date}"]`).each(function() {
+                const $row = $(this);
+                
+                // إضافة فئة اليوم المقفل
+                $row.addClass('day-approved');
+                
+                // تعطيل جميع حقول التحديد
+                $row.find('.employee-combined-select').each(function() {
+                    const $select = $(this);
+                    
+                    // إضافة فئة للخلية المقفلة
+                    $select.closest('td').addClass('approved-cell');
+                    
+                    // تعطيل Select2 إذا كان مفعل
+                    if ($select.hasClass('select2-hidden-accessible')) {
+                        $select.select2('destroy');
+                    }
+                    
+                    $select.prop('disabled', true);
+                    
+                    // إضافة زر مقفل في الخلية
+                    const $cell = $select.closest('td');
+                    if (!$cell.find('.lock-btn-cell').length) {
+                        $cell.append(`
+                        `);
+                    }
+                });
+                
+                // إخفاء أزرار الحذف في هذا اليوم
+                $row.find('.approve-day-btn').each(function() {
+                    $(this).hide();
+                });
+
+                
+                // تعطيل زر ارسال اليوم إذا كان موجوداً
+                $row.find('.remove-row-btn, .remove-row').each(function() {
+                    $(this).prop('disabled', true)
+                        .html('<i class="bi bi-check-circle"></i> مقفل')
+                        .removeClass('btn-success')
+                        .addClass('btn-secondary');
+                });
+            });
+        }
+
+
+        /**
+         * إعادة تفعيل يوم مقفل (لأغراض التطوير)
+         */
+        function unapproveDay(date) {
+            if (confirm(`هل تريد إلغاء اعتماد تاريخ ${date}؟`)) {
+                approvedDays.delete(date);
+                
+                $(`tr[data-date="${date}"]`).each(function() {
+                    const $row = $(this);
+                    
+                    // إزالة فئة اليوم المقفل
+                    $row.removeClass('day-approved');
+                    
+                    // تفعيل جميع حقول التحديد
+                    $row.find('.employee-combined-select').each(function() {
+                        const $select = $(this);
+                        
+                        // إزالة فئة الخلية المقفلة
+                        $select.closest('td').removeClass('approved-cell');
+                        
+                        // تفعيل الحقل
+                        $select.prop('disabled', false);
+                        
+                        // إعادة تهيئة Select2
+                        if (!$select.hasClass('select2-hidden-accessible')) {
+                            $select.select2({
+                                theme: 'bootstrap-5',
+                                placeholder: "اكتب للبحث أو اختر",
+                                allowClear: true,
+                                width: '100%',
+                                dropdownParent: $('#excelGrid')
+                            }).on('change', function() {
+                                trackSelectChange(this);
+                            });
+                        }
+                        
+                        // إزالة علامة المقفل
+                        $select.parent().find('.approved-badge').remove();
+                    });
+                });
+                
+                // تحديث LocalStorage
+                saveApprovedDays();
+                
+                showAlert(`تم إلغاء اعتماد تاريخ ${date}`, 'info');
+            }
+        }
+
+
+        /* ===========================================
+           COMBINED SEARCH & DROPDOWN FUNCTIONS
+           =========================================== */
+    
+        /**
+         * Initialize Combined Search & Dropdown
+         */
+        function initializeCombinedSearch() {
+            $('.employee-combined-select').each(function() {
+                const $select = $(this);
+                
+                $select.select2({
+                    theme: 'bootstrap-5',
+                    placeholder: "اكتب للبحث أو اختر",
+                    allowClear: true,
+                    width: '100%',
+                    dropdownParent: $('#excelGrid'),
+                    language: {
+                        noResults: () => "لا توجد نتائج",
+                        searching: () => "جاري البحث...",
+                        inputTooShort: () => "اكتب للبحث عن الموظفين"
+                    },
+                    minimumInputLength: 0,
+                    templateResult: formatEmployeeResult,
+                    templateSelection: formatEmployeeSelection
+                }).on('change', function() {
+                    trackSelectChange(this);
+                    updatePlaceholderText(this);
+                }).on('select2:open', function() {
+                    setTimeout(() => {
+                        const $search = $('.select2-container--open .select2-search__field');
+                        if ($search.length) {
+                            $search.focus();
+                        }
+                    }, 10);
+                });
+                
+                updatePlaceholderText($select[0]);
+            });
+        }
+    
+        /**
+         * Format employee result in dropdown
+         */
+        function formatEmployeeResult(employee) {
+            if (!employee.id) return employee.text;
+            
+            const $result = $(
+                `<div class="d-flex align-items-center">
+                    <div class="me-2">
+                        <i class="bi bi-person-circle text-success"></i>
+                    </div>
+                    <div class="flex-grow-1">
+                        <div class="fw-medium">${employee.text}</div>
+                    </div>
+                </div>`
+            );
+            
+            return $result;
+        }
+    
+        /**
+         * Format selected employee
+         */
+        function formatEmployeeSelection(employee) {
+            if (!employee.id) return employee.text || "اختر موظف";
+            
+            return $(`
+                <div class="d-flex align-items-center justify-content-center w-100">
+                    <span class="text-truncate">${employee.text}</span>
+                </div>
+            `);
+        }
+    
+        /**
+         * Update placeholder text based on value
+         */
+        function updatePlaceholderText(select) {
+            const $select = $(select);
+            const value = $select.val();
+            const $container = $select.siblings('.select2-container');
+            
+            if (!value) {
+                $container.find('.select2-selection__rendered').attr('title', 'اكتب للبحث أو اختر');
+            }
+        }
+    
+        /* ===========================================
+           DUPLICATE DETECTION FUNCTIONS
+           =========================================== */
+    
+        /**
+         * Check for duplicate employee assignments
+         */
+        function checkForDuplicates() {
+            console.log('🔍 بدء فحص التكرارات');
+            
+            // Clear previous duplicate indicators
+            $('.duplicate-shift').removeClass('duplicate-shift');
+            $('.duplicate-warning').remove();
+            $('.duplicate-cell').removeClass('duplicate-cell');
+            
+            const rows = [];
+            const dateMap = {};
+            
+            // Collect all row data
+            $('#tableBody tr').each(function(index) {
+                const $row = $(this);
+                const date = $row.data('date') || $row.find('.date-cell').text().trim();
+                const day = $row.data('day');
+                
+                rows.push({
+                    index: index,
+                    row: $row,
+                    date: date,
+                    day: day,
+                    morningShift: $row.find('select[name*="_morning"]').val()?.trim() || '',
+                    eveningShift: $row.find('select[name*="_evening"]').val()?.trim() || '',
+                    nightShift: $row.find('select[name*="_night"]').val()?.trim() || ''
+                });
+                
+                // Group by date
+                if (date) {
+                    if (!dateMap[date]) dateMap[date] = [];
+                    dateMap[date].push(rows[rows.length - 1]);
+                }
+            });
+            
+            let totalDuplicates = 0;
+            const duplicateRowIndices = new Set();
+            const duplicateCells = [];
+            
+            // Check for duplicates in each date
+            Object.values(dateMap).forEach(dateRows => {
+                checkShiftDuplicates(dateRows, 'morningShift', duplicateRowIndices, duplicateCells);
+                checkShiftDuplicates(dateRows, 'eveningShift', duplicateRowIndices, duplicateCells);
+                checkShiftDuplicates(dateRows, 'nightShift', duplicateRowIndices, duplicateCells);
+            });
+            
+            // Apply visual indicators
+            applyDuplicateIndicators(rows, duplicateRowIndices, duplicateCells);
+            
+            console.log(`✅ تم العثور على ${totalDuplicates} تكرار`);
+            updateDuplicateCount(totalDuplicates);
+            
+            return totalDuplicates;
+        }
+    
+        /**
+         * Check duplicates for specific shift type
+         */
+        function checkShiftDuplicates(rows, shiftType, duplicateRowIndices, duplicateCells) {
+            const seen = {};
+            const selector = shiftType === 'morningShift' ? 'select[name*="_morning"]' :
+                           shiftType === 'eveningShift' ? 'select[name*="_evening"]' :
+                           'select[name*="_night"]';
+            
+            rows.forEach(rowData => {
+                const shiftValue = rowData[shiftType];
+                if (!shiftValue) return;
+                
+                if (seen[shiftValue] !== undefined) {
+                    duplicateRowIndices.add(rowData.index);
+                    duplicateRowIndices.add(seen[shiftValue]);
+                    
+                    duplicateCells.push({ rowIndex: rowData.index, selector });
+                    duplicateCells.push({ rowIndex: seen[shiftValue], selector });
+                } else {
+                    seen[shiftValue] = rowData.index;
+                }
+            });
+        }
+    
+        /**
+         * Apply visual indicators to duplicate rows/cells
+         */
+        function applyDuplicateIndicators(rows, duplicateRowIndices, duplicateCells) {
+            // Highlight duplicate rows
+            duplicateRowIndices.forEach(rowIndex => {
+                const rowData = rows[rowIndex];
+                if (rowData?.row) {
+                    rowData.row.addClass('duplicate-shift');
+                    
+                    if (!rowData.row.find('.duplicate-warning').length) {
+                        rowData.row.find('td:first').append('<div class="duplicate-warning"></div>');
+                    }
+                }
+            });
+            
+            // Highlight specific cells
+            duplicateCells.forEach(cell => {
+                const rowData = rows[cell.rowIndex];
+                if (rowData?.row) {
+                    rowData.row.find(cell.selector).closest('td').addClass('duplicate-cell');
+                }
+            });
+        }
+
+        /* ===========================================
+        ENHANCED RANDOM FILL FUNCTIONS - SELECTIVE DAYS
+        =========================================== */
+
+        /**
+         * Show enhanced random fill modal with day selection
+         */
+         function showEnhancedRandomFillModal() {
+            // إنشاء HTML لخيارات الأيام مع التحقق من الأيام المقفلة
+            const dayCheckboxHTML = weekDates.map((wd, index) => {
+                const isLocked = approvedDays.has(wd.date);
+                const disabledAttr = isLocked ? 'disabled' : '';
+                const checkedAttr = (!isLocked && index !== 0) ? 'checked' : '';
+                const lockedBadge = isLocked ? '<span class="badge bg-danger ms-1">مقفل</span>' : '';
+                
+                return `
+                    <div class="col-6 col-md-4">
+                        <div class="form-check">
+                            <input class="form-check-input day-checkbox" 
+                                type="checkbox" 
+                                id="day_${index}" 
+                                value="${wd.date}"
+                                data-day-name="${wd.day_name}"
+                                ${disabledAttr}
+                                ${checkedAttr}>
+                            <label class="form-check-label" for="day_${index}">
+                                <span class="badge bg-light text-dark me-1">${wd.day_name}</span>
+                                <small class="text-muted">(${wd.date})</small>
+                                ${lockedBadge}
+                            </label>
+                        </div>
+                    </div>
+                `;
+            }).join('');
+            
+            // إنشاء HTML لخيارات اليوم المصدر مع التحقق من الأيام المقفلة
+            const sourceDayOptions = weekDates.map(wd => {
+                const isLocked = approvedDays.has(wd.date);
+                const disabledAttr = isLocked ? 'disabled' : '';
+                const lockedText = isLocked ? ' (مقفل)' : '';
+                
+                return `
+                    <option value="${wd.date}" 
+                            data-day-name="${wd.day_name}"
+                            ${disabledAttr}>
+                        ${wd.day_name} (${wd.date})${lockedText}
+                    </option>
+                `;
+            }).join('');
+            
+            const modalHTML = `
+                <div class="modal fade" id="enhancedRandomFillModal" tabindex="-1">
+                    <div class="modal-dialog modal-lg">
+                        <div class="modal-content">
+                            <div class="modal-header">
+                                <h5 class="modal-title">
+                                    <i class="bi bi-calendar2-range me-2"></i>
+                                    تعبئة من يوم إلى أيام محددة
+                                </h5>
+                                <button type="button" class="btn-close" data-bs-dismiss="modal"></button>
+                            </div>
+                            <div class="modal-body">
+                                <div class="row">
+                                    <!-- اليوم المصدر -->
+                                    <div class="col-md-6">
+                                        <div class="mb-3">
+                                            <label class="form-label fw-bold text-primary">
+                                                <i class="bi bi-calendar-plus me-2"></i>
+                                                اختر اليوم المصدر:
+                                            </label>
+                                            <select class="form-select" id="sourceDayEnhanced" style="width: 100%;">
+                                                <option value="">اختر اليوم المصدر</option>
+                                                ${sourceDayOptions}
+                                            </select>
+                                            <div class="form-text text-muted small">
+                                                سيتم نسخ الموظفين من هذا اليوم
+                                            </div>
+                                        </div>
+                                    </div>
+                                    
+                                    <!-- خيارات التطبيق -->
+                                    <div class="col-md-6">
+                                        <div class="mb-3">
+                                            <label class="form-label fw-bold text-success">
+                                                <i class="bi bi-gear me-2"></i>
+                                                خيارات التطبيق:
+                                            </label>
+                                            <div class="form-check mb-2">
+                                                <input class="form-check-input" type="radio" name="applyRangeEnhanced" 
+                                                    id="applySelectedDays" value="selected_days" checked>
+                                                <label class="form-check-label" for="applySelectedDays">
+                                                    تطبيق على أيام محددة
+                                                </label>
+                                            </div>
+                                            <div class="form-check mb-2">
+                                                <input class="form-check-input" type="radio" name="applyRangeEnhanced" 
+                                                    id="applyAllDaysEnhanced" value="all_days">
+                                                <label class="form-check-label" for="applyAllDaysEnhanced">
+                                                    تطبيق على جميع أيام الأسبوع
+                                                </label>
+                                            </div>
+                                            <div class="form-check">
+                                                <input class="form-check-input" type="radio" name="applyRangeEnhanced" 
+                                                    id="applySameDayEnhanced" value="same_day">
+                                                <label class="form-check-label" for="applySameDayEnhanced">
+                                                    تطبيق في نفس اليوم فقط
+                                                </label>
+                                            </div>
+                                        </div>
+                                    </div>
+                                </div>
+                                
+                                <!-- اختيار الأيام -->
+                                <div class="mb-3" id="daysSelectionContainer">
+                                    <label class="form-label fw-bold text-info">
+                                        <i class="bi bi-calendar-day me-2"></i>
+                                        اختر الأيام المستهدفة:
+                                    </label>
+                                    <div class="days-checkbox-container border rounded p-3" style="max-height: 200px; overflow-y: auto;">
+                                        <div class="row g-2">
+                                            ${dayCheckboxHTML}
+                                        </div>
+                                    </div>
+                                    <div class="d-flex justify-content-between mt-2">
+                                        <button type="button" class="btn btn-sm btn-outline-secondary" onclick="selectAllDays()">
+                                            <i class="bi bi-check-all me-1"></i>تحديد الكل
+                                        </button>
+                                        <button type="button" class="btn btn-sm btn-outline-secondary" onclick="deselectAllDays()">
+                                            <i class="bi bi-x-circle me-1"></i>إلغاء الكل
+                                        </button>
+                                        <button type="button" class="btn btn-sm btn-outline-warning" onclick="selectOnlyAvailableDays()">
+                                            <i class="bi bi-calendar-check me-1"></i>تحديد المتاحة فقط
+                                        </button>
+                                    </div>
+                                </div>
+                                
+                                <!-- خيارات متقدمة -->
+                                <div class="accordion mb-3" id="advancedOptionsAccordion">
+                                    <div class="accordion-item">
+                                        <h2 class="accordion-header">
+                                            <button class="accordion-button collapsed" type="button" data-bs-toggle="collapse" 
+                                                    data-bs-target="#advancedOptionsCollapse">
+                                                <i class="bi bi-sliders me-2"></i>
+                                                خيارات متقدمة
+                                            </button>
+                                        </h2>
+                                        <div id="advancedOptionsCollapse" class="accordion-collapse collapse">
+                                            <div class="accordion-body">
+                                                <div class="row">
+                                                    <div class="col-md-6">
+                                                        <div class="mb-3">
+                                                            <label class="form-label">نطاق الوظائف:</label>
+                                                            <select class="form-select" id="jobScope">
+                                                                <option value="all">جميع الوظائف</option>
+                                                                <option value="empty_only">الوظائف الفارغة فقط</option>
+                                                                <option value="specific_jobs">وظائف محددة</option>
+                                                            </select>
+                                                        </div>
+                                                    </div>
+                                                    <div class="col-md-6">
+                                                        <div class="mb-3">
+                                                            <label class="form-label">نطاق الشيفتات:</label>
+                                                            <div class="form-check">
+                                                                <input class="form-check-input" type="checkbox" id="fillMorning" checked>
+                                                                <label class="form-check-label" for="fillMorning">شيفت صباحي</label>
+                                                            </div>
+                                                            <div class="form-check">
+                                                                <input class="form-check-input" type="checkbox" id="fillEvening" checked>
+                                                                <label class="form-check-label" for="fillEvening">شيفت مسائي</label>
+                                                            </div>
+                                                            <div class="form-check">
+                                                                <input class="form-check-input" type="checkbox" id="fillNight" checked>
+                                                                <label class="form-check-label" for="fillNight">شيفت ليلي</label>
+                                                            </div>
+                                                        </div>
+                                                    </div>
+                                                </div>
+                                                <div class="row" id="specificJobsContainer" style="display: none;">
+                                                    <div class="col-12">
+                                                        <label class="form-label">اختر الوظائف:</label>
+                                                        <select class="form-select" id="specificJobsSelect" multiple style="height: 120px;">
+                                                            ${Array.from(availableJobs).map(job => 
+                                                                `<option value="${job}">${job}</option>`
+                                                            ).join('')}
+                                                        </select>
+                                                    </div>
+                                                </div>
+                                            </div>
+                                        </div>
+                                    </div>
+                                </div>
+                                
+                                <!-- معلومات التطبيق -->
+                                <div class="alert alert-info" id="previewInfo">
+                                    <i class="bi bi-info-circle me-2"></i>
+                                    حدد اليوم المصدر والأيام المستهدفة لتطبيق الموظفين.
+                                    <div class="mt-2 small">
+                                        <i class="bi bi-exclamation-triangle text-warning"></i>
+                                        <strong>ملاحظة:</strong> الأيام المقفلة غير متاحة للاختيار.
+                                    </div>
+                                </div>
+                                
+                                <!-- معاينة -->
+                                <div class="card border-primary" id="previewCard" style="display: none;">
+                                    <div class="card-header bg-primary text-white py-2">
+                                        <i class="bi bi-eye me-2"></i>معاينة التغييرات
+                                    </div>
+                                    <div class="card-body p-2">
+                                        <div class="row small">
+                                            <div class="col-md-6">
+                                                <div class="d-flex align-items-center mb-1">
+                                                    <span class="badge bg-secondary me-2">المصدر</span>
+                                                    <span id="previewSourceDay"></span>
+                                                </div>
+                                                <div class="d-flex align-items-center">
+                                                    <span class="badge bg-success me-2">المستهدف</span>
+                                                    <span id="previewTargetDays"></span>
+                                                </div>
+                                            </div>
+                                            <div class="col-md-6">
+                                                <div class="d-flex align-items-center mb-1">
+                                                    <span class="badge bg-warning text-dark me-2">المتأثر</span>
+                                                    <span id="previewAffectedRows">0 صف</span>
+                                                </div>
+                                                <div class="d-flex align-items-center">
+                                                    <span class="badge bg-info me-2">الحقول</span>
+                                                    <span id="previewFieldsCount">0 حقل</span>
+                                                </div>
+                                                <div class="d-flex align-items-center mt-1">
+                                                    <span class="badge bg-light text-dark me-2">التخطي</span>
+                                                    <span id="previewSkippedDays">0 يوم مقفل</span>
+                                                </div>
+                                            </div>
+                                        </div>
+                                    </div>
+                                </div>
+                                
+                                <!-- ملخص الأيام المقفلة -->
+                                <div class="alert alert-warning mt-2" id="lockedDaysSummary" style="display: none;">
+                                    <i class="bi bi-lock me-2"></i>
+                                    <strong>الأيام المقفلة:</strong>
+                                    <span id="lockedDaysList"></span>
+                                </div>
+                            </div>
+                            <div class="modal-footer">
+                                <button type="button" class="btn btn-secondary" data-bs-dismiss="modal">
+                                    <i class="bi bi-x-circle me-2"></i>
+                                    إلغاء
+                                </button>
+                                <button type="button" class="btn btn-primary" id="applyEnhancedFillBtn" onclick="applyEnhancedRandomFill()">
+                                    <i class="bi bi-check-circle me-2"></i>
+                                    تطبيق التعبئة
+                                </button>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+            `;
+            
+            // إضافة المودال إلى الصفحة إذا لم يكن موجوداً
+            if ($('#enhancedRandomFillModal').length) {
+                $('#enhancedRandomFillModal').remove();
+            }
+            
+            $('body').append(modalHTML);
+            
+            // تهيئة المودال
+            const modalElement = document.getElementById('enhancedRandomFillModal');
+            const modal = new bootstrap.Modal(modalElement);
+            
+            // تهيئة Select2 للاختيارات
+            $(modalElement).find('select').select2({
+                theme: 'bootstrap-5',
+                dropdownParent: modalElement
+            });
+            
+            // إضافة الأحداث
+            $(modalElement).find('#sourceDayEnhanced').on('change', function() {
+                updatePreview();
+                updateLockedDaysSummary();
+            });
+            
+            $(modalElement).find('.day-checkbox, input[name="applyRangeEnhanced"]').on('change', function() {
+                updatePreview();
+                updateLockedDaysSummary();
+            });
+            
+            $(modalElement).find('#jobScope').on('change', function() {
+                const specificJobsContainer = $(modalElement).find('#specificJobsContainer');
+                specificJobsContainer.toggle($(this).val() === 'specific_jobs');
+                updatePreview();
+            });
+            
+            // تحديث المعاينة عند تغيير أي إعداد
+            $(modalElement).find('#fillMorning, #fillEvening, #fillNight, #specificJobsSelect').on('change', updatePreview);
+            
+            // إظهار ملخص الأيام المقفلة
+            updateLockedDaysSummary();
+            
+            // إظهار المودال
+            modal.show();
+        }
+
+        /**
+         * تحديث ملخص الأيام المقفلة
+         */
+        function updateLockedDaysSummary() {
+            const modalElement = document.getElementById('enhancedRandomFillModal');
+            if (!modalElement) return;
+            
+            const lockedDays = weekDates.filter(wd => approvedDays.has(wd.date));
+            
+            if (lockedDays.length > 0) {
+                const lockedDaysList = lockedDays.map(wd => 
+                    `${wd.day_name} (${wd.date})`
+                ).join('، ');
+                
+                $(modalElement).find('#lockedDaysList').text(lockedDaysList);
+                $(modalElement).find('#lockedDaysSummary').show();
+            } else {
+                $(modalElement).find('#lockedDaysSummary').hide();
+            }
+        }
+
+        /**
+         * تحديد الأيام المتاحة فقط (غير المقفلة)
+         */
+        function selectOnlyAvailableDays() {
+            const modalElement = document.getElementById('enhancedRandomFillModal');
+            if (!modalElement) return;
+            
+            $(modalElement).find('.day-checkbox').each(function() {
+                const isLocked = approvedDays.has($(this).val());
+                $(this).prop('checked', !isLocked);
+            });
+            
+            updatePreview();
+        }
+
+        /**
+         * تحديث دالة selectAllDays لتحديد الأيام غير المقفلة فقط
+         */
+        function selectAllDays() {
+            const modalElement = document.getElementById('enhancedRandomFillModal');
+            if (!modalElement) return;
+            
+            $(modalElement).find('.day-checkbox:not(:disabled)').prop('checked', true);
+            updatePreview();
+        }
+
+        /**
+         * تحديث دالة deselectAllDays
+         */
+        function deselectAllDays() {
+            const modalElement = document.getElementById('enhancedRandomFillModal');
+            if (!modalElement) return;
+            
+            $(modalElement).find('.day-checkbox').prop('checked', false);
+            updatePreview();
+}
+
+
+
+        /**
+         * تحديث معاينة التطبيق
+         */
+        /**
+         * تحديث معاينة التطبيق
+         */
+        function updatePreview() {
+            const modalElement = document.getElementById('enhancedRandomFillModal');
+            if (!modalElement) return;
+            
+            const sourceDay = $(modalElement).find('#sourceDayEnhanced').val();
+            const applyRange = $(modalElement).find('input[name="applyRangeEnhanced"]:checked').val();
+            
+            if (!sourceDay) {
+                $(modalElement).find('#previewCard').hide();
+                $(modalElement).find('#previewInfo').show();
+                return;
+            }
+            
+            // التحقق إذا كان اليوم المصدر مقفلاً
+            const isSourceDayLocked = approvedDays.has(sourceDay);
+            
+            // جمع الأيام المستهدفة
+            let targetDays = [];
+            if (applyRange === 'selected_days') {
+                $(modalElement).find('.day-checkbox:checked').each(function() {
+                    const date = $(this).val();
+                    const dayName = $(this).data('day-name');
+                    const isLocked = approvedDays.has(date);
+                    targetDays.push({
+                        date: date,
+                        dayName: dayName,
+                        locked: isLocked
+                    });
+                });
+            } else if (applyRange === 'all_days') {
+                targetDays = weekDates
+                    .filter(wd => wd.date !== sourceDay)
+                    .map(wd => ({
+                        date: wd.date,
+                        dayName: wd.day_name,
+                        locked: approvedDays.has(wd.date)
+                    }));
+            } else if (applyRange === 'same_day') {
+                const sourceDayName = $(modalElement).find('#sourceDayEnhanced option:selected').data('day-name');
+                targetDays = weekDates
+                    .filter(wd => wd.day_name === sourceDayName && wd.date !== sourceDay)
+                    .map(wd => ({
+                        date: wd.date,
+                        dayName: wd.day_name,
+                        locked: approvedDays.has(wd.date)
+                    }));
+            }
+            
+            // حساب الأيام المقفلة والمتاحة
+            const lockedDays = targetDays.filter(d => d.locked);
+            const availableDays = targetDays.filter(d => !d.locked);
+            
+            // إظهار المعلومات
+            let sourceDayText = $(modalElement).find('#sourceDayEnhanced option:selected').text();
+            if (isSourceDayLocked) {
+                sourceDayText += ' <span class="badge bg-danger ms-1">مقفل</span>';
+            }
+            
+            $(modalElement).find('#previewSourceDay').html(sourceDayText);
+            
+            let targetDaysText = '';
+            if (availableDays.length > 0) {
+                targetDaysText = `${availableDays.length} يوم متاح`;
+                if (availableDays.length <= 3) {
+                    targetDaysText += ` (${availableDays.slice(0, 3).map(d => d.dayName).join(', ')})`;
+                }
+            }
+            
+            if (lockedDays.length > 0) {
+                targetDaysText += `<br><small class="text-danger">${lockedDays.length} يوم مقفل</small>`;
+            }
+            
+            $(modalElement).find('#previewTargetDays').html(targetDaysText || 'لا توجد أيام متاحة');
+            
+            // تحذير إذا كان اليوم المصدر مقفلاً
+            if (isSourceDayLocked) {
+                $(modalElement).find('#previewInfo').html(`
+                    <i class="bi bi-exclamation-triangle me-2 text-danger"></i>
+                    <strong class="text-danger">تحذير:</strong> اليوم المصدر مقفل. لن تتم التعبئة.
+                `).show();
+                $(modalElement).find('#applyEnhancedFillBtn').prop('disabled', true);
+            } else {
+                $(modalElement).find('#previewInfo').html(`
+                    <i class="bi bi-info-circle me-2"></i>
+                    حدد اليوم المصدر والأيام المستهدفة لتطبيق الموظفين.
+                `).show();
+                $(modalElement).find('#applyEnhancedFillBtn').prop('disabled', false);
+            }
+            
+            // إظهار بطاقة المعاينة
+            $(modalElement).find('#previewCard').show();
+        }
+
+
+
+        /**
+         * تحديد جميع الأيام
+         */
+        function selectAllDays() {
+            $('#enhancedRandomFillModal .day-checkbox').prop('checked', true);
+            updatePreview();
+        }
+
+        /**
+         * إلغاء تحديد جميع الأيام
+         */
+        function deselectAllDays() {
+            $('#enhancedRandomFillModal .day-checkbox').prop('checked', false);
+            updatePreview();
+        }
+
+        /**
+         * تطبيق التعبئة المتقدمة
+         */
+        function applyEnhancedRandomFill() {
+            const modalElement = document.getElementById('enhancedRandomFillModal');
+            if (!modalElement) return;
+            
+            const sourceDay = $(modalElement).find('#sourceDayEnhanced').val();
+            const applyRange = $(modalElement).find('input[name="applyRangeEnhanced"]:checked').val();
+            const jobScope = $(modalElement).find('#jobScope').val();
+            const specificJobs = $(modalElement).find('#specificJobsSelect').val() || [];
+            
+            const fillMorning = $(modalElement).find('#fillMorning').is(':checked');
+            const fillEvening = $(modalElement).find('#fillEvening').is(':checked');
+            const fillNight = $(modalElement).find('#fillNight').is(':checked');
+            
+            if (!sourceDay) {
+                showAlert('الرجاء اختيار اليوم المصدر', 'warning');
+                return;
+            }
+            
+            // التحقق إذا كان اليوم المصدر مقفلاً
+            if (approvedDays.has(sourceDay)) {
+                showAlert('اليوم المصدر مقفل ولا يمكن استخدامه', 'warning');
+                return;
+            }
+            
+            // جمع الأيام المستهدفة
+            let targetDates = [];
+            if (applyRange === 'selected_days') {
+                $(modalElement).find('.day-checkbox:checked').each(function() {
+                    targetDates.push($(this).val());
+                });
+            } else if (applyRange === 'all_days') {
+                targetDates = weekDates.map(wd => wd.date).filter(date => date !== sourceDay);
+            } else if (applyRange === 'same_day') {
+                const sourceDayName = $(modalElement).find('#sourceDayEnhanced option:selected').data('day-name');
+                targetDates = weekDates
+                    .filter(wd => wd.day_name === sourceDayName && wd.date !== sourceDay)
+                    .map(wd => wd.date);
+            }
+            
+            if (targetDates.length === 0) {
+                showAlert('الرجاء اختيار أيام مستهدفة', 'warning');
+                return;
+            }
+            
+            // تصفية الأيام المستهدفة - إزالة الأيام المقفلة
+            const filteredTargetDates = targetDates.filter(date => !approvedDays.has(date));
+            
+            if (filteredTargetDates.length === 0) {
+                showAlert('جميع الأيام المستهدفة مقفلة ولا يمكن التعبئة فيها', 'warning');
+                return;
+            }
+            
+            if (filteredTargetDates.length < targetDates.length) {
+                const skippedDays = targetDates.length - filteredTargetDates.length;
+                showAlert(`تم تخطي ${skippedDays} يوم مقفل`, 'info');
+            }
+            
+            showLoading('جاري التعبئة...');
+            
+            setTimeout(() => {
+                const sourceData = getSourceDayData(sourceDay);
+                if (!sourceData || Object.keys(sourceData).length === 0) {
+                    hideLoading();
+                    showAlert('لا توجد بيانات في اليوم المحدد', 'warning');
+                    return;
+                }
+                
+                const result = applyEnhancedSourceData(
+                    sourceData, 
+                    sourceDay, 
+                    filteredTargetDates, // استخدام الأيام المفلترة
+                    jobScope,
+                    specificJobs,
+                    { fillMorning, fillEvening, fillNight }
+                );
+                
+                hideLoading();
+                handleEnhancedFillResult(result);
+                
+                // إغلاق المودال
+                const modal = bootstrap.Modal.getInstance(modalElement);
+                if (modal) modal.hide();
+            }, 500);
+        }
+        
+        /**
+         * تطبيق بيانات المصدر مع الخيارات المتقدمة
+         */
+        /**
+         * تطبيق بيانات المصدر مع الخيارات المتقدمة
+         */
+        function applyEnhancedSourceData(sourceData, sourceDay, targetDates, jobScope, specificJobs, shiftOptions) {
+            let totalFilled = 0;
+            let affectedJobs = new Set();
+            
+            targetDates.forEach(targetDate => {
+                // التحقق من اليوم المقفل
+                if (approvedDays.has(targetDate)) {
+                    return; // تخطي اليوم المقفل
+                }
+                
+                $(`tr[data-date="${targetDate}"]:not(.new-row)`).each(function() {
+                    const $row = $(this);
+                    const job = $row.data('job');
+                    
+                    // التحقق من الصف المقفل
+                    if ($row.hasClass('day-approved')) {
+                        return; // تخطي الصف المقفل
+                    }
+                    
+                    // التحقق من نطاق الوظائف
+                    if (!shouldProcessJob(job, jobScope, specificJobs, sourceData)) {
+                        return;
+                    }
+                    
+                    // التعبئة حسب خيارات الشيفتات
+                    if (shiftOptions.fillMorning && sourceData[job]?.morning) {
+                        if (fillShiftIfEmpty($row, 'morning', sourceData[job].morning)) {
+                            totalFilled++;
+                            affectedJobs.add(job);
+                        }
+                    }
+                    
+                    if (shiftOptions.fillEvening && sourceData[job]?.evening) {
+                        if (fillShiftIfEmpty($row, 'evening', sourceData[job].evening)) {
+                            totalFilled++;
+                            affectedJobs.add(job);
+                        }
+                    }
+                    
+                    if (shiftOptions.fillNight && sourceData[job]?.night) {
+                        if (fillShiftIfEmpty($row, 'night', sourceData[job].night)) {
+                            totalFilled++;
+                            affectedJobs.add(job);
+                        }
+                    }
+                });
+            });
+            
+            return {
+                totalFilled,
+                affectedJobs: Array.from(affectedJobs),
+                targetDatesCount: targetDates.length,
+                skippedDates: targetDates.filter(date => approvedDays.has(date)).length
+            };
+        }
+
+
+
+
+        /**
+         * التحقق مما إذا كان يجب معالجة الوظيفة
+         */
+        function shouldProcessJob(job, jobScope, specificJobs, sourceData) {
+            if (!job || !sourceData[job]) return false;
+            
+            switch (jobScope) {
+                case 'all':
+                    return true;
+                case 'empty_only':
+                    // نتحقق مما إذا كان هناك حقل فارغ لهذه الوظيفة في sourceData
+                    return Object.values(sourceData[job]).some(value => value);
+                case 'specific_jobs':
+                    return specificJobs.includes(job);
+                default:
+                    return false;
+            }
+        }
+
+        /**
+         * تعبئة شيفت إذا كان فارغاً
+         */
+        function fillShiftIfEmpty($row, shiftType, value) {
+            const $select = $row.find(`select[name*="_${shiftType}"]`);
+            
+            // التحقق مما إذا كان الحقل فارغاً
+            if (!$select.val() && value) {
+                $select.val(value).trigger('change').addClass('cell-changed');
+                return true;
+            }
+            
+            return false;
+        }
+
+        /**
+         * معالجة نتيجة التعبئة
+         */
+        function handleEnhancedFillResult(result) {
+            if (result.totalFilled > 0) {
+                changeCount += result.totalFilled;
+                updateChangeCount();
+                
+                // إظهار تقرير مفصل
+                const message = `
+                    <div class="text-start">
+                        <h6 class="mb-3">تمت التعبئة بنجاح</h6>
+                        <div class="mb-2">
+                            <i class="bi bi-check-circle text-success me-2"></i>
+                            <strong>تم تعبئة:</strong> ${result.totalFilled} حقل
+                        </div>
+                        <div class="mb-2">
+                            <i class="bi bi-calendar-range text-primary me-2"></i>
+                            <strong>الأيام المتأثرة:</strong> ${result.targetDatesCount} يوم
+                        </div>
+                        <div class="mb-2">
+                            <i class="bi bi-person-badge text-info me-2"></i>
+                            <strong>الوظائف المتأثرة:</strong> ${result.affectedJobs.length} وظيفة
+                        </div>
+                        <div class="mt-3 small text-muted">
+                            <i class="bi bi-info-circle me-2"></i>
+                            تم تعبئة الحقول الفارغة فقط
+                        </div>
+                    </div>
+                `;
+                
+                Swal.fire({
+                    icon: 'success',
+                    title: 'تمت العملية',
+                    html: message,
+                    confirmButtonText: 'تم',
+                    width: 500
+                });
+            } else {
+                showAlert('لم يتم تعبئة أي حقول. قد تكون جميع الحقول ممتلئة بالفعل.', 'info');
+            }
+        }
+
+        /* ===========================================
+        UPDATE EXISTING FUNCTION
+        =========================================== */
+
+
+    
+        /* ===========================================
+           FILTER FUNCTIONS
+           =========================================== */
+    
+        /**
+         * Create day filter badges
+         */
+        function createDayFilters() {
+            const container = $('#dayFilters').empty();
+            
+            weekDaysArabic.forEach(day => {
+                const badge = $(`<span class="badge bg-primary filter-badge me-1 mb-1" 
+                                   data-day="${day}">${day}</span>`);
+                
+                badge.click(() => toggleDayFilter(day, badge[0]));
+                container.append(badge);
+                selectedDays.add(day);
+            });
+        }
+    
+        /**
+         * Toggle day filter
+         */
+        function toggleDayFilter(day, badge) {
+            const $badge = $(badge);
+            
+            if (selectedDays.has(day)) {
+                selectedDays.delete(day);
+                $badge.removeClass('bg-primary').addClass('bg-secondary');
+            } else {
+                selectedDays.add(day);
+                $badge.removeClass('bg-secondary').addClass('bg-primary');
+            }
+            
+            filterTable();
+        }
+    
+        /**
+         * Update job filter dropdown
+         */
+        function updateJobFilter() {
+            const $jobFilter = $('#jobFilter').empty().append('<option value="">جميع الوظائف</option>');
+            
+            availableJobs.forEach(job => {
+                $jobFilter.append(new Option(job, job));
+            });
+            
+            $jobFilter.select2({
+                placeholder: "اختر الوظيفة",
+                allowClear: true,
+                width: '100%'
+            }).on('change', filterTable);
+        }
+    
+        /**
+         * Filter table based on selected criteria
+         */
+        function filterTable() {
+            const selectedJob = $('#jobFilter').val() || '';
+            const $rows = $('#tableBody tr');
+            let visibleCount = 0;
+            let hiddenCount = 0;
+            
+            $rows.each(function() {
+                const $row = $(this);
+                const job = $row.data('job') || '';
+                const day = $row.data('day') || '';
+                
+                const showRow = (!selectedJob || job === selectedJob) &&
+                               (selectedDays.size === 0 || selectedDays.has(day));
+                
+                if (showRow) {
+                    $row.show();
+                    visibleCount++;
+                } else {
+                    $row.hide();
+                    hiddenCount++;
+                }
+            });
+            
+            updateFilterStatusBadge(selectedJob);
+            updateTableSummary(visibleCount, hiddenCount);
+            
+            if (visibleCount === 0 && (selectedJob || selectedDays.size < weekDaysArabic.length)) {
+                showFilteredEmptyState(selectedJob);
+            }
+        }
+    
+        /**
+         * Update filter status badge
+         */
+        function updateFilterStatusBadge(selectedJob) {
+            let $container = $('#filterStatusContainer');
+            
+            if (!$container.length) {
+                $container = $(`
+                    <div id="filterStatusContainer" class="d-flex align-items-center gap-2 mt-2"></div>
+                `);
+                $('.card-body.p-3').append($container);
+            }
+            
+            $container.empty();
+            
+            const hasJobFilter = selectedJob && selectedJob !== '';
+            const hasDayFilter = selectedDays.size > 0 && selectedDays.size < weekDaysArabic.length;
+            
+            if (hasJobFilter || hasDayFilter) {
+                if (hasJobFilter) {
+                    const jobText = $('#jobFilter option:selected').text();
+                    $container.append(`
+                        <span class="badge bg-info text-dark filter-badge-active">
+                            <i class="bi bi-person-badge me-1"></i>
+                            ${jobText}
+                            <i class="bi bi-x ms-1" onclick="clearJobFilter()" style="cursor: pointer;"></i>
+                        </span>
+                    `);
+                }
+            
+            } else {
+                $container.hide();
+            }
+        }
+    
+        /**
+         * Clear job filter
+         */
+        function clearJobFilter() {
+            $('#jobFilter').val('').trigger('change');
+            filterTable();
+            showAlert('تم إلغاء فلتر الوظيفة', 'info');
+        }
+    
+        /**
+         * Clear day filters
+         */
+        function clearDayFilters() {
+            selectedDays = new Set(weekDaysArabic);
+            $('.filter-badge').removeClass('bg-secondary').addClass('bg-primary');
+            filterTable();
+            showAlert('تم إلغاء فلتر الأيام', 'info');
+        }
+    
+        /**
+         * Clear all filters
+         */
+        function clearAllFilters() {
+            $('#jobFilter').val('').trigger('change');
+            clearDayFilters();
+            localStorage.removeItem('scheduleFilters');
+            showAlert('تم إلغاء جميع الفلاتر', 'info');
+        }
+    
+        /**
+         * Update table summary
+         */
+        function updateTableSummary(visibleCount, hiddenCount) {
+            let $summary = $('#tableSummary');
+            
+            if (!$summary.length) {
+                $summary = $(`<div id="tableSummary" class="text-muted small mt-2 mb-3"></div>`);
+                $('.excel-grid').before($summary);
+            }
+            
+            const totalCount = visibleCount + hiddenCount;
+            let summaryText = ` `;
+            
+            if (hiddenCount > 0) {
+                summaryText += ``;
+            }
+            
+        }
+    
+        /**
+         * Show filtered empty state
+         */
+        function showFilteredEmptyState(selectedJob) {
+            const $emptyState = $('#filteredEmptyState');
+            const $existingEmptyState = $('#emptyMessage');
+            
+            if ($existingEmptyState.is(':visible')) {
+                $existingEmptyState.hide();
+            }
+            
+            if ($emptyState.length) {
+                $emptyState.show();
+            } else {
+                const filteredEmptyState = $(`
+                    <div id="filteredEmptyState" class="empty-state text-center py-5">
+                        <div class="mb-3">
+                            <i class="bi bi-funnel fs-1 text-warning"></i>
+                        </div>
+                        <h5 class="text-warning">لا توجد نتائج تطابق الفلتر</h5>
+                        <p class="text-muted mb-3">
+                            ${selectedJob ? `لا توجد وظيفة "${$('#jobFilter option:selected').text()}" في الأيام المحددة` : 'لا توجد بيانات في الأيام المحددة'}
+                        </p>
+                        <button class="btn btn-outline-warning btn-sm" onclick="clearAllFilters()">
+                            <i class="bi bi-x-circle me-2"></i> إلغاء جميع الفلاتر
+                        </button>
+                    </div>
+                `);
+                
+                $('#tableBody').before(filteredEmptyState);
+            }
+        }
+    
+        /**
+         * Save filter state to localStorage
+         */
+        function saveFilterState() {
+            const filterState = {
+                selectedJob: $('#jobFilter').val() || '',
+                selectedDays: Array.from(selectedDays),
+                jobFilterText: $('#jobFilter').select2('data')[0]?.text || ''
+            };
+            localStorage.setItem('scheduleFilters', JSON.stringify(filterState));
+        }
+    
+        /**
+         * Load filter state from localStorage
+         */
+        function loadFilterState() {
+            try {
+                const savedState = localStorage.getItem('scheduleFilters');
+                if (!savedState) return;
+                
+                const filterState = JSON.parse(savedState);
+                
+                // Set job filter
+                if (filterState.selectedJob) {
+                    setTimeout(() => {
+                        $('#jobFilter').val(filterState.selectedJob).trigger('change');
+                    }, 300);
+                }
+                
+                // Set day filters
+                if (filterState.selectedDays?.length > 0) {
+                    selectedDays = new Set(filterState.selectedDays);
+                    
+                    setTimeout(() => {
+                        $('.filter-badge').each(function() {
+                            const $badge = $(this);
+                            const day = $badge.data('day');
+                            
+                            if (selectedDays.has(day)) {
+                                $badge.removeClass('bg-secondary').addClass('bg-primary');
+                            } else {
+                                $badge.removeClass('bg-primary').addClass('bg-secondary');
+                            }
+                        });
+                        
+                        setTimeout(filterTable, 100);
+                    }, 100);
+                }
+            } catch (error) {
+                console.error('Error loading filter state:', error);
+                localStorage.removeItem('scheduleFilters');
+            }
+        }
+    
+        /* ===========================================
+           ROW MANAGEMENT FUNCTIONS
+           =========================================== */
+    
+        /**
+         * Add new row to table
+         */
+        /**
+        /**
+         * Add new row to table
+         */
+        function addNewRow() {
+            if (!weekDates?.length) {
+                showAlert('لا توجد أيام متاحة لإضافة سطر جديد', 'warning');
+                return;
+            }
+            
+            const existingRowsByDate = {};
+            $('#tableBody tr:not(.new-row)').each(function() {
+                const date = $(this).data('date');
+                const job = $(this).data('job');
+                if (date && job) {
+                    if (!existingRowsByDate[date]) existingRowsByDate[date] = new Set();
+                    existingRowsByDate[date].add(job);
+                }
+            });
+            
+            // إيجاد أول يوم متاح (ليس مقفلاً وليس يوم السبت بالضرورة)
+            let selectedDate = '';
+            let selectedDay = '';
+            let selectedWeekDate = null;
+            
+            // نبحث عن أول يوم في الأسبوع ليس مقفلاً وليس فيه بيانات لكل الوظائف
+            for (const weekDate of weekDates) {
+                // تخطي الأيام المقفلة
+                if (approvedDays.has(weekDate.date)) {
+                    continue;
+                }
+                
+                if (!existingRowsByDate[weekDate.date] || 
+                    existingRowsByDate[weekDate.date].size < availableJobs.size) {
+                    selectedDate = weekDate.date;
+                    selectedDay = weekDate.day_name;
+                    selectedWeekDate = weekDate;
+                    break;
+                }
+            }
+            
+            // إذا لم نجد يوم متاح، نبحث عن أي يوم غير مقفل
+            if (!selectedDate && weekDates.length > 0) {
+                for (const weekDate of weekDates) {
+                    if (!approvedDays.has(weekDate.date)) {
+                        selectedDate = weekDate.date;
+                        selectedDay = weekDate.day_name;
+                        selectedWeekDate = weekDate;
+                        break;
+                    }
+                }
+            }
+            
+            // إذا لم نجد أي يوم غير مقفل
+            if (!selectedDate) {
+                showAlert('جميع الأيام مقفلة ولا يمكن إضافة سطر جديد', 'warning');
+                return;
+            }
+            
+            const newRowId = `new_${Date.now()}`;
+            
+            // Prepare employee options
+            const employeeOptions = '<option value=""></option>' +
+                departmentEmployees.map(e => `<option value="${e.name}">${e.name}</option>`).join('');
+            
+            // إنشاء خيارات الأيام (استبعاد الأيام المقفلة)
+            const dayOptions = weekDates.map(wd => {
+                const isLocked = approvedDays.has(wd.date);
+                const isSelected = wd.date === selectedDate;
+                const disabledAttr = isLocked ? 'disabled' : '';
+                const selectedAttr = isSelected ? 'selected' : '';
+                const lockedText = isLocked ? ' (مقفل)' : '';
+                
+                return `<option value="${wd.day_name}" data-date="${wd.date}" 
+                        ${selectedAttr} ${disabledAttr}>
+                        ${wd.day_name} (${wd.date})${lockedText}
+                        </option>`;
+            }).join('');
+            
+            const jobOptions = '<option value="">اختر الوظيفة</option>' +
+                Array.from(availableJobs).map(j => `<option value="${j}">${j}</option>`).join('') +
+                '<option value="__new_job__">+ إضافة وظيفة جديدة</option>';
+            
+            // Create new row HTML
+            const newRowHTML = `
+                <tr class="new-row" data-job="" data-day="${selectedDay}" 
+                    data-date="${selectedDate}" data-row-id="${newRowId}">
+                    <td>
+                        <select class="form-control form-control-sm border-0 text-center job-select" 
+                                data-row-id="${newRowId}" onchange="updateJobForNewRow(this, '${newRowId}')">
+                            ${jobOptions}
+                        </select>
+                    </td>
+                    <td>
+                        <select class="form-control form-control-sm border-0 text-center day-select" 
+                                data-row-id="${newRowId}" onchange="updateDayAndDate(this, '${newRowId}')">
+                            ${dayOptions}
+                        </select>
+                    </td>
+                    <td class="date-cell">${selectedDate}</td>
+                    <td>
+                        <div class="combined-search-cell">
+                            <select name="new_row_morning_${newRowId}" 
+                                    class="employee-combined-select" data-original="">
+                                ${employeeOptions}
+                            </select>
+                        </div>
+                    </td>
+                    <td>
+                        <div class="combined-search-cell">
+                            <select name="new_row_evening_${newRowId}" 
+                                    class="employee-combined-select" data-original="">
+                                ${employeeOptions}
+                            </select>
+                        </div>
+                    </td>
+                    <td>
+                        <div class="combined-search-cell">
+                            <select name="new_row_night_${newRowId}" 
+                                    class="employee-combined-select" data-original="">
+                                ${employeeOptions}
+                            </select>
+                        </div>
+                    </td>
+                    <td>
+                        <button type="button" class="btn btn-sm btn-danger remove-row" 
+                                onclick="removeNewRow('${newRowId}')" title="حذف السطر الجديد">
+                            <i class="bi bi-trash"></i>
+                        </button>
+                    </td>
+                </tr>
+            `;
+            
+            $('#tableBody').append(newRowHTML);
+            const $newRow = $(`tr[data-row-id="${newRowId}"]`);
+            
+            // Initialize combined search for new row
+            $newRow.find('.employee-combined-select').each(function() {
+                $(this).select2({
+                    theme: 'bootstrap-5',
+                    placeholder: "اكتب للبحث أو اختر",
+                    allowClear: true,
+                    width: '100%',
+                    dropdownParent: $('#excelGrid'),
+                    language: {
+                        noResults: () => "لا توجد نتائج",
+                        searching: () => "جاري البحث..."
+                    },
+                    minimumInputLength: 0
+                }).on('change', function() {
+                    trackSelectChange(this);
+                });
+            });
+            
+            $newRow.find('.job-select, .day-select').select2({
+                placeholder: "اختر...",
+                allowClear: false,
+                width: '100%',
+                dropdownParent: $('#excelGrid')
+            });
+            
+            // Scroll to and highlight new row
+            $newRow[0].scrollIntoView({ behavior: 'smooth', block: 'center' });
+            
+            changeCount++;
+            updateChangeCount();
+            showEmptyMessage();
+            showAlert('تم إضافة سطر جديد', 'success');
+        }
+
+
+        /**
+         * Update job for new row
+         */
+        function updateJobForNewRow(select, rowId) {
+            const $select = $(select);
+            const job = $select.val();
+            const $row = $(`tr[data-row-id="${rowId}"]`);
+            
+            if (job === '__new_job__') {
+                const newJob = prompt('أدخل اسم الوظيفة الجديدة:');
+                if (newJob?.trim()) {
+                    availableJobs.add(newJob.trim());
+                    updateJobOptions($select, newJob.trim());
+                    $row.attr('data-job', newJob.trim());
+                    updateJobFilter();
+                } else {
+                    $select.val('').trigger('change');
+                }
+            } else if (job) {
+                $row.attr('data-job', job);
+                if (!availableJobs.has(job)) {
+                    availableJobs.add(job);
+                    updateJobFilter();
+                }
+            }
+            
+            trackSelectChange(select);
+        }
+    
+        /**
+         * Update job select options
+         */
+        function updateJobOptions($select, selectedJob) {
+            $select.empty();
+            availableJobs.forEach(job => {
+                $select.append(new Option(job, job));
+            });
+            $select.append(new Option('+ إضافة وظيفة جديدة', '__new_job__'));
+            $select.val(selectedJob).trigger('change');
+        }
+    
+        /**
+         * Update day and date for new row
+         */
+        /**
+         * Update day and date for new row
+         */
+        function updateDayAndDate(select, rowId) {
+            const $select = $(select);
+            const selectedDay = $select.val();
+            const selectedDate = $select.find('option:selected').data('date') || '';
+            const $row = $(`tr[data-row-id="${rowId}"]`);
+            
+            if ($row.length && selectedDay && selectedDate) {
+                // تحديث data attributes و text
+                $row.attr('data-day', selectedDay)
+                    .attr('data-date', selectedDate)
+                    .find('.date-cell').text(selectedDate);
+                
+                // تحديث العنوان في الخلية أيضاً
+                $row.find('.day-text').text(selectedDay);
+                $row.find('.date-text').text(selectedDate);
+            }
+            
+            trackSelectChange(select);
+        }
+    
+        /**
+         * Remove new row
+         */
+        function removeNewRow(rowId) {
+            if (!confirm('هل تريد حذف هذا السطر الجديد؟')) return;
+            
+            const $row = $(`tr[data-row-id="${rowId}"]`);
+            if ($row.length) {
+                // Count changes in this row
+                const hasChanges = $row.find('.employee-combined-select.cell-changed').length > 0;
+                if (hasChanges) changeCount--;
+                
+                $row.remove();
+                updateChangeCount();
+                showEmptyMessage();
+                showAlert('تم حذف السطر الجديد', 'success');
+            }
+        }
+    
+        /**
+         * Remove existing row
+         */
+        function removeExistingRow(detailId) {
+            if (!confirm('هل تريد حذف هذا السطر؟ هذا الإجراء نهائي.')) return;
+            
+            const $row = $(`tr[data-detail-id="${detailId}"]`);
+            if (!$row.length) return;
+            
+            fetch(`/api/schedule/{{ schedule.id }}/delete_detail/${detailId}`, {
+                method: 'DELETE',
+                headers: { 'Content-Type': 'application/json' }
+            })
+            .then(response => response.json())
+            .then(data => {
+                if (data.success) {
+                    // Count changes in this row
+                    const hadChanges = $row.find('.employee-combined-select.cell-changed').length > 0;
+                    if (hadChanges) changeCount--;
+                    
+                    $row.remove();
+                    updateChangeCount();
+                    showEmptyMessage();
+                    showAlert(data.message || 'تم حذف السطر بنجاح', 'success');
+                } else {
+                    showAlert(data.message || 'حدث خطأ أثناء الحذف', 'danger');
+                }
+            })
+            .catch(error => {
+                console.error('Error:', error);
+                showAlert('حدث خطأ أثناء الحذف', 'danger');
+            });
+        }
+    
+        /**
+         * Show/hide empty message
+         */
+        function showEmptyMessage() {
+            const $emptyMessage = $('#emptyMessage');
+            const $tableBody = $('#tableBody');
+            const hasRows = $tableBody.find('tr').length > 0;
+            
+            $emptyMessage.toggle(!hasRows);
+            $tableBody.toggle(hasRows);
+        }
+    
+        /* ===========================================
+           RANDOM FILL FUNCTIONS
+           =========================================== */
+    
+        /**
+         * Show random fill modal
+         */
+        function showRandomFillModal() {
+            new bootstrap.Modal(document.getElementById('randomFillModal')).show();
+        }
+    
+        /**
+         * Apply random fill from source day
+         */
+
+        function applyRandomFill() {
+            const sourceDay = $('#sourceDay').val();
+            const applyRange = $('input[name="applyRange"]:checked').val();
+            
+            if (!sourceDay) {
+                showAlert('الرجاء اختيار اليوم المصدر', 'warning');
+                return;
+            }
+            
+            // التحقق إذا كان اليوم المصدر مقفلاً
+            if (approvedDays.has(sourceDay)) {
+                showAlert('اليوم المصدر مقفل ولا يمكن استخدامه', 'warning');
+                return;
+            }
+            
+            showLoading('جاري التعبئة العشوائية...');
+            
+            setTimeout(() => {
+                const sourceData = getSourceDayData(sourceDay);
+                if (!sourceData || Object.keys(sourceData).length === 0) {
+                    hideLoading();
+                    showAlert('لا توجد بيانات في اليوم المحدد', 'warning');
+                    return;
+                }
+                
+                const filledCount = applySourceData(sourceData, sourceDay, applyRange);
+                
+                hideLoading();
+                handleRandomFillResult(filledCount);
+            }, 500);
+        }
+
+
+
+        /**
+         * Get source day data
+         */
+        function getSourceDayData(sourceDay) {
+            const sourceData = {};
+            
+            $(`tr[data-date="${sourceDay}"]`).each(function() {
+                const job = $(this).data('job');
+                const morning = $(this).find('select[name*="_morning"]').val() || '';
+                const evening = $(this).find('select[name*="_evening"]').val() || '';
+                const night = $(this).find('select[name*="_night"]').val() || '';
+                
+                if (job && (morning || evening || night)) {
+                    sourceData[job] = { morning, evening, night };
+                }
+            });
+            
+            return sourceData;
+        }
+    
+        /**
+         * Apply source data to target rows
+         */
+        /**
+         
+
+        /**
+         * تعطيل خيارات الأيام المقفلة في select
+         */
+        function disableLockedDayOptions() {
+            $('.day-select option').each(function() {
+                const $option = $(this);
+                const date = $option.data('date');
+                if (date && approvedDays.has(date)) {
+                    $option.prop('disabled', true);
+                    if (!$option.text().includes('مقفل')) {
+                        $option.text($option.text() + ' (مقفل)');
+                    }
+                }
+            });
+        }
+
+         /**
+          * Apply source data to target rows
+         */
+        function applySourceData(sourceData, sourceDay, applyRange) {
+            let filledCount = 0;
+            const targetSelector = applyRange === 'same_day' ? 
+                `tr[data-day="${$(`#sourceDay option[value="${sourceDay}"]`).data('day-name')}"]:not(.day-approved)` :
+                '#tableBody tr:not(.new-row, .day-approved)';
+            
+            $(targetSelector).each(function() {
+                const $row = $(this);
+                const job = $row.data('job');
+                const targetDate = $row.data('date');
+                
+                // تخطي اليوم المقفل
+                if (approvedDays.has(targetDate)) {
+                    return;
+                }
+                
+                // تخطي اليوم المصدر
+                if (targetDate === sourceDay || !sourceData[job]) return;
+                
+                filledCount += fillRowShifts($row, sourceData[job]);
+            });
+            
+            return filledCount;
+        }
+
+
+        /**
+         * Fill row shifts with source data
+         */
+        function fillRowShifts($row, shiftData) {
+            let filled = 0;
+            
+            ['morning', 'evening', 'night'].forEach(shift => {
+                const $select = $row.find(`select[name*="_${shift}"]`);
+                if (shiftData[shift] && !$select.val()) {
+                    $select.val(shiftData[shift]).trigger('change').addClass('cell-changed');
+                    filled++;
+                }
+            });
+            
+            return filled;
+        }
+    
+        /**
+         * Handle random fill result
+         */
+        function handleRandomFillResult(filledCount) {
+            if (filledCount > 0) {
+                changeCount += filledCount;
+                updateChangeCount();
+                showAlert(`تم تعبئة ${filledCount} شيفت عشوائياً`, 'success');
+                
+                const modal = bootstrap.Modal.getInstance(document.getElementById('randomFillModal'));
+                if (modal) modal.hide();
+            } else {
+                showAlert('لم يتم تعبئة أي شيفتات', 'info');
+            }
+        }
+    
+        /* ===========================================
+           REPOPULATE FUNCTIONS
+           =========================================== */
+    
+        /**
+         * Initialize repopulate functionality
+         */
+        function initializeRepopulate() {
+            $('#repopulateFromAnotherBtn').click(() => {
+                loadSourceSchedules();
+                $('#repopulateModal').modal('show');
+            });
+            
+            $('#sourceScheduleSelect').change(function() {
+                const selectedId = $(this).val();
+                const $info = $('#sourceScheduleInfo');
+                const $btn = $('#confirmRepopulateBtn');
+                
+                if (selectedId) {
+                    $('#sourceScheduleDetails').html($(this).find('option:selected').text());
+                    $info.show();
+                    $btn.prop('disabled', false);
+                } else {
+                    $info.hide();
+                    $btn.prop('disabled', true);
+                }
+            });
+            
+            $('#confirmRepopulateBtn').click(confirmRepopulate);
+        }
+    
+        /**
+         * Load source schedules
+         */
+        function loadSourceSchedules() {
+            $('#sourceScheduleSelect').html('<option value="">جاري تحميل الجداول...</option>');
+            
+            $.ajax({
+                url: `/api/schedule/{{ schedule.id }}/available_source_schedules`,
+                type: 'GET',
+                success: function(response) {
+                    if (response.success) {
+                        let options = '<option value="">اختر جدولاً مصدراً...</option>';
+                        $.each(response.schedules, function(index, schedule) {
+                            options += `<option value="${schedule.id}">${schedule.display_name}</option>`;
+                        });
+                        $('#sourceScheduleSelect').html(options);
+                    } else {
+                        $('#sourceScheduleSelect').html('<option value="">حدث خطأ في تحميل الجداول</option>');
+                    }
+                },
+                error: function() {
+                    $('#sourceScheduleSelect').html('<option value="">حدث خطأ في الاتصال</option>');
+                }
+            });
+        }
+    
+        /**
+         * Confirm and execute repopulate
+         */
+        function confirmRepopulate() {
+            const sourceScheduleId = $('#sourceScheduleSelect').val();
+            const currentScheduleId = {{ schedule.id }};
+            
+            if (!sourceScheduleId) {
+                showAlert('يرجى اختيار جدول مصدر', 'warning');
+                return;
+            }
+            
+            if (!confirm('هل أنت متأكد من إعادة ملء الجدول؟ سيتم حذف جميع الصفوف المضافة يدوياً.')) {
+                return;
+            }
+            
+            const $btn = $('#confirmRepopulateBtn');
+            $btn.prop('disabled', true).html('<i class="bi bi-spinner bi-spin me-2"></i> جاري المعالجة...');
+            
+            $.ajax({
+                url: `/api/schedule/${currentScheduleId}/repopulate_from/${sourceScheduleId}`,
+                type: 'POST',
+                contentType: 'application/json',
+                data: JSON.stringify({}),
+                success: function(response) {
+                    if (response.success) {
+                        $('#repopulateModal').modal('hide');
+                        
+                        Swal.fire({
+                            icon: 'success',
+                            title: 'نجحت العملية',
+                            html: response.message + '<br><br>' +
+                                `تم نسخ <strong>${response.details.copied}</strong> تفصيلة<br>` +
+                                `تم حذف <strong>${response.details.deleted}</strong> تفصيلة مخصصة`,
+                            confirmButtonText: 'حسناً'
+                        }).then(() => {
+                            window.location.href = response.redirect_url || window.location.href;
+                        });
+                    } else {
+                        showAlert(response.message, 'danger');
+                        $btn.prop('disabled', false).html('<i class="bi bi-check me-2"></i> تأكيد إعادة الملء');
+                    }
+                },
+                error: function(xhr) {
+                    const errorMsg = xhr.responseJSON?.message || 'حدث خطأ في الخادم';
+                    showAlert(errorMsg, 'danger');
+                    $btn.prop('disabled', false).html('<i class="bi bi-check me-2"></i> تأكيد إعادة الملء');
+                }
+            });
+        }
+    
+        /* ===========================================
+           EXPORT FUNCTIONS
+           =========================================== */
+    
+        /**
+         * Download table as Excel
+         */
+        function downloadAsExcel() {
+            const $rows = $('#tableBody tr');
+            if (!$rows.length) {
+                showAlert('لا توجد بيانات لتحميلها', 'warning');
+                return;
+            }
+            
+            const headers = ['الوظيفة', 'اليوم', 'التاريخ', 'الصباحي', 'المسائي', 'السهر'];
+            const excelData = [headers];
+            
+            $rows.each(function() {
+                const $row = $(this);
+                const job = $row.data('job') || $row.find('.job-select').val() || '';
+                
+                if (job) {
+                    excelData.push([
+                        job,
+                        $row.data('day') || $row.find('.day-select').val() || '',
+                        $row.data('date') || $row.find('.date-cell').text() || '',
+                        $row.find('select[name*="_morning"]').val() || '',
+                        $row.find('select[name*="_evening"]').val() || '',
+                        $row.find('select[name*="_night"]').val() || ''
+                    ]);
+                }
+            });
+            
+            const worksheet = XLSX.utils.aoa_to_sheet(excelData);
+            const workbook = XLSX.utils.book_new();
+            XLSX.utils.book_append_sheet(workbook, worksheet, "جدول {{ schedule.department.name }}");
+            
+            const fileName = `جدول_{{ schedule.department.name }}_${'{{ schedule.week_start_date.strftime("%Y-%m-%d") }}'}.xlsx`;
+            XLSX.writeFile(workbook, fileName);
+        }
+    
+        /* ===========================================
+           SAVE FUNCTIONS
+           =========================================== */
+    
+        /**
+         * Save data as draft
+         */
+                
+        /* ===========================================
+        RECEPTION DEPARTMENT SPECIAL HANDLING
+        =========================================== */
+        /* ===========================================
+        RECEPTION DEPARTMENT SPECIAL HANDLING
+        =========================================== */
+
+        // Global flag to track if we should apply reception filtering
+        let receptionFilterEnabled = true;
+        let receptionFilterActive = true;
+
+        /**
+         * Handle Reception department special job filtering based on day
+         * This function adds a data attribute to rows to mark them for filtering
+         * Instead of hiding directly, it marks rows so filterTable can handle them
+         */
+        function markReceptionDepartmentJobs() {
+            // Check if current department is Reception (الأستقبال)
+            const departmentName = "{{ schedule.department.name }}";
+            
+            // Only apply this logic for Reception department
+            if (departmentName !== "الاستقبال" && departmentName !== "Reception") {
+                return;
+            }
+            
+            // Don't apply if manually disabled
+            if (!receptionFilterEnabled) {
+                console.log("🏥 تم تعطيل تصفية الأستقبال مؤقتاً");
+                return;
+            }
+            
+            console.log("🏥 تطبيق قواعد قسم الأستقبال - وضع علامات على الوظائف");
+            
+            // Define the special Friday-only jobs
+            const fridayJobs = [
+                "الجمعة -1",
+                "الجمعة -2", 
+                "الجمعة -3"
+            ];
+            
+            // Get all rows
+            const $allRows = $('#tableBody tr');
+            let receptionFilterActiveLocal = false;
+            
+            $allRows.each(function() {
+                const $row = $(this);
+                const day = $row.data('day') || '';
+                const job = $row.data('job') || $row.find('.job-input').val() || $row.find('.job-select').val() || '';
+                
+                // Check if this is a Friday job
+                const isFridayJob = fridayJobs.some(fridayJob => job.includes(fridayJob));
+                
+                // Check if this day is Friday
+                const isFriday = day === 'الجمعة';
+                
+                // Remove any existing reception-filter class
+                $row.removeClass('reception-hidden reception-visible');
+                
+                if (isFriday) {
+                    // On Friday: Show only Friday jobs, hide all other jobs
+                    if (!isFridayJob) {
+                        $row.addClass('reception-hidden');
+                        console.log(`🏷️ وضع علامة إخفاء لوظيفة غير الجمعة في يوم الجمعة: ${job}`);
+                    } else {
+                        $row.addClass('reception-visible');
+                        receptionFilterActiveLocal = true;
+                    }
+                } else {
+                    // On other days: Show all jobs except Friday jobs
+                    if (isFridayJob) {
+                        $row.addClass('reception-hidden');
+                        console.log(`🏷️ وضع علامة إخفاء لوظيفة الجمعة في يوم ${day}: ${job}`);
+                    } else {
+                        $row.addClass('reception-visible');
+                        receptionFilterActiveLocal = true;
+                    }
+                }
+            });
+            
+            receptionFilterActive = receptionFilterActiveLocal;
+            
+            // Update the filter status display
+            updateReceptionFilterStatus();
+        }
+
+        /**
+         * Update the filterTable function to respect reception filtering
+         */
+        function enhancedFilterTable() {
+            const selectedJob = $('#jobFilter').val() || '';
+            const $rows = $('#tableBody tr');
+            let visibleCount = 0;
+            let hiddenCount = 0;
+            
+            $rows.each(function() {
+                const $row = $(this);
+                const job = $row.data('job') || '';
+                const day = $row.data('day') || '';
+                
+                // Check if row passes the job/day filter
+                const passesJobFilter = !selectedJob || job === selectedJob;
+                const passesDayFilter = selectedDays.size === 0 || selectedDays.has(day);
+                
+                // Check if row passes reception filter (if enabled)
+                let passesReceptionFilter = true;
+                if (receptionFilterEnabled) {
+                    passesReceptionFilter = !$row.hasClass('reception-hidden');
+                }
+                
+                // Show row only if it passes all filters
+                const showRow = passesJobFilter && passesDayFilter && passesReceptionFilter;
+                
+                if (showRow) {
+                    $row.show();
+                    visibleCount++;
+                } else {
+                    $row.hide();
+                    hiddenCount++;
+                }
+            });
+            
+            updateFilterStatusBadge(selectedJob);
+            updateTableSummary(visibleCount, hiddenCount);
+            updateReceptionFilterStatus();
+            
+            if (visibleCount === 0 && (selectedJob || selectedDays.size < weekDaysArabic.length || receptionFilterEnabled)) {
+                showFilteredEmptyState(selectedJob);
+            }
+        }
+
+        /**
+         * Update reception filter status display
+         */
+        function updateReceptionFilterStatus() {
+            const departmentName = "{{ schedule.department.name }}";
+            if (departmentName !== "الاستقبال" && departmentName !== "Reception") {
+                return;
+            }
+            
+            const hiddenCount = $('#tableBody tr.reception-hidden').length;
+            const visibleCount = $('#tableBody tr.reception-visible').length;
+            const totalRows = $('#tableBody tr').length;
+            
+            let $summary = $('#receptionSummary');
+            if (!$summary.length) {
+                $summary = $(``);
+                $('.excel-grid').before($summary);
+            }
+            
+            const today = new Date().toLocaleDateString('ar-EG', { weekday: 'long' });
+            const isTodayFriday = today === 'الجمعة';
+            
+            let statusMessage = '';
+            if (!receptionFilterEnabled) {
+                statusMessage = 'تم تعطيل التصفية التلقائية - عرض جميع الوظائف';
+            } else {
+                statusMessage = isTodayFriday ? 
+                    'اليوم الجمعة - يتم عرض وظائف الجمعة فقط' : 
+                    '';
+            }
+            
+            let message = `
+                
+            `;
+            
+            $summary.html(message).show();
+            
+            // Update toggle button states if exists
+            updateReceptionToggleButtons();
+        }
+
+        /**
+         * Toggle reception filter on/off
+         */
+        function toggleReceptionFilter() {
+            receptionFilterEnabled = !receptionFilterEnabled;
+            
+            if (receptionFilterEnabled) {
+                // Re-apply marking
+                markReceptionDepartmentJobs();
+                showAlert('تم تفعيل التصفية التلقائية لوظائف الأستقبال', 'success');
+            } else {
+                // Clear reception classes
+                $('#tableBody tr').removeClass('reception-hidden reception-visible');
+                showAlert('تم تعطيل التصفية التلقائية - عرض جميع الوظائف', 'info');
+            }
+            
+            // Re-filter the table
+            enhancedFilterTable();
+        }
+
+        /**
+         * Update toggle buttons in the reception toggle group
+         */
+        function updateReceptionToggleButtons() {
+            const $toggleGroup = $('#receptionToggle');
+            if (!$toggleGroup.length) return;
+            
+            $toggleGroup.find('.btn').removeClass('active');
+            if (receptionFilterEnabled) {
+                $toggleGroup.find('.btn-outline-warning').addClass('active');
+            } else {
+                $toggleGroup.find('.btn-outline-info').addClass('active');
+            }
+        }
+
+        /**
+         * Add a toggle button for Reception department
+         */
+        function addReceptionDepartmentToggle() {
+            const departmentName = "{{ schedule.department.name }}";
+            if (departmentName !== "الاستقبال" && departmentName !== "Reception") {
+                return;
+            }
+            
+            // Check if toggle already exists
+            if ($('#receptionToggle').length) return;
+            
+            const toggleHTML = `
+            `;
+            
+            // Add toggle buttons next to the existing filter buttons
+            $('.d-flex.gap-2').first().after(toggleHTML);
+        }
+
+        /**
+         * Refresh reception filter
+         */
+        function refreshReceptionFilter() {
+            markReceptionDepartmentJobs();
+            enhancedFilterTable();
+            showAlert('تم تحديث تصفية وظائف الأستقبال', 'info');
+        }
+
+        /**
+         * Force show all Reception jobs
+         */
+        function forceShowAllReceptionJobs() {
+            receptionFilterEnabled = false;
+            $('#tableBody tr').removeClass('reception-hidden reception-visible');
+            enhancedFilterTable();
+            showAlert('تم عرض جميع وظائف الأستقبال', 'info');
+            updateReceptionToggleButtons();
+        }
+
+        /**
+         * Reset to automatic filtering
+         */
+        function resetReceptionJobsFilter() {
+            receptionFilterEnabled = true;
+            markReceptionDepartmentJobs();
+            enhancedFilterTable();
+            showAlert('تم إعادة التصفية التلقائية حسب اليوم', 'success');
+            updateReceptionToggleButtons();
+        }
+
+        /**
+         * Initialize Reception department handling
+         */
+        function initializeReceptionHandling() {
+            const departmentName = "{{ schedule.department.name }}";
+            
+            if (departmentName === "الاستقبال" || departmentName === "Reception") {
+                console.log("🏥 تم تفعيل معالجة خاصة لقسم الأستقبال");
+                
+                // Add toggle button
+                addReceptionDepartmentToggle();
+                
+                // Initial marking
+                setTimeout(() => {
+                    markReceptionDepartmentJobs();
+                    enhancedFilterTable();
+                }, 500);
+                
+                // Re-apply on day change or filter change
+                $(document).on('change', '.day-select, .job-select', function() {
+                    setTimeout(() => {
+                        markReceptionDepartmentJobs();
+                        enhancedFilterTable();
+                    }, 100);
+                });
+                
+                // Handle when new rows are added
+                $(document).on('DOMNodeInserted', '#tableBody tr', function() {
+                    setTimeout(() => {
+                        markReceptionDepartmentJobs();
+                        enhancedFilterTable();
+                    }, 100);
+                });
+                
+                // Handle day filter badge clicks
+                $(document).on('click', '.filter-badge', function() {
+                    setTimeout(enhancedFilterTable, 100);
+                });
+                
+                // Handle job filter changes
+                $(document).on('change', '#jobFilter', function() {
+                    setTimeout(enhancedFilterTable, 100);
+                });
+            }
+        }
+
+        function saveAsDraft() {
+            if (changeCount === 0) {
+                showAlert('لم تقم بإجراء أي تغييرات', 'warning');
+                return;
+            }
+            
+            if (!confirm('هل تريد حفظ التغييرات كمسودة؟')) {
+                return;
+            }
+            
+            saveFilterState();
+            showLoading('جاري حفظ المسودة...');
+            
+            const scheduleData = {
+                existing_rows: [],
+                new_rows: [],
+                schedule_id: {{ schedule.id }},
+                action: 'save_draft'
+            };
+            
+            // Collect existing rows
+            $('tr:not(.new-row)').each(function() {
+                const $row = $(this);
+                const detailId = $row.data('detail-id');
+                
+                if (detailId && !isNaN(parseInt(detailId))) {
+                    scheduleData.existing_rows.push({
+                        detail_id: parseInt(detailId),
+                        morning_shift: $row.find('select[name*="_morning"]').val() || '',
+                        evening_shift: $row.find('select[name*="_evening"]').val() || '',
+                        night_shift: $row.find('select[name*="_night"]').val() || '',
+                        job_title: $row.data('job') || $row.find('input.job-input').val() || ''
+                    });
+                }
+            });
+            
+            // Collect new rows
+            // في دالة saveAsDraft، تأكد من أننا نحفظ اليوم الصحيح
+            $('.new-row').each(function() {
+                const $row = $(this);
+                const job = $row.data('job') || $row.find('.job-select').val() || '';
+                
+                // الحصول على اليوم من الـ select المختار وليس من data-day
+                const daySelect = $row.find('.day-select');
+                const day = daySelect.val() || $row.data('day') || '';
+                const date = daySelect.find('option:selected').data('date') || $row.data('date') || $row.find('.date-cell').text() || '';
+                
+                if (job && day && date) {
+                    scheduleData.new_rows.push({
+                        job_title: job,
+                        day: day,
+                        date: date,
+                        morning_shift: $row.find('select[name*="_morning"]').val() || '',
+                        evening_shift: $row.find('select[name*="_evening"]').val() || '',
+                        night_shift: $row.find('select[name*="_night"]').val() || ''
+                    });
+                }
+            });
+            
+            // Send to server
+            fetch(`/api/schedule/update/{{ schedule.id }}`, {
+                method: 'POST',
+                headers: { 'Content-Type': 'application/json', 'Accept': 'application/json' },
+                body: JSON.stringify(scheduleData)
+            })
+            .then(response => {
+                if (!response.ok) throw new Error(`HTTP error! status: ${response.status}`);
+                return response.json();
+            })
+            .then(data => {
+                hideLoading();
+                
+                if (data.success) {
+                    handleSaveSuccess(data);
+                } else {
+                    handleSaveError(data.message);
+                }
+            })
+            .catch(error => {
+                hideLoading();
+                handleSaveError(error.message);
+            });
+        }
+    
+        /**
+         * Handle successful save
+         */
+        function handleSaveSuccess(data) {
+            showAlert('تم حفظ المسودة بنجاح', 'success');
+            
+            changesMade = false;
+            changeCount = 0;
+            updateChangeCount();
+            
+            // Reset original values
+            $('.employee-combined-select').each(function() {
+                $(this).data('original', $(this).val()).removeClass('cell-changed');
+            });
+            
+            // Reload if needed
+            if (data.new_rows_count > 0 || data.updated_count > 0) {
+                setTimeout(() => window.location.reload(), 1500);
+            }
+        }
+    
+        /**
+         * Handle save error
+         */
+        function handleSaveError(errorMessage) {
+            showAlert('حدث خطأ أثناء الحفظ: ' + errorMessage, 'danger');
+            localStorage.removeItem('scheduleFilters');
+        }
+    
+        /**
+         * Submit for approval
+         */
+        function submitForApproval() {
+            if (changeCount > 0) {
+                if (!confirm('لديك تغييرات غير محفوظة. هل تريد حفظها أولاً قبل الإرسال للاعتماد؟')) return;
+                saveFilterState();
+                saveAsDraft();
+                return;
+            }
+            
+            if (!confirm('هل تريد إرسال الجدول للاعتماد؟ بعد الإرسال لا يمكن التعديل.')) return;
+            
+            saveFilterState();
+            showLoading('جاري إرسال الجدول للاعتماد...');
+            
+            fetch(`/api/schedule/{{ schedule.id }}/submit_for_approval`, {
+                method: 'POST',
+                headers: { 'Content-Type': 'application/json' },
+                body: JSON.stringify({ action: 'submit_for_approval', schedule_id: {{ schedule.id }} })
+            })
+            .then(response => response.json())
+            .then(data => {
+                hideLoading();
+                
+                if (data.success) {
+                    handleSubmitSuccess();
+                } else {
+                    showAlert('حدث خطأ أثناء الإرسال: ' + data.message, 'danger');
+                }
+            })
+            .catch(error => {
+                hideLoading();
+                showAlert('حدث خطأ أثناء الإرسال: ' + error.message, 'danger');
+            });
+        }
+    
+        /**
+         * Handle successful submission
+         */
+        function handleSubmitSuccess() {
+            showAlert('تم إرسال الجدول للاعتماد بنجاح', 'success');
+            
+            // Lock interface
+            $('#changeStatus').hide();
+            $('.employee-combined-select').prop('disabled', true).select2({ disabled: true });
+            $('.remove-row').prop('disabled', true).hide();
+            $('button[onclick="saveAsDraft()"], button[onclick="submitForApproval()"]').hide();
+            
+            // Update status
+            $('.status-indicator').html(`
+                <span class="badge bg-warning text-dark">
+                    <i class="bi bi-clock me-1"></i> في انتظار الاعتماد
+                </span>
+                <span class="badge bg-danger ms-1">
+                    <i class="bi bi-lock me-1"></i> مقفل
+                </span>
+            `);
+            
+            // Redirect
+            setTimeout(() => {
+                window.location.href = "{{ url_for('manager_schedules') }}";
+            }, 2000);
+        }
+    
+        /* ===========================================
+           PAGE INITIALIZATION
+           =========================================== */
+    
+        /**
+         * Initialize real-time clock
+         */
+        function initializeClock() {
+            function updateClock() {
+                const now = new Date();
+                const timeString = now.toLocaleTimeString('ar-EG');
+                const dateString = now.toLocaleDateString('ar-EG', {
+                    weekday: 'long',
+                    year: 'numeric',
+                    month: 'long',
+                    day: 'numeric'
+                });
+                
+                $('#live-clock').html(`
+                    <i class="bi bi-clock me-2"></i>
+                    ${timeString}
+                    <small class="text-white-50 ms-2 d-none d-md-inline">${dateString}</small>
+                `);
+            }
+            
+            updateClock();
+            setInterval(updateClock, 1000);
+        }
+    
+        /**
+         * Initialize mobile menu
+         */
+        function initializeMobileMenu() {
+            const $mobileMenuBtn = $('#mobileMenuBtn');
+            const $mobileNavMenu = $('#mobileNavMenu');
+            
+            if ($mobileMenuBtn.length && $mobileNavMenu.length) {
+                $mobileMenuBtn.click(() => $mobileNavMenu.toggleClass('active'));
+                
+                $(document).click(event => {
+                    if (!$mobileMenuBtn.is(event.target) && 
+                        !$mobileNavMenu.is(event.target) && 
+                        $mobileNavMenu.has(event.target).length === 0) {
+                        $mobileNavMenu.removeClass('active');
+                    }
+                });
+            }
+        }
+    
+        /**
+         * Initialize the application
+         */
+        /**
+         * Initialize the application
+         */
+        function initializeApp() {
+            // Extract jobs from existing data
+            $('tr[data-job]').each(function() {
+                const job = $(this).data('job');
+                if (job) availableJobs.add(job);
+            });
+            
+            // Initialize Combined Search & Dropdown
+            initializeCombinedSearch();
+            
+            // Initialize job filter
+            updateJobFilter();
+
+            loadApprovedDays();
+            
+            // Create day filters
+            createDayFilters();
+            
+            // Load saved filter state
+            loadFilterState();
+            
+            // Update change count
+            updateChangeCount();
+            
+            // Show/hide empty message
+            showEmptyMessage();
+            
+            // Initialize repopulate functionality
+            initializeRepopulate();
+            
+            // Initialize Reception department special handling
+            initializeReceptionHandling();
+            
+            // Initial duplicate check
+            setTimeout(checkForDuplicates, 500);
+        }
+    
+        /* ===========================================
+           DOCUMENT READY
+           =========================================== */
+        $(document).ready(function() {
+            // Initialize clock
+            initializeClock();
+            
+            // Initialize mobile menu
+            initializeMobileMenu();
+            
+            // Initialize app
+            initializeApp();
+            
+            // Setup duplicate checking on change
+            $(document).on('change', '.employee-combined-select', function() {
+                setTimeout(checkForDuplicates, 100);
+            });
+            
+            // Setup change tracking for combined search
+            $(document).on('select2:select select2:unselect', '.employee-combined-select', function() {
+                trackSelectChange(this);
+            });
+        });
+    </script>
+</body>
+</html>

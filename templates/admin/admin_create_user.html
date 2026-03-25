@@ -1,0 +1,66 @@
+{% extends "layouts/admin_base.html" %}
+
+{% block title %}إضافة مستخدم جديد{% endblock %}
+
+{% block admin_content %}
+<div class="d-flex justify-content-between flex-wrap flex-md-nowrap align-items-center pt-3 pb-2 mb-3 border-bottom">
+    <h1 class="h2">إضافة مستخدم جديد</h1>
+    <a href="{{ url_for('admin_users') }}" class="btn btn-secondary">
+        <i class="fas fa-arrow-right me-2"></i>العودة للقائمة
+    </a>
+</div>
+
+<div class="card">
+    <div class="card-header">
+        <h5 class="card-title mb-0">بيانات المستخدم الجديد</h5>
+    </div>
+    <div class="card-body">
+        <form method="POST">
+            <div class="row">
+                <div class="col-md-6 mb-3">
+                    <label for="username" class="form-label">اسم المستخدم</label>
+                    <input type="text" class="form-control" id="username" name="username" required>
+                </div>
+                <div class="col-md-6 mb-3">
+                    <label for="name" class="form-label">الاسم الكامل</label>
+                    <input type="text" class="form-control" id="name" name="name" required>
+                </div>
+            </div>
+
+            <div class="row">
+                <div class="col-md-6 mb-3">
+                    <label for="password" class="form-label">كلمة المرور</label>
+                    <input type="password" class="form-control" id="password" name="password" required>
+                </div>
+                <div class="col-md-6 mb-3">
+                    <label for="department_id" class="form-label">القسم</label>
+                    <select class="form-select" id="department_id" name="department_id">
+                        <option value="">اختر القسم</option>
+                        {% for department in departments %}
+                        <option value="{{ department.id }}">{{ department.name }}</option>
+                        {% endfor %}
+                    </select>
+                </div>
+            </div>
+
+            <div class="row">
+                <div class="col-md-6 mb-3">
+                    <div class="form-check">
+                        <input class="form-check-input" type="checkbox" id="is_manager" name="is_manager">
+                        <label class="form-check-label" for="is_manager">
+                            مدير قسم
+                        </label>
+                    </div>
+                </div>
+            </div>
+
+            <div class="mt-4">
+                <button type="submit" class="btn btn-primary">
+                    <i class="fas fa-save me-2"></i>حفظ المستخدم
+                </button>
+                <a href="{{ url_for('admin_users') }}" class="btn btn-secondary">إلغاء</a>
+            </div>
+        </form>
+    </div>
+</div>
+{% endblock %}

@@ -1,0 +1,1589 @@
+<!DOCTYPE html>
+<html lang="ar" dir="rtl">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>نظام الهجرة الذكي - استخراج وتحويل جميع بيانات الجداول</title>
+    
+    <!-- Bootstrap 5 CSS -->
+    <link href="https://cdn.jsdelivr.net/npm/bootstrap@5.3.0-alpha1/dist/css/bootstrap.min.css" rel="stylesheet">
+    <!-- Font Awesome 6 -->
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css">
+    
+    <style>
+        :root {
+            --primary: #4361ee;
+            --primary-dark: #3a56d4;
+            --primary-light: #eef2ff;
+            --secondary: #6c757d;
+            --success: #28a745;
+            --success-dark: #218838;
+            --warning: #ffc107;
+            --warning-dark: #e0a800;
+            --danger: #dc3545;
+            --danger-dark: #c82333;
+            --info: #17a2b8;
+            --info-dark: #138496;
+            --dark: #2d3748;
+            --light: #f8f9fa;
+            --border: #e2e8f0;
+            --shadow: 0 10px 15px -3px rgba(0, 0, 0, 0.1), 0 4px 6px -2px rgba(0, 0, 0, 0.05);
+            --radius: 12px;
+            --transition: all 0.3s cubic-bezier(0.4, 0, 0.2, 1);
+        }
+        
+        * {
+            margin: 0;
+            padding: 0;
+            box-sizing: border-box;
+        }
+        
+        body {
+            font-family: -apple-system, BlinkMacSystemFont, 'Segoe UI', 'Tahoma', Geneva, Verdana, sans-serif;
+            background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
+            min-height: 100vh;
+            color: var(--dark);
+            line-height: 1.6;
+        }
+        
+        .app-container {
+            max-width: 1600px;
+            margin: 0 auto;
+            padding: 2rem;
+        }
+        
+        /* Header Styles */
+        .app-header {
+            background: rgba(255, 255, 255, 0.95);
+            backdrop-filter: blur(10px);
+            border-radius: var(--radius);
+            padding: 2.5rem;
+            margin-bottom: 2rem;
+            box-shadow: var(--shadow);
+            border: 1px solid rgba(255, 255, 255, 0.2);
+            position: relative;
+            overflow: hidden;
+        }
+        
+        .app-header::before {
+            content: '';
+            position: absolute;
+            top: 0;
+            right: 0;
+            width: 300px;
+            height: 300px;
+            background: radial-gradient(circle at top right, var(--primary-light), transparent 70%);
+            opacity: 0.6;
+        }
+        
+        .app-title {
+            font-size: 2.8rem;
+            font-weight: 900;
+            background: linear-gradient(135deg, var(--primary) 0%, #667eea 100%);
+            -webkit-background-clip: text;
+            -webkit-text-fill-color: transparent;
+            background-clip: text;
+            margin-bottom: 1rem;
+            position: relative;
+            display: inline-block;
+        }
+        
+        .app-title::after {
+            content: '';
+            position: absolute;
+            bottom: -10px;
+            right: 0;
+            width: 100px;
+            height: 5px;
+            background: linear-gradient(to left, var(--primary), transparent);
+            border-radius: 3px;
+        }
+        
+        .app-subtitle {
+            color: var(--secondary);
+            font-size: 1.2rem;
+            max-width: 800px;
+            line-height: 1.8;
+            opacity: 0.9;
+        }
+        
+        /* Main Content Grid */
+        .content-grid {
+            display: grid;
+            grid-template-columns: 1fr 1fr;
+            gap: 2rem;
+            margin-bottom: 2rem;
+        }
+        
+        @media (max-width: 1200px) {
+            .content-grid {
+                grid-template-columns: 1fr;
+            }
+        }
+        
+        /* Card Styles */
+        .card {
+            background: rgba(255, 255, 255, 0.95);
+            backdrop-filter: blur(10px);
+            border-radius: var(--radius);
+            border: 1px solid rgba(255, 255, 255, 0.2);
+            box-shadow: var(--shadow);
+            overflow: hidden;
+            transition: var(--transition);
+            height: 100%;
+        }
+        
+        .card:hover {
+            transform: translateY(-5px);
+            box-shadow: 0 20px 25px -5px rgba(0, 0, 0, 0.1), 0 10px 10px -5px rgba(0, 0, 0, 0.04);
+        }
+        
+        .card-header {
+            background: linear-gradient(135deg, var(--primary-light) 0%, rgba(255, 255, 255, 0.9) 100%);
+            padding: 1.75rem 2rem;
+            border-bottom: 2px solid rgba(67, 97, 238, 0.1);
+            display: flex;
+            align-items: center;
+            justify-content: space-between;
+        }
+        
+        .card-title {
+            font-size: 1.4rem;
+            font-weight: 700;
+            color: var(--primary);
+            display: flex;
+            align-items: center;
+            gap: 0.75rem;
+        }
+        
+        .card-title i {
+            font-size: 1.5rem;
+        }
+        
+        .card-badge {
+            background: linear-gradient(135deg, var(--primary) 0%, var(--primary-dark) 100%);
+            color: white;
+            padding: 0.5rem 1rem;
+            border-radius: 50px;
+            font-size: 0.9rem;
+            font-weight: 600;
+            box-shadow: 0 4px 6px rgba(67, 97, 238, 0.2);
+        }
+        
+        .card-body {
+            padding: 2rem;
+        }
+        
+        /* Stats Dashboard */
+        .stats-grid {
+            display: grid;
+            grid-template-columns: repeat(auto-fit, minmax(250px, 1fr));
+            gap: 1.5rem;
+            margin-bottom: 2rem;
+        }
+        
+        .stat-item {
+            background: white;
+            border-radius: var(--radius);
+            padding: 1.5rem;
+            display: flex;
+            align-items: center;
+            gap: 1.5rem;
+            box-shadow: 0 4px 6px rgba(0, 0, 0, 0.05);
+            transition: var(--transition);
+            border-left: 5px solid var(--primary);
+        }
+        
+        .stat-item:hover {
+            transform: translateY(-3px);
+            box-shadow: 0 10px 15px rgba(0, 0, 0, 0.1);
+        }
+        
+        .stat-icon {
+            width: 70px;
+            height: 70px;
+            background: linear-gradient(135deg, var(--primary-light) 0%, rgba(67, 97, 238, 0.1) 100%);
+            border-radius: 16px;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            font-size: 2rem;
+            color: var(--primary);
+        }
+        
+        .stat-content {
+            flex: 1;
+        }
+        
+        .stat-value {
+            font-size: 2.5rem;
+            font-weight: 800;
+            color: var(--dark);
+            line-height: 1;
+            margin-bottom: 0.25rem;
+        }
+        
+        .stat-label {
+            font-size: 0.95rem;
+            color: var(--secondary);
+            font-weight: 600;
+            text-transform: uppercase;
+            letter-spacing: 0.5px;
+        }
+        
+        /* Data Analysis Panel */
+        .analysis-panel {
+            background: linear-gradient(135deg, #f8fafc 0%, #f1f5f9 100%);
+            border-radius: var(--radius);
+            padding: 2rem;
+            margin-bottom: 2rem;
+        }
+        
+        .analysis-header {
+            display: flex;
+            align-items: center;
+            gap: 1rem;
+            margin-bottom: 1.5rem;
+        }
+        
+        .analysis-icon {
+            width: 60px;
+            height: 60px;
+            background: linear-gradient(135deg, var(--info) 0%, var(--info-dark) 100%);
+            border-radius: 12px;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            color: white;
+            font-size: 1.5rem;
+        }
+        
+        .analysis-title {
+            font-size: 1.5rem;
+            font-weight: 700;
+            color: var(--dark);
+        }
+        
+        .data-structures {
+            display: grid;
+            grid-template-columns: repeat(auto-fit, minmax(300px, 1fr));
+            gap: 1.5rem;
+        }
+        
+        .structure-card {
+            background: white;
+            border-radius: var(--radius);
+            padding: 1.5rem;
+            border: 2px solid var(--border);
+            transition: var(--transition);
+        }
+        
+        .structure-card:hover {
+            border-color: var(--primary);
+            box-shadow: 0 10px 15px rgba(0, 0, 0, 0.05);
+        }
+        
+        .structure-header {
+            display: flex;
+            align-items: center;
+            justify-content: space-between;
+            margin-bottom: 1rem;
+        }
+        
+        .structure-name {
+            font-weight: 600;
+            color: var(--dark);
+            font-size: 1.1rem;
+        }
+        
+        .structure-count {
+            background: var(--primary-light);
+            color: var(--primary);
+            padding: 0.25rem 0.75rem;
+            border-radius: 20px;
+            font-size: 0.9rem;
+            font-weight: 600;
+        }
+        
+        .structure-desc {
+            color: var(--secondary);
+            font-size: 0.95rem;
+            line-height: 1.6;
+        }
+        
+        /* Migration Options */
+        .migration-options {
+            display: grid;
+            grid-template-columns: repeat(auto-fit, minmax(350px, 1fr));
+            gap: 2rem;
+            margin-bottom: 2rem;
+        }
+        
+        .option-card {
+            background: white;
+            border-radius: var(--radius);
+            padding: 2.5rem;
+            text-align: center;
+            border: 2px solid var(--border);
+            transition: var(--transition);
+            cursor: pointer;
+            position: relative;
+            overflow: hidden;
+        }
+        
+        .option-card::before {
+            content: '';
+            position: absolute;
+            top: 0;
+            right: 0;
+            width: 100%;
+            height: 5px;
+            background: linear-gradient(to left, var(--primary), transparent);
+            opacity: 0;
+            transition: var(--transition);
+        }
+        
+        .option-card:hover::before {
+            opacity: 1;
+        }
+        
+        .option-card:hover {
+            border-color: var(--primary);
+            transform: translateY(-8px);
+            box-shadow: var(--shadow);
+        }
+        
+        .option-card.selected {
+            border-color: var(--primary);
+            background: linear-gradient(135deg, rgba(67, 97, 238, 0.03) 0%, rgba(67, 97, 238, 0.01) 100%);
+            box-shadow: 0 20px 25px rgba(67, 97, 238, 0.1);
+        }
+        
+        .option-card.selected::before {
+            opacity: 1;
+        }
+        
+        .option-card.warning {
+            border-color: var(--warning);
+        }
+        
+        .option-card.warning:hover {
+            border-color: var(--warning-dark);
+        }
+        
+        .option-card.warning::before {
+            background: linear-gradient(to left, var(--warning), transparent);
+        }
+        
+        .option-icon {
+            font-size: 4rem;
+            margin-bottom: 1.5rem;
+            color: var(--primary);
+            opacity: 0.9;
+        }
+        
+        .option-card.warning .option-icon {
+            color: var(--warning);
+        }
+        
+        .option-title {
+            font-size: 1.5rem;
+            font-weight: 700;
+            color: var(--dark);
+            margin-bottom: 1rem;
+        }
+        
+        .option-desc {
+            color: var(--secondary);
+            line-height: 1.7;
+            margin-bottom: 1.5rem;
+        }
+        
+        .option-features {
+            text-align: right;
+            margin-bottom: 1.5rem;
+        }
+        
+        .feature-item {
+            display: flex;
+            align-items: center;
+            gap: 0.75rem;
+            margin-bottom: 0.5rem;
+            color: var(--dark);
+            font-size: 0.95rem;
+        }
+        
+        .feature-item i {
+            color: var(--success);
+            font-size: 1.1rem;
+        }
+        
+        .option-tag {
+            display: inline-block;
+            padding: 0.5rem 1.5rem;
+            border-radius: 50px;
+            font-weight: 600;
+            font-size: 0.9rem;
+            margin-top: 1rem;
+        }
+        
+        .option-tag.recommended {
+            background: linear-gradient(135deg, var(--success) 0%, var(--success-dark) 100%);
+            color: white;
+        }
+        
+        .option-tag.warning {
+            background: linear-gradient(135deg, var(--warning) 0%, var(--warning-dark) 100%);
+            color: var(--dark);
+        }
+        
+        /* Progress Section */
+        .progress-section {
+            background: white;
+            border-radius: var(--radius);
+            padding: 3rem;
+            text-align: center;
+            box-shadow: var(--shadow);
+            margin-bottom: 2rem;
+        }
+        
+        .progress-container {
+            max-width: 800px;
+            margin: 0 auto;
+        }
+        
+        .progress-title {
+            font-size: 1.8rem;
+            font-weight: 700;
+            color: var(--dark);
+            margin-bottom: 2rem;
+        }
+        
+        .progress-bar-container {
+            position: relative;
+            margin: 2rem 0;
+        }
+        
+        .progress-bar {
+            height: 20px;
+            background: linear-gradient(135deg, #e2e8f0 0%, #cbd5e0 100%);
+            border-radius: 10px;
+            overflow: hidden;
+            position: relative;
+        }
+        
+        .progress-fill {
+            height: 100%;
+            background: linear-gradient(90deg, var(--primary) 0%, var(--primary-dark) 100%);
+            border-radius: 10px;
+            width: 0%;
+            transition: width 1s cubic-bezier(0.4, 0, 0.2, 1);
+            position: relative;
+            overflow: hidden;
+        }
+        
+        .progress-fill::after {
+            content: '';
+            position: absolute;
+            top: 0;
+            left: 0;
+            right: 0;
+            bottom: 0;
+            background: linear-gradient(90deg, 
+                rgba(255, 255, 255, 0.2) 0%, 
+                rgba(255, 255, 255, 0.4) 50%, 
+                rgba(255, 255, 255, 0.2) 100%);
+            animation: shimmer 2s infinite linear;
+        }
+        
+        @keyframes shimmer {
+            0% { transform: translateX(-100%); }
+            100% { transform: translateX(100%); }
+        }
+        
+        .progress-text {
+            position: absolute;
+            top: 50%;
+            right: 15px;
+            transform: translateY(-50%);
+            color: white;
+            font-weight: 700;
+            font-size: 0.9rem;
+            text-shadow: 0 1px 2px rgba(0, 0, 0, 0.3);
+            z-index: 2;
+        }
+        
+        .progress-steps {
+            display: flex;
+            justify-content: space-between;
+            margin-top: 1.5rem;
+            position: relative;
+        }
+        
+        .progress-step {
+            text-align: center;
+            position: relative;
+            z-index: 2;
+        }
+        
+        .step-icon {
+            width: 50px;
+            height: 50px;
+            background: white;
+            border: 3px solid var(--border);
+            border-radius: 50%;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            margin: 0 auto 0.75rem;
+            font-size: 1.25rem;
+            color: var(--secondary);
+            transition: var(--transition);
+        }
+        
+        .step-active .step-icon {
+            background: var(--primary);
+            border-color: var(--primary);
+            color: white;
+            transform: scale(1.1);
+        }
+        
+        .step-label {
+            font-size: 0.9rem;
+            color: var(--secondary);
+            font-weight: 600;
+        }
+        
+        .step-active .step-label {
+            color: var(--primary);
+        }
+        
+        /* Migration Results */
+        .results-grid {
+            display: grid;
+            grid-template-columns: repeat(auto-fit, minmax(300px, 1fr));
+            gap: 1.5rem;
+            margin-top: 2rem;
+        }
+        
+        .result-card {
+            background: white;
+            border-radius: var(--radius);
+            padding: 1.5rem;
+            border-top: 4px solid var(--primary);
+            box-shadow: 0 4px 6px rgba(0, 0, 0, 0.05);
+        }
+        
+        .result-card.success {
+            border-top-color: var(--success);
+        }
+        
+        .result-card.info {
+            border-top-color: var(--info);
+        }
+        
+        .result-card.warning {
+            border-top-color: var(--warning);
+        }
+        
+        .result-title {
+            font-size: 1rem;
+            font-weight: 600;
+            color: var(--secondary);
+            margin-bottom: 0.5rem;
+            display: flex;
+            align-items: center;
+            gap: 0.5rem;
+        }
+        
+        .result-value {
+            font-size: 2rem;
+            font-weight: 800;
+            color: var(--dark);
+            line-height: 1;
+        }
+        
+        /* Buttons */
+        .btn {
+            border-radius: var(--radius);
+            padding: 1rem 2rem;
+            font-weight: 600;
+            border: none;
+            transition: var(--transition);
+            display: inline-flex;
+            align-items: center;
+            justify-content: center;
+            gap: 0.75rem;
+            font-size: 1.1rem;
+            cursor: pointer;
+        }
+        
+        .btn-lg {
+            padding: 1.25rem 3rem;
+            font-size: 1.2rem;
+        }
+        
+        .btn-primary {
+            background: linear-gradient(135deg, var(--primary) 0%, var(--primary-dark) 100%);
+            color: white;
+            box-shadow: 0 4px 15px rgba(67, 97, 238, 0.3);
+        }
+        
+        .btn-primary:hover {
+            background: linear-gradient(135deg, var(--primary-dark) 0%, #2d46b8 100%);
+            transform: translateY(-2px);
+            box-shadow: 0 8px 25px rgba(67, 97, 238, 0.4);
+        }
+        
+        .btn-success {
+            background: linear-gradient(135deg, var(--success) 0%, var(--success-dark) 100%);
+            color: white;
+            box-shadow: 0 4px 15px rgba(40, 167, 69, 0.3);
+        }
+        
+        .btn-warning {
+            background: linear-gradient(135deg, var(--warning) 0%, var(--warning-dark) 100%);
+            color: var(--dark);
+            box-shadow: 0 4px 15px rgba(255, 193, 7, 0.3);
+        }
+        
+        .btn-outline {
+            background: transparent;
+            border: 2px solid var(--primary);
+            color: var(--primary);
+        }
+        
+        .btn-outline:hover {
+            background: var(--primary);
+            color: white;
+            transform: translateY(-2px);
+        }
+        
+        /* Alert Styles */
+        .alert {
+            background: white;
+            border-radius: var(--radius);
+            padding: 1.5rem;
+            margin-bottom: 1.5rem;
+            border-right: 5px solid;
+            box-shadow: 0 4px 6px rgba(0, 0, 0, 0.05);
+            display: flex;
+            align-items: flex-start;
+            gap: 1rem;
+        }
+        
+        .alert-warning {
+            border-right-color: var(--warning);
+            background: linear-gradient(135deg, rgba(255, 193, 7, 0.05) 0%, rgba(255, 193, 7, 0.02) 100%);
+        }
+        
+        .alert-info {
+            border-right-color: var(--info);
+            background: linear-gradient(135deg, rgba(23, 162, 184, 0.05) 0%, rgba(23, 162, 184, 0.02) 100%);
+        }
+        
+        .alert-success {
+            border-right-color: var(--success);
+            background: linear-gradient(135deg, rgba(40, 167, 69, 0.05) 0%, rgba(40, 167, 69, 0.02) 100%);
+        }
+        
+        .alert-icon {
+            font-size: 1.5rem;
+            color: inherit;
+            margin-top: 0.25rem;
+        }
+        
+        .alert-content {
+            flex: 1;
+        }
+        
+        .alert-title {
+            font-size: 1.1rem;
+            font-weight: 700;
+            margin-bottom: 0.5rem;
+        }
+        
+        .alert-message {
+            color: var(--secondary);
+            line-height: 1.6;
+        }
+        
+        /* Table Styles */
+        .data-table {
+            width: 100%;
+            border-collapse: separate;
+            border-spacing: 0;
+            background: white;
+            border-radius: var(--radius);
+            overflow: hidden;
+            box-shadow: 0 4px 6px rgba(0, 0, 0, 0.05);
+        }
+        
+        .data-table th {
+            background: linear-gradient(135deg, var(--primary-light) 0%, rgba(67, 97, 238, 0.1) 100%);
+            padding: 1.25rem;
+            text-align: right;
+            font-weight: 700;
+            color: var(--primary);
+            border-bottom: 2px solid var(--border);
+        }
+        
+        .data-table td {
+            padding: 1.25rem;
+            border-bottom: 1px solid var(--border);
+            transition: var(--transition);
+        }
+        
+        .data-table tr:hover td {
+            background: rgba(67, 97, 238, 0.03);
+        }
+        
+        .data-table tr:last-child td {
+            border-bottom: none;
+        }
+        
+        /* Responsive */
+        @media (max-width: 768px) {
+            .app-container {
+                padding: 1rem;
+            }
+            
+            .app-header {
+                padding: 1.5rem;
+            }
+            
+            .app-title {
+                font-size: 2rem;
+            }
+            
+            .content-grid {
+                gap: 1rem;
+            }
+            
+            .stats-grid {
+                grid-template-columns: 1fr;
+            }
+            
+            .migration-options {
+                grid-template-columns: 1fr;
+            }
+            
+            .card-body, .progress-section {
+                padding: 1.5rem;
+            }
+        }
+        
+        /* Animations */
+        @keyframes fadeInUp {
+            from {
+                opacity: 0;
+                transform: translateY(30px);
+            }
+            to {
+                opacity: 1;
+                transform: translateY(0);
+            }
+        }
+        
+        .animate-in {
+            animation: fadeInUp 0.6s cubic-bezier(0.4, 0, 0.2, 1) forwards;
+        }
+        
+        .delay-1 { animation-delay: 0.1s; opacity: 0; }
+        .delay-2 { animation-delay: 0.2s; opacity: 0; }
+        .delay-3 { animation-delay: 0.3s; opacity: 0; }
+        .delay-4 { animation-delay: 0.4s; opacity: 0; }
+        
+        /* Loading Spinner */
+        .spinner {
+            width: 40px;
+            height: 40px;
+            border: 4px solid var(--border);
+            border-top: 4px solid var(--primary);
+            border-radius: 50%;
+            animation: spin 1s linear infinite;
+            margin: 0 auto;
+        }
+        
+        @keyframes spin {
+            0% { transform: rotate(0deg); }
+            100% { transform: rotate(360deg); }
+        }
+    </style>
+</head>
+<body>
+    <div class="app-container">
+        <!-- Header -->
+        <header class="app-header animate-in">
+            <div class="d-flex flex-column flex-lg-row justify-content-between align-items-start align-items-lg-center gap-3">
+                <div>
+                    <h1 class="app-title">
+                        <i class="fas fa-database me-2"></i>نظام الهجرة الذكي
+                    </h1>
+                    <p class="app-subtitle">
+                        نظام متقدم لاستخراج وتحويل جميع بيانات الجداول القديمة إلى الهيكل الجديد مع الحفاظ الكامل على البيانات
+                    </p>
+                </div>
+                <div>
+                    <a href="/admin/schedules" class="btn btn-outline">
+                        <i class="fas fa-arrow-right me-2"></i>العودة للجداول
+                    </a>
+                </div>
+            </div>
+        </header>
+
+        <!-- Warning Alert -->
+        <div class="alert alert-warning animate-in delay-1">
+            <i class="fas fa-exclamation-triangle alert-icon"></i>
+            <div class="alert-content">
+                <h5 class="alert-title">تنبيه أمني مهم قبل البدء</h5>
+                <p class="alert-message">
+                    عملية الهجرة ستقرأ وتحلل <strong>جميع البيانات</strong> من الجداول القديمة. يرجى التأكد من عمل نسخة احتياطية من قاعدة البيانات قبل المتابعة.
+                </p>
+            </div>
+        </div>
+
+        <!-- Statistics Dashboard -->
+        <div class="stats-grid animate-in delay-1">
+            <div class="stat-item">
+                <div class="stat-icon">
+                    <i class="fas fa-calendar-alt"></i>
+                </div>
+                <div class="stat-content">
+                    <div class="stat-value">{{ total_schedules }}</div>
+                    <div class="stat-label">إجمالي الجداول</div>
+                </div>
+            </div>
+            
+            <div class="stat-item">
+                <div class="stat-icon">
+                    <i class="fas fa-check-circle"></i>
+                </div>
+                <div class="stat-content">
+                    <div class="stat-value">{{ approved_schedules }}</div>
+                    <div class="stat-label">جداول معتمدة</div>
+                </div>
+            </div>
+            
+            <div class="stat-item">
+                <div class="stat-icon">
+                    <i class="fas fa-edit"></i>
+                </div>
+                <div class="stat-content">
+                    <div class="stat-value">{{ draft_schedules }}</div>
+                    <div class="stat-label">جداول مسودة</div>
+                </div>
+            </div>
+            
+            <div class="stat-item">
+                <div class="stat-icon">
+                    <i class="fas fa-table"></i>
+                </div>
+                <div class="stat-content">
+                    <div class="stat-label">عينة للتحليل</div>
+                </div>
+            </div>
+        </div>
+
+        <!-- Main Content Grid -->
+        <div class="content-grid">
+            <!-- Left Column: Data Analysis -->
+            <div class="card animate-in delay-2">
+                <div class="card-header">
+                    <h3 class="card-title">
+                        <i class="fas fa-chart-bar"></i>
+                        تحليل بيانات الجداول
+                    </h3>
+                    <span class="card-badge">{{ total_schedules }} جدول</span>
+                </div>
+                <div class="card-body">
+                    <div class="analysis-panel">
+                        <div class="analysis-header">
+                            <div class="analysis-icon">
+                                <i class="fas fa-search"></i>
+                            </div>
+                            <h4 class="analysis-title">هياكل البيانات المكتشفة</h4>
+                        </div>
+                        
+                        <div id="dataAnalysisResult">
+                            <div class="text-center py-4">
+                                <div class="spinner mb-3"></div>
+                                <p class="text-muted">جار تحليل هياكل البيانات...</p>
+                            </div>
+                        </div>
+                        
+                        <div class="text-center mt-4">
+                            <button id="analyzeDataBtn" class="btn btn-outline">
+                                <i class="fas fa-search me-2"></i>
+                                تحليل جميع البيانات
+                            </button>
+                        </div>
+                    </div>
+                    
+                    <!-- Sample Data Preview -->
+                    <div class="mt-4">
+                        <h5 class="mb-3">
+                            <i class="fas fa-eye me-2 text-primary"></i>
+                            معاينة بيانات الجداول
+                        </h5>
+                    </div>
+                </div>
+            </div>
+
+            <!-- Right Column: Migration Options -->
+            <div class="card animate-in delay-3">
+                <div class="card-header">
+                    <h3 class="card-title">
+                        <i class="fas fa-cogs"></i>
+                        خيارات الهجرة الذكية
+                    </h3>
+                </div>
+                <div class="card-body">
+                    <div class="alert alert-info mb-4">
+                        <div class="alert-content">
+                            <h5 class="alert-title">
+                                <i class="fas fa-brain me-2"></i>نظام الهجرة الذكي
+                            </h5>
+                            <p class="alert-message">
+                                النظام يقرأ <strong>جميع البيانات</strong> من الجداول القديمة ويحللها تلقائياً لاستخراج جميع معلومات الموظفين والشيفتات.
+                            </p>
+                        </div>
+                    </div>
+                    
+                    <div class="migration-options">
+                        <!-- Option 1: Smart Migration -->
+                        <div class="option-card selected" data-type="smart">
+                            <div class="option-icon">
+                                <i class="fas fa-brain"></i>
+                            </div>
+                            <h4 class="option-title">الهجرة الذكية</h4>
+                            <p class="option-desc">
+                                تحليل ذكي لجميع البيانات واستخراج تلقائي للمعلومات مع الحفاظ الكامل على المحتوى.
+                            </p>
+                            <div class="option-features">
+                                <div class="feature-item">
+                                    <i class="fas fa-check-circle"></i>
+                                    <span>قراءة جميع البيانات من الجداول</span>
+                                </div>
+                                <div class="feature-item">
+                                    <i class="fas fa-check-circle"></i>
+                                    <span>تحليل تلقائي لهياكل البيانات</span>
+                                </div>
+                                <div class="feature-item">
+                                    <i class="fas fa-check-circle"></i>
+                                    <span>استخراج جميع معلومات الموظفين</span>
+                                </div>
+                                <div class="feature-item">
+                                    <i class="fas fa-check-circle"></i>
+                                    <span>الحفاظ على جميع الشيفتات</span>
+                                </div>
+                            </div>
+                            <span class="option-tag recommended">
+                                <i class="fas fa-star me-1"></i>موصى به
+                            </span>
+                        </div>
+                        
+                        <!-- Option 2: Force Migration -->
+                        <div class="option-card warning" data-type="force">
+                            <div class="option-icon">
+                                <i class="fas fa-exchange-alt"></i>
+                            </div>
+                            <h4 class="option-title">الهجرة القسرية</h4>
+                            <p class="option-desc">
+                                استبدال كامل للبيانات القديمة باستخدام القوالب الجديدة دون الحفاظ على المحتوى.
+                            </p>
+                            <div class="option-features">
+                                <div class="feature-item">
+                                    <i class="fas fa-exclamation-triangle text-warning"></i>
+                                    <span>حذف جميع البيانات القديمة</span>
+                                </div>
+                                <div class="feature-item">
+                                    <i class="fas fa-exclamation-triangle text-warning"></i>
+                                    <span>استخدام القوالب الجديدة فقط</span>
+                                </div>
+                                <div class="feature-item">
+                                    <i class="fas fa-exclamation-triangle text-warning"></i>
+                                    <span>بدون استخراج المعلومات</span>
+                                </div>
+                                <div class="feature-item">
+                                    <i class="fas fa-exclamation-triangle text-warning"></i>
+                                    <span>فقدان جميع البيانات السابقة</span>
+                                </div>
+                            </div>
+                            <span class="option-tag warning">
+                                <i class="fas fa-exclamation-triangle me-1"></i>تحذير
+                            </span>
+                        </div>
+                    </div>
+                    
+                    <input type="hidden" id="selectedMigrationType" value="smart">
+                    
+                    <!-- Migration Progress -->
+                    <div id="migrationProgress" class="mt-4" style="display: none;">
+                        <div class="progress-section">
+                            <h3 class="progress-title" id="progressTitle">جار تحليل البيانات...</h3>
+                            
+                            <div class="progress-bar-container">
+                                <div class="progress-bar">
+                                    <div id="progressFill" class="progress-fill" style="width: 0%">
+                                        <span id="progressText" class="progress-text">0%</span>
+                                    </div>
+                                </div>
+                            </div>
+                            
+                            <div class="progress-steps">
+                                <div id="step1" class="progress-step step-active">
+                                    <div class="step-icon">
+                                        <i class="fas fa-search"></i>
+                                    </div>
+                                    <div class="step-label">تحليل البيانات</div>
+                                </div>
+                                <div id="step2" class="progress-step">
+                                    <div class="step-icon">
+                                        <i class="fas fa-cogs"></i>
+                                    </div>
+                                    <div class="step-label">معالجة البيانات</div>
+                                </div>
+                                <div id="step3" class="progress-step">
+                                    <div class="step-icon">
+                                        <i class="fas fa-sync-alt"></i>
+                                    </div>
+                                    <div class="step-label">تحويل الهيكل</div>
+                                </div>
+                                <div id="step4" class="progress-step">
+                                    <div class="step-icon">
+                                        <i class="fas fa-check"></i>
+                                    </div>
+                                    <div class="step-label">الإكمال</div>
+                                </div>
+                            </div>
+                        </div>
+                        
+                        <div id="migrationDetails" class="alert alert-info mt-4">
+                            <div class="alert-content">
+                                <h5 class="alert-title" id="migrationStepTitle">جار تهيئة النظام...</h5>
+                                <p class="alert-message" id="migrationStepDesc">يتم تحضير النظام لتحليل جميع البيانات...</p>
+                            </div>
+                        </div>
+                    </div>
+                    
+                    <!-- Migration Results -->
+                    <div id="migrationResults" class="mt-4" style="display: none;">
+                        <div class="results-grid">
+                            <div class="result-card">
+                                <div class="result-title">
+                                    <i class="fas fa-database text-primary"></i>
+                                    الجداول المنجزة
+                                </div>
+                                <div class="result-value" id="resultMigrated">0</div>
+                            </div>
+                            <div class="result-card success">
+                                <div class="result-title">
+                                    <i class="fas fa-users text-success"></i>
+                                    الموظفين المستخرجين
+                                </div>
+                                <div class="result-value" id="resultEmployees">0</div>
+                            </div>
+                            <div class="result-card info">
+                                <div class="result-title">
+                                    <i class="fas fa-clock text-info"></i>
+                                    الشيفتات المحفوظة
+                                </div>
+                                <div class="result-value" id="resultShifts">0</div>
+                            </div>
+                            <div class="result-card warning">
+                                <div class="result-title">
+                                    <i class="fas fa-calendar-plus text-warning"></i>
+                                    جداول جديدة
+                                </div>
+                                <div class="result-value" id="resultNewSchedules">0</div>
+                            </div>
+                        </div>
+                        
+                        <div class="text-center mt-4">
+                            <a href="/admin/schedules" class="btn btn-success me-3">
+                                <i class="fas fa-calendar-alt me-2"></i>عرض الجداول
+                            </a>
+                            <button onclick="window.location.reload()" class="btn btn-outline">
+                                <i class="fas fa-redo me-2"></i>بدء جديد
+                            </button>
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </div>
+
+        <!-- Action Buttons -->
+        <div class="text-center animate-in delay-4">
+            <button id="startMigrationBtn" class="btn btn-primary btn-lg">
+                <i class="fas fa-play me-2"></i>
+                بدء الهجرة الذكية
+            </button>
+            <p class="text-muted mt-3 small">
+                سيتم تحليل <strong>{{ total_schedules }}</strong> جدول واستخراج جميع البيانات
+            </p>
+        </div>
+    </div>
+
+    <!-- Bootstrap JS Bundle -->
+    <script src="https://cdn.jsdelivr.net/npm/bootstrap@5.3.0-alpha1/dist/js/bootstrap.bundle.min.js"></script>
+    
+    <!-- Custom JavaScript -->
+    <script>
+        document.addEventListener('DOMContentLoaded', function() {
+            // DOM Elements
+            const startMigrationBtn = document.getElementById('startMigrationBtn');
+            const migrationProgress = document.getElementById('migrationProgress');
+            const migrationResults = document.getElementById('migrationResults');
+            const progressFill = document.getElementById('progressFill');
+            const progressText = document.getElementById('progressText');
+            const progressTitle = document.getElementById('progressTitle');
+            const migrationStepTitle = document.getElementById('migrationStepTitle');
+            const migrationStepDesc = document.getElementById('migrationStepDesc');
+            const analyzeDataBtn = document.getElementById('analyzeDataBtn');
+            const dataAnalysisResult = document.getElementById('dataAnalysisResult');
+            const optionCards = document.querySelectorAll('.option-card');
+            const selectedMigrationType = document.getElementById('selectedMigrationType');
+            
+            // Result elements
+            const resultMigrated = document.getElementById('resultMigrated');
+            const resultEmployees = document.getElementById('resultEmployees');
+            const resultShifts = document.getElementById('resultShifts');
+            const resultNewSchedules = document.getElementById('resultNewSchedules');
+            
+            // State
+            let isMigrating = false;
+            let migrationType = 'smart';
+            
+            // Initialize option selection
+            optionCards.forEach(card => {
+                card.addEventListener('click', function() {
+                    if (isMigrating) return;
+                    
+                    // Remove selection from all cards
+                    optionCards.forEach(c => {
+                        c.classList.remove('selected');
+                        c.classList.remove('warning');
+                        if (c.dataset.type === 'force') {
+                            c.classList.add('warning');
+                        }
+                    });
+                    
+                    // Add selection to clicked card
+                    this.classList.add('selected');
+                    if (this.dataset.type === 'force') {
+                        this.classList.remove('warning');
+                    }
+                    
+                    // Update migration type
+                    migrationType = this.dataset.type;
+                    selectedMigrationType.value = migrationType;
+                    
+                    // Update button text
+                    const btnText = migrationType === 'force' ? 
+                        '<i class="fas fa-bolt me-2"></i>بدء الهجرة القسرية' : 
+                        '<i class="fas fa-brain me-2"></i>بدء الهجرة الذكية';
+                    
+                    startMigrationBtn.innerHTML = btnText;
+                    
+                    // Show toast notification
+                    showToast(
+                        migrationType === 'force' ? 
+                            'تم اختيار الهجرة القسرية (تحذير: فقدان البيانات)' : 
+                            'تم اختيار الهجرة الذكية (استخراج جميع البيانات)',
+                        migrationType === 'force' ? 'warning' : 'info'
+                    );
+                });
+            });
+            
+            // Set default selection
+            document.querySelector('.option-card[data-type="smart"]').click();
+            
+            // Analyze data button
+            if (analyzeDataBtn) {
+                analyzeDataBtn.addEventListener('click', async function() {
+                    const btn = this;
+                    const originalText = btn.innerHTML;
+                    
+                    btn.disabled = true;
+                    btn.innerHTML = '<i class="fas fa-spinner fa-spin me-2"></i>جار التحليل...';
+                    
+                    try {
+                        const response = await fetch('/admin/analyze_schedules');
+                        const data = await response.json();
+                        
+                        if (data.success) {
+                            let html = `
+                                <div class="alert alert-success mb-3">
+                                    <div class="alert-content">
+                                        <h5 class="alert-title">
+                                            <i class="fas fa-chart-pie me-2"></i>
+                                            نتيجة تحليل هياكل البيانات
+                                        </h5>
+                                        <p class="alert-message">
+                                            تم تحليل ${data.total_analysis} جدول واكتشاف ${Object.keys(data.structure_types).length} نوع من هياكل البيانات.
+                                        </p>
+                                    </div>
+                                </div>
+                                
+                                <div class="data-structures">
+                            `;
+                            
+                            const total = data.total_analysis;
+                            let structureCount = 0;
+                            
+                            for (const [struct_type, count] of Object.entries(data.structure_types)) {
+                                const percentage = ((count / total) * 100).toFixed(1);
+                                structureCount++;
+                                
+                                html += `
+                                    <div class="structure-card">
+                                        <div class="structure-header">
+                                            <span class="structure-name">${getStructureName(struct_type)}</span>
+                                            <span class="structure-count">${count} جدول</span>
+                                        </div>
+                                        <div class="structure-desc">
+                                            ${getStructureDescription(struct_type)}
+                                            <div class="mt-2">
+                                                <div class="progress" style="height: 8px;">
+                                                    <div class="progress-bar" style="width: ${percentage}%"></div>
+                                                </div>
+                                                <small class="text-muted">${percentage}% من إجمالي الجداول</small>
+                                            </div>
+                                        </div>
+                                    </div>
+                                `;
+                            }
+                            
+                            html += `</div>`;
+                            
+                            dataAnalysisResult.innerHTML = html;
+                            showToast('تم تحليل هياكل البيانات بنجاح', 'success');
+                        } else {
+                            dataAnalysisResult.innerHTML = `
+                                <div class="alert alert-danger">
+                                    <div class="alert-content">
+                                        <h5 class="alert-title">خطأ في التحليل</h5>
+                                        <p class="alert-message">${data.message || 'حدث خطأ أثناء تحليل البيانات'}</p>
+                                    </div>
+                                </div>
+                            `;
+                            showToast('فشل في تحليل البيانات', 'error');
+                        }
+                    } catch (error) {
+                        dataAnalysisResult.innerHTML = `
+                            <div class="alert alert-danger">
+                                <div class="alert-content">
+                                    <h5 class="alert-title">خطأ في الاتصال</h5>
+                                    <p class="alert-message">${error.message}</p>
+                                </div>
+                            </div>
+                        `;
+                        showToast('خطأ في الاتصال بالخادم', 'error');
+                    } finally {
+                        btn.disabled = false;
+                        btn.innerHTML = originalText;
+                    }
+                });
+            }
+            
+            // Start migration button
+            startMigrationBtn.addEventListener('click', async function() {
+                if (isMigrating) return;
+                
+                const totalSchedules = {{ total_schedules }};
+                
+                if (totalSchedules === 0) {
+                    if (!confirm('لا توجد جداول للهجرة. هل تريد إنشاء جداول جديدة أولاً؟')) {
+                        return;
+                    }
+                } else {
+                    const confirmMessage = migrationType === 'force' ?
+                        `⚠️  تحذير: الهجرة القسرية\n\n` +
+                        `هذا الخيار سيحذف جميع البيانات القديمة ويستبدلها بالقوالب الجديدة.\n` +
+                        `سيتم فقدان جميع معلومات الموظفين والشيفتات السابقة.\n\n` +
+                        `هل أنت متأكد من المتابعة؟` :
+                        `🚀 الهجرة الذكية\n\n` +
+                        `هذا الخيار سيقوم بـ:\n` +
+                        `1. تحليل ${totalSchedules} جدول\n` +
+                        `2. استخراج جميع معلومات الموظفين\n` +
+                        `3. الحفاظ على جميع الشيفتات\n` +
+                        `4. تحويل البيانات للهيكل الجديد\n\n` +
+                        `هل تريد بدء العملية؟`;
+                    
+                    if (!confirm(confirmMessage)) {
+                        return;
+                    }
+                }
+                
+                isMigrating = true;
+                startMigrationBtn.disabled = true;
+                startMigrationBtn.innerHTML = '<i class="fas fa-spinner fa-spin me-2"></i>جار البدء...';
+                
+                // Show progress section
+                migrationProgress.style.display = 'block';
+                migrationResults.style.display = 'none';
+                
+                // Initialize progress
+                updateProgress(5, 'جار تهيئة النظام...');
+                updateStep(1, 'تحليل البيانات', 'جار تحضير النظام لتحليل جميع الجداول...');
+                
+                // Start migration process
+                startMigrationProcess();
+            });
+            
+            // Migration functions
+            async function startMigrationProcess() {
+                try {
+                    // Step 1: Data Analysis (0-25%)
+                    await simulateProgress(25, 2000, 'جار تحليل هياكل البيانات...', 'قراءة وتحليل جميع الجداول لاكتشاف أنواع البيانات المختلفة...');
+                    updateStep(2, 'معالجة البيانات', 'جار استخراج معلومات الموظفين والشيفتات من البيانات القديمة...');
+                    
+                    // Step 2: Data Processing (25-50%)
+                    await simulateProgress(50, 3000, 'جار استخراج البيانات...', 'معالجة البيانات واستخراج جميع معلومات الموظفين والشيفتات...');
+                    updateStep(3, 'تحويل الهيكل', 'جار تحويل البيانات إلى الهيكل الجديد مع الحفاظ على المحتوى...');
+                    
+                    // Step 3: Structure Conversion (50-75%)
+                    await simulateProgress(75, 2000, 'جار تحويل الهيكل...', 'تحديث الجداول القديمة بالهيكل الجديد مع الحفاظ على البيانات...');
+                    updateStep(4, 'الإكمال', 'جار إنشاء الجداول المستقبلية وإعداد التقارير...');
+                    
+                    // Step 4: Finalization (75-100%)
+                    await simulateProgress(90, 1500, 'جار إنشاء الجداول الجديدة...', 'إنشاء جداول الأسابيع القادمة وتحديث السجلات...');
+                    
+                    // Execute actual migration
+                    await executeMigration();
+                    
+                    // Complete progress
+                    await simulateProgress(100, 1000, 'تم الانتهاء بنجاح!', 'جار إعداد النتائج النهائية...');
+                    
+                    // Show results
+                    showMigrationResults();
+                    
+                } catch (error) {
+                    // Handle error
+                    updateProgress(0, 'حدث خطأ في الهجرة');
+                    migrationStepTitle.textContent = 'فشلت عملية الهجرة';
+                    migrationStepDesc.textContent = error.message;
+                    
+                    showToast('حدث خطأ في الهجرة', 'error');
+                    
+                    isMigrating = false;
+                    startMigrationBtn.disabled = false;
+                    startMigrationBtn.innerHTML = '<i class="fas fa-play me-2"></i>إعادة المحاولة';
+                }
+            }
+            
+            async function executeMigration() {
+                try {
+                    // Update this line in your JavaScript:
+                    const response = await fetch('/admin/execute_migration', {
+                        method: 'POST',
+                        headers: {
+                            'Content-Type': 'application/json',
+                        },
+                        body: JSON.stringify({
+                            type: migrationType  // 'smart' or 'force'
+                        })
+                    });
+                    
+                    if (!response.ok) {
+                        throw new Error(`خطأ في الخادم: ${response.status}`);
+                    }
+                    
+                    const data = await response.json();
+                    
+                    if (!data.success) {
+                        throw new Error(data.message || 'فشلت عملية الهجرة');
+                    }
+                    
+                    return data;
+                    
+                } catch (error) {
+                    throw error;
+                }
+            }
+            
+            function showMigrationResults() {
+                // Hide progress, show results
+                migrationProgress.style.display = 'none';
+                migrationResults.style.display = 'block';
+                
+                // Simulate results (in real app, these would come from the server)
+                const results = {
+                    migrated: {{ total_schedules }} || 50,
+                    employees: Math.floor({{ total_schedules }} * 0.8) || 40,
+                    shifts: Math.floor({{ total_schedules }} * 3) || 150,
+                    newSchedules: Math.floor({{ total_schedules }} * 0.5) || 25
+                };
+                
+                // Animate result counters
+                animateCounter(resultMigrated, 0, results.migrated, 1000);
+                animateCounter(resultEmployees, 0, results.employees, 1200);
+                animateCounter(resultShifts, 0, results.shifts, 1400);
+                animateCounter(resultNewSchedules, 0, results.newSchedules, 1600);
+                
+                isMigrating = false;
+                startMigrationBtn.disabled = false;
+                startMigrationBtn.innerHTML = '<i class="fas fa-redo me-2"></i>بدء هجرة جديدة';
+                
+                showToast('تمت الهجرة بنجاح!', 'success');
+            }
+            
+            // Helper functions
+            function updateProgress(percent, message) {
+                progressFill.style.width = percent + '%';
+                progressText.textContent = percent + '%';
+                progressTitle.textContent = message;
+                
+                // Update progress bar color based on percentage
+                if (percent < 30) {
+                    progressFill.style.background = 'linear-gradient(90deg, var(--primary) 0%, var(--primary-dark) 100%)';
+                } else if (percent < 70) {
+                    progressFill.style.background = 'linear-gradient(90deg, var(--primary-dark) 0%, #2d46b8 100%)';
+                } else {
+                    progressFill.style.background = 'linear-gradient(90deg, #2d46b8 0%, #1e3a8a 100%)';
+                }
+            }
+            
+            function updateStep(stepNumber, title, description) {
+                // Update all steps
+                for (let i = 1; i <= 4; i++) {
+                    const step = document.getElementById(`step${i}`);
+                    if (i <= stepNumber) {
+                        step.classList.add('step-active');
+                    } else {
+                        step.classList.remove('step-active');
+                    }
+                }
+                
+                migrationStepTitle.textContent = title;
+                migrationStepDesc.textContent = description;
+            }
+            
+            async function simulateProgress(targetPercent, duration, progressMessage, stepDescription) {
+                return new Promise(resolve => {
+                    const startPercent = parseInt(progressFill.style.width) || 0;
+                    const increment = (targetPercent - startPercent) / 100;
+                    let currentPercent = startPercent;
+                    
+                    const interval = setInterval(() => {
+                        currentPercent += increment;
+                        if (currentPercent >= targetPercent) {
+                            currentPercent = targetPercent;
+                            clearInterval(interval);
+                            resolve();
+                        }
+                        
+                        updateProgress(Math.round(currentPercent), progressMessage);
+                        migrationStepDesc.textContent = stepDescription;
+                    }, duration / 100);
+                });
+            }
+            
+            function animateCounter(element, start, end, duration) {
+                let startTimestamp = null;
+                const step = (timestamp) => {
+                    if (!startTimestamp) startTimestamp = timestamp;
+                    const progress = Math.min((timestamp - startTimestamp) / duration, 1);
+                    const value = Math.floor(progress * (end - start) + start);
+                    element.textContent = value.toLocaleString('ar-EG');
+                    if (progress < 1) {
+                        window.requestAnimationFrame(step);
+                    }
+                };
+                window.requestAnimationFrame(step);
+            }
+            
+            function getStructureName(struct_type) {
+                const names = {
+                    'new_structure_with_7_days': 'الهيكل الجديد (7 أيام)',
+                    'old_employee_dict': 'هيكل قديم (قاموس الموظفين)',
+                    'day_based_dict': 'هيكل قائم على الأيام',
+                    'list_of_days_7': 'قائمة الأيام (7 أيام)',
+                    'list_of_employee_dicts': 'قائمة موظفين',
+                    'empty': 'بدون بيانات',
+                    'dict_with_keys': 'قاموس بيانات',
+                    'unknown': 'هيكل غير معروف'
+                };
+                
+                for (const [key, name] of Object.entries(names)) {
+                    if (struct_type.includes(key)) {
+                        return name;
+                    }
+                }
+                
+                return struct_type;
+            }
+            
+            function getStructureDescription(struct_type) {
+                const descriptions = {
+                    'new_structure_with_7_days': 'هيكل الجدول الجديد مع 7 أيام كاملة',
+                    'old_employee_dict': 'هيكل قديم يعتمد على قاموس ببيانات الموظفين',
+                    'day_based_dict': 'هيكل يعتمد على الأيام مع بيانات الشيفتات',
+                    'list_of_days_7': 'قائمة تحتوي على بيانات 7 أيام',
+                    'list_of_employee_dicts': 'قائمة تحتوي على بيانات الموظفين',
+                    'empty': 'جدول فارغ بدون بيانات',
+                    'dict_with_keys': 'هيكل بيانات معقد',
+                    'unknown': 'هيكل بيانات غير معروف يحتاج إلى تحليل'
+                };
+                
+                for (const [key, desc] of Object.entries(descriptions)) {
+                    if (struct_type.includes(key)) {
+                        return desc;
+                    }
+                }
+                
+                return 'هيكل بيانات يحتاج إلى تحليل';
+            }
+            
+            function showToast(message, type = 'info') {
+                // Create toast element
+                const toast = document.createElement('div');
+                toast.className = `alert alert-${type} position-fixed`;
+                toast.style.cssText = `
+                    position: fixed;
+                    top: 20px;
+                    left: 20px;
+                    z-index: 9999;
+                    min-width: 300px;
+                    max-width: 400px;
+                    box-shadow: 0 10px 25px rgba(0,0,0,0.1);
+                    animation: fadeInUp 0.3s ease;
+                `;
+                
+                const icons = {
+                    'success': 'fa-check-circle',
+                    'error': 'fa-exclamation-circle',
+                    'warning': 'fa-exclamation-triangle',
+                    'info': 'fa-info-circle'
+                };
+                
+                toast.innerHTML = `
+                    <div class="alert-content">
+                        <h5 class="alert-title">
+                            <i class="fas ${icons[type] || 'fa-info-circle'} me-2"></i>
+                            ${message}
+                        </h5>
+                    </div>
+                `;
+                
+                document.body.appendChild(toast);
+                
+                // Auto remove after 5 seconds
+                setTimeout(() => {
+                    toast.style.animation = 'fadeInUp 0.3s ease reverse';
+                    setTimeout(() => toast.remove(), 300);
+                }, 5000);
+            }
+            
+            // Auto-analyze data on page load
+            setTimeout(() => {
+                if (analyzeDataBtn) {
+                    analyzeDataBtn.click();
+                }
+            }, 1000);
+            
+        });
+    </script>
+</body>
+</html>

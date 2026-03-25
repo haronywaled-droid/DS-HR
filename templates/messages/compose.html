@@ -1,0 +1,1994 @@
+<!DOCTYPE html>
+<html lang="ar" dir="rtl">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>رسالة جديدة - نظام إدارة الموارد البشرية</title>
+    
+    <!-- Bootstrap 5 CSS -->
+    <link href="https://cdn.jsdelivr.net/npm/bootstrap@5.3.0/dist/css/bootstrap.min.css" rel="stylesheet">
+    
+    <!-- Bootstrap Icons -->
+    <link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/bootstrap-icons@1.10.0/font/bootstrap-icons.css">
+    
+    <!-- Font Awesome -->
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css">
+    
+    <!-- Select2 for user selection -->
+    <link href="https://cdn.jsdelivr.net/npm/select2@4.1.0-rc.0/dist/css/select2.min.css" rel="stylesheet" />
+    <link href="https://cdn.jsdelivr.net/npm/select2-bootstrap-5-theme@1.3.0/dist/select2-bootstrap-5-theme.rtl.min.css" rel="stylesheet" />
+    
+    <!-- Quill Editor for Rich Text -->
+    <link href="https://cdn.quilljs.com/1.3.6/quill.snow.css" rel="stylesheet">
+    
+    <style>
+        :root {
+            --primary-green: #10b981;
+            --dark-green: #059669;
+            --light-green: #34d399;
+            --accent-green: #a7f3d0;
+            --gradient-primary: linear-gradient(135deg, #10b981 0%, #059669 100%);
+            --gradient-secondary: linear-gradient(135deg, #34d399 0%, #10b981 100%);
+            --gradient-dark: linear-gradient(135deg, #065f46 0%, #047857 100%);
+            --gradient-warning: linear-gradient(135deg, #f59e0b 0%, #d97706 100%);
+            --gradient-danger: linear-gradient(135deg, #ef4444 0%, #dc2626 100%);
+            --gradient-info: linear-gradient(135deg, #0ea5e9 0%, #0284c7 100%);
+            --header-height: 130px;
+        }
+        
+        * {
+            margin: 0;
+            padding: 0;
+            box-sizing: border-box;
+        }
+        
+        body {
+            font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif;
+            background: #f8fdf9;
+            min-height: 100vh;
+            overflow-x: hidden;
+            padding-top: var(--header-height);
+            color: #1a4731;
+        }
+        
+        /* Unified Navigation Bar (same as inbox.html) */
+        .unified-nav {
+            background: var(--gradient-dark);
+            color: white;
+            position: fixed;
+            top: 0;
+            right: 0;
+            left: 0;
+            height: var(--header-height);
+            z-index: 1000;
+            box-shadow: 0 4px 20px rgba(5, 150, 105, 0.25);
+            border-bottom: 1px solid rgba(255, 255, 255, 0.1);
+        }
+        
+        .unified-nav-container {
+            display: flex;
+            flex-direction: column;
+            height: 100%;
+            padding: 0 1rem;
+        }
+
+
+        /* Styled CC/BCC Button */
+        .btn-cc-bcc {
+            background: linear-gradient(135deg, #f0fdf4 0%, #dcfce7 100%);
+            border: 2px solid var(--primary-green);
+            border-radius: 50px;
+            padding: 0.5rem 1.5rem;
+            cursor: pointer;
+            transition: all 0.3s ease;
+            box-shadow: 0 4px 10px rgba(16, 185, 129, 0.2);
+            position: relative;
+            overflow: hidden;
+        }
+
+        .btn-cc-bcc::before {
+            content: '';
+            position: absolute;
+            top: 0;
+            left: -100%;
+            width: 100%;
+            height: 100%;
+            background: linear-gradient(90deg, transparent, rgba(255, 255, 255, 0.3), transparent);
+            transition: left 0.5s ease;
+        }
+
+        .btn-cc-bcc:hover {
+            transform: translateY(-2px);
+            box-shadow: 0 6px 15px rgba(16, 185, 129, 0.3);
+            background: linear-gradient(135deg, #dcfce7 0%, #bbf7d0 100%);
+        }
+
+        .btn-cc-bcc:hover::before {
+            left: 100%;
+        }
+
+        .btn-cc-bcc:active {
+            transform: translateY(0);
+            box-shadow: 0 2px 5px rgba(16, 185, 129, 0.2);
+        }
+
+        .btn-cc-bcc-content {
+            display: flex;
+            align-items: center;
+            gap: 8px;
+            color: var(--dark-green);
+            font-weight: 600;
+            font-size: 0.95rem;
+        }
+
+        .btn-cc-bcc-content i {
+            font-size: 1.1rem;
+            transition: transform 0.3s ease;
+        }
+
+        .btn-cc-bcc:hover .btn-cc-bcc-content i:first-child {
+            transform: rotate(90deg);
+        }
+
+        /* Arrow rotation when fields are visible */
+        .btn-cc-bcc.active .bi-chevron-down {
+            transform: rotate(180deg);
+        }
+
+        /* CC and BCC Field Badges */
+        .badge-cc {
+            background: linear-gradient(135deg, #3b82f6 0%, #2563eb 100%);
+            color: white;
+            font-size: 0.7rem;
+            padding: 0.2rem 0.6rem;
+            border-radius: 20px;
+            margin-right: 0.5rem;
+            font-weight: normal;
+        }
+
+        .badge-bcc {
+            background: linear-gradient(135deg, #8b5cf6 0%, #7c3aed 100%);
+            color: white;
+            font-size: 0.7rem;
+            padding: 0.2rem 0.6rem;
+            border-radius: 20px;
+            margin-right: 0.5rem;
+            font-weight: normal;
+        }
+
+        /* CC and BCC Fields Styling */
+        .cc-field, .bcc-field {
+            background: linear-gradient(135deg, #f8fafc 0%, #f1f5f9 100%);
+            padding: 1rem;
+            border-radius: 16px;
+            margin-bottom: 1.5rem;
+            border-right: 4px solid;
+            animation: slideDown 0.3s ease-out;
+        }
+
+        .cc-field {
+            border-right-color: #3b82f6;
+        }
+
+        .bcc-field {
+            border-right-color: #8b5cf6;
+        }
+
+        @keyframes slideDown {
+            from {
+                opacity: 0;
+                transform: translateY(-10px);
+            }
+            to {
+                opacity: 1;
+                transform: translateY(0);
+            }
+        }
+
+        .field-actions {
+            margin-top: 0.5rem;
+            padding-top: 0.5rem;
+            border-top: 1px dashed #e2e8f0;
+        }
+
+        /* Responsive adjustments */
+        @media (max-width: 768px) {
+            .btn-cc-bcc {
+                width: 100%;
+                justify-content: center;
+            }
+            
+            .btn-cc-bcc-content {
+                justify-content: center;
+            }
+        }
+
+        /* Animation for the plus icon */
+        @keyframes pulse {
+            0% {
+                transform: scale(1);
+            }
+            50% {
+                transform: scale(1.1);
+            }
+            100% {
+                transform: scale(1);
+            }
+        }
+
+        .btn-cc-bcc:hover .bi-plus-circle-dotted {
+            animation: pulse 1s infinite;
+        }
+
+        
+        .nav-top-section {
+            display: flex;
+            align-items: center;
+            justify-content: space-between;
+            height: 70px;
+            flex-shrink: 0;
+            padding: 0.5rem 0;
+        }
+        
+        .nav-bottom-section {
+            display: flex;
+            align-items: center;
+            justify-content: space-between;
+            height: 60px;
+            flex-shrink: 0;
+            border-top: 1px solid rgba(255, 255, 255, 0.15);
+            position: relative;
+        }
+        
+        .nav-brand-section {
+            display: flex;
+            align-items: center;
+            flex-shrink: 0;
+            min-width: 0;
+        }
+        
+        .logo-container {
+            width: 45px;
+            height: 45px;
+            background: var(--gradient-primary);
+            border-radius: 10px;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            box-shadow: 0 4px 12px rgba(16, 185, 129, 0.4);
+            margin-left: 0.5rem;
+            flex-shrink: 0;
+        }
+        
+        .welcome-section {
+            display: flex;
+            align-items: center;
+            flex-grow: 1;
+            justify-content: center;
+            color: white;
+            text-align: center;
+            min-width: 0;
+            overflow: hidden;
+        }
+        
+        .welcome-content {
+            min-width: 0;
+            overflow: hidden;
+        }
+        
+        .welcome-content h4 {
+            margin-bottom: 0.2rem;
+            font-weight: 600;
+            font-size: 1.1rem;
+            white-space: nowrap;
+            overflow: hidden;
+            text-overflow: ellipsis;
+        }
+        
+        .welcome-content p {
+            margin-bottom: 0;
+            font-size: 0.85rem;
+            opacity: 0.9;
+            white-space: nowrap;
+            overflow: hidden;
+            text-overflow: ellipsis;
+        }
+        
+        .nav-user-section {
+            display: flex;
+            align-items: center;
+            flex-shrink: 0;
+            min-width: 0;
+        }
+        
+        .nav-menu-section {
+            display: flex;
+            align-items: center;
+            flex-grow: 1;
+            height: 100%;
+            position: relative;
+            min-width: 0;
+        }
+        
+        .nav-menu-wrapper {
+            display: flex;
+            align-items: center;
+            height: 100%;
+            overflow-x: auto;
+            overflow-y: hidden;
+            scroll-behavior: smooth;
+            -webkit-overflow-scrolling: touch;
+            width: 100%;
+            padding: 0 0.5rem;
+            scrollbar-width: thin;
+            scrollbar-color: var(--primary-green) rgba(255, 255, 255, 0.1);
+            min-width: 0;
+        }
+        
+        .nav-menu-wrapper::-webkit-scrollbar {
+            height: 6px;
+        }
+        
+        .nav-menu-wrapper::-webkit-scrollbar-track {
+            background: rgba(255, 255, 255, 0.1);
+            border-radius: 10px;
+        }
+        
+        .nav-menu-wrapper::-webkit-scrollbar-thumb {
+            background: var(--primary-green);
+            border-radius: 10px;
+        }
+        
+        .nav-menu-wrapper::-webkit-scrollbar-thumb:hover {
+            background: var(--light-green);
+        }
+        
+        .unified-nav .nav-link {
+            color: rgba(255, 255, 255, 0.9);
+            padding: 0.7rem 1.2rem;
+            margin: 0 0.2rem;
+            border-radius: 10px;
+            transition: all 0.3s ease;
+            font-weight: 500;
+            position: relative;
+            border: 1px solid transparent;
+            display: flex;
+            align-items: center;
+            text-decoration: none;
+            font-size: 0.9rem;
+            white-space: nowrap;
+            height: 80%;
+            flex-shrink: 0;
+            background: rgba(255, 255, 255, 0.05);
+            min-width: max-content;
+        }
+        
+        .unified-nav .nav-link:hover {
+            color: white;
+            background: rgba(255, 255, 255, 0.12);
+            border: 1px solid rgba(255, 255, 255, 0.2);
+            transform: translateY(-2px);
+            box-shadow: 0 4px 12px rgba(0, 0, 0, 0.15);
+        }
+        
+        .unified-nav .nav-link.active {
+            background: rgba(255, 255, 255, 0.15);
+            color: white;
+            border: 1px solid rgba(255, 255, 255, 0.25);
+            box-shadow: 0 4px 12px rgba(0, 0, 0, 0.2);
+        }
+        
+        .unified-nav .nav-link.active::after {
+            content: '';
+            position: absolute;
+            bottom: -10px;
+            right: 50%;
+            transform: translateX(50%);
+            width: 70%;
+            height: 3px;
+            background: var(--accent-green);
+            border-radius: 4px 4px 0 0;
+        }
+        
+        .nav-badge {
+            background: var(--accent-green);
+            color: #065f46;
+            padding: 0.2rem 0.4rem;
+            border-radius: 8px;
+            font-size: 0.65rem;
+            font-weight: bold;
+            margin-right: 0.3rem;
+            position: absolute;
+            top: 5px;
+            right: 5px;
+            box-shadow: 0 2px 4px rgba(0, 0, 0, 0.1);
+        }
+        
+        .nav-link-with-badge {
+            position: relative;
+        }
+        
+        .notification-badge {
+            position: absolute;
+            top: -5px;
+            right: -5px;
+            font-size: 0.7rem;
+            background: var(--gradient-secondary);
+            border: 2px solid white;
+            box-shadow: 0 2px 8px rgba(16, 185, 129, 0.4);
+        }
+        
+        .user-avatar {
+            width: 38px;
+            height: 38px;
+            background: var(--gradient-primary);
+            border-radius: 50%;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            color: white;
+            font-weight: bold;
+            font-size: 1rem;
+            box-shadow: 0 4px 10px rgba(16, 185, 129, 0.4);
+            transition: all 0.3s ease;
+            flex-shrink: 0;
+        }
+        
+        .user-avatar:hover {
+            transform: scale(1.08);
+            box-shadow: 0 6px 15px rgba(16, 185, 129, 0.5);
+        }
+        
+        .dropdown-menu {
+            background: white;
+            border: none;
+            border-radius: 12px;
+            box-shadow: 0 10px 30px rgba(16, 185, 129, 0.2);
+            overflow: hidden;
+            border: 1px solid rgba(16, 185, 129, 0.15);
+        }
+        
+        .dropdown-item {
+            padding: 0.8rem 1.2rem;
+            border-radius: 8px;
+            margin: 0.2rem 0.5rem;
+            transition: all 0.2s ease;
+            color: #065f46;
+        }
+        
+        .dropdown-item:hover {
+            background: rgba(16, 185, 129, 0.1);
+            color: #065f46;
+            transform: translateX(-5px);
+        }
+        
+        .mobile-menu-btn {
+            display: none;
+            background: transparent;
+            border: 1px solid rgba(255, 255, 255, 0.3);
+            color: white;
+            width: 40px;
+            height: 40px;
+            border-radius: 8px;
+            align-items: center;
+            justify-content: center;
+            cursor: pointer;
+            transition: all 0.3s ease;
+            margin-right: 0.5rem;
+        }
+        
+        .mobile-menu-btn:hover {
+            background: rgba(255, 255, 255, 0.1);
+        }
+        
+        .mobile-nav-menu {
+            position: fixed;
+            top: var(--header-height);
+            right: 0;
+            left: 0;
+            background: var(--gradient-dark);
+            z-index: 999;
+            padding: 1rem;
+            box-shadow: 0 4px 20px rgba(0, 0, 0, 0.2);
+            display: none;
+            flex-direction: column;
+            max-height: calc(100vh - var(--header-height));
+            overflow-y: auto;
+        }
+        
+        .mobile-nav-menu.active {
+            display: flex;
+        }
+        
+        .mobile-nav-link {
+            color: white;
+            padding: 1rem;
+            margin: 0.2rem 0;
+            border-radius: 8px;
+            text-decoration: none;
+            display: flex;
+            align-items: center;
+            transition: all 0.3s ease;
+            border: 1px solid transparent;
+            position: relative;
+        }
+        
+        .mobile-nav-link:hover,
+        .mobile-nav-link.active {
+            background: rgba(255, 255, 255, 0.1);
+            border: 1px solid rgba(255, 255, 255, 0.2);
+        }
+        
+        @media (max-width: 992px) {
+            :root {
+                --header-height: 100px;
+            }
+            
+            .unified-nav {
+                height: auto;
+                min-height: var(--header-height);
+            }
+            
+            .unified-nav-container {
+                padding: 0.5rem;
+            }
+            
+            .nav-top-section {
+                height: 60px;
+                flex-wrap: nowrap;
+                padding: 0;
+            }
+            
+            .nav-brand-section {
+                order: 1;
+                width: auto;
+                flex: 0 0 auto;
+            }
+            
+            .welcome-section {
+                order: 2;
+                flex: 1;
+                justify-content: flex-start;
+                padding: 0 0.5rem;
+                display: none;
+            }
+            
+            .nav-user-section {
+                order: 3;
+                width: auto;
+                flex: 0 0 auto;
+                justify-content: flex-end;
+            }
+            
+            .nav-bottom-section {
+                display: none;
+            }
+            
+            .mobile-menu-btn {
+                display: flex;
+            }
+            
+            body {
+                padding-top: var(--header-height);
+            }
+        }
+        
+        @media (max-width: 768px) {
+            :root {
+                --header-height: 80px;
+            }
+            
+            .nav-top-section {
+                height: 50px;
+            }
+            
+            .logo-container {
+                width: 35px;
+                height: 35px;
+            }
+            
+            .user-avatar {
+                width: 32px;
+                height: 32px;
+                font-size: 0.9rem;
+            }
+        }
+        
+        @media (max-width: 576px) {
+            :root {
+                --header-height: 70px;
+            }
+            
+            .nav-top-section {
+                height: 45px;
+            }
+            
+            .logo-container {
+                width: 30px;
+                height: 30px;
+                margin-left: 0.3rem;
+            }
+            
+            .user-avatar {
+                width: 28px;
+                height: 28px;
+                font-size: 0.8rem;
+            }
+        }
+
+        /* Main Content Styles */
+        .main-content {
+            padding: 20px;
+            max-width: 1400px;
+            margin: 0 auto;
+        }
+        
+        /* Header Card */
+        .header-card {
+            background: var(--gradient-dark);
+            border: none;
+            border-radius: 20px;
+            color: white;
+            box-shadow: 0 15px 35px rgba(5, 150, 105, 0.2);
+            margin-bottom: 30px;
+            overflow: hidden;
+        }
+        
+        .header-content {
+            padding: 2rem;
+        }
+        
+        .page-title {
+            font-size: 1.8rem;
+            font-weight: 700;
+            display: flex;
+            align-items: center;
+            gap: 15px;
+        }
+        
+        .page-title i {
+            font-size: 2.2rem;
+            background: rgba(255, 255, 255, 0.2);
+            width: 60px;
+            height: 60px;
+            border-radius: 15px;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+        }
+        
+        /* Compose Card */
+        .compose-card {
+            background: white;
+            border-radius: 20px;
+            box-shadow: 0 10px 30px rgba(16, 185, 129, 0.1);
+            border: 2px solid rgba(16, 185, 129, 0.1);
+            overflow: hidden;
+            margin-bottom: 20px;
+        }
+        
+        .compose-header {
+            padding: 1.5rem;
+            border-bottom: 2px solid #e5e7eb;
+            background: linear-gradient(135deg, #f8fafc 0%, #f1f5f9 100%);
+            display: flex;
+            align-items: center;
+            justify-content: space-between;
+        }
+        
+        .compose-header h3 {
+            margin: 0;
+            font-weight: 600;
+            color: #1f2937;
+        }
+        
+        .compose-body {
+            padding: 2rem;
+        }
+        
+        /* Recipient Fields */
+        .recipient-field {
+            margin-bottom: 1.5rem;
+            position: relative;
+        }
+        
+        .recipient-label {
+            display: flex;
+            align-items: center;
+            gap: 8px;
+            margin-bottom: 0.5rem;
+            font-weight: 600;
+            color: #374151;
+        }
+        
+        .recipient-label i {
+            color: var(--primary-green);
+        }
+        
+        .recipient-input {
+            width: 100%;
+            padding: 0.8rem 1rem;
+            border: 2px solid #e5e7eb;
+            border-radius: 12px;
+            font-family: inherit;
+            transition: all 0.3s ease;
+        }
+        
+        .recipient-input:focus {
+            outline: none;
+            border-color: var(--primary-green);
+            box-shadow: 0 0 0 3px rgba(16, 185, 129, 0.2);
+        }
+        
+        .add-cc-bcc {
+            position: absolute;
+            left: 10px;
+            top: 35px;
+            color: var(--primary-green);
+            cursor: pointer;
+            font-size: 0.9rem;
+        }
+        
+        /* Select2 Customization */
+        .select2-container--bootstrap-5 .select2-selection {
+            min-height: 45px;
+            border: 2px solid #e5e7eb;
+            border-radius: 12px;
+        }
+        
+        .select2-container--bootstrap-5 .select2-selection--multiple .select2-selection__rendered .select2-selection__choice {
+            background: var(--gradient-primary);
+            color: white;
+            border: none;
+            border-radius: 8px;
+            padding: 5px 10px;
+            font-size: 0.9rem;
+        }
+        
+        .select2-container--bootstrap-5 .select2-selection--multiple .select2-selection__rendered .select2-selection__choice__remove {
+            color: white;
+            margin-right: 5px;
+        }
+        
+        /* Subject Field */
+        .subject-field {
+            margin-bottom: 1.5rem;
+        }
+        
+        .subject-input {
+            width: 100%;
+            padding: 1rem;
+            border: 2px solid #e5e7eb;
+            border-radius: 12px;
+            font-family: inherit;
+            font-size: 1rem;
+            transition: all 0.3s ease;
+        }
+        
+        .subject-input:focus {
+            outline: none;
+            border-color: var(--primary-green);
+            box-shadow: 0 0 0 3px rgba(16, 185, 129, 0.2);
+        }
+        
+        /* Priority Selector */
+        .priority-selector {
+            display: flex;
+            gap: 15px;
+            margin-bottom: 1.5rem;
+            flex-wrap: wrap;
+        }
+        
+        .priority-option {
+            flex: 1;
+            min-width: 100px;
+        }
+        
+        .priority-option input[type="radio"] {
+            display: none;
+        }
+        
+        .priority-option label {
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            gap: 8px;
+            padding: 0.8rem;
+            border: 2px solid #e5e7eb;
+            border-radius: 12px;
+            cursor: pointer;
+            transition: all 0.3s ease;
+            font-weight: 500;
+        }
+        
+        .priority-option input[type="radio"]:checked + label {
+            border-color: var(--primary-green);
+            background: rgba(16, 185, 129, 0.1);
+            color: var(--primary-green);
+        }
+        
+        .priority-option.normal label { color: #6b7280; }
+        .priority-option.high label { color: #f59e0b; }
+        .priority-option.urgent label { color: #ef4444; }
+        
+        /* Quill Editor */
+        #editor-container {
+            height: 300px;
+            margin-bottom: 1.5rem;
+            border: 2px solid #e5e7eb;
+            border-radius: 12px;
+            font-family: inherit;
+        }
+        
+        .ql-toolbar {
+            border: 2px solid #e5e7eb !important;
+            border-bottom: none !important;
+            border-radius: 12px 12px 0 0;
+            background: #f9fafb;
+        }
+        
+        .ql-container {
+            border: 2px solid #e5e7eb !important;
+            border-top: none !important;
+            border-radius: 0 0 12px 12px;
+            font-family: inherit;
+            font-size: 1rem;
+        }
+        
+        /* Attachments */
+        .attachments-section {
+            margin-bottom: 1.5rem;
+            padding: 1.5rem;
+            border: 2px dashed #e5e7eb;
+            border-radius: 12px;
+            text-align: center;
+            cursor: pointer;
+            transition: all 0.3s ease;
+        }
+        
+        .attachments-section:hover {
+            border-color: var(--primary-green);
+            background: rgba(16, 185, 129, 0.05);
+        }
+        
+        .attachments-section i {
+            font-size: 2rem;
+            color: var(--primary-green);
+            margin-bottom: 0.5rem;
+        }
+        
+        .attachment-list {
+            margin-top: 1rem;
+            text-align: right;
+        }
+        
+        .attachment-item {
+            display: flex;
+            align-items: center;
+            justify-content: space-between;
+            padding: 0.8rem;
+            background: #f9fafb;
+            border-radius: 8px;
+            margin-bottom: 0.5rem;
+        }
+        
+        .attachment-info {
+            display: flex;
+            align-items: center;
+            gap: 10px;
+        }
+        
+        .attachment-info i {
+            font-size: 1.2rem;
+            margin: 0;
+        }
+        
+        .remove-attachment {
+            color: #ef4444;
+            cursor: pointer;
+            padding: 5px;
+        }
+        
+        /* Form Actions */
+        .form-actions {
+            display: flex;
+            gap: 15px;
+            justify-content: flex-end;
+            margin-top: 2rem;
+            padding-top: 1.5rem;
+            border-top: 2px solid #e5e7eb;
+        }
+        
+        .btn-submit {
+            background: var(--gradient-primary);
+            color: white;
+            border: none;
+            padding: 0.8rem 2rem;
+            border-radius: 12px;
+            font-weight: 600;
+            display: flex;
+            align-items: center;
+            gap: 8px;
+            cursor: pointer;
+            transition: all 0.3s ease;
+        }
+        
+        .btn-submit:hover {
+            transform: translateY(-2px);
+            box-shadow: 0 5px 15px rgba(16, 185, 129, 0.3);
+        }
+        
+        .btn-draft {
+            background: white;
+            border: 2px solid #e5e7eb;
+            padding: 0.8rem 2rem;
+            border-radius: 12px;
+            font-weight: 600;
+            display: flex;
+            align-items: center;
+            gap: 8px;
+            cursor: pointer;
+            transition: all 0.3s ease;
+        }
+        
+        .btn-draft:hover {
+            border-color: var(--primary-green);
+            color: var(--primary-green);
+        }
+        
+        .btn-cancel {
+            background: white;
+            border: 2px solid #e5e7eb;
+            padding: 0.8rem 2rem;
+            border-radius: 12px;
+            font-weight: 600;
+            display: flex;
+            align-items: center;
+            gap: 8px;
+            cursor: pointer;
+            transition: all 0.3s ease;
+            text-decoration: none;
+            color: #4b5563;
+        }
+        
+        .btn-cancel:hover {
+            border-color: #ef4444;
+            color: #ef4444;
+        }
+        
+        /* Quote Section */
+        .quote-section {
+            margin-bottom: 1.5rem;
+            padding: 1.5rem;
+            background: #f9fafb;
+            border-radius: 12px;
+            border-right: 4px solid var(--primary-green);
+        }
+        
+        .quote-header {
+            display: flex;
+            align-items: center;
+            justify-content: space-between;
+            margin-bottom: 1rem;
+            color: #6b7280;
+            font-size: 0.9rem;
+        }
+        
+        .quote-content {
+            color: #374151;
+            line-height: 1.6;
+        }
+        
+        /* Loading States */
+        .loading {
+            opacity: 0.6;
+            pointer-events: none;
+        }
+        
+        .loading-overlay {
+            position: fixed;
+            top: 0;
+            left: 0;
+            width: 100%;
+            height: 100%;
+            background: rgba(0, 0, 0, 0.7);
+            display: flex;
+            justify-content: center;
+            align-items: center;
+            z-index: 9999;
+            flex-direction: column;
+            gap: 1.5rem;
+            backdrop-filter: blur(5px);
+        }
+        
+        .loading-spinner {
+            width: 60px;
+            height: 60px;
+            border: 5px solid rgba(255, 255, 255, 0.3);
+            border-top: 5px solid var(--primary-green);
+            border-radius: 50%;
+            animation: spin 1s linear infinite;
+        }
+        
+        @keyframes spin {
+            0% { transform: rotate(0deg); }
+            100% { transform: rotate(360deg); }
+        }
+        
+        /* Alert Container */
+        .alert-container {
+            position: fixed;
+            top: calc(var(--header-height) + 20px);
+            right: 20px;
+            z-index: 1000;
+            min-width: 300px;
+            max-width: 400px;
+        }
+        
+        .alert-container .alert {
+            border-radius: 12px;
+            border: 1px solid rgba(16, 185, 129, 0.2);
+            box-shadow: 0 5px 20px rgba(16, 185, 129, 0.15);
+            backdrop-filter: blur(10px);
+            background: rgba(255, 255, 255, 0.95);
+        }
+        
+        /* Responsive */
+        @media (max-width: 768px) {
+            .compose-body {
+                padding: 1rem;
+            }
+            
+            .priority-selector {
+                flex-direction: column;
+            }
+            
+            .priority-option {
+                width: 100%;
+            }
+            
+            .form-actions {
+                flex-direction: column;
+            }
+            
+            .form-actions button,
+            .form-actions a {
+                width: 100%;
+                justify-content: center;
+            }
+        }
+        
+        /* Custom Scrollbar */
+        ::-webkit-scrollbar {
+            width: 8px;
+            height: 8px;
+        }
+        
+        ::-webkit-scrollbar-track {
+            background: rgba(16, 185, 129, 0.1);
+            border-radius: 10px;
+        }
+        
+        ::-webkit-scrollbar-thumb {
+            background: var(--gradient-primary);
+            border-radius: 10px;
+        }
+        
+        ::-webkit-scrollbar-thumb:hover {
+            background: var(--dark-green);
+        }
+    </style>
+</head>
+<body>
+    <!-- Unified Navigation Bar (same as inbox.html) -->
+    <nav class="unified-nav">
+        <div class="unified-nav-container">
+            <!-- Top Section: Brand, Welcome, User -->
+            <div class="nav-top-section">
+                <!-- Brand Section -->
+                <div class="nav-brand-section">
+                    <div class="logo-container">
+                        <i class="bi bi-pencil-square text-white"></i>
+                    </div>
+                    <div class="d-none d-md-block ms-2">
+                        <h6 class="text-white mb-0 fw-bold text-truncate">نظام الموارد البشرية</h6>
+                        <small class="text-white-50">رسالة جديدة</small>
+                    </div>
+                </div>
+                
+                <!-- Welcome Section -->
+                <div class="welcome-section d-none d-lg-flex">
+                    <div class="welcome-content">
+                        <h4 class="text-white mb-1 text-truncate">مرحباً، {{ current_user.name if current_user else 'المستخدم' }}</h4>
+                        <p class="text-white-50 mb-0 text-truncate">نظام الموارد البشرية - إنشاء رسالة جديدة</p>
+                    </div>
+                    <div class="text-white fw-bold me-3" id="live-clock">
+                        <i class="bi bi-clock me-2"></i>
+                        جاري التحميل...
+                    </div>
+                </div>
+                
+                <!-- User Section -->
+                <div class="nav-user-section">
+                    <!-- Notifications -->
+                    <div class="dropdown me-2">
+                        <button class="btn btn-light position-relative rounded-pill" 
+                                type="button" data-bs-toggle="dropdown" 
+                                style="padding: 0.4rem 0.8rem; border: 1px solid rgba(255, 255, 255, 0.3); background: rgba(255, 255, 255, 0.15); color: white;">
+                            <i class="bi bi-bell"></i>
+                            {% if notifications and notifications|length > 0 %}
+                            <span class="notification-badge badge">{{ notifications|length }}</span>
+                            {% endif %}
+                        </button>
+                        <ul class="dropdown-menu dropdown-menu-end">
+                            {% if notifications and notifications|length > 0 %}
+                                {% for notification in notifications[:3] %}
+                                <li>
+                                    <a class="dropdown-item" href="#">
+                                        <div class="d-flex align-items-start">
+                                            <div class="bg-success bg-opacity-10 rounded-circle p-2 me-3">
+                                                <i class="bi bi-bell text-success"></i>
+                                            </div>
+                                            <div>
+                                                <strong class="d-block text-dark">{{ notification.title }}</strong>
+                                                <small class="text-muted">{{ notification.message|truncate(30) }}</small>
+                                            </div>
+                                        </div>
+                                    </a>
+                                </li>
+                                {% endfor %}
+                                <li><hr class="dropdown-divider my-2"></li>
+                            {% else %}
+                                <li>
+                                    <a class="dropdown-item text-muted text-center" href="#">
+                                        <i class="bi bi-bell-slash fs-4 d-block mb-2 text-success"></i>
+                                        لا توجد إشعارات جديدة
+                                    </a>
+                                </li>
+                                <li><hr class="dropdown-divider my-2"></li>
+                            {% endif %}
+                            <li>
+                                <a class="dropdown-item text-center text-success fw-bold" href="{{ url_for('notifications') }}">
+                                    <i class="bi bi-arrow-left me-2"></i>
+                                    عرض جميع الإشعارات
+                                </a>
+                            </li>
+                        </ul>
+                    </div>
+                    
+                    <!-- User Menu -->
+                    <div class="dropdown">
+                        <button class="btn btn-outline-light dropdown-toggle rounded-pill d-flex align-items-center" 
+                                type="button" data-bs-toggle="dropdown"
+                                style="padding: 0.4rem 0.9rem; border: 1px solid rgba(255, 255, 255, 0.4);">
+                            <div class="user-avatar me-2">
+                                {{ current_user.name[0] if current_user else 'م' }}
+                            </div>
+                            <span class="d-none d-md-inline text-truncate" style="max-width: 80px;">{{ current_user.username if current_user else 'مدير' }}</span>
+                        </button>
+                        <ul class="dropdown-menu dropdown-menu-end">
+                            <li>
+                                <a class="dropdown-item" href="{{ url_for('user_dashboard') }}">
+                                    <i class="bi bi-house-door me-2 text-success"></i>الرئيسية
+                                </a>
+                            </li>
+                            <li>
+                                <a class="dropdown-item" href="#">
+                                    <i class="bi bi-person-circle me-2 text-success"></i>الملف الشخصي
+                                </a>
+                            </li>
+                            <li>
+                                <a class="dropdown-item" href="#">
+                                    <i class="bi bi-key me-2 text-success"></i>تغير كلمة المرور
+                                </a>
+                            </li>
+                            <li><hr class="dropdown-divider my-2"></li>
+                            <li>
+                                <a class="dropdown-item text-danger fw-bold" href="{{ url_for('logout') }}">
+                                    <i class="bi bi-box-arrow-right me-2"></i>تسجيل الخروج
+                                </a>
+                            </li>
+                        </ul>
+                    </div>
+                    
+                    <!-- Mobile Menu Button -->
+                    <button class="mobile-menu-btn d-lg-none" id="mobileMenuBtn">
+                        <i class="bi bi-list"></i>
+                    </button>
+                </div>
+            </div>
+
+            <div class="nav-bottom-section d-none d-lg-flex">
+                <div class="nav-controls"></div>
+                
+                <div class="nav-menu-section">
+                    <div class="nav-menu-wrapper">
+                        {% if current_user.is_admin %}
+                            <!-- Admin Navigation -->
+                            <a class="nav-link {% if request.endpoint == 'admin_dashboard' %}active{% endif %}" href="{{ url_for('admin_dashboard') }}">
+                                <i class="bi bi-speedometer2 me-2"></i>
+                                لوحة التحكم
+                            </a>
+                            <a class="nav-link {% if request.endpoint == 'admin_users' %}active{% endif %}" href="{{ url_for('admin_users') }}">
+                                <i class="bi bi-people me-2"></i>
+                                إدارة المستخدمين
+                            </a>
+                            <a class="nav-link {% if request.endpoint == 'admin_departments' %}active{% endif %}" href="{{ url_for('admin_departments') }}">
+                                <i class="bi bi-building me-2"></i>
+                                إدارة الأقسام
+                            </a>
+                            <a class="nav-link {% if request.endpoint == 'admin_employee_progress' %}active{% endif %}" href="{{ url_for('admin_employee_progress') }}">
+                                <i class="bi bi-graph-up me-2"></i>
+                                تقدم الموظفين
+                            </a>
+                            <a class="nav-link {% if request.endpoint == 'admin_schedules' %}active{% endif %}" href="{{ url_for('admin_schedules') }}">
+                                <i class="bi bi-calendar-check me-2"></i>
+                                اعتماد الجداول
+                            </a>
+                            <!-- Add Messages Link for Admin -->
+                            <a class="nav-link nav-link-with-badge {% if request.endpoint == 'messages_inbox' %}active{% endif %}" href="{{ url_for('messages_inbox') }}">
+                                <i class="bi bi-envelope me-2"></i>
+                                الرسائل
+                                {% if unread_count and unread_count > 0 %}
+                                <span class="nav-badge">{{ unread_count }}</span>
+                                {% endif %}
+                            </a>
+                            <a class="nav-link" href="{{ url_for('admin_all_leaves') }}">
+                                <i class="bi bi-calendar-minus me-2"></i>
+                                طلبات الإجازات
+                            </a>
+                            <a class="nav-link" href="{{ url_for('admin_all_permissions') }}">
+                                <i class="bi bi-clock me-2"></i>
+                                طلبات الإذونات
+                            </a>
+                            <a class="nav-link" href="{{ url_for('manager_advance_requests') }}">
+                                <i class="bi bi-cash-coin me-2"></i>
+                                طلبات السلف
+                            </a>
+                            
+                        {% elif current_user.is_manager %}
+                            <!-- Manager Navigation -->
+                            <a class="nav-link {% if request.endpoint == 'manager_dashboard' %}active{% endif %}" href="{{ url_for('manager_dashboard') }}">
+                                <i class="bi bi-speedometer2 me-2"></i>
+                                لوحة التحكم
+                            </a>
+                            <a class="nav-link {% if request.endpoint == 'manager_employees' %}active{% endif %}" href="{{ url_for('manager_employees') }}">
+                                <i class="bi bi-people me-2"></i>
+                                موظفي القسم
+                            </a>
+                            <a class="nav-link {% if request.endpoint == 'manager_schedules' %}active{% endif %}" href="{{ url_for('manager_schedules') }}">
+                                <i class="bi bi-calendar-check me-2"></i>
+                                جدولة الموظفين
+                            </a>
+                            <!-- Add Messages Link for Manager -->
+                            <a class="nav-link nav-link-with-badge {% if request.endpoint == 'messages_inbox' %}active{% endif %}" href="{{ url_for('messages_inbox') }}">
+                                <i class="bi bi-envelope me-2"></i>
+                                الرسائل
+                                {% if unread_count and unread_count > 0 %}
+                                <span class="nav-badge">{{ unread_count }}</span>
+                                {% endif %}
+                            </a>
+                            <a class="nav-link nav-link-with-badge {% if request.endpoint == 'manager_leave_requests' %}active{% endif %}" href="{{ url_for('manager_leave_requests') }}">
+                                <i class="bi bi-calendar-minus me-2"></i>
+                                طلبات الإجازات
+                                {% if stats and stats.pending_leaves > 0 %}
+                                <span class="nav-badge">{{ stats.pending_leaves }}</span>
+                                {% endif %}
+                            </a>
+                            <a class="nav-link nav-link-with-badge {% if request.endpoint == 'manager_permission_requests' %}active{% endif %}" href="{{ url_for('manager_permission_requests') }}">
+                                <i class="bi bi-clock me-2"></i>
+                                طلبات الإذونات
+                                {% if stats and stats.pending_permissions > 0 %}
+                                <span class="nav-badge">{{ stats.pending_permissions }}</span>
+                                {% endif %}
+                            </a>
+                            <a class="nav-link nav-link-with-badge active" href="{{ url_for('user_salary_slips') }}">
+                                <i class="bi bi-file-earmark-text me-2"></i>
+                                شيت المرتب
+                                {% if new_salary_slips and new_salary_slips > 0 %}
+                                <span class="nav-badge">{{ new_salary_slips }}</span>
+                                {% endif %}
+                            </a>
+                            <a class="nav-link nav-link-with-badge {% if request.endpoint == 'manager_advance_requests' %}active{% endif %}" href="{{ url_for('manager_advance_requests') }}">
+                                <i class="bi bi-cash-coin me-2"></i>
+                                طلبات السلف
+                                {% if stats and stats.pending_advances > 0 %}
+                                <span class="nav-badge">{{ stats.pending_advances }}</span>
+                                {% endif %}
+                            </a>
+                            <a class="nav-link {% if request.endpoint == 'manager_rewards_penalties' %}active{% endif %}" href="{{ url_for('manager_rewards_penalties') }}">
+                                <i class="bi bi-award me-2"></i>
+                                المكافآت والخصومات
+                            </a>
+                            <a class="nav-link" href="{{ url_for('user_excel_data') }}">
+                                <i class="fas fa-file-excel me-2"></i>
+                                الحضور والانصراف
+                            </a>
+                            {% if current_user.is_admin %}
+                            <a class="nav-link text-warning" href="{{ url_for('admin_dashboard') }}">
+                                <i class="bi bi-person-shield me-2"></i>
+                                لوحة المسؤول
+                            </a>
+                            {% endif %}
+                            
+                        {% else %}
+                            <!-- User Navigation -->
+                            <a class="nav-link" href="{{ url_for('user_dashboard') }}">
+                                <i class="bi bi-speedometer2 me-2"></i>
+                                لوحة التحكم
+                            </a>
+                            <a class="nav-link" href="{{ url_for('user_form') }}">
+                                <i class="bi bi-person-lines-fill me-2"></i>
+                                البيانات الشخصية
+                            </a>
+                            <!-- Add Messages Link for User -->
+                            <a class="nav-link nav-link-with-badge {% if request.endpoint == 'messages_inbox' %}active{% endif %}" href="{{ url_for('messages_inbox') }}">
+                                <i class="bi bi-envelope me-2"></i>
+                                الرسائل
+                                {% if unread_count and unread_count > 0 %}
+                                <span class="nav-badge">{{ unread_count }}</span>
+                                {% endif %}
+                            </a>
+                            <a class="nav-link" href="{{ url_for('user_leave') }}">
+                                <i class="bi bi-calendar-minus me-2"></i>
+                                طلب إجازة
+                            </a>
+                            <a class="nav-link" href="{{ url_for('user_permission') }}">
+                                <i class="bi bi-clock me-2"></i>
+                                طلب إذن
+                            </a>
+                            <a class="nav-link active" href="{{ url_for('user_salary_slips') }}">
+                                <i class="bi bi-file-earmark-text me-2"></i>
+                                شيت المرتب
+                                {% if new_salary_slips and new_salary_slips > 0 %}
+                                <span class="nav-badge">{{ new_salary_slips }}</span>
+                                {% endif %}
+                            </a>
+                            <a class="nav-link" href="{{ url_for('user_schedule') }}">
+                                <i class="bi bi-calendar-week me-2"></i>
+                                الجدول الأسبوعي
+                            </a>
+                            <a class="nav-link" href="{{ url_for('user_leave_requests') }}">
+                                <i class="bi bi-clock-history me-2"></i>
+                                طلباتي السابقة
+                            </a>
+                            <a class="nav-link" href="{{ url_for('user_excel_data') }}">
+                                <i class="fas fa-file-excel me-2"></i>
+                                الحضور والانصراف
+                            </a>
+                        {% endif %}
+                    </div>
+                </div>
+                
+                <div class="nav-controls-right"></div>
+            </div>            
+
+        </div>
+    </nav>
+
+    <!-- Mobile Navigation Menu -->
+    <!-- Mobile Navigation Menu -->
+    <div class="mobile-nav-menu" id="mobileNavMenu">
+        {% if current_user.is_admin %}
+            <!-- Admin Mobile Navigation -->
+            <a class="mobile-nav-link {% if request.endpoint == 'admin_dashboard' %}active{% endif %}" href="{{ url_for('admin_dashboard') }}">
+                <i class="bi bi-speedometer2"></i>
+                لوحة التحكم
+            </a>
+            <a class="mobile-nav-link {% if request.endpoint == 'admin_users' %}active{% endif %}" href="{{ url_for('admin_users') }}">
+                <i class="bi bi-people"></i>
+                إدارة المستخدمين
+            </a>
+            <a class="mobile-nav-link {% if request.endpoint == 'admin_departments' %}active{% endif %}" href="{{ url_for('admin_departments') }}">
+                <i class="bi bi-building"></i>
+                إدارة الأقسام
+            </a>
+            <a class="mobile-nav-link {% if request.endpoint == 'admin_employee_progress' %}active{% endif %}" href="{{ url_for('admin_employee_progress') }}">
+                <i class="bi bi-graph-up"></i>
+                تقدم الموظفين
+            </a>
+            <a class="mobile-nav-link {% if request.endpoint == 'admin_schedules' %}active{% endif %}" href="{{ url_for('admin_schedules') }}">
+                <i class="bi bi-calendar-check"></i>
+                اعتماد الجداول
+            </a>
+            <!-- Add Messages Link for Admin Mobile -->
+            <a class="mobile-nav-link nav-link-with-badge {% if request.endpoint == 'messages_inbox' %}active{% endif %}" href="{{ url_for('messages_inbox') }}">
+                <i class="bi bi-envelope"></i>
+                الرسائل
+                {% if unread_count and unread_count > 0 %}
+                <span class="nav-badge">{{ unread_count }}</span>
+                {% endif %}
+            </a>
+            <a class="mobile-nav-link" href="{{ url_for('admin_all_leaves') }}">
+                <i class="bi bi-calendar-minus"></i>
+                طلبات الإجازات
+            </a>
+            <a class="mobile-nav-link" href="{{ url_for('admin_all_permissions') }}">
+                <i class="bi bi-clock"></i>
+                طلبات الإذونات
+            </a>
+            <a class="mobile-nav-link" href="{{ url_for('manager_advance_requests') }}">
+                <i class="bi bi-cash-coin"></i>
+                طلبات السلف
+            </a>
+            
+        {% elif current_user.is_manager %}
+            <!-- Manager Mobile Navigation -->
+            <a class="mobile-nav-link {% if request.endpoint == 'manager_dashboard' %}active{% endif %}" href="{{ url_for('manager_dashboard') }}">
+                <i class="bi bi-speedometer2"></i>
+                لوحة التحكم
+            </a>
+            <a class="mobile-nav-link {% if request.endpoint == 'manager_employees' %}active{% endif %}" href="{{ url_for('manager_employees') }}">
+                <i class="bi bi-people"></i>
+                موظفي القسم
+            </a>
+            <a class="mobile-nav-link {% if request.endpoint == 'manager_schedules' %}active{% endif %}" href="{{ url_for('manager_schedules') }}">
+                <i class="bi bi-calendar-check"></i>
+                جدولة الموظفين
+            </a>
+            <!-- Add Messages Link for Manager Mobile -->
+            <a class="mobile-nav-link nav-link-with-badge {% if request.endpoint == 'messages_inbox' %}active{% endif %}" href="{{ url_for('messages_inbox') }}">
+                <i class="bi bi-envelope"></i>
+                الرسائل
+                {% if unread_count and unread_count > 0 %}
+                <span class="nav-badge">{{ unread_count }}</span>
+                {% endif %}
+            </a>
+            <a class="mobile-nav-link {% if request.endpoint == 'manager_leave_requests' %}active{% endif %}" href="{{ url_for('manager_leave_requests') }}">
+                <i class="bi bi-calendar-minus"></i>
+                طلبات الإجازات
+                {% if stats and stats.pending_leaves > 0 %}
+                <span class="nav-badge">{{ stats.pending_leaves }}</span>
+                {% endif %}
+            </a>
+            <a class="mobile-nav-link {% if request.endpoint == 'manager_permission_requests' %}active{% endif %}" href="{{ url_for('manager_permission_requests') }}">
+                <i class="bi bi-clock"></i>
+                طلبات الإذونات
+                {% if stats and stats.pending_permissions > 0 %}
+                <span class="nav-badge">{{ stats.pending_permissions }}</span>
+                {% endif %}
+            </a>
+            <a class="mobile-nav-link active" href="{{ url_for('user_salary_slips') }}">
+                <i class="bi bi-file-earmark-text"></i>
+                شيت المرتب
+                {% if new_salary_slips and new_salary_slips > 0 %}
+                <span class="nav-badge">{{ new_salary_slips }}</span>
+                {% endif %}
+            </a>
+            <a class="mobile-nav-link {% if request.endpoint == 'manager_advance_requests' %}active{% endif %}" href="{{ url_for('manager_advance_requests') }}">
+                <i class="bi bi-cash-coin"></i>
+                طلبات السلف
+                {% if stats and stats.pending_advances > 0 %}
+                <span class="nav-badge">{{ stats.pending_advances }}</span>
+                {% endif %}
+            </a>
+            <a class="mobile-nav-link {% if request.endpoint == 'manager_rewards_penalties' %}active{% endif %}" href="{{ url_for('manager_rewards_penalties') }}">
+                <i class="bi bi-award"></i>
+                المكافآت والخصومات
+            </a>
+            <a class="mobile-nav-link" href="{{ url_for('user_excel_data') }}">
+                <i class="fas fa-file-excel me-2"></i>
+                الحضور والانصراف
+            </a>
+            {% if current_user.is_admin %}
+            <a class="mobile-nav-link text-warning" href="{{ url_for('admin_dashboard') }}">
+                <i class="bi bi-person-shield"></i>
+                لوحة المسؤول
+            </a>
+            {% endif %}
+            
+        {% else %}
+            <!-- User Mobile Navigation -->
+            <a class="mobile-nav-link" href="{{ url_for('user_dashboard') }}">
+                <i class="bi bi-speedometer2"></i>
+                لوحة التحكم
+            </a>
+            <a class="mobile-nav-link" href="{{ url_for('user_form') }}">
+                <i class="bi bi-person-lines-fill"></i>
+                البيانات الشخصية
+            </a>
+            <!-- Add Messages Link for User Mobile -->
+            <a class="mobile-nav-link nav-link-with-badge {% if request.endpoint == 'messages_inbox' %}active{% endif %}" href="{{ url_for('messages_inbox') }}">
+                <i class="bi bi-envelope"></i>
+                الرسائل
+                {% if unread_count and unread_count > 0 %}
+                <span class="nav-badge">{{ unread_count }}</span>
+                {% endif %}
+            </a>
+            <a class="mobile-nav-link" href="{{ url_for('user_leave') }}">
+                <i class="bi bi-calendar-minus"></i>
+                طلب إجازة
+            </a>
+            <a class="mobile-nav-link" href="{{ url_for('user_permission') }}">
+                <i class="bi bi-clock"></i>
+                طلب إذن
+            </a>
+            <a class="mobile-nav-link active" href="{{ url_for('user_salary_slips') }}">
+                <i class="bi bi-file-earmark-text"></i>
+                شيت المرتب
+                {% if new_salary_slips and new_salary_slips > 0 %}
+                <span class="nav-badge">{{ new_salary_slips }}</span>
+                {% endif %}
+            </a>
+            <a class="mobile-nav-link" href="{{ url_for('user_schedule') }}">
+                <i class="bi bi-calendar-week"></i>
+                الجدول الأسبوعي
+            </a>
+            <a class="mobile-nav-link" href="{{ url_for('user_leave_requests') }}">
+                <i class="bi bi-clock-history"></i>
+                طلباتي السابقة
+            </a>
+            <a class="mobile-nav-link" href="{{ url_for('user_excel_data') }}">
+                <i class="fas fa-file-excel"></i>
+                الحضور والانصراف
+            </a>
+        {% endif %}
+    </div>
+
+    <!-- Main Content -->
+    <div class="main-content">
+        <!-- Alert Container -->
+        <div class="alert-container">
+            {% with messages = get_flashed_messages(with_categories=true) %}
+                {% if messages %}
+                    {% for category, message in messages %}
+                        <div class="alert alert-{{ category if category in ['success', 'danger', 'warning', 'info'] else 'info' }} alert-dismissible fade show mb-2" role="alert">
+                            <i class="bi bi-{{ 'check-circle' if category == 'success' else 'exclamation-triangle' if category == 'danger' else 'info-circle' if category == 'info' else 'exclamation-circle' }} me-2"></i>
+                            {{ message }}
+                            <button type="button" class="btn-close" data-bs-dismiss="alert" aria-label="Close"></button>
+                        </div>
+                    {% endfor %}
+                {% endif %}
+            {% endwith %}
+        </div>
+
+        <!-- Header Card -->
+        <div class="header-card">
+            <div class="header-content">
+                <div class="page-title">
+                    <i class="bi bi-pencil-square"></i>
+                    <div>
+                        <h1 class="mb-2">رسالة جديدة</h1>
+                        <p class="mb-0 text-white-50">إنشاء وإرسال رسالة داخلية</p>
+                    </div>
+                </div>
+            </div>
+        </div>
+
+        <!-- Compose Card -->
+        <div class="compose-card">
+            <form method="POST" action="{{ url_for('messages_compose') }}" enctype="multipart/form-data" id="composeForm">
+                <div class="compose-header">
+                    <h3>تفاصيل الرسالة</h3>
+                    <div>
+                        <span class="badge bg-success" id="charCount">0</span>
+                    </div>
+                </div>
+                
+                <div class="compose-body">
+                    <!-- Quote Section (for replies) -->
+                    {% if reply_to_msg %}
+                    <div class="quote-section">
+                        <div class="quote-header">
+                            <span>
+                                <i class="bi bi-reply-fill me-2 text-success"></i>
+                                رد على رسالة من {{ reply_to_msg.sender.name }}
+                            </span>
+                            <span>{{ reply_to_msg.created_at.strftime('%Y-%m-%d %H:%M') }}</span>
+                        </div>
+                        <div class="quote-content">
+                            {{ reply_to_msg.body|safe }}
+                        </div>
+                    </div>
+                    {% endif %}
+                    
+                    {% if forward_msg %}
+                    <div class="quote-section">
+                        <div class="quote-header">
+                            <span>
+                                <i class="bi bi-forward-fill me-2 text-success"></i>
+                                رسالة معممة من {{ forward_msg.sender.name }}
+                            </span>
+                            <span>{{ forward_msg.created_at.strftime('%Y-%m-%d %H:%M') }}</span>
+                        </div>
+                        <div class="quote-content">
+                            {{ forward_msg.body|safe }}
+                        </div>
+                    </div>
+                    {% endif %}
+                    
+                    {% if quote_msg %}
+                    <div class="quote-section">
+                        <div class="quote-header">
+                            <span>
+                                <i class="bi bi-quote me-2 text-success"></i>
+                                نقلاً عن {{ quote_msg.sender.name }}
+                            </span>
+                            <span>{{ quote_msg.created_at.strftime('%Y-%m-%d %H:%M') }}</span>
+                        </div>
+                        <div class="quote-content">
+                            {{ quote_msg.body|safe }}
+                        </div>
+                    </div>
+                    {% endif %}
+                    <!-- Department Filter -->
+                    <div class="recipient-field mb-3">
+                        <div class="recipient-label">
+                            <i class="bi bi-building"></i>
+                            تصفية حسب القسم
+                        </div>
+                        <select class="recipient-input" id="departmentFilter" onchange="filterUsersByDepartment()">
+                            <option value="all">جميع الأقسام</option>
+                            {% for dept in departments %}
+                            <option value="{{ dept.id }}">{{ dept.name }}</option>
+                            {% endfor %}
+                        </select>
+                    </div>
+
+                    <!-- To Field -->
+                    <div class="recipient-field">
+                        <div class="recipient-label">
+                            <i class="bi bi-person"></i>
+                            إلى
+                        </div>
+                        <div class="d-flex align-items-center mb-2">
+                            <select class="recipient-input select2-multiple" name="to[]" id="to" multiple="multiple" required>
+                                <option value="">اختر المستلمين...</option>
+                                {% for user in users %}
+                                <option value="{{ user.id }}">{{ user.name }} ({{ user.username }})</option>
+                                {% endfor %}
+                            </select>
+                            <button type="button" class="btn btn-sm btn-outline-success me-2" onclick="selectAllUsers('to')" style="white-space: nowrap; min-width: 80px;">
+                                <i class="bi bi-check2-all"></i> تحديد الكل
+                            </button>
+                        </div>
+                        
+                        <!-- Styled CC/BCC Button -->
+                        <div class="d-flex justify-content-start mt-2">
+                            <button type="button" class="btn-cc-bcc" onclick="toggleCCBCC()" id="toggleCCBCCBtn">
+                                <span class="btn-cc-bcc-content">
+                                    <i class="bi bi-plus-circle-dotted"></i>
+                                    <span>إضافة CC / BCC</span>
+                                    <i class="bi bi-chevron-down ms-1" id="ccBccArrow"></i>
+                                </span>
+                            </button>
+                        </div>
+                    </div>
+
+                    <!-- CC Field (hidden by default) -->
+                    <div class="recipient-field cc-field" id="ccField" style="display: none;">
+                        <div class="recipient-label">
+                            <i class="bi bi-person-plus"></i>
+                            CC <span class="badge-cc">نسخة إلى</span>
+                        </div>
+                        <div class="d-flex align-items-center mb-2">
+                            <select class="recipient-input select2-multiple" name="cc[]" id="cc" multiple="multiple">
+                                <option value="">اختر المستلمين...</option>
+                                {% for user in users %}
+                                <option value="{{ user.id }}">{{ user.name }} ({{ user.username }})</option>
+                                {% endfor %}
+                            </select>
+                            <button type="button" class="btn btn-sm btn-outline-success me-2" onclick="selectAllUsers('cc')" style="white-space: nowrap; min-width: 80px;">
+                                <i class="bi bi-check2-all"></i> تحديد الكل
+                            </button>
+                        </div>
+                        <div class="field-actions">
+                            <small class="text-muted">
+                                <i class="bi bi-info-circle"></i>
+                                المستلمون في CC سيتمكنون من رؤية بعضهم البعض
+                            </small>
+                        </div>
+                    </div>
+
+                    <!-- BCC Field (hidden by default) -->
+                    <div class="recipient-field bcc-field" id="bccField" style="display: none;">
+                        <div class="recipient-label">
+                            <i class="bi bi-eye-slash"></i>
+                            BCC <span class="badge-bcc">نسخة مخفية</span>
+                        </div>
+                        <div class="d-flex align-items-center mb-2">
+                            <select class="recipient-input select2-multiple" name="bcc[]" id="bcc" multiple="multiple">
+                                <option value="">اختر المستلمين...</option>
+                                {% for user in users %}
+                                <option value="{{ user.id }}">{{ user.name }} ({{ user.username }})</option>
+                                {% endfor %}
+                            </select>
+                            <button type="button" class="btn btn-sm btn-outline-success me-2" onclick="selectAllUsers('bcc')" style="white-space: nowrap; min-width: 80px;">
+                                <i class="bi bi-check2-all"></i> تحديد الكل
+                            </button>
+                        </div>
+                        <div class="field-actions">
+                            <small class="text-muted">
+                                <i class="bi bi-incognito"></i>
+                                المستلمون في BCC مخفيون عن الجميع
+                            </small>
+                        </div>
+                    </div>
+
+                    <!-- Subject Field -->
+                    <div class="subject-field">
+                        <input type="text" class="subject-input" name="subject" id="subject" 
+                               placeholder="عنوان الرسالة" 
+                               value="{% if reply_to_msg %}رد: {{ reply_to_msg.subject }}{% elif forward_msg %}معمم: {{ forward_msg.subject }}{% endif %}"
+                               required>
+                    </div>
+
+                    <!-- Priority Selector -->
+                    <div class="priority-selector">
+                        <div class="priority-option normal">
+                            <input type="radio" name="priority" id="priorityNormal" value="normal" checked>
+                            <label for="priorityNormal">
+                                <i class="bi bi-flag"></i>
+                                عادي
+                            </label>
+                        </div>
+                        <div class="priority-option high">
+                            <input type="radio" name="priority" id="priorityHigh" value="high">
+                            <label for="priorityHigh">
+                                <i class="bi bi-exclamation-triangle"></i>
+                                مهم
+                            </label>
+                        </div>
+                        <div class="priority-option urgent">
+                            <input type="radio" name="priority" id="priorityUrgent" value="urgent">
+                            <label for="priorityUrgent">
+                                <i class="bi bi-exclamation-circle"></i>
+                                عاجل
+                            </label>
+                        </div>
+                    </div>
+
+                    <!-- Quill Editor -->
+                    <div id="editor-container"></div>
+                    <input type="hidden" name="body" id="body">
+
+                    <!-- Attachments -->
+                    <div class="attachments-section" onclick="document.getElementById('fileInput').click()">
+                        <i class="bi bi-paperclip"></i>
+                        <h6>إضافة مرفقات</h6>
+                        <p class="text-muted small">اسحب الملفات أو اضغط للاختيار</p>
+                        <input type="file" name="attachments" id="fileInput" multiple style="display: none;" onchange="handleFileSelect(this)">
+                        <div class="attachment-list" id="attachmentList"></div>
+                    </div>
+
+                    <!-- Form Actions -->
+                    <div class="form-actions">
+                        <button type="submit" name="action" value="send" class="btn-submit">
+                            <i class="bi bi-send"></i>
+                            إرسال
+                        </button>
+                        <button type="submit" name="action" value="draft" class="btn-draft">
+                            <i class="bi bi-save"></i>
+                            حفظ كمسودة
+                        </button>
+                        <a href="{{ url_for('messages_inbox') }}" class="btn-cancel">
+                            <i class="bi bi-x-lg"></i>
+                            إلغاء
+                        </a>
+                    </div>
+                </div>
+            </form>
+        </div>
+    </div>
+
+    <!-- JavaScript Libraries -->
+    <script src="https://cdn.jsdelivr.net/npm/bootstrap@5.3.0/dist/js/bootstrap.bundle.min.js"></script>
+    <script src="https://code.jquery.com/jquery-3.6.0.min.js"></script>
+    <script src="https://cdn.jsdelivr.net/npm/select2@4.1.0-rc.0/dist/js/select2.min.js"></script>
+    <script src="https://cdn.quilljs.com/1.3.6/quill.min.js"></script>
+    
+    <script>
+        // Mobile menu functionality
+        document.addEventListener('DOMContentLoaded', function() {
+            const mobileMenuBtn = document.getElementById('mobileMenuBtn');
+            const mobileNavMenu = document.getElementById('mobileNavMenu');
+            
+            if (mobileMenuBtn && mobileNavMenu) {
+                mobileMenuBtn.addEventListener('click', function() {
+                    mobileNavMenu.classList.toggle('active');
+                });
+                
+                document.addEventListener('click', function(event) {
+                    if (!mobileMenuBtn.contains(event.target) && !mobileNavMenu.contains(event.target)) {
+                        mobileNavMenu.classList.remove('active');
+                    }
+                });
+            }
+
+            // Real-time clock
+            function updateClock() {
+                const now = new Date();
+                const timeString = now.toLocaleTimeString('ar-EG');
+                const dateString = now.toLocaleDateString('ar-EG', {
+                    weekday: 'long',
+                    year: 'numeric',
+                    month: 'long',
+                    day: 'numeric'
+                });
+                
+                const clockElement = document.getElementById('live-clock');
+                if (clockElement) {
+                    clockElement.innerHTML = `
+                        <i class="bi bi-clock me-2"></i>
+                        ${timeString}
+                        <small class="text-white-50 ms-2 d-none d-md-inline">${dateString}</small>
+                    `;
+                }
+            }
+            
+            updateClock();
+            setInterval(updateClock, 1000);
+
+            // Initialize Select2
+            $('.select2-multiple').select2({
+                theme: 'bootstrap-5',
+                placeholder: 'اختر المستلمين...',
+                allowClear: true,
+                width: '100%',
+                language: {
+                    noResults: function() {
+                        return "لا توجد نتائج";
+                    }
+                }
+            });
+
+            // Initialize Quill editor
+            var quill = new Quill('#editor-container', {
+                theme: 'snow',
+                placeholder: 'اكتب رسالتك هنا...',
+                modules: {
+                    toolbar: [
+                        [{ 'header': [1, 2, 3, 4, 5, 6, false] }],
+                        ['bold', 'italic', 'underline', 'strike'],
+                        [{ 'list': 'ordered'}, { 'list': 'bullet' }],
+                        [{ 'color': [] }, { 'background': [] }],
+                        ['link', 'clean']
+                    ]
+                },
+                direction: 'rtl'
+            });
+
+            // Update character count
+            quill.on('text-change', function() {
+                var text = quill.getText();
+                var count = text.length - 1; // Subtract 1 for the newline
+                document.getElementById('charCount').textContent = count;
+                
+                // Update hidden input
+                document.getElementById('body').value = quill.root.innerHTML;
+            });
+
+            // Form submission
+            document.getElementById('composeForm').addEventListener('submit', function(e) {
+                if (e.submitter && e.submitter.name === 'action' && e.submitter.value === 'send') {
+                    var to = $('#to').val();
+                    if (!to || to.length === 0) {
+                        e.preventDefault();
+                        showAlert('يرجى اختيار مستلم واحد على الأقل', 'error');
+                    }
+                }
+            });
+        });
+
+        // Toggle CC/BCC fields
+        function toggleCCBCC() {
+            const ccField = document.getElementById('ccField');
+            const bccField = document.getElementById('bccField');
+            
+            if (ccField.style.display === 'none') {
+                ccField.style.display = 'block';
+                bccField.style.display = 'block';
+            } else {
+                ccField.style.display = 'none';
+                bccField.style.display = 'none';
+            }
+        }
+
+        // Filter users by department
+        function filterUsersByDepartment() {
+            const deptId = document.getElementById('departmentFilter').value;
+            
+            $.ajax({
+                url: '/api/users/search',
+                method: 'GET',
+                data: { department_id: deptId },
+                success: function(data) {
+                    updateSelect2Options('#to', data);
+                    updateSelect2Options('#cc', data);
+                    updateSelect2Options('#bcc', data);
+                }
+            });
+        }
+
+        // Update Select2 options
+        function updateSelect2Options(selector, data) {
+            const select = $(selector);
+            select.empty();
+            
+            data.forEach(function(user) {
+                select.append(new Option(user.display, user.id, false, false));
+            });
+            
+            select.trigger('change');
+        }
+
+        // Handle file selection
+        function handleFileSelect(input) {
+            const list = document.getElementById('attachmentList');
+            list.innerHTML = '';
+            
+            for (let i = 0; i < input.files.length; i++) {
+                const file = input.files[i];
+                const size = (file.size / 1024).toFixed(1);
+                
+                const item = document.createElement('div');
+                item.className = 'attachment-item';
+                item.innerHTML = `
+                    <div class="attachment-info">
+                        <i class="bi bi-file-earmark"></i>
+                        <span>${file.name}</span>
+                        <small class="text-muted">(${size} KB)</small>
+                    </div>
+                    <span class="remove-attachment" onclick="this.parentElement.remove()">
+                        <i class="bi bi-x-lg"></i>
+                    </span>
+                `;
+                
+                list.appendChild(item);
+            }
+        }
+
+        // Search users
+        function searchUsers() {
+            const query = document.getElementById('userSearch').value;
+            
+            $.ajax({
+                url: '/api/users/search',
+                method: 'GET',
+                data: { q: query },
+                success: function(data) {
+                    updateSelect2Options('#to', data);
+                    updateSelect2Options('#cc', data);
+                    updateSelect2Options('#bcc', data);
+                }
+            });
+        }
+
+        // Select all users in a select field
+        function selectAllUsers(fieldId) {
+            const select = $(`#${fieldId}`);
+            const allValues = select.find('option').map(function() {
+                return $(this).val();
+            }).get().filter(val => val !== ''); // Filter out empty option
+            
+            select.val(allValues).trigger('change');
+        }
+
+        // Also update the existing functions list
+        window.selectAllUsers = selectAllUsers;
+        // Show alert
+        function showAlert(message, type = 'success') {
+            const alert = document.createElement('div');
+            alert.className = `alert alert-${type} alert-dismissible fade show mb-2`;
+            alert.innerHTML = `
+                <i class="fas fa-${type === 'success' ? 'check-circle' : type === 'error' ? 'exclamation-triangle' : 'info-circle'} me-2"></i>
+                ${message}
+                <button type="button" class="btn-close" data-bs-dismiss="alert" aria-label="Close"></button>
+            `;
+            
+            const container = document.querySelector('.alert-container');
+            container.insertBefore(alert, container.firstChild);
+            
+            setTimeout(() => {
+                alert.remove();
+            }, 5000);
+        }
+
+        // Export functions
+        window.toggleCCBCC = toggleCCBCC;
+        window.filterUsersByDepartment = filterUsersByDepartment;
+        window.handleFileSelect = handleFileSelect;
+        window.searchUsers = searchUsers;
+    </script>
+</body>
+</html>

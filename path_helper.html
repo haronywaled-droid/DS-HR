@@ -1,0 +1,110 @@
+<!DOCTYPE html>
+<html>
+<head>
+    <title>دليل المسارات</title>
+    <style>
+        body { font-family: Arial; padding: 20px; }
+        .path { background: #f5f5f5; padding: 10px; margin: 5px; border-radius: 5px; }
+        .from { color: #0066cc; font-weight: bold; }
+        .to { color: #009933; }
+    </style>
+</head>
+<body>
+    <h1>دليل المسارات للنظام</h1>
+    
+    <h2>هيكل المجلدات:</h2>
+    <div class="path">📁 D:\Haron\08-01-2026\hr_system\
+        ├── 📁 <strong>css</strong>\
+        │   ├── bootstrap.min.css\
+        │   ├── bootstrap-icons.css\
+        │   ├── select2.min.css\
+        │   └── 📁 <strong>fonts</strong>\
+        │       ├── bootstrap-icons.woff\
+        │       └── bootstrap-icons.woff2\
+        ├── 📁 <strong>js</strong>\
+        │   ├── jquery-3.6.0.min.js\
+        │   ├── bootstrap.bundle.min.js\
+        │   ├── select2.min.js\
+        │   ├── xlsx.full.min.js\
+        │   └── sweetalert2.min.js\
+        └── 📁 <strong>templates\manager</strong>\
+            └── edit_schedule.html
+    </div>
+    
+    <h2>المسارات من edit_schedule.html:</h2>
+    <div class="path">
+        <span class="from">من:</span> templates\manager\edit_schedule.html<br>
+        <span class="to">إلى:</span> css\bootstrap.min.css<br>
+        <span class="to">المسار:</span> <code>../../../css/bootstrap.min.css</code>
+    </div>
+    
+    <div class="path">
+        <span class="from">من:</span> templates\manager\edit_schedule.html<br>
+        <span class="to">إلى:</span> js\jquery-3.6.0.min.js<br>
+        <span class="to">المسار:</span> <code>../../../js/jquery-3.6.0.min.js</code>
+    </div>
+    
+    <h2>كود HTML المعدل:</h2>
+    <pre>
+&lt;!-- في templates\manager\edit_schedule.html --&gt;
+&lt;link href="../../../css/bootstrap.min.css" rel="stylesheet"&gt;
+&lt;link href="../../../css/bootstrap-icons.css" rel="stylesheet"&gt;
+&lt;link href="../../../css/select2.min.css" rel="stylesheet"&gt;
+&lt;link href="../../../css/sweetalert2.min.css" rel="stylesheet"&gt;
+&lt;link href="../../../css/sweetalert2-bootstrap-4.css" rel="stylesheet"&gt;
+
+&lt;script src="../../../js/xlsx.full.min.js"&gt;&lt;/script&gt;
+
+&lt;!-- في نهاية body --&gt;
+&lt;script src="../../../js/jquery-3.6.0.min.js"&gt;&lt;/script&gt;
+&lt;script src="../../../js/bootstrap.bundle.min.js"&gt;&lt;/script&gt;
+&lt;script src="../../../js/select2.min.js"&gt;&lt;/script&gt;
+&lt;script src="../../../js/sweetalert2.min.js"&gt;&lt;/script&gt;
+    </pre>
+    
+    <h2>اختبار المسارات:</h2>
+    <button onclick="testPaths()">اختبار جميع المسارات</button>
+    <div id="testResults" style="margin-top: 20px;"></div>
+    
+    <script>
+        const paths = [
+            {! "'../../../css/bootstrap.min.css'", "'../../../css/bootstrap-icons.css'", 
+               "'../../../css/select2.min.css'", "'../../../css/sweetalert2.min.css'",
+               "'../../../css/sweetalert2-bootstrap-4.css'",
+               "'../../../js/jquery-3.6.0.min.js'", "'../../../js/bootstrap.bundle.min.js'",
+               "'../../../js/select2.min.js'", "'../../../js/xlsx.full.min.js'",
+               "'../../../js/sweetalert2.min.js'" }
+        ];
+        
+        function testPaths() {
+            const results = document.getElementById('testResults');
+            results.innerHTML = '<h3>نتائج الاختبار:</h3>';
+            
+            paths.forEach(path => {
+                const link = document.createElement('link');
+                const script = document.createElement('script');
+                let element;
+                
+                if (path.includes('.css')) {
+                    element = link;
+                    element.rel = 'stylesheet';
+                    element.href = path;
+                } else {
+                    element = script;
+                    element.src = path;
+                }
+                
+                element.onload = function() {
+                    results.innerHTML += `<div style="color: green;">✓ $<class 'pathlib._local.Path'> - تم تحميله بنجاح</div>`;
+                };
+                
+                element.onerror = function() {
+                    results.innerHTML += `<div style="color: red;">✗ $<class 'pathlib._local.Path'> - فشل التحميل</div>`;
+                };
+                
+                document.head.appendChild(element);
+            });
+        }
+    </script>
+</body>
+</html>

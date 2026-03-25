@@ -1,0 +1,1930 @@
+<!DOCTYPE html>
+<html lang="ar" dir="rtl">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>تفاصيل الجدول - {{ schedule.department.name }}</title>
+    
+    <!-- Bootstrap 5 CSS -->
+    <link href="https://cdn.jsdelivr.net/npm/bootstrap@5.3.0/dist/css/bootstrap.min.css" rel="stylesheet">
+    
+    <!-- Bootstrap Icons -->
+    <link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/bootstrap-icons@1.10.0/font/bootstrap-icons.css">
+    
+    <!-- SheetJS for Excel -->
+    <script src="https://cdnjs.cloudflare.com/ajax/libs/xlsx/0.18.5/xlsx.full.min.js"></script>
+    
+    <style>
+        :root {
+            --primary-green: #10b981;
+            --dark-green: #059669;
+            --light-green: #34d399;
+            --accent-green: #a7f3d0;
+            --gradient-primary: linear-gradient(135deg, #10b981 0%, #059669 100%);
+            --gradient-secondary: linear-gradient(135deg, #34d399 0%, #10b981 100%);
+            --gradient-dark: linear-gradient(135deg, #065f46 0%, #047857 100%);
+            --gradient-success: linear-gradient(135deg, #a7f3d0 0%, #6ee7b7 100%);
+            --header-height: 130px;
+        }
+        
+        * {
+            margin: 0;
+            padding: 0;
+            box-sizing: border-box;
+        }
+        
+        body {
+            font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif;
+            background: #f8fdf9;
+            min-height: 100vh;
+            overflow-x: hidden;
+            padding-top: var(--header-height);
+            color: #1a4731;
+        }
+        
+        /* Unified Navigation Bar */
+        .unified-nav {
+            background: var(--gradient-dark);
+            color: white;
+            position: fixed;
+            top: 0;
+            right: 0;
+            left: 0;
+            height: var(--header-height);
+            z-index: 1000;
+            box-shadow: 0 4px 20px rgba(5, 150, 105, 0.25);
+            border-bottom: 1px solid rgba(255, 255, 255, 0.1);
+        }
+        
+        .unified-nav-container {
+            display: flex;
+            flex-direction: column;
+            height: 100%;
+            padding: 0 1rem;
+        }
+        
+        .nav-top-section {
+            display: flex;
+            align-items: center;
+            justify-content: space-between;
+            height: 70px;
+            flex-shrink: 0;
+            padding: 0.5rem 0;
+        }
+        
+        .nav-bottom-section {
+            display: flex;
+            align-items: center;
+            justify-content: space-between;
+            height: 60px;
+            flex-shrink: 0;
+            border-top: 1px solid rgba(255, 255, 255, 0.15);
+            position: relative;
+        }
+        
+        .nav-brand-section {
+            display: flex;
+            align-items: center;
+            flex-shrink: 0;
+            min-width: 0;
+        }
+        
+        .logo-container {
+            width: 45px;
+            height: 45px;
+            background: var(--gradient-primary);
+            border-radius: 10px;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            box-shadow: 0 4px 12px rgba(16, 185, 129, 0.4);
+            margin-left: 0.5rem;
+            flex-shrink: 0;
+        }
+        
+        .welcome-section {
+            display: flex;
+            align-items: center;
+            flex-grow: 1;
+            justify-content: center;
+            color: white;
+            text-align: center;
+            min-width: 0;
+            overflow: hidden;
+        }
+        
+        .welcome-content {
+            min-width: 0;
+            overflow: hidden;
+        }
+        
+        .welcome-content h4 {
+            margin-bottom: 0.2rem;
+            font-weight: 600;
+            font-size: 1.1rem;
+            white-space: nowrap;
+            overflow: hidden;
+            text-overflow: ellipsis;
+        }
+        
+        .welcome-content p {
+            margin-bottom: 0;
+            font-size: 0.85rem;
+            opacity: 0.9;
+            white-space: nowrap;
+            overflow: hidden;
+            text-overflow: ellipsis;
+        }
+        
+        .nav-user-section {
+            display: flex;
+            align-items: center;
+            flex-shrink: 0;
+            min-width: 0;
+        }
+        
+        .nav-menu-section {
+            display: flex;
+            align-items: center;
+            flex-grow: 1;
+            height: 100%;
+            position: relative;
+            min-width: 0;
+        }
+        
+        .nav-menu-wrapper {
+            display: flex;
+            align-items: center;
+            height: 100%;
+            overflow-x: auto;
+            overflow-y: hidden;
+            scroll-behavior: smooth;
+            -webkit-overflow-scrolling: touch;
+            width: 100%;
+            padding: 0 0.5rem;
+            scrollbar-width: thin;
+            scrollbar-color: var(--primary-green) rgba(255, 255, 255, 0.1);
+            min-width: 0;
+        }
+        
+        /* Custom scrollbar for nav menu */
+        .nav-menu-wrapper::-webkit-scrollbar {
+            height: 6px;
+        }
+        
+        .nav-menu-wrapper::-webkit-scrollbar-track {
+            background: rgba(255, 255, 255, 0.1);
+            border-radius: 10px;
+        }
+        
+        .nav-menu-wrapper::-webkit-scrollbar-thumb {
+            background: var(--primary-green);
+            border-radius: 10px;
+        }
+        
+        .nav-menu-wrapper::-webkit-scrollbar-thumb:hover {
+            background: var(--light-green);
+        }
+        
+        .unified-nav .nav-link {
+            color: rgba(255, 255, 255, 0.9);
+            padding: 0.7rem 1.2rem;
+            margin: 0 0.2rem;
+            border-radius: 10px;
+            transition: all 0.3s ease;
+            font-weight: 500;
+            position: relative;
+            border: 1px solid transparent;
+            display: flex;
+            align-items: center;
+            text-decoration: none;
+            font-size: 0.9rem;
+            white-space: nowrap;
+            height: 80%;
+            flex-shrink: 0;
+            background: rgba(255, 255, 255, 0.05);
+            min-width: max-content;
+        }
+        
+        .unified-nav .nav-link:hover {
+            color: white;
+            background: rgba(255, 255, 255, 0.12);
+            border: 1px solid rgba(255, 255, 255, 0.2);
+            transform: translateY(-2px);
+            box-shadow: 0 4px 12px rgba(0, 0, 0, 0.15);
+        }
+        
+        .unified-nav .nav-link.active {
+            background: rgba(255, 255, 255, 0.15);
+            color: white;
+            border: 1px solid rgba(255, 255, 255, 0.25);
+            box-shadow: 0 4px 12px rgba(0, 0, 0, 0.2);
+        }
+        
+        .unified-nav .nav-link.active::after {
+            content: '';
+            position: absolute;
+            bottom: -10px;
+            right: 50%;
+            transform: translateX(50%);
+            width: 70%;
+            height: 3px;
+            background: var(--accent-green);
+            border-radius: 4px 4px 0 0;
+        }
+        
+        .nav-badge {
+            background: var(--accent-green);
+            color: #065f46;
+            padding: 0.2rem 0.4rem;
+            border-radius: 8px;
+            font-size: 0.65rem;
+            font-weight: bold;
+            margin-right: 0.3rem;
+            position: absolute;
+            top: 5px;
+            right: 5px;
+            box-shadow: 0 2px 4px rgba(0, 0, 0, 0.1);
+        }
+        
+        .nav-link-with-badge {
+            position: relative;
+        }
+        
+        .notification-badge {
+            position: absolute;
+            top: -5px;
+            right: -5px;
+            font-size: 0.7rem;
+            background: var(--gradient-secondary);
+            border: 2px solid white;
+            box-shadow: 0 2px 8px rgba(16, 185, 129, 0.4);
+        }
+        
+        .user-avatar {
+            width: 38px;
+            height: 38px;
+            background: var(--gradient-primary);
+            border-radius: 50%;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            color: white;
+            font-weight: bold;
+            font-size: 1rem;
+            box-shadow: 0 4px 10px rgba(16, 185, 129, 0.4);
+            transition: all 0.3s ease;
+            flex-shrink: 0;
+        }
+        
+        .user-avatar:hover {
+            transform: scale(1.08);
+            box-shadow: 0 6px 15px rgba(16, 185, 129, 0.5);
+        }
+        
+        .dropdown-menu {
+            background: white;
+            border: none;
+            border-radius: 12px;
+            box-shadow: 0 10px 30px rgba(16, 185, 129, 0.2);
+            overflow: hidden;
+            border: 1px solid rgba(16, 185, 129, 0.15);
+        }
+        
+        .dropdown-item {
+            padding: 0.8rem 1.2rem;
+            border-radius: 8px;
+            margin: 0.2rem 0.5rem;
+            transition: all 0.2s ease;
+            color: #065f46;
+        }
+        
+        .dropdown-item:hover {
+            background: rgba(16, 185, 129, 0.1);
+            color: #065f46;
+            transform: translateX(-5px);
+        }
+        
+        .nav-controls {
+            display: flex;
+            align-items: center;
+            position: absolute;
+            left: 0;
+            top: 0;
+            height: 100%;
+            background: linear-gradient(90deg, rgba(6, 95, 70, 0.9) 0%, transparent 100%);
+            padding: 0 0.5rem;
+            z-index: 5;
+        }
+        
+        .nav-prev, .nav-next {
+            background: rgba(255, 255, 255, 0.2);
+            border: 1px solid rgba(255, 255, 255, 0.3);
+            color: white;
+            width: 28px;
+            height: 28px;
+            border-radius: 50%;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            cursor: pointer;
+            transition: all 0.3s ease;
+            font-size: 0.8rem;
+            margin-left: 0.3rem;
+        }
+        
+        .nav-prev:hover, .nav-next:hover {
+            background: rgba(255, 255, 255, 0.3);
+            transform: scale(1.1);
+        }
+        
+        .nav-controls-right {
+            display: flex;
+            align-items: center;
+            position: absolute;
+            right: 0;
+            top: 0;
+            height: 100%;
+            background: linear-gradient(270deg, rgba(6, 95, 70, 0.9) 0%, transparent 100%);
+            padding: 0 0.5rem;
+            z-index: 5;
+        }
+        
+        /* Mobile Menu Button */
+        .mobile-menu-btn {
+            display: none;
+            background: transparent;
+            border: 1px solid rgba(255, 255, 255, 0.3);
+            color: white;
+            width: 40px;
+            height: 40px;
+            border-radius: 8px;
+            align-items: center;
+            justify-content: center;
+            cursor: pointer;
+            transition: all 0.3s ease;
+            margin-right: 0.5rem;
+        }
+        
+        .mobile-menu-btn:hover {
+            background: rgba(255, 255, 255, 0.1);
+        }
+        
+        /* Mobile Menu */
+        .mobile-nav-menu {
+            position: fixed;
+            top: var(--header-height);
+            right: 0;
+            left: 0;
+            background: var(--gradient-dark);
+            z-index: 999;
+            padding: 1rem;
+            box-shadow: 0 4px 20px rgba(0, 0, 0, 0.2);
+            display: none;
+            flex-direction: column;
+            max-height: calc(100vh - var(--header-height));
+            overflow-y: auto;
+        }
+        
+        .mobile-nav-menu.active {
+            display: flex;
+        }
+        
+        .mobile-nav-link {
+            color: white;
+            padding: 1rem;
+            margin: 0.2rem 0;
+            border-radius: 8px;
+            text-decoration: none;
+            display: flex;
+            align-items: center;
+            transition: all 0.3s ease;
+            border: 1px solid transparent;
+            position: relative;
+        }
+        
+        .mobile-nav-link:hover,
+        .mobile-nav-link.active {
+            background: rgba(255, 255, 255, 0.1);
+            border: 1px solid rgba(255, 255, 255, 0.2);
+        }
+        
+        .mobile-nav-link i {
+            margin-left: 0.5rem;
+            width: 20px;
+            text-align: center;
+        }
+        
+        /* Mobile Responsive */
+        @media (max-width: 992px) {
+            :root {
+                --header-height: 100px;
+            }
+            
+            .unified-nav {
+                height: auto;
+                min-height: var(--header-height);
+            }
+            
+            .unified-nav-container {
+                padding: 0.5rem;
+            }
+            
+            .nav-top-section {
+                height: 60px;
+                flex-wrap: nowrap;
+                padding: 0;
+            }
+            
+            .nav-brand-section {
+                order: 1;
+                width: auto;
+                flex: 0 0 auto;
+            }
+            
+            .welcome-section {
+                order: 2;
+                flex: 1;
+                justify-content: flex-start;
+                padding: 0 0.5rem;
+                display: none;
+            }
+            
+            .nav-user-section {
+                order: 3;
+                width: auto;
+                flex: 0 0 auto;
+                justify-content: flex-end;
+            }
+            
+            .nav-bottom-section {
+                display: none;
+            }
+            
+            .mobile-menu-btn {
+                display: flex;
+            }
+            
+            .welcome-content h4 {
+                font-size: 0.9rem;
+            }
+            
+            .welcome-content p {
+                display: none;
+            }
+            
+            #live-clock {
+                display: none;
+            }
+            
+            body {
+                padding-top: var(--header-height);
+            }
+            
+            .nav-controls, .nav-controls-right {
+                display: none;
+            }
+            
+            /* Mobile specific fixes */
+            .nav-user-section .dropdown .btn {
+                padding: 0.3rem 0.6rem;
+            }
+            
+            .user-avatar {
+                width: 32px;
+                height: 32px;
+                font-size: 0.9rem;
+                margin-left: 0.3rem;
+            }
+            
+            .nav-brand-section .d-none.d-md-block {
+                display: none !important;
+            }
+        }
+        
+        @media (max-width: 768px) {
+            :root {
+                --header-height: 80px;
+            }
+            
+            .nav-top-section {
+                height: 50px;
+            }
+            
+            .logo-container {
+                width: 35px;
+                height: 35px;
+            }
+            
+            .logo-container i {
+                font-size: 1rem;
+            }
+            
+            .user-avatar {
+                width: 32px;
+                height: 32px;
+                font-size: 0.9rem;
+            }
+            
+            .mobile-menu-btn {
+                width: 35px;
+                height: 35px;
+            }
+            
+            .notification-badge {
+                font-size: 0.6rem;
+                top: -3px;
+                right: -3px;
+            }
+        }
+        
+        @media (max-width: 576px) {
+            :root {
+                --header-height: 70px;
+            }
+            
+            .nav-top-section {
+                height: 45px;
+            }
+            
+            .logo-container {
+                width: 30px;
+                height: 30px;
+                margin-left: 0.3rem;
+            }
+            
+            .user-avatar {
+                width: 28px;
+                height: 28px;
+                font-size: 0.8rem;
+            }
+            
+            .notification-badge {
+                font-size: 0.6rem;
+                top: -3px;
+                right: -3px;
+            }
+            
+            .btn {
+                padding: 0.3rem 0.6rem;
+                font-size: 0.8rem;
+            }
+            
+            .mobile-menu-btn {
+                width: 32px;
+                height: 32px;
+                margin-right: 0.3rem;
+            }
+            
+            .nav-user-section .dropdown .btn {
+                padding: 0.2rem 0.5rem;
+            }
+            
+            .dropdown .btn-outline-light {
+                font-size: 0.75rem;
+            }
+        }
+
+        /* Schedule Details Page Specific Styles */
+        .schedule-container {
+            max-width: 1400px;
+            margin: 0 auto;
+            padding: 20px;
+        }
+        
+        .header-card {
+            background: var(--gradient-dark);
+            border: none;
+            border-radius: 20px;
+            color: white;
+            box-shadow: 0 15px 35px rgba(5, 150, 105, 0.2);
+            margin-bottom: 30px;
+        }
+        
+        .content-card {
+            border: none;
+            border-radius: 20px;
+            box-shadow: 0 15px 35px rgba(16, 185, 129, 0.1);
+            background: rgba(255, 255, 255, 0.95);
+            margin-bottom: 25px;
+        }
+        
+        .card-header {
+            border-radius: 20px 20px 0 0 !important;
+            border-bottom: 2px solid rgba(255, 255, 255, 0.1);
+            padding: 20px 25px;
+        }
+        
+        .card-header-primary {
+            background: var(--gradient-primary);
+            color: white;
+        }
+        
+        .card-header-info {
+            background: linear-gradient(135deg, #0ea5e9 0%, #0284c7 100%);
+            color: white;
+        }
+        
+        .btn-primary {
+            background: var(--gradient-primary);
+            border: none;
+            border-radius: 15px;
+            padding: 12px 30px;
+            font-weight: 600;
+            transition: all 0.3s ease;
+        }
+        
+        .btn-primary:hover {
+            transform: translateY(-3px);
+            box-shadow: 0 8px 25px rgba(16, 185, 129, 0.4);
+        }
+        
+        .btn-excel {
+            background: linear-gradient(135deg, #217346 0%, #1e6640 100%);
+            border: none;
+            border-radius: 12px;
+            padding: 10px 25px;
+            font-weight: 600;
+            color: white;
+            transition: all 0.3s ease;
+        }
+        
+        .btn-excel:hover {
+            transform: translateY(-2px);
+            box-shadow: 0 6px 20px rgba(33, 115, 70, 0.3);
+            color: white;
+        }
+        
+        .back-btn {
+            background: rgba(255, 255, 255, 0.2);
+            border: 2px solid rgba(255, 255, 255, 0.3);
+            color: white;
+            border-radius: 15px;
+            padding: 10px 20px;
+            transition: all 0.3s ease;
+            font-weight: 600;
+        }
+        
+        .back-btn:hover {
+            background: rgba(255, 255, 255, 0.3);
+            border-color: rgba(255, 255, 255, 0.5);
+            transform: translateY(-2px);
+            color: white;
+        }
+        
+        .schedule-details-table {
+            width: 100%;
+            border-collapse: collapse;
+            font-size: 14px;
+            margin-bottom: 20px;
+        }
+        
+        .schedule-details-table th {
+            background: linear-gradient(135deg, #10b981 0%, #059669 100%);
+            color: white;
+            font-weight: 600;
+            text-align: center;
+            padding: 12px 8px;
+            border: 1px solid rgba(255, 255, 255, 0.2);
+            position: sticky;
+            top: 0;
+            z-index: 10;
+        }
+        
+        .schedule-details-table td {
+            padding: 8px;
+            border: 1px solid rgba(16, 185, 129, 0.1);
+            text-align: center;
+            vertical-align: middle;
+            background-color: white;
+            transition: all 0.2s ease;
+        }
+        
+        .schedule-details-table tr:hover td {
+            background-color: rgba(16, 185, 129, 0.05);
+        }
+        
+        .day-header {
+            background: linear-gradient(135deg, #dbeafe 0%, #bfdbfe 100%) !important;
+            color: #1e40af;
+            font-weight: bold;
+            font-size: 15px;
+        }
+        
+        .day-cell {
+            font-weight: bold;
+            color: #065f46;
+            background-color: rgba(16, 185, 129, 0.1);
+        }
+        
+        .date-cell {
+            font-weight: 500;
+            color: #1a4731;
+        }
+        
+        .job-cell {
+            font-weight: 600;
+            color: #374151;
+            background-color: rgba(16, 185, 129, 0.08);
+        }
+        
+        .shift-cell {
+            min-width: 120px;
+        }
+        
+        .employee-name {
+            font-weight: 500;
+            color: #1f2937;
+            padding: 6px 10px;
+            border-radius: 8px;
+            background: rgba(16, 185, 129, 0.05);
+            display: inline-block;
+            margin: 2px;
+        }
+        
+        .empty-shift {
+            color: #9ca3af;
+            font-style: italic;
+        }
+        
+        .stats-card {
+            background: rgba(255, 255, 255, 0.9);
+            border-radius: 15px;
+            padding: 20px;
+            text-align: center;
+            border: 1px solid rgba(16, 185, 129, 0.1);
+            transition: all 0.3s ease;
+            height: 100%;
+        }
+        
+        .stats-card:hover {
+            transform: translateY(-5px);
+            box-shadow: 0 10px 25px rgba(16, 185, 129, 0.15);
+        }
+        
+        .stats-value {
+            font-size: 2rem;
+            font-weight: 700;
+            color: var(--dark-green);
+            margin: 10px 0;
+        }
+        
+        .stats-label {
+            color: #6b7280;
+            font-size: 0.9rem;
+        }
+        
+        .floating-shape {
+            position: fixed;
+            width: 200px;
+            height: 200px;
+            background: var(--gradient-primary);
+            opacity: 0.1;
+            border-radius: 50%;
+            z-index: -1;
+            animation: float 6s ease-in-out infinite;
+        }
+        
+        .shape-1 {
+            top: 10%;
+            left: 10%;
+        }
+        
+        .shape-2 {
+            bottom: 10%;
+            right: 10%;
+            animation-delay: 2s;
+        }
+        
+        @keyframes float {
+            0%, 100% { transform: translateY(0px) rotate(0deg); }
+            50% { transform: translateY(-20px) rotate(10deg); }
+        }
+        
+        .schedule-info {
+            background: linear-gradient(135deg, #f0fdf4 0%, #dcfce7 100%);
+            border-radius: 15px;
+            padding: 20px;
+            margin-bottom: 20px;
+            border: 2px solid rgba(16, 185, 129, 0.2);
+        }
+        
+        .loading-overlay {
+            position: fixed;
+            top: 0;
+            left: 0;
+            width: 100%;
+            height: 100%;
+            background: rgba(0, 0, 0, 0.5);
+            display: flex;
+            justify-content: center;
+            align-items: center;
+            z-index: 9999;
+            display: none;
+        }
+        
+        .loading-spinner {
+            color: white;
+            font-size: 24px;
+            background: var(--gradient-primary);
+            padding: 20px 30px;
+            border-radius: 15px;
+            box-shadow: 0 10px 30px rgba(0, 0, 0, 0.3);
+        }
+        
+        .alert-container {
+            position: fixed;
+            top: calc(var(--header-height) + 20px);
+            right: 20px;
+            z-index: 1000;
+            min-width: 300px;
+            max-width: 400px;
+        }
+        
+        .alert-container .alert {
+            border-radius: 12px;
+            border: 1px solid rgba(16, 185, 129, 0.2);
+            box-shadow: 0 5px 20px rgba(16, 185, 129, 0.15);
+            backdrop-filter: blur(10px);
+            background: rgba(255, 255, 255, 0.95);
+        }
+        
+        .alert-container .alert-success {
+            background: linear-gradient(135deg, rgba(16, 185, 129, 0.1) 0%, rgba(52, 211, 153, 0.05) 100%);
+            border-left: 4px solid var(--primary-green);
+            color: #065f46;
+        }
+        
+        .badge {
+            font-size: 0.8rem;
+            padding: 6px 12px;
+            border-radius: 10px;
+            font-weight: 500;
+        }
+        
+        .table-container {
+            max-height: 600px;
+            overflow-y: auto;
+            border-radius: 10px;
+            border: 2px solid rgba(16, 185, 129, 0.1);
+            background: white;
+        }
+        
+        .table-wrapper {
+            position: relative;
+        }
+        
+        .table-sticky-header {
+            position: sticky;
+            top: 0;
+            z-index: 100;
+        }
+        
+        .export-options {
+            background: rgba(255, 255, 255, 0.95);
+            border-radius: 15px;
+            padding: 15px;
+            margin-bottom: 20px;
+            border: 2px solid rgba(16, 185, 129, 0.1);
+        }
+        
+        .notes-cell {
+            font-size: 12px;
+            color: #6b7280;
+            max-width: 150px;
+            overflow: hidden;
+            text-overflow: ellipsis;
+            white-space: nowrap;
+        }
+        
+        .today-row {
+            background-color: rgba(245, 158, 11, 0.1) !important;
+            border-left: 3px solid #f59e0b !important;
+        }
+        
+        @media (max-width: 768px) {
+            .schedule-details-table {
+                font-size: 12px;
+            }
+            
+            .schedule-details-table th, 
+            .schedule-details-table td {
+                padding: 6px 4px;
+            }
+            
+            .employee-name {
+                font-size: 11px;
+                padding: 4px 6px;
+            }
+        }
+        
+        /* Custom Scrollbar */
+        ::-webkit-scrollbar {
+            width: 8px;
+            height: 8px;
+        }
+        
+        ::-webkit-scrollbar-track {
+            background: rgba(16, 185, 129, 0.1);
+            border-radius: 10px;
+        }
+        
+        ::-webkit-scrollbar-thumb {
+            background: var(--gradient-primary);
+            border-radius: 10px;
+        }
+        
+        ::-webkit-scrollbar-thumb:hover {
+            background: var(--dark-green);
+        }
+        
+        #live-clock {
+            font-size: 0.9rem;
+            background: rgba(255, 255, 255, 0.1);
+            padding: 0.3rem 0.7rem;
+            border-radius: 20px;
+            border: 1px solid rgba(255, 255, 255, 0.2);
+            flex-shrink: 0;
+        }
+        
+        .text-truncate {
+            overflow: hidden;
+            text-overflow: ellipsis;
+            white-space: nowrap;
+        }
+    </style>
+</head>
+<body>
+    
+    <!-- Unified Navigation Bar -->
+    <nav class="unified-nav">
+        <div class="unified-nav-container">
+            <!-- Top Section: Brand, Welcome, User -->
+            <div class="nav-top-section">
+                <!-- Brand Section -->
+                <div class="nav-brand-section">
+                    <div class="logo-container">
+                        <i class="bi bi-person-gear text-white"></i>
+                    </div>
+                    <div class="d-none d-md-block ms-2">
+                        <h6 class="text-white mb-0 fw-bold text-truncate">نظام الموارد البشرية</h6>
+                        <small class="text-white-50">لوحة المدير</small>
+                    </div>
+                </div>
+                
+                <!-- Welcome Section - Hidden on mobile -->
+                <div class="welcome-section d-none d-lg-flex">
+                    <div class="welcome-content">
+                        <h4 class="text-white mb-1 text-truncate">مرحباً، {{ current_user.name if current_user else 'المدير' }}</h4>
+                        <p class="text-white-50 mb-0 text-truncate">نظام الموارد البشرية - لوحة تحكم المدير</p>
+                    </div>
+                    <div class="text-white fw-bold me-3" id="live-clock">
+                        <i class="bi bi-clock me-2"></i>
+                        جاري التحميل...
+                    </div>
+                </div>
+                
+                <!-- User Section -->
+                <div class="nav-user-section">
+                    <!-- Notifications -->
+                    <div class="dropdown me-2">
+                        <button class="btn btn-light position-relative rounded-pill" 
+                                type="button" data-bs-toggle="dropdown" 
+                                style="padding: 0.4rem 0.8rem; border: 1px solid rgba(255, 255, 255, 0.3); background: rgba(255, 255, 255, 0.15); color: white;">
+                            <i class="bi bi-bell"></i>
+                            {% if notifications and notifications|length > 0 %}
+                            <span class="notification-badge badge">{{ notifications|length }}</span>
+                            {% endif %}
+                        </button>
+                        <ul class="dropdown-menu dropdown-menu-end">
+                            {% if notifications and notifications|length > 0 %}
+                                {% for notification in notifications[:3] %}
+                                <li>
+                                    <a class="dropdown-item" href="#">
+                                        <div class="d-flex align-items-start">
+                                            <div class="bg-success bg-opacity-10 rounded-circle p-2 me-3">
+                                                <i class="bi bi-bell text-success"></i>
+                                            </div>
+                                            <div>
+                                                <strong class="d-block text-dark">{{ notification.title }}</strong>
+                                                <small class="text-muted">{{ notification.message|truncate(30) }}</small>
+                                            </div>
+                                        </div>
+                                    </a>
+                                </li>
+                                {% endfor %}
+                                <li><hr class="dropdown-divider my-2"></li>
+                            {% else %}
+                                <li>
+                                    <a class="dropdown-item text-muted text-center" href="#">
+                                        <i class="bi bi-bell-slash fs-4 d-block mb-2 text-success"></i>
+                                        لا توجد إشعارات جديدة
+                                    </a>
+                                </li>
+                                <li><hr class="dropdown-divider my-2"></li>
+                            {% endif %}
+                            <li>
+                                <a class="dropdown-item text-center text-success fw-bold" href="#">
+                                    <i class="bi bi-arrow-left me-2"></i>
+                                    عرض جميع الإشعارات
+                                </a>
+                            </li>
+                        </ul>
+                    </div>
+                    
+                    <!-- User Menu -->
+                    <div class="dropdown">
+                        <button class="btn btn-outline-light dropdown-toggle rounded-pill d-flex align-items-center" 
+                                type="button" data-bs-toggle="dropdown"
+                                style="padding: 0.4rem 0.9rem; border: 1px solid rgba(255, 255, 255, 0.4);">
+                            <div class="user-avatar me-2">
+                                {{ current_user.name[0] if current_user else 'م' }}
+                            </div>
+                            <span class="d-none d-md-inline text-truncate" style="max-width: 80px;">{{ current_user.username if current_user else 'مدير' }}</span>
+                        </button>
+                        <ul class="dropdown-menu dropdown-menu-end">
+                            <li>
+                                <a class="dropdown-item" href="#">
+                                    <i class="bi bi-bell me-2 text-success"></i>الإشعارات
+                                </a>
+                            </li>
+                            <li>
+                                <a class="dropdown-item" href="#">
+                                    <i class="bi bi-key me-2 text-success"></i>تغير كلمة المرور
+                                </a>
+                            </li>
+                            <li><hr class="dropdown-divider my-2"></li>
+                            <li>
+                                <a class="dropdown-item text-danger fw-bold" href="{{ url_for('logout') }}">
+                                    <i class="bi bi-box-arrow-right me-2"></i>تسجيل الخروج
+                                </a>
+                            </li>
+                        </ul>
+                    </div>
+                    
+                    <!-- Mobile Menu Button -->
+                    <button class="mobile-menu-btn d-lg-none" id="mobileMenuBtn">
+                        <i class="bi bi-list"></i>
+                    </button>
+                </div>
+            </div>
+            
+            <!-- Bottom Section: Navigation Menu - Hidden on mobile -->
+            <!-- Bottom Section: Navigation Menu - Hidden on mobile -->
+            <div class="nav-bottom-section d-none d-lg-flex">
+                <div class="nav-controls"></div>
+                
+                <div class="nav-menu-section">
+                    <div class="nav-menu-wrapper">
+                        <a class="nav-link" href="{{ url_for('manager_dashboard') }}">
+                            <i class="bi bi-speedometer2 me-2"></i>
+                            لوحة التحكم
+                        </a>
+                        <a class="nav-link" href="{{ url_for('manager_employees') }}">
+                            <i class="bi bi-people me-2"></i>
+                            موظفي القسم
+                        </a>
+                        <a class="nav-link active" href="{{ url_for('manager_schedules') }}">
+                            <i class="bi bi-calendar-check me-2"></i>
+                            جدولة الموظفين
+                        </a>
+                        <!-- Add Messages Link Here -->
+                        <a class="nav-link nav-link-with-badge" href="{{ url_for('messages_inbox') }}">
+                            <i class="bi bi-envelope me-2"></i>
+                            الرسائل
+                            {% if unread_count and unread_count > 0 %}
+                            <span class="nav-badge">{{ unread_count }}</span>
+                            {% endif %}
+                        </a>
+                        <a class="nav-link nav-link-with-badge" href="{{ url_for('manager_leave_requests') }}">
+                            <i class="bi bi-calendar-minus me-2"></i>
+                            طلبات الإجازات
+                            {% if stats and stats.pending_leaves > 0 %}
+                            <span class="nav-badge">{{ stats.pending_leaves }}</span>
+                            {% endif %}
+                        </a>
+                        <a class="nav-link nav-link-with-badge" href="{{ url_for('manager_permission_requests') }}">
+                            <i class="bi bi-clock me-2"></i>
+                            طلبات الإذونات
+                            {% if stats and stats.pending_permissions > 0 %}
+                            <span class="nav-badge">{{ stats.pending_permissions }}</span>
+                            {% endif %}
+                        </a>
+                        <a class="nav-link nav-link-with-badge" href="{{ url_for('user_salary_slips') }}">
+                            <i class="bi bi-file-earmark-text me-2"></i>
+                            شيت المرتب
+                            {% if new_salary_slips and new_salary_slips > 0 %}
+                            <span class="nav-badge">{{ new_salary_slips }}</span>
+                            {% endif %}
+                        </a>
+                        <a class="nav-link nav-link-with-badge" href="{{ url_for('manager_advance_requests') }}">
+                            <i class="bi bi-cash-coin me-2"></i>
+                            طلبات السلف
+                            {% if stats and stats.pending_advances > 0 %}
+                            <span class="nav-badge">{{ stats.pending_advances }}</span>
+                            {% endif %}
+                        </a>
+                        <a class="nav-link" href="{{ url_for('manager_rewards_penalties') }}">
+                            <i class="bi bi-award me-2"></i>
+                            المكافآت والخصومات
+                        </a>
+                        <a class="nav-link" href="{{ url_for('manager_excel_data') }}">
+                            <i class="fas fa-file-excel me-2"></i>
+                            الحضور والانصراف
+                        </a>
+                        {% if current_user and current_user.is_admin %}
+                        <a class="nav-link text-warning" href="{{ url_for('admin_dashboard') }}">
+                            <i class="bi bi-person-shield me-2"></i>
+                            لوحة المسؤول
+                        </a>
+                        {% endif %}
+                    </div>
+                </div>
+                
+                <div class="nav-controls-right"></div>
+            </div>
+        </div>
+    </nav>
+
+    <!-- Mobile Navigation Menu -->
+    <!-- Mobile Navigation Menu -->
+    <div class="mobile-nav-menu" id="mobileNavMenu">
+        <a class="mobile-nav-link" href="{{ url_for('manager_dashboard') }}">
+            <i class="bi bi-speedometer2"></i>
+            لوحة التحكم
+        </a>
+        <a class="mobile-nav-link" href="{{ url_for('manager_employees') }}">
+            <i class="bi bi-people"></i>
+            موظفي القسم
+        </a>
+        <a class="mobile-nav-link active" href="{{ url_for('manager_schedules') }}">
+            <i class="bi bi-calendar-check"></i>
+            جدولة الموظفين
+        </a>
+        <!-- Add Messages Link Here -->
+        <a class="mobile-nav-link nav-link-with-badge" href="{{ url_for('messages_inbox') }}">
+            <i class="bi bi-envelope"></i>
+            الرسائل
+            {% if unread_count and unread_count > 0 %}
+            <span class="nav-badge">{{ unread_count }}</span>
+            {% endif %}
+        </a>
+        <a class="mobile-nav-link" href="{{ url_for('manager_leave_requests') }}">
+            <i class="bi bi-calendar-minus"></i>
+            طلبات الإجازات
+            {% if stats and stats.pending_leaves > 0 %}
+            <span class="nav-badge">{{ stats.pending_leaves }}</span>
+            {% endif %}
+        </a>
+        <a class="mobile-nav-link" href="{{ url_for('manager_permission_requests') }}">
+            <i class="bi bi-clock"></i>
+            طلبات الإذونات
+            {% if stats and stats.pending_permissions > 0 %}
+            <span class="nav-badge">{{ stats.pending_permissions }}</span>
+            {% endif %}
+        </a>
+        <a class="mobile-nav-link" href="{{ url_for('user_salary_slips') }}">
+            <i class="bi bi-file-earmark-text"></i>
+            شيت المرتب
+            {% if new_salary_slips and new_salary_slips > 0 %}
+            <span class="nav-badge">{{ new_salary_slips }}</span>
+            {% endif %}
+        </a>
+        <a class="mobile-nav-link" href="{{ url_for('manager_advance_requests') }}">
+            <i class="bi bi-cash-coin"></i>
+            طلبات السلف
+            {% if stats and stats.pending_advances > 0 %}
+            <span class="nav-badge">{{ stats.pending_advances }}</span>
+            {% endif %}
+        </a>
+        <a class="mobile-nav-link" href="{{ url_for('manager_rewards_penalties') }}">
+            <i class="bi bi-award"></i>
+            المكافآت والخصومات
+        </a>
+        <a class="mobile-nav-link" href="{{ url_for('manager_excel_data') }}">
+            <i class="fas fa-file-excel me-2"></i>
+            الحضور والانصراف
+        </a>
+        {% if current_user and current_user.is_admin %}
+        <a class="mobile-nav-link text-warning" href="{{ url_for('admin_dashboard') }}">
+            <i class="bi bi-person-shield"></i>
+            لوحة المسؤول
+        </a>
+        {% endif %}
+    </div>
+
+    <!-- Background Shapes -->
+    <div class="floating-shape shape-1"></div>
+    <div class="floating-shape shape-2"></div>
+    
+    <!-- Loading Overlay -->
+    <div class="loading-overlay" id="loadingOverlay">
+        <div class="loading-spinner">
+            <i class="bi bi-arrow-repeat me-2"></i>جاري التحميل...
+        </div>
+    </div>
+    
+    <!-- Alert Container -->
+    <div class="alert-container">
+        {% with messages = get_flashed_messages(with_categories=true) %}
+            {% if messages %}
+                {% for category, message in messages %}
+                    <div class="alert alert-{{ category if category in ['success', 'danger', 'warning', 'info'] else 'info' }} alert-dismissible fade show mb-2" role="alert">
+                        <i class="bi bi-{{ 'check-circle' if category == 'success' else 'exclamation-triangle' if category == 'danger' else 'info-circle' if category == 'info' else 'exclamation-circle' }} me-2"></i>
+                        {{ message }}
+                        <button type="button" class="btn-close" data-bs-dismiss="alert" aria-label="Close"></button>
+                    </div>
+                {% endfor %}
+            {% endif %}
+        {% endwith %}
+    </div>
+
+    <div class="schedule-container">
+
+        <!-- Schedule Info -->
+        <div class="row mb-4">
+            <div class="col-md-12">
+                <div class="schedule-info p-4 bg-light rounded-3 shadow-sm">
+                    <!-- Header Section -->
+                    <div class="row mb-4 border-bottom pb-3">
+                        <div class="col-md-8">
+                            <h1 class="h2 fw-bold mb-2 text-primary">
+                                <i class="bi bi-calendar-week me-3"></i>
+                                جدول {{ schedule.department.name }}
+                            </h1>
+                            <div class="d-flex flex-wrap align-items-center gap-2">
+                                <span class="text-muted">
+                                    الفترة: {{ schedule.week_start_date.strftime('%Y-%m-%d') }} إلى {{ schedule.week_end_date.strftime('%Y-%m-%d') }}
+                                </span>
+                                <span class="badge bg-{{ 'success' if schedule.is_approved else 'warning' if schedule.status == 'pending' else 'info' }}">
+                                    {{ 'معتمد' if schedule.is_approved else 'في انتظار الاعتماد' if schedule.status == 'pending' else 'مسودة' }}
+                                </span>
+                                {% if schedule.is_locked %}
+                                <span class="badge bg-danger">
+                                    <i class="bi bi-lock me-1"></i>مقفل
+                                </span>
+                                {% endif %}
+                            </div>
+                        </div>
+                        <div class="col-md-4 d-flex align-items-center justify-content-end">
+                            <div class="d-flex gap-2">
+                                <button type="button" class="btn btn-success btn-excel" onclick="downloadAsExcelWithStyle()">
+                                    <i class="bi bi-file-earmark-excel me-2"></i>
+                                    Excel
+                                </button>
+                                <button type="button" class="btn btn-danger" onclick="downloadAsPDF()">
+                                    <i class="bi bi-file-pdf me-2"></i>
+                                    PDF
+                                </button>
+                                <button type="button" class="btn btn-outline-secondary" onclick="printSchedule()">
+                                    <i class="bi bi-printer me-2"></i>
+                                    طباعة
+                                </button>
+                            </div>
+                        </div>
+                    </div>
+
+                </div>
+            </div>
+        </div>
+
+        <!-- Schedule Details -->
+        <div class="content-card card">
+            <div class="card-header card-header-primary">
+                <div class="d-flex justify-content-between align-items-center">
+                    <h5 class="card-title mb-0">
+                        <i class="bi bi-table me-2"></i>
+                        تفاصيل الجدول الأسبوعي
+                    </h5>
+                    <div class="d-flex align-items-center gap-2">
+                        <input type="text" class="form-control form-control-sm" id="searchInput" placeholder="بحث في الجدول..." style="width: 200px;">
+                        <span class="badge bg-light text-dark">
+                            <i class="bi bi-grid-3x3-gap me-1"></i>
+                            <span id="visibleRows">0</span> صف
+                        </span>
+                    </div>
+                </div>
+            </div>
+            <div class="card-body">
+                <div class="table-container">
+                    <div class="table-wrapper">
+                        <table class="schedule-details-table" id="scheduleTable">
+                            <thead class="table-sticky-header">
+                                <tr>
+                                    <th>اليوم</th>
+                                    <th>التاريخ</th>
+                                    <th>الوظيفة</th>
+                                    <th>الشيفت الصباحي</th>
+                                    <th>الشيفت المسائي</th>
+                                    <th>شيفت السهر</th>
+                                </tr>
+                            </thead>
+                            <tbody>
+                                {% set today_str = today.strftime('%Y-%m-%d') %}
+                                {% set total_shifts = 0 %}
+                                
+                                {% for day_key, day_data in details_by_day.items() %}
+                                    {% set day_date = day_data.date %}
+                                    {% set day_date_str = day_date.strftime('%Y-%m-%d') %}
+                                    {% set is_today = (day_date_str == today_str) %}
+                                    
+                                    {% for detail in day_data.details %}
+                                    <tr class="{% if is_today %}today-row{% endif %}">
+                                        <td class="day-cell">
+                                            <strong>{{ day_data.day_name }}</strong>
+                                        </td>
+                                        <td class="date-cell">
+                                            {{ day_date_str }}
+                                        </td>
+                                        <td class="job-cell">
+                                            {{ detail.job_title }}
+                                        </td>
+                                        <td class="shift-cell">
+                                            {% if detail.morning_shift %}
+                                                {% set total_shifts = total_shifts + 1 %}
+                                                <span class="employee-name">{{ detail.morning_shift }}</span>
+                                            {% else %}
+                                                <span class="empty-shift">--</span>
+                                            {% endif %}
+                                        </td>
+                                        <td class="shift-cell">
+                                            {% if detail.evening_shift %}
+                                                {% set total_shifts = total_shifts + 1 %}
+                                                <span class="employee-name">{{ detail.evening_shift }}</span>
+                                            {% else %}
+                                                <span class="empty-shift">--</span>
+                                            {% endif %}
+                                        </td>
+                                        <td class="shift-cell">
+                                            {% if detail.night_shift %}
+                                                {% set total_shifts = total_shifts + 1 %}
+                                                <span class="employee-name">{{ detail.night_shift }}</span>
+                                            {% else %}
+                                                <span class="empty-shift">--</span>
+                                            {% endif %}
+                                        </td>
+                                    </tr>
+                                    {% endfor %}
+                                {% endfor %}
+                            </tbody>
+                        </table>
+                    </div>
+                    
+                    {% if not details_by_day %}
+                    <div class="empty-state text-center py-5">
+                        <i class="bi bi-calendar-x display-4 text-muted"></i>
+                        <h5 class="text-muted mt-3">لا توجد بيانات</h5>
+                        <p class="text-muted">لم يتم إضافة أي شيفتات لهذا الجدول</p>
+                    </div>
+                    {% endif %}
+                </div>
+            </div>
+        </div>
+    </div>
+
+    <!-- Bootstrap 5 JS -->
+    <script src="https://cdn.jsdelivr.net/npm/bootstrap@5.3.0/dist/js/bootstrap.bundle.min.js"></script>
+    <!-- html2pdf -->
+    <script src="https://cdnjs.cloudflare.com/ajax/libs/html2pdf.js/0.10.1/html2pdf.bundle.min.js"></script>
+
+    <script>
+        // Global variables
+        let totalRows = 0;
+        let totalShifts = 0;
+        
+        // Initialize on page load
+        document.addEventListener('DOMContentLoaded', function() {
+            // Mobile menu functionality
+            const mobileMenuBtn = document.getElementById('mobileMenuBtn');
+            const mobileNavMenu = document.getElementById('mobileNavMenu');
+            
+            if (mobileMenuBtn && mobileNavMenu) {
+                mobileMenuBtn.addEventListener('click', function() {
+                    mobileNavMenu.classList.toggle('active');
+                });
+                
+                // Close mobile menu when clicking outside
+                document.addEventListener('click', function(event) {
+                    if (!mobileMenuBtn.contains(event.target) && !mobileNavMenu.contains(event.target)) {
+                        mobileNavMenu.classList.remove('active');
+                    }
+                });
+            }
+
+            // Real-time clock
+            function updateClock() {
+                const now = new Date();
+                const timeString = now.toLocaleTimeString('ar-EG');
+                const dateString = now.toLocaleDateString('ar-EG', {
+                    weekday: 'long',
+                    year: 'numeric',
+                    month: 'long',
+                    day: 'numeric'
+                });
+                
+                const clockElement = document.getElementById('live-clock');
+                
+                if (clockElement) {
+                    clockElement.innerHTML = `
+                        <i class="bi bi-clock me-2"></i>
+                        ${timeString}
+                        <small class="text-white-50 ms-2 d-none d-md-inline">${dateString}</small>
+                    `;
+                }
+            }
+            
+            updateClock();
+            setInterval(updateClock, 1000);
+            
+            // Initialize table functionality
+            initTableSearch();
+        });
+
+        // Initialize table search
+        function initTableSearch() {
+            const searchInput = document.getElementById('searchInput');
+            
+            searchInput.addEventListener('input', function(e) {
+                const searchTerm = e.target.value.toLowerCase();
+                const rows = document.querySelectorAll('#scheduleTable tbody tr');
+                let visibleCount = 0;
+                
+                rows.forEach(row => {
+                    const text = row.textContent.toLowerCase();
+                    if (text.includes(searchTerm)) {
+                        row.style.display = '';
+                        visibleCount++;
+                    } else {
+                        row.style.display = 'none';
+                    }
+                });
+                
+                document.getElementById('visibleRows').textContent = visibleCount;
+            });
+        }
+
+        // Download as Excel
+        function downloadAsExcelWithStyle() {
+            showLoading('جاري تحضير ملف Excel مع تنسيقات...');
+            
+            try {
+                // إنشاء مصنف جديد
+                const wb = {
+                    SheetNames: [],
+                    Sheets: {},
+                    Props: {
+                        Title: 'جدول المناوبات',
+                        Subject: 'جدول أسبوعي',
+                        Author: 'نظام الموارد البشرية',
+                        CreatedDate: new Date()
+                    }
+                };
+                
+                // إعداد البيانات
+                const data = [];
+                
+                // إضافة معلومات الجدول
+                data.push([{ v: "جدول المناوبات", t: "s", s: { font: { bold: true, sz: 16 }, alignment: { horizontal: "center" } } }]);
+                data.push([{ v: `القسم: {{ schedule.department.name }}`, t: "s", s: { font: { bold: true, sz: 14 } } }]);
+                data.push([{ v: `الفترة: {{ schedule.week_start_date.strftime('%Y-%m-%d') }} إلى {{ schedule.week_end_date.strftime('%Y-%m-%d') }}`, t: "s", s: { font: { bold: true } } }]);
+                data.push([]);
+                
+                // إضافة العناوين
+                const headers = [
+                    { v: "اليوم", t: "s", s: { font: { bold: true, color: { rgb: "FFFFFF" } }, fill: { fgColor: { rgb: "059669" } }, alignment: { horizontal: "center" } } },
+                    { v: "التاريخ", t: "s", s: { font: { bold: true, color: { rgb: "FFFFFF" } }, fill: { fgColor: { rgb: "059669" } }, alignment: { horizontal: "center" } } },
+                    { v: "الوظيفة", t: "s", s: { font: { bold: true, color: { rgb: "FFFFFF" } }, fill: { fgColor: { rgb: "059669" } }, alignment: { horizontal: "center" } } },
+                    { v: "الشيفت الصباحي", t: "s", s: { font: { bold: true, color: { rgb: "FFFFFF" } }, fill: { fgColor: { rgb: "059669" } }, alignment: { horizontal: "center" } } },
+                    { v: "الشيفت المسائي", t: "s", s: { font: { bold: true, color: { rgb: "FFFFFF" } }, fill: { fgColor: { rgb: "059669" } }, alignment: { horizontal: "center" } } },
+                    { v: "شيفت السهر", t: "s", s: { font: { bold: true, color: { rgb: "FFFFFF" } }, fill: { fgColor: { rgb: "059669" } }, alignment: { horizontal: "center" } } }
+                ];
+                data.push(headers);
+                
+                // إضافة البيانات
+                const rows = document.querySelectorAll('#scheduleTable tbody tr');
+                rows.forEach(row => {
+                    const cells = row.querySelectorAll('td');
+                    const rowData = [];
+                    
+                    cells.forEach((cell, index) => {
+                        let cellValue = '';
+                        let style = {};
+                        
+                        if (index === 0) {
+                            // اليوم
+                            const strong = cell.querySelector('strong');
+                            cellValue = strong ? strong.textContent.trim() : cell.textContent.trim();
+                            style = { font: { bold: true }, fill: { fgColor: { rgb: "E8F5E9" } } };
+                        } else if (index === 1) {
+                            // التاريخ
+                            cellValue = cell.textContent.trim();
+                            style = { font: { bold: true } };
+                        } else if (index === 2) {
+                            // الوظيفة
+                            cellValue = cell.textContent.trim();
+                            style = { font: { bold: true }, fill: { fgColor: { rgb: "F0FDF4" } } };
+                        } else {
+                            // الشيفتات
+                            const employeeSpan = cell.querySelector('.employee-name');
+                            cellValue = employeeSpan ? employeeSpan.textContent.trim() : '--';
+                            style = { alignment: { horizontal: "center" } };
+                        }
+                        
+                        rowData.push({ v: cellValue, t: "s", s: style });
+                    });
+                    
+                    data.push(rowData);
+                });
+                
+                // إنشاء ورقة العمل
+                const ws = XLSX.utils.aoa_to_sheet([]);
+                
+                // تعيين البيانات مع التنسيقات
+                data.forEach((row, rowIndex) => {
+                    if (row && row.length > 0) {
+                        row.forEach((cell, colIndex) => {
+                            const cellAddress = XLSX.utils.encode_cell({ r: rowIndex, c: colIndex });
+                            ws[cellAddress] = cell;
+                        });
+                    }
+                });
+                
+                // تعيين نطاق البيانات
+                ws['!ref'] = XLSX.utils.encode_range({
+                    s: { r: 0, c: 0 },
+                    e: { r: data.length - 1, c: 5 }
+                });
+                
+                // إعداد عرض الأعمدة
+                ws['!cols'] = [
+                    { wch: 15 }, { wch: 12 }, { wch: 25 }, 
+                    { wch: 20 }, { wch: 20 }, { wch: 20 }
+                ];
+                
+                // إضافة إلى المصنف
+                const sheetName = "جدول المناوبات";
+                wb.SheetNames.push(sheetName);
+                wb.Sheets[sheetName] = ws;
+                
+                // إنشاء الملف وتنزيله
+                const wbout = XLSX.write(wb, { bookType: 'xlsx', type: 'binary' });
+                
+                function s2ab(s) {
+                    const buf = new ArrayBuffer(s.length);
+                    const view = new Uint8Array(buf);
+                    for (let i = 0; i < s.length; i++) view[i] = s.charCodeAt(i) & 0xFF;
+                    return buf;
+                }
+                
+                const blob = new Blob([s2ab(wbout)], { type: "application/octet-stream" });
+                const url = URL.createObjectURL(blob);
+                const a = document.createElement("a");
+                a.href = url;
+                a.download = `جدول_{{schedule.department.name}}_{{schedule.week_start_date.strftime('%Y%m%d')}}.xlsx`;
+                document.body.appendChild(a);
+                a.click();
+                setTimeout(() => {
+                    document.body.removeChild(a);
+                    URL.revokeObjectURL(url);
+                }, 100);
+                
+                hideLoading();
+                showAlert('تم تصدير الملف بنجاح مع تنسيقات متقدمة', 'success');
+                
+            } catch (error) {
+                hideLoading();
+                console.error('خطأ في التصدير:', error);
+                showAlert('حدث خطأ أثناء التصدير', 'danger');
+            }
+        }    
+        // Download as PDF
+        function downloadAsPDF() {
+            showLoading('جاري تحضير ملف PDF...');
+            
+            try {
+                const element = document.getElementById('scheduleTable');
+                const scheduleInfo = `<div style="text-align:center;margin-bottom:15px;font-family:Arial">
+                    <h2 style="color:#059669;margin:0">جدول {{schedule.department.name}} , الفترة: {{schedule.week_start_date.strftime('%Y-%m-%d')}} إلى {{schedule.week_end_date.strftime('%Y-%m-%d')}}</h2>
+                </div>`;
+                
+                const opt = {
+                    margin: 2,
+                    filename: `جدول_{{schedule.department.name}}_الاسبوع_{{schedule.week_number}}_من_{{schedule.week_start_date.strftime('%Y-%m-%d')}}.pdf`,
+                    image: { type: 'jpeg', quality: 0.98 },
+                    html2canvas: { scale: 2, useCORS: true },
+                    jsPDF: { unit: 'mm', format: 'a4', orientation: 'landscape', compress: true },
+                    pagebreak: { mode: 'avoid-all' }
+                };
+                
+                // Compress table rows
+                const tableClone = element.cloneNode(true);
+                const rows = tableClone.querySelectorAll('tr');
+                
+                // Reduce row height and padding
+                rows.forEach(row => {
+                    row.style.height = '20px';
+                    row.style.minHeight = '20px';
+                    const cells = row.querySelectorAll('td, th');
+                    cells.forEach(cell => {
+                        cell.style.padding = '3px 5px';
+                        cell.style.fontSize = '12px';
+                        cell.style.lineHeight = '1.2';
+                    });
+                });
+                
+                // Remove unnecessary spacing
+                tableClone.style.borderCollapse = 'collapse';
+                tableClone.style.width = '100%';
+                tableClone.style.margin = '0';
+                
+                const container = document.createElement('div');
+                container.style.padding = '5px';
+                container.style.fontFamily = 'Arial, sans-serif';
+                container.innerHTML = scheduleInfo;
+                container.appendChild(tableClone);
+                
+                html2pdf().set(opt).from(container).save().then(() => {
+                    hideLoading();
+                    showAlert('تم تحميل ملف PDF بنجاح', 'success');
+                });
+                
+            } catch (error) {
+                hideLoading();
+                console.error('PDF export error:', error);
+                showAlert('حدث خطأ أثناء التصدير إلى PDF', 'danger');
+            }
+        }
+
+
+        
+        // Print schedule
+        function printSchedule() {
+            showLoading('جاري تحضير الطباعة...');
+            
+            try {
+                const tableElement = document.getElementById('scheduleTable');
+                
+                // Create optimized content for printing
+                const printContent = document.createElement('div');
+                printContent.innerHTML = `
+                    <div style="font-family: 'Arial', 'Segoe UI', sans-serif; padding: 5px; direction: rtl; background: white;">
+                        <!-- Header -->
+                        <div style="text-align: center; margin-bottom: 5px; padding-bottom: 5px; border-bottom: 2px solid #059669;">
+                            <h2 style="color: #059669; margin: 0 0 10px 0; font-size: 22px;">
+                                جدول {{ schedule.department.name }} ,  الفترة: {{ schedule.week_start_date.strftime('%Y-%m-%d') }} إلى {{ schedule.week_end_date.strftime('%Y-%m-%d') }}
+                            </h2>
+                        </div>
+                        
+                        <!-- Schedule Table -->
+                        <div style="overflow-x: auto; margin: 20px 0;">
+                            ${tableElement.outerHTML}
+                        </div>
+                    </div>
+                `;
+                
+                // Open print window
+                const printWindow = window.open('', '_blank', 'width=1200,height=800,scrollbars=yes');
+                
+                // Generate print HTML
+                printWindow.document.write(`
+                    <!DOCTYPE html>
+                    <html dir="rtl" lang="ar">
+                    <head>
+                        <meta charset="UTF-8">
+                        <meta name="viewport" content="width=device-width, initial-scale=1.0">
+                        <title>جدول {{ schedule.department.name }} - طباعة</title>
+                        <style>
+                            /* Reset and Base Styles */
+                            * {
+                                margin: 0;
+                                padding: 0;
+                                box-sizing: border-box;
+                            }
+                            
+                            body {
+                                font-family: 'Arial', 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif;
+                                line-height: 1.4;
+                                color: #333;
+                                background: #fff;
+                                padding: 0;
+                                margin: 0;
+                            }
+                            
+                            /* Print Specific Styles */
+                            @media print {
+                                @page {
+                                    margin: 15mm 10mm;
+                                    size: A4 landscape;
+                                }
+                                
+                                @page :first {
+                                    margin-top: 20mm;
+                                }
+                                
+                                body {
+                                    margin: 0;
+                                    padding: 0;
+                                }
+                                
+                                .no-print {
+                                    display: none !important;
+                                }
+                                
+                                .page-break {
+                                    page-break-before: always;
+                                }
+                            }
+                            
+                            /* Table Styles */
+                            table {
+                                width: 100%;
+                                border-collapse: collapse;
+                                table-layout: fixed;
+                                font-size: 11px;
+                                margin: 0;
+                            }
+                            
+                            th {
+                                background-color: #059669;
+                                color: white;
+                                padding: 8px 6px;
+                                border: 1px solid #047857;
+                                text-align: center;
+                                font-weight: bold;
+                                font-size: 11px;
+                                vertical-align: middle;
+                                height: 35px;
+                            }
+                            
+                            td {
+                                padding: 6px 5px;
+                                border: 1px solid #ddd;
+                                text-align: center;
+                                vertical-align: middle;
+                                height: 30px;
+                                word-wrap: break-word;
+                                overflow-wrap: break-word;
+                            }
+                            
+                            /* Specific Cell Styles */
+                            .day-header {
+                                background-color: #065f46;
+                                color: white;
+                                font-size: 12px;
+                            }
+                            
+                            .job-cell {
+                                font-weight: 600;
+                                background-color: #f0fdf4;
+                            }
+                            
+                            .time-cell {
+                                background-color: #f8fafc;
+                                font-weight: 600;
+                                color: #1e40af;
+                                width: 80px;
+                            }
+                            
+                            .employee-name {
+                                color: #1e3a8a;
+                                font-weight: 600;
+                            }
+                            
+                            /* Header and Footer */
+                            .print-header {
+                                text-align: center;
+                                margin-bottom: 20px;
+                                padding-bottom: 15px;
+                                border-bottom: 2px solid #059669;
+                            }
+                            
+                            .print-footer {
+                                margin-top: 20px;
+                                padding-top: 15px;
+                                border-top: 1px solid #e5e7eb;
+                                text-align: center;
+                                font-size: 11px;
+                                color: #6b7280;
+                            }
+                            
+                            /* Responsive for Print */
+                            @media screen {
+                                body {
+                                    padding: 20px;
+                                    background: #f5f5f5;
+                                }
+                                
+                                .print-container {
+                                    max-width: 100%;
+                                    background: white;
+                                    padding: 20px;
+                                    border-radius: 8px;
+                                    box-shadow: 0 2px 10px rgba(0,0,0,0.1);
+                                }
+                            }
+                            
+                            /* Page Numbers */
+                            .page-number:after {
+                                content: counter(page);
+                            }
+                        </style>
+                    </head>
+                    <body onload="window.focus();">
+                        <div class="print-container">
+                            ${printContent.innerHTML}
+                        </div>
+                        <div style="text-align:center;padding:20px;display:none;" class="no-print">
+                            <button onclick="window.print()" style="padding:10px 20px;background:#059669;color:white;border:none;border-radius:5px;cursor:pointer;margin:10px;">
+                                🖨️ طباعة الجدول
+                            </button>
+                            <button onclick="window.close()" style="padding:10px 20px;background:#dc2626;color:white;border:none;border-radius:5px;cursor:pointer;margin:10px;">
+                                ✕ إغلاق النافذة
+                            </button>
+                        </div>
+                        
+                        <script>
+                            // Add page numbers
+                            document.addEventListener('DOMContentLoaded', function() {
+                                // Focus window for printing
+                                window.focus();
+                                
+                                // Auto-print after short delay
+                                setTimeout(() => {
+                                    window.print();
+                                    
+                                    // Auto-close after printing (if not cancelled)
+                                    setTimeout(() => {
+                                        if (!document.hasFocus()) {
+                                            window.close();
+                                        }
+                                    }, 1000);
+                                }, 500);
+                            });
+                            
+                            // Handle print dialog close
+                            window.addEventListener('afterprint', function() {
+                                setTimeout(() => window.close(), 500);
+                            });
+                        <\/script>
+                    </body>
+                    </html>
+                `);
+                
+                printWindow.document.close();
+                
+                hideLoading();
+                
+            } catch (error) {
+                hideLoading();
+                console.error('Print error:', error);
+                showAlert('حدث خطأ أثناء تحضير الطباعة', 'danger');
+            }
+        }
+
+        // Show loading
+        function showLoading(message = 'جاري التحميل...') {
+            const loadingOverlay = document.getElementById('loadingOverlay');
+            const loadingSpinner = document.querySelector('.loading-spinner');
+            if (loadingOverlay) {
+                loadingOverlay.style.display = 'flex';
+            }
+            if (loadingSpinner) {
+                loadingSpinner.innerHTML = `<i class="bi bi-arrow-repeat me-2"></i>${message}`;
+            }
+        }
+
+        // Hide loading
+        function hideLoading() {
+            const loadingOverlay = document.getElementById('loadingOverlay');
+            if (loadingOverlay) {
+                loadingOverlay.style.display = 'none';
+            }
+        }
+
+        // Show alert
+        function showAlert(message, type = 'success') {
+            const existingAlerts = document.querySelectorAll('.alert');
+            existingAlerts.forEach(alert => alert.remove());
+            
+            const alertHTML = `
+                <div class="alert alert-${type} alert-dismissible fade show" role="alert" style="z-index: 99999;">
+                    <div class="d-flex align-items-center">
+                        <i class="bi bi-${type === 'success' ? 'check-circle' : 'exclamation-triangle'} me-2 fs-5"></i>
+                        <div class="flex-grow-1">${message}</div>
+                        <button type="button" class="btn-close" data-bs-dismiss="alert"></button>
+                    </div>
+                </div>
+            `;
+            
+            document.querySelector('.alert-container').insertAdjacentHTML('beforeend', alertHTML);
+            
+            setTimeout(() => {
+                const alerts = document.querySelectorAll('.alert');
+                if (alerts.length > 0) {
+                    alerts[alerts.length - 1].remove();
+                }
+            }, 5000);
+        }
+    </script>
+</body>
+</html>

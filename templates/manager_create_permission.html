@@ -1,0 +1,3378 @@
+<!DOCTYPE html>
+<html lang="ar" dir="rtl">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>إنشاء إذن للموظفين - نظام إدارة الموارد البشرية</title>
+    
+    <!-- Bootstrap 5 CSS -->
+    <link href="https://cdn.jsdelivr.net/npm/bootstrap@5.3.0/dist/css/bootstrap.min.css" rel="stylesheet">
+    
+    <!-- Bootstrap Icons -->
+    <link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/bootstrap-icons@1.10.0/font/bootstrap-icons.css">
+    
+    <!-- Font Awesome -->
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.0.0/css/all.min.css">
+    
+    <style>
+        :root {
+            --primary-green: #10b981;
+            --dark-green: #059669;
+            --light-green: #34d399;
+            --accent-green: #a7f3d0;
+            --gradient-primary: linear-gradient(135deg, #10b981 0%, #059669 100%);
+            --gradient-secondary: linear-gradient(135deg, #34d399 0%, #10b981 100%);
+            --gradient-dark: linear-gradient(135deg, #065f46 0%, #047857 100%);
+            --gradient-success: linear-gradient(135deg, #a7f3d0 0%, #6ee7b7 100%);
+            --gradient-warning: linear-gradient(135deg, #f59e0b 0%, #d97706 100%);
+            --gradient-danger: linear-gradient(135deg, #ef4444 0%, #dc2626 100%);
+            --gradient-info: linear-gradient(135deg, #0ea5e9 0%, #0284c7 100%);
+            --header-height: 130px;
+        }
+        
+        * {
+            margin: 0;
+            padding: 0;
+            box-sizing: border-box;
+        }
+        
+        body {
+            font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif;
+            background: linear-gradient(135deg, #ecfdf5 0%, #d1fae5 100%);
+            min-height: 100vh;
+            overflow-x: hidden;
+            padding-top: var(--header-height);
+            color: #1a4731;
+        }
+        
+        /* Unified Navigation Bar */
+        .unified-nav {
+            background: var(--gradient-dark);
+            color: white;
+            position: fixed;
+            top: 0;
+            right: 0;
+            left: 0;
+            height: var(--header-height);
+            z-index: 1000;
+            box-shadow: 0 4px 20px rgba(5, 150, 105, 0.25);
+            border-bottom: 1px solid rgba(255, 255, 255, 0.1);
+        }
+        
+        .unified-nav-container {
+            display: flex;
+            flex-direction: column;
+            height: 100%;
+            padding: 0 1rem;
+        }
+        
+        .nav-top-section {
+            display: flex;
+            align-items: center;
+            justify-content: space-between;
+            height: 70px;
+            flex-shrink: 0;
+            padding: 0.5rem 0;
+        }
+        
+        .nav-bottom-section {
+            display: flex;
+            align-items: center;
+            justify-content: space-between;
+            height: 60px;
+            flex-shrink: 0;
+            border-top: 1px solid rgba(255, 255, 255, 0.15);
+            position: relative;
+        }
+        
+        .nav-brand-section {
+            display: flex;
+            align-items: center;
+            flex-shrink: 0;
+            min-width: 0;
+        }
+        
+        .logo-container {
+            width: 45px;
+            height: 45px;
+            background: var(--gradient-primary);
+            border-radius: 10px;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            box-shadow: 0 4px 12px rgba(16, 185, 129, 0.4);
+            margin-left: 0.5rem;
+            flex-shrink: 0;
+        }
+        
+        .welcome-section {
+            display: flex;
+            align-items: center;
+            flex-grow: 1;
+            justify-content: center;
+            color: white;
+            text-align: center;
+            min-width: 0;
+            overflow: hidden;
+        }
+        
+        .welcome-content {
+            min-width: 0;
+            overflow: hidden;
+        }
+        
+        .welcome-content h4 {
+            margin-bottom: 0.2rem;
+            font-weight: 600;
+            font-size: 1.1rem;
+            white-space: nowrap;
+            overflow: hidden;
+            text-overflow: ellipsis;
+        }
+        
+        .welcome-content p {
+            margin-bottom: 0;
+            font-size: 0.85rem;
+            opacity: 0.9;
+            white-space: nowrap;
+            overflow: hidden;
+            text-overflow: ellipsis;
+        }
+        
+        .nav-user-section {
+            display: flex;
+            align-items: center;
+            flex-shrink: 0;
+            min-width: 0;
+        }
+        
+        .nav-menu-section {
+            display: flex;
+            align-items: center;
+            flex-grow: 1;
+            height: 100%;
+            position: relative;
+            min-width: 0;
+        }
+        
+        .nav-menu-wrapper {
+            display: flex;
+            align-items: center;
+            height: 100%;
+            overflow-x: auto;
+            overflow-y: hidden;
+            scroll-behavior: smooth;
+            -webkit-overflow-scrolling: touch;
+            width: 100%;
+            padding: 0 0.5rem;
+            scrollbar-width: thin;
+            scrollbar-color: var(--primary-green) rgba(255, 255, 255, 0.1);
+            min-width: 0;
+        }
+        
+        /* Custom scrollbar for nav menu */
+        .nav-menu-wrapper::-webkit-scrollbar {
+            height: 6px;
+        }
+        
+        .nav-menu-wrapper::-webkit-scrollbar-track {
+            background: rgba(255, 255, 255, 0.1);
+            border-radius: 10px;
+        }
+        
+        .nav-menu-wrapper::-webkit-scrollbar-thumb {
+            background: var(--primary-green);
+            border-radius: 10px;
+        }
+        
+        .nav-menu-wrapper::-webkit-scrollbar-thumb:hover {
+            background: var(--light-green);
+        }
+        
+        .unified-nav .nav-link {
+            color: rgba(255, 255, 255, 0.9);
+            padding: 0.7rem 1.2rem;
+            margin: 0 0.2rem;
+            border-radius: 10px;
+            transition: all 0.3s ease;
+            font-weight: 500;
+            position: relative;
+            border: 1px solid transparent;
+            display: flex;
+            align-items: center;
+            text-decoration: none;
+            font-size: 0.9rem;
+            white-space: nowrap;
+            height: 80%;
+            flex-shrink: 0;
+            background: rgba(255, 255, 255, 0.05);
+            min-width: max-content;
+        }
+        
+        .unified-nav .nav-link:hover {
+            color: white;
+            background: rgba(255, 255, 255, 0.12);
+            border: 1px solid rgba(255, 255, 255, 0.2);
+            transform: translateY(-2px);
+            box-shadow: 0 4px 12px rgba(0, 0, 0, 0.15);
+        }
+        
+        .unified-nav .nav-link.active {
+            background: rgba(255, 255, 255, 0.15);
+            color: white;
+            border: 1px solid rgba(255, 255, 255, 0.25);
+            box-shadow: 0 4px 12px rgba(0, 0, 0, 0.2);
+        }
+        
+        .unified-nav .nav-link.active::after {
+            content: '';
+            position: absolute;
+            bottom: -10px;
+            right: 50%;
+            transform: translateX(50%);
+            width: 70%;
+            height: 3px;
+            background: var(--accent-green);
+            border-radius: 4px 4px 0 0;
+        }
+        
+        .notification-badge {
+            position: absolute;
+            top: -5px;
+            right: -5px;
+            font-size: 0.7rem;
+            background: var(--gradient-secondary);
+            border: 2px solid white;
+            box-shadow: 0 2px 8px rgba(16, 185, 129, 0.4);
+        }
+        
+        .user-avatar {
+            width: 38px;
+            height: 38px;
+            background: var(--gradient-primary);
+            border-radius: 50%;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            color: white;
+            font-weight: bold;
+            font-size: 1rem;
+            box-shadow: 0 4px 10px rgba(16, 185, 129, 0.4);
+            transition: all 0.3s ease;
+            flex-shrink: 0;
+        }
+        
+        .dropdown-menu {
+            background: white;
+            border: none;
+            border-radius: 12px;
+            box-shadow: 0 10px 30px rgba(16, 185, 129, 0.2);
+            overflow: hidden;
+            border: 1px solid rgba(16, 185, 129, 0.15);
+        }
+        
+        .dropdown-item {
+            padding: 0.8rem 1.2rem;
+            border-radius: 8px;
+            margin: 0.2rem 0.5rem;
+            transition: all 0.2s ease;
+            color: #065f46;
+        }
+        
+        .dropdown-item:hover {
+            background: rgba(16, 185, 129, 0.1);
+            color: #065f46;
+            transform: translateX(-5px);
+        }
+        
+        /* Main Content */
+        .main-content {
+            min-height: 100vh;
+            background: transparent;
+            position: relative;
+        }
+        
+        /* Manager Permission Creation Styles */
+        .header-card {
+            background: var(--gradient-primary);
+            border: none;
+            border-radius: 20px;
+            color: white;
+            box-shadow: 0 15px 35px rgba(5, 150, 105, 0.2);
+            margin-bottom: 2rem;
+        }
+        
+        .form-section-card {
+            background: white;
+            border-radius: 15px;
+            padding: 25px;
+            margin-bottom: 25px;
+            border: 1px solid rgba(16, 185, 129, 0.1);
+            box-shadow: 0 5px 15px rgba(0, 0, 0, 0.08);
+            transition: all 0.3s ease;
+        }
+        
+        .form-section-card:hover {
+            transform: translateY(-2px);
+            box-shadow: 0 8px 25px rgba(0, 0, 0, 0.12);
+        }
+        
+        .section-header {
+            background: var(--gradient-primary);
+            color: white;
+            padding: 15px 20px;
+            border-radius: 12px;
+            margin: -25px -25px 25px -25px;
+        }
+        
+        .section-header-success {
+            background: var(--gradient-success);
+        }
+        
+        .section-header-info {
+            background: var(--gradient-info);
+        }
+        
+        .section-header-warning {
+            background: var(--gradient-warning);
+        }
+        
+        .section-header-danger {
+            background: var(--gradient-danger);
+        }
+        
+        .form-label {
+            font-weight: 600;
+            color: #374151;
+            margin-bottom: 8px;
+        }
+        
+        .form-control, .form-select {
+            border-radius: 10px;
+            padding: 12px 15px;
+            border: 2px solid #e5e7eb;
+            transition: all 0.3s ease;
+        }
+        
+        .form-control:focus, .form-select:focus {
+            border-color: var(--primary-green);
+            box-shadow: 0 0 0 3px rgba(16, 185, 129, 0.1);
+        }
+        
+        .btn-success {
+            background: var(--gradient-success);
+            border: none;
+            border-radius: 12px;
+            padding: 12px 30px;
+            font-weight: 600;
+            transition: all 0.3s ease;
+        }
+        
+        .btn-success:hover {
+            transform: translateY(-2px);
+            box-shadow: 0 8px 25px rgba(16, 185, 129, 0.3);
+        }
+        
+        .instructions-card {
+            background: white;
+            border-radius: 15px;
+            padding: 25px;
+            border: 1px solid rgba(16, 185, 129, 0.1);
+            box-shadow: 0 5px 15px rgba(0, 0, 0, 0.08);
+            height: 100%;
+        }
+        
+        .alert-info-custom {
+            background: linear-gradient(135deg, #ecfdf5 0%, #d1fae5 100%);
+            border: 2px solid #10b981;
+            border-radius: 15px;
+            color: #065f46;
+            padding: 20px;
+            margin-bottom: 25px;
+        }
+        
+        .required::after {
+            content: " *";
+            color: #ef4444;
+        }
+        
+        .permission-type-card {
+            background: #f8fafc;
+            border: 2px solid #e5e7eb;
+            border-radius: 10px;
+            padding: 15px;
+            margin-bottom: 15px;
+            transition: all 0.3s ease;
+            cursor: pointer;
+        }
+        
+        .permission-type-card:hover {
+            border-color: var(--primary-green);
+            background: #f0fdf4;
+        }
+        
+        .permission-type-card.selected {
+            border-color: var(--primary-green);
+            background: #f0fdf4;
+            box-shadow: 0 0 0 3px rgba(16, 185, 129, 0.1);
+        }
+        
+        .permission-icon {
+            width: 50px;
+            height: 50px;
+            border-radius: 50%;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            margin-left: 15px;
+            font-size: 1.2rem;
+        }
+        
+        .icon-emergency {
+            background: var(--gradient-danger);
+            color: white;
+        }
+        
+        .icon-exit {
+            background: var(--gradient-info);
+            color: white;
+        }
+        
+        .icon-forgot {
+            background: var(--gradient-warning);
+            color: white;
+        }
+        
+        .time-input-group {
+            position: relative;
+        }
+        
+        .card {
+            background: white;
+            border: none;
+            border-radius: 12px;
+            box-shadow: 0 6px 15px rgba(16, 185, 129, 0.1);
+            transition: all 0.3s ease;
+            margin-bottom: 1.5rem;
+            border: 1px solid rgba(16, 185, 129, 0.1);
+        }
+        
+        .alert-success {
+            background-color: rgba(16, 185, 129, 0.1);
+            border-color: rgba(16, 185, 129, 0.2);
+            color: #065f46;
+            border-radius: 10px;
+        }
+        
+        /* Employee suggestions styling */
+        .employee-suggestions-container {
+            position: relative;
+        }
+        
+        .employee-suggestions {
+            position: absolute;
+            top: 100%;
+            left: 0;
+            right: 0;
+            background: white;
+            border: 1px solid #ddd;
+            border-top: none;
+            border-radius: 0 0 8px 8px;
+            max-height: 250px;
+            overflow-y: auto;
+            z-index: 1050;
+            box-shadow: 0 4px 12px rgba(0,0,0,0.1);
+            display: none;
+        }
+        
+        .employee-suggestion-item {
+            padding: 10px 15px;
+            cursor: pointer;
+            border-bottom: 1px solid #f0f0f0;
+            transition: all 0.2s;
+        }
+        
+        .employee-suggestion-item:last-child {
+            border-bottom: none;
+        }
+        
+        .employee-suggestion-item:hover,
+        .employee-suggestion-item.selected {
+            background: #e7f5ff;
+        }
+        
+        .employee-name {
+            font-weight: 600;
+            color: #333;
+            margin-bottom: 2px;
+        }
+        
+        .employee-position {
+            font-size: 12px;
+            color: #666;
+        }
+        
+        .no-results {
+            padding: 10px;
+            text-align: center;
+            color: #6c757d;
+            font-style: italic;
+            background: #f8f9fa;
+        }
+        
+        .employee-autocomplete:focus {
+            border-color: #007bff;
+            box-shadow: 0 0 0 0.2rem rgba(0, 123, 255, 0.25);
+        }
+        
+        /* Time selection for permissions */
+        .time-selection-grid {
+            display: grid;
+            grid-template-columns: repeat(auto-fit, minmax(120px, 1fr));
+            gap: 10px;
+            margin-top: 15px;
+        }
+        
+        .time-option {
+            background: white;
+            border: 2px solid #e5e7eb;
+            border-radius: 8px;
+            padding: 12px;
+            text-align: center;
+            cursor: pointer;
+            transition: all 0.2s ease;
+        }
+        
+        .time-option:hover {
+            border-color: var(--primary-green);
+            background: #f0fdf4;
+        }
+        
+        .time-option.selected {
+            background: var(--gradient-primary);
+            color: white;
+            border-color: var(--primary-green);
+            box-shadow: 0 4px 12px rgba(16, 185, 129, 0.2);
+        }
+        
+        .time-value {
+            font-weight: bold;
+            font-size: 1.1rem;
+            margin-bottom: 5px;
+        }
+        
+        .time-label {
+            font-size: 0.85rem;
+            opacity: 0.9;
+        }
+        
+        .time-option.selected .time-label {
+            opacity: 0.8;
+        }
+        
+        /* Mobile Menu Button */
+        .mobile-menu-btn {
+            display: none;
+            background: transparent;
+            border: 1px solid rgba(255, 255, 255, 0.3);
+            color: white;
+            width: 40px;
+            height: 40px;
+            border-radius: 8px;
+            align-items: center;
+            justify-content: center;
+            cursor: pointer;
+            transition: all 0.3s ease;
+        }
+        
+        /* Mobile Menu */
+        .mobile-nav-menu {
+            position: fixed;
+            top: var(--header-height);
+            right: 0;
+            left: 0;
+            background: var(--gradient-dark);
+            z-index: 999;
+            padding: 1rem;
+            box-shadow: 0 4px 20px rgba(0, 0, 0, 0.2);
+            display: none;
+            flex-direction: column;
+            max-height: calc(100vh - var(--header-height));
+            overflow-y: auto;
+        }
+        
+        .mobile-nav-menu.active {
+            display: flex;
+        }
+        
+        .mobile-nav-link {
+            color: white;
+            padding: 1rem;
+            margin: 0.2rem 0;
+            border-radius: 8px;
+            text-decoration: none;
+            display: flex;
+            align-items: center;
+            transition: all 0.3s ease;
+            border: 1px solid transparent;
+        }
+        
+        .mobile-nav-link:hover,
+        .mobile-nav-link.active {
+            background: rgba(255, 255, 255, 0.1);
+            border: 1px solid rgba(255, 255, 255, 0.2);
+        }
+        
+        /* Custom Scrollbar */
+        ::-webkit-scrollbar {
+            width: 8px;
+            height: 8px;
+        }
+        
+        ::-webkit-scrollbar-track {
+            background: rgba(16, 185, 129, 0.1);
+            border-radius: 10px;
+        }
+        
+        ::-webkit-scrollbar-thumb {
+            background: var(--gradient-primary);
+            border-radius: 10px;
+        }
+        
+        #live-clock {
+            font-size: 0.9rem;
+            background: rgba(255, 255, 255, 0.1);
+            padding: 0.3rem 0.7rem;
+            border-radius: 20px;
+            border: 1px solid rgba(255, 255, 255, 0.2);
+            flex-shrink: 0;
+        }
+        
+        /* Ensure text doesn't overflow */
+        .text-truncate {
+            overflow: hidden;
+            text-overflow: ellipsis;
+            white-space: nowrap;
+        }
+        
+        /* Manager specific styles */
+        .manager-stats {
+            background: var(--gradient-info);
+            border-radius: 15px;
+            padding: 20px;
+            color: white;
+            margin-bottom: 20px;
+            text-align: center;
+        }
+        
+        /* Mobile Responsive */
+        @media (max-width: 1200px) {
+            :root {
+                --header-height: 120px;
+            }
+            
+            .unified-nav .nav-link {
+                padding: 0.6rem 1rem;
+                font-size: 0.85rem;
+            }
+        }
+        
+        @media (max-width: 992px) {
+            :root {
+                --header-height: 100px;
+            }
+            
+            .unified-nav {
+                height: auto;
+                min-height: var(--header-height);
+            }
+            
+            .unified-nav-container {
+                padding: 0.5rem;
+            }
+            
+            .nav-top-section {
+                height: 60px;
+                flex-wrap: nowrap;
+                padding: 0;
+            }
+            
+            .nav-brand-section {
+                order: 1;
+                width: auto;
+                flex: 0 0 auto;
+            }
+            
+            .welcome-section {
+                order: 2;
+                flex: 1;
+                justify-content: flex-start;
+                padding: 0 0.5rem;
+                display: none;
+            }
+            
+            .nav-user-section {
+                order: 3;
+                width: auto;
+                flex: 0 0 auto;
+                justify-content: flex-end;
+            }
+            
+            .nav-bottom-section {
+                order: 4;
+                height: 40px;
+                margin-top: 0;
+                display: none;
+            }
+            
+            .mobile-menu-btn {
+                display: flex;
+                margin-left: 0.5rem;
+            }
+            
+            .welcome-content h4 {
+                font-size: 0.9rem;
+            }
+            
+            .welcome-content p {
+                display: none;
+            }
+            
+            #live-clock {
+                display: none;
+            }
+            
+            body {
+                padding-top: var(--header-height);
+            }
+        }
+        
+        @media (max-width: 768px) {
+            :root {
+                --header-height: 80px;
+            }
+            
+            .nav-top-section {
+                height: 50px;
+            }
+            
+            .logo-container {
+                width: 35px;
+                height: 35px;
+            }
+            
+            .user-avatar {
+                width: 32px;
+                height: 32px;
+                font-size: 0.9rem;
+            }
+            
+            .mobile-menu-btn {
+                width: 35px;
+                height: 35px;
+            }
+            
+            .time-selection-grid {
+                grid-template-columns: repeat(2, 1fr);
+            }
+        }
+        
+        @media (max-width: 576px) {
+            :root {
+                --header-height: 70px;
+            }
+            
+            .nav-top-section {
+                height: 45px;
+            }
+            
+            .logo-container {
+                width: 30px;
+                height: 30px;
+                margin-left: 0.3rem;
+            }
+            
+            .user-avatar {
+                width: 28px;
+                height: 28px;
+                font-size: 0.8rem;
+            }
+            
+            .notification-badge {
+                font-size: 0.6rem;
+                top: -3px;
+                right: -3px;
+            }
+            
+            .btn {
+                padding: 0.3rem 0.6rem;
+                font-size: 0.8rem;
+            }
+            
+            .time-selection-grid {
+                grid-template-columns: 1fr;
+            }
+        }
+    </style>
+
+    <style>
+        :root {
+            --primary-green: #10b981;
+            --dark-green: #059669;
+            --light-green: #34d399;
+            --accent-green: #a7f3d0;
+            --gradient-primary: linear-gradient(135deg, #10b981 0%, #059669 100%);
+            --gradient-secondary: linear-gradient(135deg, #34d399 0%, #10b981 100%);
+            --gradient-dark: linear-gradient(135deg, #065f46 0%, #047857 100%);
+            --gradient-success: linear-gradient(135deg, #a7f3d0 0%, #6ee7b7 100%);
+            --header-height: 130px;
+        }
+        
+        * {
+            margin: 0;
+            padding: 0;
+            box-sizing: border-box;
+        }
+        
+        body {
+            font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif;
+            background: #f8fdf9;
+            min-height: 100vh;
+            overflow-x: hidden;
+            padding-top: var(--header-height);
+            color: #1a4731;
+        }
+        
+        /* Unified Navigation Bar */
+        .unified-nav {
+            background: var(--gradient-dark);
+            color: white;
+            position: fixed;
+            top: 0;
+            right: 0;
+            left: 0;
+            height: var(--header-height);
+            z-index: 1000;
+            box-shadow: 0 4px 20px rgba(5, 150, 105, 0.25);
+            border-bottom: 1px solid rgba(255, 255, 255, 0.1);
+        }
+        
+        .unified-nav-container {
+            display: flex;
+            flex-direction: column;
+            height: 100%;
+            padding: 0 1rem;
+        }
+        
+        .nav-top-section {
+            display: flex;
+            align-items: center;
+            justify-content: space-between;
+            height: 70px;
+            flex-shrink: 0;
+            padding: 0.5rem 0;
+        }
+        
+        .nav-bottom-section {
+            display: flex;
+            align-items: center;
+            justify-content: space-between;
+            height: 60px;
+            flex-shrink: 0;
+            border-top: 1px solid rgba(255, 255, 255, 0.15);
+            position: relative;
+        }
+        
+        .nav-brand-section {
+            display: flex;
+            align-items: center;
+            flex-shrink: 0;
+            min-width: 0;
+        }
+        
+        .logo-container {
+            width: 45px;
+            height: 45px;
+            background: var(--gradient-primary);
+            border-radius: 10px;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            box-shadow: 0 4px 12px rgba(16, 185, 129, 0.4);
+            margin-left: 0.5rem;
+            flex-shrink: 0;
+        }
+        
+        .welcome-section {
+            display: flex;
+            align-items: center;
+            flex-grow: 1;
+            justify-content: center;
+            color: white;
+            text-align: center;
+            min-width: 0;
+            overflow: hidden;
+        }
+        
+        .welcome-content {
+            min-width: 0;
+            overflow: hidden;
+        }
+        
+        .welcome-content h4 {
+            margin-bottom: 0.2rem;
+            font-weight: 600;
+            font-size: 1.1rem;
+            white-space: nowrap;
+            overflow: hidden;
+            text-overflow: ellipsis;
+        }
+        
+        .welcome-content p {
+            margin-bottom: 0;
+            font-size: 0.85rem;
+            opacity: 0.9;
+            white-space: nowrap;
+            overflow: hidden;
+            text-overflow: ellipsis;
+        }
+        
+        .nav-user-section {
+            display: flex;
+            align-items: center;
+            flex-shrink: 0;
+            min-width: 0;
+        }
+        
+        .nav-menu-section {
+            display: flex;
+            align-items: center;
+            flex-grow: 1;
+            height: 100%;
+            position: relative;
+            min-width: 0;
+        }
+        
+        .nav-menu-wrapper {
+            display: flex;
+            align-items: center;
+            height: 100%;
+            overflow-x: auto;
+            overflow-y: hidden;
+            scroll-behavior: smooth;
+            -webkit-overflow-scrolling: touch;
+            width: 100%;
+            padding: 0 0.5rem;
+            scrollbar-width: thin;
+            scrollbar-color: var(--primary-green) rgba(255, 255, 255, 0.1);
+            min-width: 0;
+        }
+        
+        /* Custom scrollbar for nav menu */
+        .nav-menu-wrapper::-webkit-scrollbar {
+            height: 6px;
+        }
+        
+        .nav-menu-wrapper::-webkit-scrollbar-track {
+            background: rgba(255, 255, 255, 0.1);
+            border-radius: 10px;
+        }
+        
+        .nav-menu-wrapper::-webkit-scrollbar-thumb {
+            background: var(--primary-green);
+            border-radius: 10px;
+        }
+        
+        .nav-menu-wrapper::-webkit-scrollbar-thumb:hover {
+            background: var(--light-green);
+        }
+        
+        .unified-nav .nav-link {
+            color: rgba(255, 255, 255, 0.9);
+            padding: 0.7rem 1.2rem;
+            margin: 0 0.2rem;
+            border-radius: 10px;
+            transition: all 0.3s ease;
+            font-weight: 500;
+            position: relative;
+            border: 1px solid transparent;
+            display: flex;
+            align-items: center;
+            text-decoration: none;
+            font-size: 0.9rem;
+            white-space: nowrap;
+            height: 80%;
+            flex-shrink: 0;
+            background: rgba(255, 255, 255, 0.05);
+            min-width: max-content;
+        }
+        
+        .unified-nav .nav-link:hover {
+            color: white;
+            background: rgba(255, 255, 255, 0.12);
+            border: 1px solid rgba(255, 255, 255, 0.2);
+            transform: translateY(-2px);
+            box-shadow: 0 4px 12px rgba(0, 0, 0, 0.15);
+        }
+        
+        .unified-nav .nav-link.active {
+            background: rgba(255, 255, 255, 0.15);
+            color: white;
+            border: 1px solid rgba(255, 255, 255, 0.25);
+            box-shadow: 0 4px 12px rgba(0, 0, 0, 0.2);
+        }
+        
+        .unified-nav .nav-link.active::after {
+            content: '';
+            position: absolute;
+            bottom: -10px;
+            right: 50%;
+            transform: translateX(50%);
+            width: 70%;
+            height: 3px;
+            background: var(--accent-green);
+            border-radius: 4px 4px 0 0;
+        }
+        
+        .nav-badge {
+            background: var(--accent-green);
+            color: #065f46;
+            padding: 0.2rem 0.4rem;
+            border-radius: 8px;
+            font-size: 0.65rem;
+            font-weight: bold;
+            margin-right: 0.3rem;
+            position: absolute;
+            top: 5px;
+            right: 5px;
+            box-shadow: 0 2px 4px rgba(0, 0, 0, 0.1);
+        }
+        
+        .nav-link-with-badge {
+            position: relative;
+        }
+        
+        .notification-badge {
+            position: absolute;
+            top: -5px;
+            right: -5px;
+            font-size: 0.7rem;
+            background: var(--gradient-secondary);
+            border: 2px solid white;
+            box-shadow: 0 2px 8px rgba(16, 185, 129, 0.4);
+        }
+        
+        .user-avatar {
+            width: 38px;
+            height: 38px;
+            background: var(--gradient-primary);
+            border-radius: 50%;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            color: white;
+            font-weight: bold;
+            font-size: 1rem;
+            box-shadow: 0 4px 10px rgba(16, 185, 129, 0.4);
+            transition: all 0.3s ease;
+            flex-shrink: 0;
+        }
+        
+        .user-avatar:hover {
+            transform: scale(1.08);
+            box-shadow: 0 6px 15px rgba(16, 185, 129, 0.5);
+        }
+        
+        .dropdown-menu {
+            background: white;
+            border: none;
+            border-radius: 12px;
+            box-shadow: 0 10px 30px rgba(16, 185, 129, 0.2);
+            overflow: hidden;
+            border: 1px solid rgba(16, 185, 129, 0.15);
+        }
+        
+        .dropdown-item {
+            padding: 0.8rem 1.2rem;
+            border-radius: 8px;
+            margin: 0.2rem 0.5rem;
+            transition: all 0.2s ease;
+            color: #065f46;
+        }
+        
+        .dropdown-item:hover {
+            background: rgba(16, 185, 129, 0.1);
+            color: #065f46;
+            transform: translateX(-5px);
+        }
+        
+        .nav-controls {
+            display: flex;
+            align-items: center;
+            position: absolute;
+            left: 0;
+            top: 0;
+            height: 100%;
+            background: linear-gradient(90deg, rgba(6, 95, 70, 0.9) 0%, transparent 100%);
+            padding: 0 0.5rem;
+            z-index: 5;
+        }
+        
+        .nav-prev, .nav-next {
+            background: rgba(255, 255, 255, 0.2);
+            border: 1px solid rgba(255, 255, 255, 0.3);
+            color: white;
+            width: 28px;
+            height: 28px;
+            border-radius: 50%;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            cursor: pointer;
+            transition: all 0.3s ease;
+            font-size: 0.8rem;
+            margin-left: 0.3rem;
+        }
+        
+        .nav-prev:hover, .nav-next:hover {
+            background: rgba(255, 255, 255, 0.3);
+            transform: scale(1.1);
+        }
+        
+        .nav-controls-right {
+            display: flex;
+            align-items: center;
+            position: absolute;
+            right: 0;
+            top: 0;
+            height: 100%;
+            background: linear-gradient(270deg, rgba(6, 95, 70, 0.9) 0%, transparent 100%);
+            padding: 0 0.5rem;
+            z-index: 5;
+        }
+        
+        /* Mobile Menu Button */
+        .mobile-menu-btn {
+            display: none;
+            background: transparent;
+            border: 1px solid rgba(255, 255, 255, 0.3);
+            color: white;
+            width: 40px;
+            height: 40px;
+            border-radius: 8px;
+            align-items: center;
+            justify-content: center;
+            cursor: pointer;
+            transition: all 0.3s ease;
+            margin-right: 0.5rem;
+        }
+        
+        .mobile-menu-btn:hover {
+            background: rgba(255, 255, 255, 0.1);
+        }
+        
+        /* Mobile Menu */
+        .mobile-nav-menu {
+            position: fixed;
+            top: var(--header-height);
+            right: 0;
+            left: 0;
+            background: var(--gradient-dark);
+            z-index: 999;
+            padding: 1rem;
+            box-shadow: 0 4px 20px rgba(0, 0, 0, 0.2);
+            display: none;
+            flex-direction: column;
+            max-height: calc(100vh - var(--header-height));
+            overflow-y: auto;
+        }
+        
+        .mobile-nav-menu.active {
+            display: flex;
+        }
+        
+        .mobile-nav-link {
+            color: white;
+            padding: 1rem;
+            margin: 0.2rem 0;
+            border-radius: 8px;
+            text-decoration: none;
+            display: flex;
+            align-items: center;
+            transition: all 0.3s ease;
+            border: 1px solid transparent;
+            position: relative;
+        }
+        
+        .mobile-nav-link:hover,
+        .mobile-nav-link.active {
+            background: rgba(255, 255, 255, 0.1);
+            border: 1px solid rgba(255, 255, 255, 0.2);
+        }
+        
+        .mobile-nav-link i {
+            margin-left: 0.5rem;
+            width: 20px;
+            text-align: center;
+        }
+        
+        /* Mobile Responsive */
+        @media (max-width: 992px) {
+            :root {
+                --header-height: 100px;
+            }
+            
+            .unified-nav {
+                height: auto;
+                min-height: var(--header-height);
+            }
+            
+            .unified-nav-container {
+                padding: 0.5rem;
+            }
+            
+            .nav-top-section {
+                height: 60px;
+                flex-wrap: nowrap;
+                padding: 0;
+            }
+            
+            .nav-brand-section {
+                order: 1;
+                width: auto;
+                flex: 0 0 auto;
+            }
+            
+            .welcome-section {
+                order: 2;
+                flex: 1;
+                justify-content: flex-start;
+                padding: 0 0.5rem;
+                display: none;
+            }
+            
+            .nav-user-section {
+                order: 3;
+                width: auto;
+                flex: 0 0 auto;
+                justify-content: flex-end;
+            }
+            
+            .nav-bottom-section {
+                display: none;
+            }
+            
+            .mobile-menu-btn {
+                display: flex;
+            }
+            
+            .welcome-content h4 {
+                font-size: 0.9rem;
+            }
+            
+            .welcome-content p {
+                display: none;
+            }
+            
+            #live-clock {
+                display: none;
+            }
+            
+            body {
+                padding-top: var(--header-height);
+            }
+            
+            .nav-controls, .nav-controls-right {
+                display: none;
+            }
+            
+            /* Mobile specific fixes */
+            .nav-user-section .dropdown .btn {
+                padding: 0.3rem 0.6rem;
+            }
+            
+            .user-avatar {
+                width: 32px;
+                height: 32px;
+                font-size: 0.9rem;
+                margin-left: 0.3rem;
+            }
+            
+            .nav-brand-section .d-none.d-md-block {
+                display: none !important;
+            }
+        }
+        
+        @media (max-width: 768px) {
+            :root {
+                --header-height: 80px;
+            }
+            
+            .nav-top-section {
+                height: 50px;
+            }
+            
+            .logo-container {
+                width: 35px;
+                height: 35px;
+            }
+            
+            .logo-container i {
+                font-size: 1rem;
+            }
+            
+            .user-avatar {
+                width: 32px;
+                height: 32px;
+                font-size: 0.9rem;
+            }
+            
+            .mobile-menu-btn {
+                width: 35px;
+                height: 35px;
+            }
+            
+            .notification-badge {
+                font-size: 0.6rem;
+                top: -3px;
+                right: -3px;
+            }
+        }
+        
+        @media (max-width: 576px) {
+            :root {
+                --header-height: 70px;
+            }
+            
+            .nav-top-section {
+                height: 45px;
+            }
+            
+            .logo-container {
+                width: 30px;
+                height: 30px;
+                margin-left: 0.3rem;
+            }
+            
+            .user-avatar {
+                width: 28px;
+                height: 28px;
+                font-size: 0.8rem;
+            }
+            
+            .notification-badge {
+                font-size: 0.6rem;
+                top: -3px;
+                right: -3px;
+            }
+            
+            .btn {
+                padding: 0.3rem 0.6rem;
+                font-size: 0.8rem;
+            }
+            
+            .mobile-menu-btn {
+                width: 32px;
+                height: 32px;
+                margin-right: 0.3rem;
+            }
+            
+            .nav-user-section .dropdown .btn {
+                padding: 0.2rem 0.5rem;
+            }
+            
+            .dropdown .btn-outline-light {
+                font-size: 0.75rem;
+            }
+        }
+
+        /* Custom Scrollbar for whole page */
+        ::-webkit-scrollbar {
+            width: 8px;
+            height: 8px;
+        }
+        
+        ::-webkit-scrollbar-track {
+            background: rgba(16, 185, 129, 0.1);
+            border-radius: 10px;
+        }
+        
+        ::-webkit-scrollbar-thumb {
+            background: var(--gradient-primary);
+            border-radius: 10px;
+        }
+        
+        ::-webkit-scrollbar-thumb:hover {
+            background: var(--dark-green);
+        }
+        
+        /* Green accent elements */
+        .text-success {
+            color: var(--primary-green) !important;
+        }
+        
+        .bg-success {
+            background-color: var(--primary-green) !important;
+        }
+        
+        #live-clock {
+            font-size: 0.9rem;
+            background: rgba(255, 255, 255, 0.1);
+            padding: 0.3rem 0.7rem;
+            border-radius: 20px;
+            border: 1px solid rgba(255, 255, 255, 0.2);
+            flex-shrink: 0;
+        }
+        
+        /* Ensure text doesn't overflow */
+        .text-truncate {
+            overflow: hidden;
+            text-overflow: ellipsis;
+            white-space: nowrap;
+        }
+        
+        /* Page Specific Styles */
+        .admin-container {
+            max-width: 1400px;
+            margin: 0 auto;
+            padding: 20px;
+        }
+        
+        .header-card {
+            background: linear-gradient(135deg, #065f46 0%, #047857 100%);
+            border: none;
+            border-radius: 20px;
+            color: white;
+            box-shadow: 0 15px 35px rgba(5, 150, 105, 0.2);
+            margin-bottom: 30px;
+        }
+        
+        .content-card {
+            border: none;
+            border-radius: 20px;
+            box-shadow: 0 15px 35px rgba(16, 185, 129, 0.1);
+            background: rgba(255, 255, 255, 0.95);
+            margin-bottom: 25px;
+        }
+        
+        .card-header {
+            border-radius: 20px 20px 0 0 !important;
+            border-bottom: 2px solid rgba(255, 255, 255, 0.1);
+            padding: 20px 25px;
+        }
+        
+        .card-header-primary {
+            background: var(--gradient-primary);
+            color: white;
+        }
+        
+        .card-header-info {
+            background: linear-gradient(135deg, #0ea5e9 0%, #0284c7 100%);
+            color: white;
+        }
+        
+        .btn-primary {
+            background: var(--gradient-primary);
+            border: none;
+            border-radius: 15px;
+            padding: 12px 30px;
+            font-weight: 600;
+            transition: all 0.3s ease;
+        }
+        
+        .back-btn {
+            background: rgba(255, 255, 255, 0.2);
+            border: 2px solid rgba(255, 255, 255, 0.3);
+            color: white;
+            border-radius: 15px;
+            padding: 10px 20px;
+            transition: all 0.3s ease;
+            font-weight: 600;
+        }
+        
+        .back-btn:hover {
+            background: rgba(255, 255, 255, 0.3);
+            border-color: rgba(255, 255, 255, 0.5);
+            color: white;
+        }
+
+        .schedule-table {
+            width: 100%;
+            border-collapse: separate;
+            border-spacing: 0 8px;
+        }
+        
+        .schedule-table th {
+            color: var(--dark-green);
+            font-weight: 600;
+            padding: 15px;
+            background: rgba(16, 185, 129, 0.05);
+        }
+        
+        .schedule-table td {
+            padding: 15px;
+            background: rgba(255, 255, 255, 0.9);
+            border: 1px solid rgba(16, 185, 129, 0.1);
+            vertical-align: middle;
+        }
+        
+        .badge {
+            font-size: 0.8rem;
+            padding: 6px 12px;
+            border-radius: 10px;
+            font-weight: 500;
+        }
+        
+        .stats-card {
+            background: rgba(255, 255, 255, 0.9);
+            border-radius: 15px;
+            padding: 20px;
+            text-align: center;
+            border: 1px solid rgba(16, 185, 129, 0.1);
+            transition: all 0.3s ease;
+            height: 100%;
+        }
+        
+        .stats-card:hover {
+            transform: translateY(-3px);
+            box-shadow: 0 8px 25px rgba(16, 185, 129, 0.15);
+        }
+        
+        .stats-value {
+            font-size: 2rem;
+            font-weight: 700;
+            color: var(--dark-green);
+            margin: 10px 0;
+        }
+        
+        .stats-label {
+            color: #6b7280;
+            font-size: 0.9rem;
+        }
+        
+        .schedule-actions {
+            display: flex;
+            gap: 8px;
+            flex-wrap: wrap;
+            justify-content: center;
+        }
+        
+        .empty-state {
+            text-align: center;
+            padding: 40px 20px;
+            color: #6b7280;
+        }
+        
+        .export-btn {
+            background: linear-gradient(135deg, #10b981 0%, #059669 100%);
+            border: none;
+            border-radius: 10px;
+            padding: 8px 16px;
+            color: white;
+            font-weight: 600;
+        }
+        
+        .view-btn {
+            background: linear-gradient(135deg, #3b82f6 0%, #1d4ed8 100%);
+            border: none;
+            border-radius: 10px;
+            padding: 8px 16px;
+            color: white;
+            font-weight: 600;
+        }
+        
+        .edit-btn {
+            background: linear-gradient(135deg, #f59e0b 0%, #d97706 100%);
+            border: none;
+            border-radius: 10px;
+            padding: 8px 16px;
+            color: white;
+            font-weight: 600;
+        }
+        
+        .month-section {
+            background: linear-gradient(135deg, #f8fafc 0%, #f1f5f9 100%);
+            border-radius: 15px;
+            padding: 20px;
+            margin-bottom: 25px;
+            border: 2px solid rgba(16, 185, 129, 0.1);
+        }
+        
+        .month-header {
+            background: linear-gradient(135deg, #e0f2fe 0%, #bae6fd 100%);
+            border-radius: 10px;
+            padding: 15px 20px;
+            margin-bottom: 15px;
+            border-right: 4px solid #0ea5e9;
+        }
+        
+        .period-badge {
+            background: linear-gradient(135deg, #7dd3fc 0%, #0ea5e9 100%);
+            color: white;
+            font-size: 1.1rem;
+            padding: 8px 16px;
+            border-radius: 10px;
+        }
+        
+        .current-week {
+            background: linear-gradient(135deg, #dcfce7 0%, #bbf7d0 100%) !important;
+            border: 2px solid #22c55e;
+        }
+        
+        .floating-shape {
+            position: fixed;
+            width: 200px;
+            height: 200px;
+            background: var(--gradient-primary);
+            opacity: 0.1;
+            border-radius: 50%;
+            z-index: -1;
+            animation: float 6s ease-in-out infinite;
+        }
+        
+        .shape-1 {
+            top: 10%;
+            left: 10%;
+        }
+        
+        .shape-2 {
+            bottom: 10%;
+            right: 10%;
+            animation-delay: 2s;
+        }
+        
+        @keyframes float {
+            0%, 100% { transform: translateY(0px) rotate(0deg); }
+            50% { transform: translateY(-20px) rotate(10deg); }
+        }
+        
+        .loading-overlay {
+            position: fixed;
+            top: 0;
+            left: 0;
+            width: 100%;
+            height: 100%;
+            background: rgba(0, 0, 0, 0.5);
+            display: flex;
+            justify-content: center;
+            align-items: center;
+            z-index: 9999;
+            display: none;
+        }
+        
+        .alert-container {
+            position: fixed;
+            top: calc(var(--header-height) + 20px);
+            right: 20px;
+            z-index: 9999;
+            min-width: 300px;
+        }
+        
+        .timeline-connector {
+            position: relative;
+        }
+        
+        .timeline-connector::before {
+            content: '';
+            position: absolute;
+            left: -15px;
+            top: 0;
+            bottom: 0;
+            width: 2px;
+            background: linear-gradient(to bottom, #10b981, #34d399);
+        }
+        
+        .filter-card {
+            background: rgba(255, 255, 255, 0.95);
+            border-radius: 15px;
+            padding: 20px;
+            margin-bottom: 20px;
+            border: 2px solid rgba(16, 185, 129, 0.1);
+        }
+        
+        .filter-section {
+            background: linear-gradient(135deg, #f0fdf4 0%, #dcfce7 100%);
+            border-radius: 10px;
+            padding: 15px;
+            margin-bottom: 15px;
+        }
+        
+        .error-state {
+            text-align: center;
+            padding: 60px 20px;
+            color: #dc2626;
+        }
+        
+        /* إضافة أنماط الجديدة للفلتر المدمج */
+        .week-filter-section {
+            background: linear-gradient(135deg, #fef3c7 0%, #fde68a 100%);
+            border: 2px solid #f59e0b;
+            border-radius: 15px;
+            padding: 15px;
+            margin-bottom: 20px;
+        }
+        
+        .week-filter-header {
+            display: flex;
+            align-items: center;
+            justify-content: space-between;
+            margin-bottom: 10px;
+        }
+        
+        .week-filter-dropdown {
+            position: relative;
+            display: inline-block;
+            width: 100%;
+        }
+        
+        .week-filter-btn {
+            background: white;
+            border: 2px solid #e5e7eb;
+            border-radius: 10px;
+            padding: 10px 15px;
+            width: 100%;
+            text-align: right;
+            cursor: pointer;
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            transition: all 0.3s ease;
+        }
+        
+        .week-filter-btn:hover {
+            border-color: var(--light-green);
+        }
+        
+        .week-filter-btn.active {
+            border-color: var(--primary-green);
+            background: linear-gradient(135deg, #dcfce7 0%, #bbf7d0 100%);
+        }
+        
+        .week-filter-content {
+            display: none;
+            position: absolute;
+            background: white;
+            min-width: 100%;
+            box-shadow: 0 8px 25px rgba(0,0,0,0.1);
+            border-radius: 10px;
+            z-index: 1000;
+            max-height: 300px;
+            overflow-y: auto;
+            margin-top: 5px;
+            border: 1px solid #e5e7eb;
+        }
+        
+        .week-filter-content.show {
+            display: block;
+        }
+        
+        .week-option {
+            padding: 12px 15px;
+            cursor: pointer;
+            border-bottom: 1px solid #f3f4f6;
+            transition: all 0.2s ease;
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+        }
+        
+        .week-option:hover {
+            background: #f9fafb;
+        }
+        
+        .week-option.current {
+            background: linear-gradient(135deg, #dcfce7 0%, #bbf7d0 100%);
+            border-right: 3px solid var(--primary-green);
+        }
+        
+        .week-option.selected {
+            background: var(--light-green);
+            color: white;
+        }
+        
+        .week-date {
+            font-weight: bold;
+            color: var(--dark-green);
+        }
+        
+        .week-status {
+            font-size: 0.75rem;
+        }
+        
+        .current-week-indicator {
+            display: inline-flex;
+            align-items: center;
+            background: var(--primary-green);
+            color: white;
+            padding: 3px 8px;
+            border-radius: 6px;
+            font-size: 0.7rem;
+            margin-right: 5px;
+        }
+        
+        .selected-week-display {
+            background: linear-gradient(135deg, #dcfce7 0%, #bbf7d0 100%);
+            border-radius: 10px;
+            padding: 15px;
+            margin-top: 15px;
+            border: 1px solid var(--primary-green);
+            display: none;
+        }
+        
+        .selected-week-display.show {
+            display: block;
+        }
+        
+        .week-actions {
+            display: flex;
+            gap: 10px;
+            margin-top: 10px;
+            flex-wrap: wrap;
+        }
+    </style>
+
+</head>
+<body data-dept-id="{{ current_user.department_id }}">
+    <div class="container-fluid p-0">
+        <!-- Unified Navigation Bar -->
+        <nav class="unified-nav">
+            <div class="unified-nav-container">
+                <!-- Top Section: Brand, Welcome, User -->
+                <div class="nav-top-section">
+                    <!-- Brand Section -->
+                    <div class="nav-brand-section">
+                        <div class="logo-container">
+                            <i class="bi bi-person-circle text-white"></i>
+                        </div>
+                        <div class="d-none d-md-block ms-2">
+                            <h6 class="text-white mb-0 fw-bold text-truncate">نظام الموارد البشرية</h6>
+                            <small class="text-white-50">لوحة المدير</small>
+                        </div>
+                    </div>
+                    
+                    <!-- Welcome Section - Hidden on mobile -->
+                    <div class="welcome-section d-none d-lg-flex">
+                        <div class="welcome-content">
+                            <h4 class="text-white mb-1 text-truncate">مرحباً، {{ current_user.name }}</h4>
+                            <p class="text-white-50 mb-0 text-truncate">نظام الموارد البشرية - لوحة مدير القسم</p>
+                        </div>
+                        <div class="text-white fw-bold me-3" id="live-clock">
+                            <i class="bi bi-clock me-2"></i>
+                            جاري التحميل...
+                        </div>
+                    </div>
+                    
+                    <!-- User Section -->
+                    <div class="nav-user-section">
+                        <!-- Notifications -->
+                        <div class="dropdown me-2">
+                            <button class="btn btn-light position-relative rounded-pill" 
+                                    type="button" data-bs-toggle="dropdown" 
+                                    style="padding: 0.4rem 0.8rem; border: 1px solid rgba(255, 255, 255, 0.3); background: rgba(255, 255, 255, 0.15); color: white;">
+                                <i class="bi bi-bell"></i>
+                                {% if notifications and notifications|length > 0 %}
+                                <span class="notification-badge badge">{{ notifications|length }}</span>
+                                {% endif %}
+                            </button>
+                            <ul class="dropdown-menu dropdown-menu-end">
+                                {% if notifications and notifications|length > 0 %}
+                                    {% for notification in notifications[:3] %}
+                                    <li>
+                                        <a class="dropdown-item" href="#">
+                                            <div class="d-flex align-items-start">
+                                                <div class="bg-success bg-opacity-10 rounded-circle p-2 me-3">
+                                                    <i class="bi bi-bell text-success"></i>
+                                                </div>
+                                                <div>
+                                                    <strong class="d-block text-dark">{{ notification.title }}</strong>
+                                                    <small class="text-muted">{{ notification.message|truncate(30) }}</small>
+                                                </div>
+                                            </div>
+                                        </a>
+                                    </li>
+                                    {% endfor %}
+                                    <li><hr class="dropdown-divider my-2"></li>
+                                {% else %}
+                                    <li>
+                                        <a class="dropdown-item text-muted text-center" href="#">
+                                            <i class="bi bi-bell-slash fs-4 d-block mb-2 text-success"></i>
+                                            لا توجد إشعارات جديدة
+                                        </a>
+                                    </li>
+                                    <li><hr class="dropdown-divider my-2"></li>
+                                {% endif %}
+                                <li>
+                                    <a class="dropdown-item text-center text-success fw-bold" href="{{ url_for('notifications') }}">
+                                        <i class="bi bi-arrow-left me-2"></i>
+                                        عرض جميع الإشعارات
+                                    </a>
+                                </li>
+                            </ul>
+                        </div>
+                        
+                        <!-- User Menu -->
+                        <div class="dropdown">
+                            <button class="btn btn-outline-light dropdown-toggle rounded-pill d-flex align-items-center" 
+                                    type="button" data-bs-toggle="dropdown"
+                                    style="padding: 0.4rem 0.9rem; border: 1px solid rgba(255, 255, 255, 0.4);">
+                                <div class="user-avatar me-2">
+                                    {{ current_user.name[0] }}
+                                </div>
+                                <span class="d-none d-md-inline text-truncate" style="max-width: 80px;">{{ current_user.username }}</span>
+                            </button>
+                            <ul class="dropdown-menu dropdown-menu-end">
+                                <li>
+                                    <a class="dropdown-item" href="{{ url_for('notifications') }}">
+                                        <i class="bi bi-bell me-2 text-success"></i>الإشعارات
+                                    </a>
+                                </li>
+                                <li>
+                                    <a class="dropdown-item" href="{{ url_for('edit_user', user_id=current_user.id) }}">
+                                        <i class="bi bi-key me-2 text-success"></i>تغير كلمة المرور
+                                    </a>
+                                </li>
+                                <li><hr class="dropdown-divider my-2"></li>
+                                <li>
+                                    <a class="dropdown-item text-danger fw-bold" href="{{ url_for('logout') }}">
+                                        <i class="bi bi-box-arrow-right me-2"></i>تسجيل الخروج
+                                    </a>
+                                </li>
+                            </ul>
+                        </div>
+                        
+                        <!-- Mobile Menu Button -->
+                        <button class="mobile-menu-btn d-lg-none" id="mobileMenuBtn">
+                            <i class="bi bi-list"></i>
+                        </button>
+                    </div>
+                </div>
+                
+                <!-- Bottom Section: Navigation Menu - Hidden on mobile -->
+                <!-- Bottom Section: Navigation Menu - Hidden on mobile -->
+                <div class="nav-bottom-section d-none d-lg-flex">
+                    <div class="nav-menu-section">
+                        <div class="nav-menu-wrapper">
+                            <a class="nav-link" href="{{ url_for('manager_dashboard') }}">
+                                <i class="bi bi-speedometer2 me-2"></i>
+                                لوحة التحكم
+                            </a>
+                            <a class="nav-link" href="{{ url_for('manager_employees') }}">
+                                <i class="bi bi-people me-2"></i>
+                                موظفي القسم
+                            </a>
+                            <a class="nav-link" href="{{ url_for('manager_schedules') }}">
+                                <i class="bi bi-calendar-check me-2"></i>
+                                جدولة الموظفين
+                            </a>
+                            <!-- Add Messages Link Here -->
+                            <a class="nav-link nav-link-with-badge" href="{{ url_for('messages_inbox') }}">
+                                <i class="bi bi-envelope me-2"></i>
+                                الرسائل
+                                {% if unread_count and unread_count > 0 %}
+                                <span class="nav-badge">{{ unread_count }}</span>
+                                {% endif %}
+                            </a>
+                            <a class="nav-link nav-link-with-badge" href="{{ url_for('manager_leave_requests') }}">
+                                <i class="bi bi-calendar-minus me-2"></i>
+                                طلبات الإجازات
+                                {% if stats and stats.pending_leaves > 0 %}
+                                <span class="nav-badge">{{ stats.pending_leaves }}</span>
+                                {% endif %}
+                            </a>
+                            <a class="nav-link nav-link-with-badge active" href="{{ url_for('manager_permission_requests') }}">
+                                <i class="bi bi-clock me-2"></i>
+                                طلبات الإذونات
+                                {% if stats and stats.pending_permissions > 0 %}
+                                <span class="nav-badge">{{ stats.pending_permissions }}</span>
+                                {% endif %}
+                            </a>
+                            <a class="nav-link nav-link-with-badge" href="{{ url_for('user_salary_slips') }}">
+                                <i class="bi bi-file-earmark-text me-2"></i>
+                                شيت المرتب
+                                {% if new_salary_slips and new_salary_slips > 0 %}
+                                <span class="nav-badge">{{ new_salary_slips }}</span>
+                                {% endif %}
+                            </a>
+                            <a class="nav-link nav-link-with-badge" href="{{ url_for('manager_advance_requests') }}">
+                                <i class="bi bi-cash-coin me-2"></i>
+                                طلبات السلف
+                                {% if stats and stats.pending_advances > 0 %}
+                                <span class="nav-badge">{{ stats.pending_advances }}</span>
+                                {% endif %}
+                            </a>
+                            <a class="nav-link" href="{{ url_for('manager_rewards_penalties') }}">
+                                <i class="bi bi-award me-2"></i>
+                                المكافآت والخصومات
+                            </a>
+                            <a class="nav-link" href="{{ url_for('manager_excel_data') }}">
+                                <i class="fas fa-file-excel me-2"></i>
+                                الحضور والانصراف
+                            </a>
+                            {% if current_user and current_user.is_admin %}
+                            <a class="nav-link text-warning" href="{{ url_for('admin_dashboard') }}">
+                                <i class="bi bi-person-shield me-2"></i>
+                                لوحة المسؤول
+                            </a>
+                            {% endif %}
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </nav>
+
+        <!-- Mobile Navigation Menu -->
+        <!-- Mobile Navigation Menu -->
+        <div class="mobile-nav-menu" id="mobileNavMenu">
+            <a class="mobile-nav-link" href="{{ url_for('manager_dashboard') }}">
+                <i class="bi bi-speedometer2"></i>
+                لوحة التحكم
+            </a>
+            <a class="mobile-nav-link" href="{{ url_for('manager_employees') }}">
+                <i class="bi bi-people"></i>
+                موظفي القسم
+            </a>
+            <a class="mobile-nav-link" href="{{ url_for('manager_schedules') }}">
+                <i class="bi bi-calendar-check"></i>
+                جدولة الموظفين
+            </a>
+            <!-- Add Messages Link Here -->
+            <a class="mobile-nav-link nav-link-with-badge" href="{{ url_for('messages_inbox') }}">
+                <i class="bi bi-envelope"></i>
+                الرسائل
+                {% if unread_count and unread_count > 0 %}
+                <span class="nav-badge">{{ unread_count }}</span>
+                {% endif %}
+            </a>
+            <a class="mobile-nav-link" href="{{ url_for('manager_leave_requests') }}">
+                <i class="bi bi-calendar-minus"></i>
+                طلبات الإجازات
+                {% if stats and stats.pending_leaves > 0 %}
+                <span class="nav-badge">{{ stats.pending_leaves }}</span>
+                {% endif %}
+            </a>
+            <a class="mobile-nav-link active" href="{{ url_for('manager_permission_requests') }}">
+                <i class="bi bi-clock"></i>
+                طلبات الإذونات
+                {% if stats and stats.pending_permissions > 0 %}
+                <span class="nav-badge">{{ stats.pending_permissions }}</span>
+                {% endif %}
+            </a>
+            <a class="mobile-nav-link" href="{{ url_for('user_salary_slips') }}">
+                <i class="bi bi-file-earmark-text"></i>
+                شيت المرتب
+                {% if new_salary_slips and new_salary_slips > 0 %}
+                <span class="nav-badge">{{ new_salary_slips }}</span>
+                {% endif %}
+            </a>
+            <a class="mobile-nav-link" href="{{ url_for('manager_advance_requests') }}">
+                <i class="bi bi-cash-coin"></i>
+                طلبات السلف
+                {% if stats and stats.pending_advances > 0 %}
+                <span class="nav-badge">{{ stats.pending_advances }}</span>
+                {% endif %}
+            </a>
+            <a class="mobile-nav-link" href="{{ url_for('manager_rewards_penalties') }}">
+                <i class="bi bi-award"></i>
+                المكافآت والخصومات
+            </a>
+            <a class="mobile-nav-link" href="{{ url_for('manager_excel_data') }}">
+                <i class="fas fa-file-excel me-2"></i>
+                الحضور والانصراف
+            </a>
+            {% if current_user and current_user.is_admin %}
+            <a class="mobile-nav-link text-warning" href="{{ url_for('admin_dashboard') }}">
+                <i class="bi bi-person-shield"></i>
+                لوحة المسؤول
+            </a>
+            {% endif %}
+        </div>
+
+
+        <!-- Main Content -->
+        <main class="main-content">
+            <!-- Page Content -->
+            <div class="container py-4">
+                <!-- Flash messages -->
+                {% with messages = get_flashed_messages() %}
+                    {% if messages %}
+                        {% for message in messages %}
+                            <div class="alert alert-success alert-dismissible fade show mb-4" role="alert">
+                                <div class="d-flex align-items-center">
+                                    <i class="bi bi-check-circle me-2 fs-5"></i>
+                                    <div class="flex-grow-1">{{ message }}</div>
+                                    <button type="button" class="btn-close" data-bs-dismiss="alert"></button>
+                                </div>
+                            </div>
+                        {% endfor %}
+                    {% endif %}
+                {% endwith %}
+                
+                <!-- Welcome Card for Mobile -->
+                <div class="card p-3 d-lg-none mb-4">
+                    <div class="d-flex justify-content-between align-items-center">
+                        <div>
+                            <h4 class="text-success mb-1">مرحباً، {{ current_user.name }}</h4>
+                            <p class="text-muted mb-0">نظام الموارد البشرية - لوحة مدير القسم</p>
+                        </div>
+                        <div class="text-success fw-bold" id="mobile-clock">
+                            <i class="bi bi-clock me-2"></i>
+                            جاري التحميل...
+                        </div>
+                    </div>
+                </div>
+            
+                <!-- Permission Request Content -->
+                <div class="row">
+                    <!-- Permission Creation Form -->
+                    <div class="col-lg-8">
+                        <div class="form-section-card">
+                            <div class="section-header">
+                                <h5 class="card-title mb-0">
+                                    <i class="fas fa-user-plus me-2"></i>
+                                    إنشاء إذن للموظفين
+                                </h5>
+                            </div>
+                            
+                            <form method="POST" id="managerPermissionForm" action="{{ url_for('manager_create_permission') }}">
+                                <!-- Step 1: Select Employee with Autocomplete -->
+                                <div class="mb-4">
+                                    <label for="employee_select" class="form-label required mb-3">اختر الموظف</label>
+                                    
+                                    <div class="employee-suggestions-container">
+                                        <input type="text" class="form-control employee-autocomplete" 
+                                               id="employee_select" name="employee_name"
+                                               placeholder="اكتب اسم الموظف أو اختر من القائمة"
+                                               required
+                                               autocomplete="off">
+                                        <div class="employee-suggestions" id="suggestions_employee_select"></div>
+                                        <input type="hidden" name="employee_id" id="employee_id" required>
+                                    </div>
+                                    
+                                    <div class="mt-3" id="selected_employee_info" style="display: none;">
+                                        <div class="d-flex align-items-center p-3 border rounded" style="background: #f0fdf4;">
+                                            <div class="employee-avatar">
+                                                <span id="selected_employee_initial"></span>
+                                            </div>
+                                            <div class="employee-details ms-3">
+                                                <div class="employee-name" id="selected_employee_name"></div>
+                                                <div class="employee-position" id="selected_employee_position"></div>
+                                            </div>
+                                        </div>
+                                    </div>
+                                    
+                                    <small class="text-muted d-block mt-2">
+                                        <i class="fas fa-info-circle me-1"></i>
+                                        ابدأ بكتابة اسم الموظف للبحث أو اختر من القائمة
+                                    </small>
+                                </div>
+
+                                <!-- Step 2: Permission Type Selection -->
+                                <div class="mb-4">
+                                    <label class="form-label required mb-3">نوع الإذن</label>
+                                    
+                                    <div class="permission-type-card" data-value="اذن حضور استثنائي">
+                                        <div class="d-flex align-items-center">
+                                            <div class="permission-icon icon-emergency">
+                                                <i class="fas fa-user-clock"></i>
+                                            </div>
+                                            <div class="flex-grow-1">
+                                                <h6 class="fw-bold mb-1">إذن حضور استثنائي</h6>
+                                                <p class="text-muted mb-0">لحضور الموظف في وقت غير الوقت المحدد للحضور</p>
+                                            </div>
+                                            <i class="fas fa-check-circle text-success ms-2" style="display: none;"></i>
+                                        </div>
+                                    </div>
+                                    
+                                    <div class="permission-type-card" data-value="اذن انصراف استثنائي">
+                                        <div class="d-flex align-items-center">
+                                            <div class="permission-icon icon-exit">
+                                                <i class="fas fa-door-open"></i>
+                                            </div>
+                                            <div class="flex-grow-1">
+                                                <h6 class="fw-bold mb-1">إذن انصراف استثنائي</h6>
+                                                <p class="text-muted mb-0">لانصراف الموظف في وقت غير الوقت المحدد للانصراف</p>
+                                            </div>
+                                            <i class="fas fa-check-circle text-success ms-2" style="display: none;"></i>
+                                        </div>
+                                    </div>
+                                    
+                                    <div class="permission-type-card" data-value="اذن عدم توقيع">
+                                        <div class="d-flex align-items-center">
+                                            <div class="permission-icon icon-forgot">
+                                                <i class="fas fa-fingerprint"></i>
+                                            </div>
+                                            <div class="flex-grow-1">
+                                                <h6 class="fw-bold mb-1">إذن عدم توقيع</h6>
+                                                <p class="text-muted mb-0">في حالة عدم تمكن الموظف من التوقيع في وقت الحضور أو الانصراف</p>
+                                            </div>
+                                            <i class="fas fa-check-circle text-success ms-2" style="display: none;"></i>
+                                        </div>
+                                    </div>
+                                    
+                                    <input type="hidden" id="permission_type" name="permission_type" required>
+                                </div>
+
+                                <!-- باقي الحقول الأساسية -->
+                                <div class="row">
+                                    <div class="col-md-6 mb-3">
+                                        <label for="date" class="form-label required">تاريخ الإذن</label>
+                                        <input type="date" class="form-control" id="date" name="date" required>
+                                        <div class="date-info mt-2">
+                                            <i class="fas fa-calendar-alt me-1"></i>
+                                            يجب اختيار تاريخ الإذن
+                                        </div>
+                                    </div>
+                                    <div class="col-md-6 mb-3">
+                                        <div class="time-input-group">
+                                            <label for="time" class="form-label required">الوقت</label>
+                                            <div class="time-selection-grid">
+                                                <div class="time-option" data-time="08:00">
+                                                    <div class="time-value">08:00</div>
+                                                    <div class="time-label">صباحاً</div>
+                                                </div>
+                                                <div class="time-option" data-time="09:00">
+                                                    <div class="time-value">09:00</div>
+                                                    <div class="time-label">صباحاً</div>
+                                                </div>
+                                                <div class="time-option" data-time="10:00">
+                                                    <div class="time-value">10:00</div>
+                                                    <div class="time-label">صباحاً</div>
+                                                </div>
+                                                <div class="time-option" data-time="11:00">
+                                                    <div class="time-value">11:00</div>
+                                                    <div class="time-label">صباحاً</div>
+                                                </div>
+                                                <div class="time-option" data-time="12:00">
+                                                    <div class="time-value">12:00</div>
+                                                    <div class="time-label">ظهراً</div>
+                                                </div>
+                                                <div class="time-option" data-time="13:00">
+                                                    <div class="time-value">13:00</div>
+                                                    <div class="time-label">ظهراً</div>
+                                                </div>
+                                                <div class="time-option" data-time="14:00">
+                                                    <div class="time-value">14:00</div>
+                                                    <div class="time-label">ظهراً</div>
+                                                </div>
+                                                <div class="time-option" data-time="15:00">
+                                                    <div class="time-value">15:00</div>
+                                                    <div class="time-label">عصراً</div>
+                                                </div>
+                                                <div class="time-option" data-time="16:00">
+                                                    <div class="time-value">16:00</div>
+                                                    <div class="time-label">عصراً</div>
+                                                </div>
+                                                <div class="time-option" data-time="17:00">
+                                                    <div class="time-value">17:00</div>
+                                                    <div class="time-label">عصراً</div>
+                                                </div>
+                                                <div class="time-option" data-time="18:00">
+                                                    <div class="time-value">18:00</div>
+                                                    <div class="time-label">مساءً</div>
+                                                </div>
+                                                <div class="time-option" data-time="19:00">
+                                                    <div class="time-value">19:00</div>
+                                                    <div class="time-label">مساءً</div>
+                                                </div>
+                                            </div>
+                                            <input type="hidden" id="time" name="time" required>
+                                            <div class="form-text mt-2">اختر الوقت المناسب للإذن</div>
+                                        </div>
+                                    </div>
+                                </div>
+
+                                <div class="mb-4">
+                                    <label for="reason" class="form-label required">سبب الإذن</label>
+                                    <textarea class="form-control" id="reason" name="reason" rows="3" placeholder="أدخل سبب منح الإذن..." required></textarea>
+                                    <div class="form-text">يجب ذكر سبب واضح لمنح الإذن</div>
+                                </div>
+
+                                <div class="alert-info-custom">
+                                    <div class="d-flex align-items-center">
+                                        <i class="fas fa-info-circle fa-2x me-3"></i>
+                                        <div>
+                                            <h5 class="fw-bold mb-1">معلومة هامة</h5>
+                                            <p class="mb-0">سيتم إضافة الإذن مباشرةً لسجل الموظف مع اعتباره مُوافق عليه من قبلك. لن يتم خصم هذا الإذن من رصيد الموظف.</p>
+                                        </div>
+                                    </div>
+                                </div>
+
+                                <div class="text-center mt-4">
+                                    <button type="submit" class="btn btn-success btn-lg" id="submitBtn">
+                                        <i class="fas fa-check-circle me-2"></i>منح الإذن للموظف
+                                    </button>
+                                </div>
+                            </form>
+                        </div>
+                    </div>
+
+                    <!-- Instructions Section -->
+                    <div class="col-lg-4">
+                        <div class="instructions-card">
+                            <div class="section-header section-header-info">
+                                <h5 class="card-title mb-0">
+                                    <i class="fas fa-clipboard-list me-2"></i>
+                                    تعليمات هامة
+                                </h5>
+                            </div>
+                            
+                            <div class="mt-4">
+                                <div class="d-flex align-items-start mb-4">
+                                    <div class="flex-shrink-0">
+                                        <i class="fas fa-user-check text-success fa-lg me-3 mt-1"></i>
+                                    </div>
+                                    <div class="flex-grow-1">
+                                        <h6 class="fw-bold mb-1">صلاحيات المدير</h6>
+                                        <p class="text-muted mb-0">يستطيع المدير منح الإذونات الاستثنائية للموظفين</p>
+                                    </div>
+                                </div>
+                                
+                                <div class="d-flex align-items-start mb-4">
+                                    <div class="flex-shrink-0">
+                                        <i class="fas fa-clock text-success fa-lg me-3 mt-1"></i>
+                                    </div>
+                                    <div class="flex-grow-1">
+                                        <h6 class="fw-bold mb-1">التوقيت المناسب</h6>
+                                        <p class="text-muted mb-0">يجب منح الإذن قبل الموعد المطلوب بوقت كاف</p>
+                                    </div>
+                                </div>
+                                
+                                <div class="d-flex align-items-start mb-4">
+                                    <div class="flex-shrink-0">
+                                        <i class="fas fa-exclamation-circle text-warning fa-lg me-3 mt-1"></i>
+                                    </div>
+                                    <div class="flex-grow-1">
+                                        <h6 class="fw-bold mb-1">استخدام معتدل</h6>
+                                        <p class="text-muted mb-0">استخدم هذه الصلاحية فقط عند الحاجة الاستثنائية</p>
+                                    </div>
+                                </div>
+                                
+                                <div class="d-flex align-items-start mb-4">
+                                    <div class="flex-shrink-0">
+                                        <i class="fas fa-history text-success fa-lg me-3 mt-1"></i>
+                                    </div>
+                                    <div class="flex-grow-1">
+                                        <h6 class="fw-bold mb-1">التسجيل التلقائي</h6>
+                                        <p class="text-muted mb-0">سيتم تسجيل الإذن تلقائياً في سجل الموظف</p>
+                                    </div>
+                                </div>
+                                
+                                <div class="d-flex align-items-start">
+                                    <div class="flex-shrink-0">
+                                        <i class="fas fa-shield-alt text-success fa-lg me-3 mt-1"></i>
+                                    </div>
+                                    <div class="flex-grow-1">
+                                        <h6 class="fw-bold mb-1">الموافقة المباشرة</h6>
+                                        <p class="text-muted mb-0">جميع الإذونات التي تمنحها تعتبر موافق عليها مباشرة</p>
+                                    </div>
+                                </div>
+                            </div>
+                            
+                            <div class="mt-5 pt-3 border-top">
+                                <div class="text-center">
+                                    <i class="fas fa-user-tie fa-2x text-success mb-3"></i>
+                                    <h6 class="fw-bold">مسؤولية المدير</h6>
+                                    <p class="text-muted small">أنت مسؤول عن جميع الإذونات التي تمنحها للموظفين</p>
+                                </div>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </main>
+    </div>
+
+    <!-- jQuery -->
+    <script src="https://code.jquery.com/jquery-3.6.0.min.js"></script>
+    
+    <!-- Bootstrap 5 JS -->
+    <script src="https://cdn.jsdelivr.net/npm/bootstrap@5.3.0/dist/js/bootstrap.bundle.min.js"></script>
+    
+    <script>
+        // Main application object for manager permission creation
+        const ManagerPermissionApp = {
+            // Cache for employees data
+            employeesCache: [],
+            
+            // Current state
+            state: {
+                selectedEmployeeId: null,
+                selectedEmployeeName: null,
+                selectedPermissionType: null,
+                selectedTime: null,
+                selectedDate: null,
+                validationErrors: [],
+                isInitialized: false
+            },
+
+            // Initialize the application
+            init: function() {
+                document.addEventListener('DOMContentLoaded', () => {
+                    this.setupMobileNavigation();
+                    this.setupRealTimeClock();
+                    this.setupEmployeeSelection();
+                    this.setupPermissionTypeSelection();
+                    this.setupTimeSelection();
+                    this.setupDateInput();
+                    this.setupFormValidation();
+                    this.injectCustomStyles();
+                    this.state.isInitialized = true;
+                    
+                    // Load employees data
+                    this.loadEmployeesForManager();
+                });
+            },
+
+            // Mobile navigation setup
+            setupMobileNavigation: function() {
+                const mobileMenuBtn = document.getElementById('mobileMenuBtn');
+                const mobileNavMenu = document.getElementById('mobileNavMenu');
+                
+                if (!mobileMenuBtn || !mobileNavMenu) return;
+                
+                mobileMenuBtn.addEventListener('click', (e) => {
+                    e.stopPropagation();
+                    mobileNavMenu.classList.toggle('active');
+                    const isExpanded = mobileNavMenu.classList.contains('active');
+                    mobileMenuBtn.setAttribute('aria-expanded', isExpanded);
+                    
+                    // Update accessibility
+                    if (isExpanded) {
+                        mobileMenuBtn.setAttribute('aria-label', 'إغلاق القائمة');
+                    } else {
+                        mobileMenuBtn.setAttribute('aria-label', 'فتح القائمة');
+                    }
+                });
+                
+                // Close menu when clicking outside
+                document.addEventListener('click', (e) => {
+                    if (!mobileNavMenu.contains(e.target) && !mobileMenuBtn.contains(e.target)) {
+                        mobileNavMenu.classList.remove('active');
+                        mobileMenuBtn.setAttribute('aria-expanded', 'false');
+                        mobileMenuBtn.setAttribute('aria-label', 'فتح القائمة');
+                    }
+                });
+                
+                // Close menu on escape key
+                document.addEventListener('keydown', (e) => {
+                    if (e.key === 'Escape' && mobileNavMenu.classList.contains('active')) {
+                        mobileNavMenu.classList.remove('active');
+                        mobileMenuBtn.setAttribute('aria-expanded', 'false');
+                        mobileMenuBtn.setAttribute('aria-label', 'فتح القائمة');
+                        mobileMenuBtn.focus();
+                    }
+                });
+            },
+
+            // Real-time clock setup
+            setupRealTimeClock: function() {
+                const updateClock = () => {
+                    const now = new Date();
+                    const timeOptions = {
+                        hour12: false,
+                        hour: '2-digit',
+                        minute: '2-digit',
+                        second: '2-digit'
+                    };
+                    const dateOptions = {
+                        weekday: 'long',
+                        year: 'numeric',
+                        month: 'long',
+                        day: 'numeric'
+                    };
+                    
+                    const timeString = now.toLocaleTimeString('ar-EG', timeOptions);
+                    const dateString = now.toLocaleDateString('ar-EG', dateOptions);
+                    
+                    // Update desktop clock
+                    const clockElement = document.getElementById('live-clock');
+                    if (clockElement) {
+                        clockElement.innerHTML = `
+                            <i class="bi bi-clock me-2" aria-hidden="true"></i>
+                            <span class="time-text" aria-live="polite">${timeString}</span>
+                            <small class="text-white-50 ms-2 d-none d-md-inline date-text">${dateString}</small>
+                        `;
+                    }
+                    
+                    // Update mobile clock
+                    const mobileClockElement = document.getElementById('mobile-clock');
+                    if (mobileClockElement) {
+                        mobileClockElement.innerHTML = `
+                            <i class="bi bi-clock me-2" aria-hidden="true"></i>
+                            <span class="time-text" aria-live="polite">${timeString}</span>
+                        `;
+                    }
+                };
+                
+                // Initial update
+                updateClock();
+                
+                // Update every second
+                setInterval(updateClock, 1000);
+            },
+
+            // Load employees for manager
+            loadEmployeesForManager: function() {
+                console.log('جاري تحميل الموظفين للمدير...');
+                
+                // Get department employees from the template data
+                // Assuming department_employees is available in the template
+                const deptId = document.body.getAttribute('data-dept-id');
+                
+                // Fetch employees from API or use template data
+                if (typeof departmentEmployees !== 'undefined' && departmentEmployees.length > 0) {
+                    this.employeesCache = departmentEmployees.map(emp => ({
+                        id: emp.id,
+                        name: emp.name,
+                        username: emp.username,
+                        position: emp.position || 'موظف',
+                        full_name: emp.name
+                    }));
+                    console.log(`تم تحميل ${this.employeesCache.length} موظف من البيانات المعروضة`);
+                } else {
+                    // Fallback: fetch from API
+                    this.fetchEmployeesFromAPI(deptId);
+                }
+            },
+
+            // Fetch employees from API
+            fetchEmployeesFromAPI: function(deptId) {
+                if (!deptId) {
+                    console.error('لم يتم العثور على معرف القسم');
+                    this.showToast('خطأ في تحميل الموظفين', 'danger');
+                    // Use sample data for demonstration
+                    this.employeesCache = this.getSampleEmployees();
+                    return;
+                }
+                
+                fetch(`/api/department_employeess?dept_id=${deptId}`)
+                    .then(response => {
+                        if (!response.ok) {
+                            throw new Error(`خطأ في الاستجابة: ${response.status}`);
+                        }
+                        return response.json();
+                    })
+                    .then(data => {
+                        if (data.success && data.employees) {
+                            this.employeesCache = data.employees;
+                            console.log(`تم تحميل ${data.employees.length} موظف من API`);
+                        } else {
+                            throw new Error(data.message || 'بيانات غير صحيحة');
+                        }
+                    })
+                    .catch(error => {
+                        console.error('خطأ في تحميل الموظفين:', error);
+                        this.showToast('خطأ في تحميل الموظفين، استخدم بيانات تجريبية', 'warning');
+                        
+                        // Use sample data for demonstration
+                        this.employeesCache = this.getSampleEmployees();
+                    });
+            },
+
+            // Get sample employees for demo
+            getSampleEmployees: function() {
+                return [
+                    { id: 1, name: "أحمد محمد", username: "ahmedm", position: "مدير القسم", full_name: "أحمد محمد" },
+                    { id: 2, name: "سارة علي", username: "saraa", position: "مدير فرع", full_name: "سارة علي" },
+                    { id: 3, name: "محمد خالد", username: "mohamedk", position: "مشرف فريق", full_name: "محمد خالد" },
+                    { id: 4, name: "فاطمة عبدالله", username: "fatimaa", position: "مشرفة قسم", full_name: "فاطمة عبدالله" },
+                    { id: 5, name: "عبدالرحمن سعيد", username: "abdulrahman", position: "موظف إداري", full_name: "عبدالرحمن سعيد" },
+                    { id: 6, name: "نورا أحمد", username: "noraa", position: "موظفة استقبال", full_name: "نورا أحمد" },
+                    { id: 7, name: "علي حسن", username: "alih", position: "موظف دعم فني", full_name: "علي حسن" },
+                    { id: 8, name: "مريم السيد", username: "maryam", position: "محاسب مالي", full_name: "مريم السيد" },
+                    { id: 9, name: "خالد فاروق", username: "khaledf", position: "مراجع حسابات", full_name: "خالد فاروق" },
+                    { id: 10, name: "لينا مصطفى", username: "lenam", position: "سكرتيرة تنفيذية", full_name: "لينا مصطفى" }
+                ];
+            },
+
+            // Setup employee selection with Autocomplete
+            setupEmployeeSelection: function() {
+                const employeeInput = document.getElementById('employee_select');
+                const suggestionsElement = document.getElementById('suggestions_employee_select');
+                const hiddenIdInput = document.getElementById('employee_id');
+                const infoDiv = document.getElementById('selected_employee_info');
+                
+                if (!employeeInput || !suggestionsElement || !hiddenIdInput) {
+                    console.error('Employee autocomplete elements not found');
+                    return;
+                }
+                
+                let selectedIndex = -1;
+                
+                // Input handler
+                employeeInput.addEventListener('input', () => {
+                    const query = employeeInput.value.trim();
+                    selectedIndex = -1;
+                    
+                    if (query.length === 0) {
+                        suggestionsElement.innerHTML = '';
+                        suggestionsElement.style.display = 'none';
+                        hiddenIdInput.value = '';
+                        
+                        // Hide employee info
+                        if (infoDiv) {
+                            infoDiv.style.display = 'none';
+                        }
+                        return;
+                    }
+                    
+                    const results = this.filterEmployees(query, this.employeesCache);
+                    
+                    if (results.length === 0) {
+                        suggestionsElement.innerHTML = '<div class="employee-suggestion-item no-results">لا توجد نتائج</div>';
+                        suggestionsElement.style.display = 'block';
+                        return;
+                    }
+                    
+                    suggestionsElement.innerHTML = '';
+                    results.forEach((employee, index) => {
+                        const item = this.createSuggestionItem(employee, index, employeeInput, suggestionsElement, hiddenIdInput);
+                        suggestionsElement.appendChild(item);
+                    });
+                    
+                    suggestionsElement.style.display = 'block';
+                });
+                
+                // Focus handler
+                employeeInput.addEventListener('focus', () => {
+                    if (employeeInput.value.trim().length === 0 && this.employeesCache.length > 0) {
+                        suggestionsElement.innerHTML = '';
+                        this.employeesCache.slice(0, 10).forEach((employee, index) => {
+                            const item = this.createSuggestionItem(employee, index, employeeInput, suggestionsElement, hiddenIdInput);
+                            suggestionsElement.appendChild(item);
+                        });
+                        suggestionsElement.style.display = 'block';
+                    }
+                });
+                
+                // Keyboard navigation
+                employeeInput.addEventListener('keydown', (e) => {
+                    const items = suggestionsElement.querySelectorAll('.employee-suggestion-item');
+                    
+                    if (items.length === 0 || suggestionsElement.style.display === 'none') {
+                        return;
+                    }
+                    
+                    switch(e.key) {
+                        case 'ArrowDown':
+                            e.preventDefault();
+                            selectedIndex = (selectedIndex + 1) % items.length;
+                            this.updateAutoCompleteSelection(items, selectedIndex);
+                            break;
+                            
+                        case 'ArrowUp':
+                            e.preventDefault();
+                            selectedIndex = selectedIndex <= 0 ? items.length - 1 : selectedIndex - 1;
+                            this.updateAutoCompleteSelection(items, selectedIndex);
+                            break;
+                            
+                        case 'Enter':
+                            e.preventDefault();
+                            if (selectedIndex >= 0 && selectedIndex < items.length) {
+                                items[selectedIndex].click();
+                            }
+                            break;
+                            
+                        case 'Escape':
+                            suggestionsElement.style.display = 'none';
+                            employeeInput.focus();
+                            break;
+                            
+                        case 'Tab':
+                            setTimeout(() => {
+                                suggestionsElement.style.display = 'none';
+                            }, 300);
+                            break;
+                    }
+                });
+                
+                // Blur handler
+                employeeInput.addEventListener('blur', () => {
+                    setTimeout(() => {
+                        const activeElement = document.activeElement;
+                        const isClickingSuggestion = suggestionsElement.contains(activeElement);
+                        
+                        if (!isClickingSuggestion && suggestionsElement.style.display === 'block') {
+                            suggestionsElement.style.display = 'none';
+                        }
+                    }, 300);
+                });
+                
+                // Prevent default on suggestion mousedown
+                suggestionsElement.addEventListener('mousedown', (e) => {
+                    e.preventDefault();
+                });
+            },
+
+            // Filter employees for auto-complete
+            filterEmployees: function(query, employees) {
+                if (!query || query.length === 0) {
+                    return employees.slice(0, 10);
+                }
+                
+                const queryLower = query.toLowerCase();
+                
+                return employees.filter(employee => {
+                    if (!employee) return false;
+                    
+                    const nameMatch = employee.name && 
+                                    employee.name.toLowerCase().includes(queryLower);
+                    
+                    const usernameMatch = employee.username && 
+                                        employee.username.toLowerCase().includes(queryLower);
+                    
+                    const fullNameMatch = employee.full_name && 
+                                        employee.full_name.toLowerCase().includes(queryLower);
+                    
+                    const positionMatch = employee.position && 
+                                        employee.position.toLowerCase().includes(queryLower);
+                    
+                    return nameMatch || usernameMatch || fullNameMatch || positionMatch;
+                }).slice(0, 10);
+            },
+
+            // Create suggestion item for auto-complete
+            createSuggestionItem: function(employee, index, inputElement, suggestionsElement, hiddenIdInput) {
+                const item = document.createElement('div');
+                item.className = 'employee-suggestion-item';
+                item.setAttribute('role', 'option');
+                item.setAttribute('tabindex', '-1');
+                item.innerHTML = `
+                    <div class="employee-name">${employee.name}</div>
+                    <div class="employee-position">${employee.position || 'موظف'}</div>
+                `;
+                item.dataset.value = employee.name;
+                item.dataset.id = employee.id;
+                item.dataset.position = employee.position || 'موظف';
+                
+                item.addEventListener('click', () => {
+                    inputElement.value = item.dataset.value;
+                    suggestionsElement.style.display = 'none';
+                    hiddenIdInput.value = item.dataset.id;
+                    
+                    // Update selected employee info display
+                    const infoDiv = document.getElementById('selected_employee_info');
+                    const nameSpan = document.getElementById('selected_employee_name');
+                    const positionSpan = document.getElementById('selected_employee_position');
+                    const initialSpan = document.getElementById('selected_employee_initial');
+                    
+                    if (infoDiv && nameSpan && positionSpan && initialSpan) {
+                        infoDiv.style.display = 'block';
+                        nameSpan.textContent = item.dataset.value;
+                        positionSpan.textContent = item.dataset.position;
+                        initialSpan.textContent = item.dataset.value.charAt(0);
+                    }
+                    
+                    this.state.selectedEmployeeId = item.dataset.id;
+                    this.state.selectedEmployeeName = item.dataset.value;
+                    
+                    inputElement.dispatchEvent(new Event('change', { bubbles: true }));
+                    this.showToast(`تم اختيار الموظف: ${item.dataset.value}`, 'success');
+                    
+                    // Announce for screen readers
+                    this.ariaAnnounce(`تم اختيار الموظف ${item.dataset.value}`);
+                });
+                
+                item.addEventListener('mouseenter', () => {
+                    this.updateAutoCompleteSelection(
+                        suggestionsElement.querySelectorAll('.employee-suggestion-item'),
+                        index
+                    );
+                });
+                
+                return item;
+            },
+
+            // Update auto-complete selection
+            updateAutoCompleteSelection: function(items, selectedIndex) {
+                items.forEach((item, index) => {
+                    item.classList.toggle('selected', index === selectedIndex);
+                    if (index === selectedIndex) {
+                        item.scrollIntoView({ block: 'nearest' });
+                        item.setAttribute('aria-selected', 'true');
+                    } else {
+                        item.setAttribute('aria-selected', 'false');
+                    }
+                });
+            },
+
+            // Setup permission type selection
+            setupPermissionTypeSelection: function() {
+                const permissionCards = document.querySelectorAll('.permission-type-card');
+                const permissionTypeInput = document.getElementById('permission_type');
+                
+                if (!permissionCards.length || !permissionTypeInput) return;
+                
+                permissionCards.forEach(card => {
+                    // Add accessibility attributes
+                    card.setAttribute('role', 'button');
+                    card.setAttribute('tabindex', '0');
+                    card.setAttribute('aria-pressed', 'false');
+                    card.setAttribute('aria-label', `اختر ${card.getAttribute('data-value')}`);
+                    
+                    // Click handler
+                    card.addEventListener('click', (e) => {
+                        e.preventDefault();
+                        this.selectPermissionCard(card);
+                    });
+                    
+                    // Keyboard navigation
+                    card.addEventListener('keydown', (e) => {
+                        if (e.key === 'Enter' || e.key === ' ') {
+                            e.preventDefault();
+                            this.selectPermissionCard(card);
+                        }
+                        
+                        // Arrow key navigation between cards
+                        if (e.key === 'ArrowRight' || e.key === 'ArrowLeft') {
+                            e.preventDefault();
+                            const currentIndex = Array.from(permissionCards).indexOf(card);
+                            let nextIndex;
+                            
+                            if (e.key === 'ArrowRight') {
+                                nextIndex = (currentIndex + 1) % permissionCards.length;
+                            } else {
+                                nextIndex = (currentIndex - 1 + permissionCards.length) % permissionCards.length;
+                            }
+                            
+                            this.selectPermissionCard(permissionCards[nextIndex]);
+                            permissionCards[nextIndex].focus();
+                        }
+                    });
+                });
+                
+                // Select first permission type by default
+                if (!permissionTypeInput.value && permissionCards.length > 0) {
+                    setTimeout(() => {
+                        this.selectPermissionCard(permissionCards[0]);
+                    }, 100);
+                }
+            },
+
+            // Select a permission card
+            selectPermissionCard: function(card) {
+                const permissionCards = document.querySelectorAll('.permission-type-card');
+                const permissionTypeInput = document.getElementById('permission_type');
+                
+                // Remove selection from all cards
+                permissionCards.forEach(c => {
+                    c.classList.remove('selected');
+                    c.setAttribute('aria-pressed', 'false');
+                    const checkIcon = c.querySelector('.fa-check-circle');
+                    if (checkIcon) checkIcon.style.display = 'none';
+                });
+                
+                // Add selection to clicked card
+                card.classList.add('selected');
+                card.setAttribute('aria-pressed', 'true');
+                const checkIcon = card.querySelector('.fa-check-circle');
+                if (checkIcon) checkIcon.style.display = 'block';
+                
+                // Update hidden input
+                const permissionType = card.getAttribute('data-value');
+                permissionTypeInput.value = permissionType;
+                this.state.selectedPermissionType = permissionType;
+                
+                // Announce selection for screen readers
+                this.ariaAnnounce(`تم اختيار ${permissionType}`);
+            },
+
+            // Setup time selection
+            setupTimeSelection: function() {
+                const timeOptions = document.querySelectorAll('.time-option');
+                const timeInput = document.getElementById('time');
+                
+                if (!timeOptions.length || !timeInput) return;
+                
+                timeOptions.forEach(option => {
+                    // Add accessibility attributes
+                    const timeValue = option.getAttribute('data-time');
+                    option.setAttribute('role', 'button');
+                    option.setAttribute('tabindex', '0');
+                    option.setAttribute('aria-pressed', 'false');
+                    option.setAttribute('aria-label', `اختر الوقت ${timeValue}`);
+                    
+                    // Click handler
+                    option.addEventListener('click', (e) => {
+                        e.preventDefault();
+                        this.selectTimeOption(option);
+                    });
+                    
+                    // Keyboard navigation
+                    option.addEventListener('keydown', (e) => {
+                        if (e.key === 'Enter' || e.key === ' ') {
+                            e.preventDefault();
+                            this.selectTimeOption(option);
+                        }
+                    });
+                });
+                
+                // Select a reasonable default time (e.g., 09:00)
+                const defaultOption = document.querySelector('.time-option[data-time="09:00"]');
+                if (defaultOption) {
+                    setTimeout(() => {
+                        this.selectTimeOption(defaultOption);
+                    }, 100);
+                }
+            },
+
+            // Select a time option
+            selectTimeOption: function(option) {
+                const timeOptions = document.querySelectorAll('.time-option');
+                const timeInput = document.getElementById('time');
+                
+                // Remove selection from all options
+                timeOptions.forEach(opt => {
+                    opt.classList.remove('selected');
+                    opt.setAttribute('aria-pressed', 'false');
+                });
+                
+                // Add selection to clicked option
+                option.classList.add('selected');
+                option.setAttribute('aria-pressed', 'true');
+                
+                // Update hidden input
+                const timeValue = option.getAttribute('data-time');
+                timeInput.value = timeValue;
+                this.state.selectedTime = timeValue;
+                
+                // Announce selection for screen readers
+                this.ariaAnnounce(`تم اختيار الوقت ${timeValue}`);
+            },
+
+            // Setup date input with validation
+            setupDateInput: function() {
+                const dateInput = document.getElementById('date');
+                if (!dateInput) return;
+                
+                // Set default date to today
+                const today = new Date().toISOString().split('T')[0];
+                dateInput.value = today;
+                this.state.selectedDate = today;
+                
+                // Set min date to today
+                dateInput.min = today;
+                
+                // Date validation
+                dateInput.addEventListener('change', (e) => {
+                    const selectedDate = new Date(e.target.value);
+                    const today = new Date();
+                    today.setHours(0, 0, 0, 0);
+                    
+                    if (selectedDate < today) {
+                        this.showValidationError(dateInput, 'لا يمكن اختيار تاريخ ماضي');
+                        dateInput.setCustomValidity('لا يمكن اختيار تاريخ ماضي');
+                    } else {
+                        this.clearValidationError(dateInput);
+                        dateInput.setCustomValidity('');
+                        this.state.selectedDate = e.target.value;
+                    }
+                });
+                
+                // Add date picker accessibility
+                dateInput.setAttribute('aria-label', 'تاريخ الإذن');
+                dateInput.setAttribute('aria-describedby', 'date-description');
+            },
+
+            // Setup form validation
+            setupFormValidation: function() {
+                const form = document.getElementById('managerPermissionForm');
+                if (!form) return;
+                
+                form.addEventListener('submit', (e) => {
+                    if (!this.validateForm()) {
+                        e.preventDefault();
+                        e.stopPropagation();
+                        return false;
+                    }
+                    
+                    // Show loading state
+                    this.showLoadingState();
+                    
+                    // Allow form submission
+                    return true;
+                });
+                
+                // Real-time validation
+                this.setupRealTimeValidation();
+            },
+
+            // Validate form before submission
+            validateForm: function() {
+                this.state.validationErrors = [];
+                let isValid = true;
+                
+                // Validate employee selection
+                const employeeIdInput = document.getElementById('employee_id');
+                if (!employeeIdInput || !employeeIdInput.value) {
+                    this.state.validationErrors.push('يرجى اختيار موظف');
+                    isValid = false;
+                } else {
+                    this.state.selectedEmployeeId = employeeIdInput.value;
+                    
+                    // Get employee name from input
+                    const employeeInput = document.getElementById('employee_select');
+                    if (employeeInput && employeeInput.value) {
+                        this.state.selectedEmployeeName = employeeInput.value;
+                    }
+                }
+                
+                // Validate permission type
+                const permissionTypeInput = document.getElementById('permission_type');
+                if (!permissionTypeInput.value) {
+                    this.state.validationErrors.push('يرجى اختيار نوع الإذن');
+                    isValid = false;
+                }
+                
+                // Validate date
+                const dateInput = document.getElementById('date');
+                if (!dateInput.value) {
+                    this.state.validationErrors.push('يرجى اختيار تاريخ الإذن');
+                    isValid = false;
+                } else {
+                    const selectedDate = new Date(dateInput.value);
+                    const today = new Date();
+                    today.setHours(0, 0, 0, 0);
+                    
+                    if (selectedDate < today) {
+                        this.state.validationErrors.push('لا يمكن اختيار تاريخ ماضي');
+                        isValid = false;
+                    }
+                }
+                
+                // Validate time
+                const timeInput = document.getElementById('time');
+                if (!timeInput.value) {
+                    this.state.validationErrors.push('يرجى اختيار وقت الإذن');
+                    isValid = false;
+                }
+                
+                // Validate reason
+                const reasonInput = document.getElementById('reason');
+                if (!reasonInput.value.trim()) {
+                    this.state.validationErrors.push('يرجى كتابة سبب الإذن');
+                    isValid = false;
+                }
+                
+                // Show errors if any
+                if (!isValid) {
+                    this.showValidationAlert();
+                }
+                
+                return isValid;
+            },
+
+            // Setup real-time validation
+            setupRealTimeValidation: function() {
+                // Validate reason in real-time
+                const reasonInput = document.getElementById('reason');
+                if (reasonInput) {
+                    reasonInput.addEventListener('input', (e) => {
+                        if (e.target.value.trim().length > 0) {
+                            this.clearValidationError(e.target);
+                        }
+                    });
+                }
+            },
+
+            // Show validation errors
+            showValidationAlert: function() {
+                // Remove existing alerts
+                document.querySelectorAll('.validation-alert').forEach(alert => alert.remove());
+                
+                // Create new alert
+                const alertDiv = document.createElement('div');
+                alertDiv.className = 'validation-alert alert alert-danger alert-dismissible fade show position-fixed';
+                alertDiv.style.cssText = `
+                    top: 20px;
+                    right: 20px;
+                    left: 20px;
+                    z-index: 9999;
+                    max-width: 500px;
+                    margin: 0 auto;
+                    box-shadow: 0 5px 20px rgba(0,0,0,0.2);
+                `;
+                
+                let alertContent = '<div class="d-flex align-items-center">';
+                alertContent += '<i class="fas fa-exclamation-triangle fa-2x me-3"></i>';
+                alertContent += '<div><h5 class="fw-bold mb-1">خطأ في إنشاء الإذن</h5>';
+                alertContent += '<ul class="mb-0">';
+                this.state.validationErrors.forEach(msg => {
+                    alertContent += `<li>${msg}</li>`;
+                });
+                alertContent += '</ul></div>';
+                alertContent += '<button type="button" class="btn-close ms-auto" data-bs-dismiss="alert" aria-label="إغلاق"></button>';
+                alertContent += '</div>';
+                
+                alertDiv.innerHTML = alertContent;
+                document.body.appendChild(alertDiv);
+                
+                // Focus on alert for screen readers
+                setTimeout(() => {
+                    alertDiv.focus();
+                }, 100);
+                
+                // Auto-remove after 10 seconds
+                setTimeout(() => {
+                    if (alertDiv.parentNode) {
+                        alertDiv.remove();
+                    }
+                }, 10000);
+                
+                // Scroll to first error field
+                const firstErrorField = document.querySelector('.is-invalid');
+                if (firstErrorField) {
+                    firstErrorField.scrollIntoView({ 
+                        behavior: 'smooth', 
+                        block: 'center' 
+                    });
+                    setTimeout(() => firstErrorField.focus(), 300);
+                }
+            },
+
+            // Show loading state
+            showLoadingState: function() {
+                const submitBtn = document.getElementById('submitBtn');
+                if (!submitBtn) return;
+                
+                const originalText = submitBtn.innerHTML;
+                const originalWidth = submitBtn.offsetWidth;
+                
+                // Set fixed width to prevent button resizing
+                submitBtn.style.width = `${originalWidth}px`;
+                submitBtn.innerHTML = '<i class="fas fa-spinner fa-spin me-2"></i>جاري إنشاء الإذن...';
+                submitBtn.disabled = true;
+                submitBtn.setAttribute('aria-busy', 'true');
+                
+                // Announce for screen readers
+                this.ariaAnnounce('جاري إنشاء إذن للموظف، يرجى الانتظار...');
+                
+                // Restore button after 5 seconds (in case submission fails)
+                setTimeout(() => {
+                    submitBtn.innerHTML = originalText;
+                    submitBtn.disabled = false;
+                    submitBtn.style.width = '';
+                    submitBtn.setAttribute('aria-busy', 'false');
+                }, 5000);
+            },
+
+            // Show validation error on specific field
+            showValidationError: function(element, message) {
+                element.classList.add('is-invalid');
+                element.classList.remove('is-valid');
+                
+                let feedback = element.nextElementSibling;
+                if (!feedback || !feedback.classList.contains('invalid-feedback')) {
+                    feedback = document.createElement('div');
+                    feedback.className = 'invalid-feedback';
+                    feedback.id = `${element.id}-feedback`;
+                    element.parentNode.insertBefore(feedback, element.nextSibling);
+                }
+                
+                feedback.textContent = message;
+                feedback.style.display = 'block';
+                element.setAttribute('aria-describedby', feedback.id);
+                element.setAttribute('aria-invalid', 'true');
+            },
+
+            // Clear validation error from field
+            clearValidationError: function(element) {
+                element.classList.remove('is-invalid');
+                element.classList.add('is-valid');
+                
+                const feedback = element.nextElementSibling;
+                if (feedback && feedback.classList.contains('invalid-feedback')) {
+                    feedback.style.display = 'none';
+                }
+                
+                element.removeAttribute('aria-describedby');
+                element.removeAttribute('aria-invalid');
+            },
+
+            // Show toast notification
+            showToast: function(message, type = 'info') {
+                let toastContainer = document.getElementById('toast-container');
+                if (!toastContainer) {
+                    toastContainer = document.createElement('div');
+                    toastContainer.id = 'toast-container';
+                    toastContainer.setAttribute('aria-live', 'polite');
+                    toastContainer.setAttribute('aria-atomic', 'true');
+                    toastContainer.style.cssText = `
+                        position: fixed;
+                        top: 20px;
+                        right: 20px;
+                        z-index: 9999;
+                        max-width: 350px;
+                    `;
+                    document.body.appendChild(toastContainer);
+                }
+                
+                const toast = document.createElement('div');
+                toast.className = `toast show align-items-center text-bg-${type} border-0`;
+                toast.setAttribute('role', 'alert');
+                toast.setAttribute('aria-live', 'assertive');
+                toast.setAttribute('aria-atomic', 'true');
+                
+                toast.innerHTML = `
+                    <div class="d-flex">
+                        <div class="toast-body">
+                            ${message}
+                        </div>
+                        <button type="button" class="btn-close btn-close-white me-2 m-auto" 
+                                data-bs-dismiss="toast" aria-label="إغلاق"></button>
+                    </div>
+                `;
+                
+                toastContainer.appendChild(toast);
+                
+                // Auto-remove after 5 seconds
+                setTimeout(() => {
+                    if (toast.parentNode) {
+                        toast.remove();
+                    }
+                }, 5000);
+                
+                // Announce for screen readers
+                this.ariaAnnounce(message);
+            },
+
+            // Announce messages for screen readers
+            ariaAnnounce: function(message) {
+                const announcement = document.createElement('div');
+                announcement.setAttribute('aria-live', 'assertive');
+                announcement.setAttribute('aria-atomic', 'true');
+                announcement.className = 'sr-only';
+                announcement.textContent = message;
+                
+                document.body.appendChild(announcement);
+                
+                setTimeout(() => {
+                    if (announcement.parentNode) {
+                        announcement.remove();
+                    }
+                }, 1000);
+            },
+
+            // Inject custom styles
+            injectCustomStyles: function() {
+                const style = document.createElement('style');
+                style.textContent = `
+                    .permission-type-card {
+                        cursor: pointer;
+                        transition: all 0.2s ease;
+                        border: 2px solid transparent;
+                    }
+                    
+                    .permission-type-card.selected {
+                        border-color: #198754;
+                        box-shadow: 0 0 0 0.25rem rgba(25, 135, 84, 0.25);
+                    }
+                    
+                    .permission-type-card:focus {
+                        outline: 2px solid #0d6efd;
+                        outline-offset: 2px;
+                    }
+                    
+                    .employee-option {
+                        cursor: pointer;
+                        transition: all 0.2s ease;
+                    }
+                    
+                    .employee-option:hover {
+                        background: #f0fdf4;
+                    }
+                    
+                    .employee-option.selected {
+                        background: #d1fae5;
+                    }
+                    
+                    .time-option {
+                        cursor: pointer;
+                        transition: all 0.2s ease;
+                    }
+                    
+                    .time-option.selected {
+                        transform: scale(1.05);
+                    }
+                    
+                    .time-option:focus {
+                        outline: 2px solid #0d6efd;
+                        outline-offset: 2px;
+                    }
+                    
+                    .date-info {
+                        background: #f0fdf4;
+                        border: 1px solid #a7f3d0;
+                        border-radius: 8px;
+                        padding: 10px 15px;
+                        font-size: 0.85rem;
+                        color: #065f46;
+                    }
+                    
+                    .sr-only {
+                        position: absolute;
+                        width: 1px;
+                        height: 1px;
+                        padding: 0;
+                        margin: -1px;
+                        overflow: hidden;
+                        clip: rect(0, 0, 0, 0);
+                        white-space: nowrap;
+                        border: 0;
+                    }
+                    
+                    .validation-alert {
+                        animation: slideInDown 0.3s ease-out;
+                    }
+                    
+                    @keyframes slideInDown {
+                        from {
+                            opacity: 0;
+                            transform: translateY(-20px);
+                        }
+                        to {
+                            opacity: 1;
+                            transform: translateY(0);
+                        }
+                    }
+                    
+                    /* Custom styles for autocomplete */
+                    .employee-autocomplete:read-only {
+                        background-color: #e9ecef;
+                        cursor: not-allowed;
+                    }
+                    
+                    .employee-autocomplete:read-only:focus {
+                        border-color: #6c757d;
+                        box-shadow: none;
+                    }
+                    
+                    .employee-avatar {
+                        width: 40px;
+                        height: 40px;
+                        background: var(--gradient-primary);
+                        border-radius: 50%;
+                        display: flex;
+                        align-items: center;
+                        justify-content: center;
+                        color: white;
+                        font-weight: bold;
+                        margin-left: 10px;
+                        flex-shrink: 0;
+                    }
+                    
+                    .employee-details {
+                        flex-grow: 1;
+                        min-width: 0;
+                    }
+                `;
+                document.head.appendChild(style);
+            }
+        };
+
+        // Initialize the application
+        ManagerPermissionApp.init();
+    </script>
+
+</body>
+</html>

@@ -1,0 +1,72 @@
+{% extends "layouts/user_base.html" %}
+
+{% block title %}طلبات الإجازات السابقة{% endblock %}
+
+{% block user_content %}
+<div class="d-flex justify-content-between flex-wrap flex-md-nowrap align-items-center pt-3 pb-2 mb-3 border-bottom">
+    <h1 class="h2">طلبات الإجازات السابقة</h1>
+    <a href="{{ url_for('user_leave') }}" class="btn btn-primary">
+        <i class="fas fa-plus me-2"></i>طلب إجازة جديدة
+    </a>
+</div>
+
+<div class="card">
+    <div class="card-header">
+        <h5 class="card-title mb-0">جميع الطلبات</h5>
+    </div>
+    <div class="card-body">
+        {% if leave_requests %}
+        <div class="table-responsive">
+            <table class="table table-striped">
+                <thead>
+                    <tr>
+                        <th>نوع الإجازة</th>
+                        <th>الفترة</th>
+                        <th>عدد الأيام</th>
+                        <th>السبب</th>
+                        <th>حالة الطلب</th>
+                        <th>تاريخ الطلب</th>
+                        <th>تاريخ القرار</th>
+                        <th>سبب الرفض</th>
+                    </tr>
+                </thead>
+                <tbody>
+                    {% for request in leave_requests %}
+                    <tr>
+                        <td>{{ request.leave_type }}</td>
+                        <td>{{ request.start_date }} إلى {{ request.end_date }}</td>
+                        <td>{{ request.total_days }}</td>
+                        <td>{{ request.reason or '-' }}</td>
+                        <td>
+                            {% if request.status == 'pending' %}
+                                <span class="badge bg-warning">قيد المراجعة</span>
+                            {% elif request.status == 'approved' %}
+                                <span class="badge bg-success">موافق</span>
+                            {% else %}
+                                <span class="badge bg-danger">مرفوض</span>
+                            {% endif %}
+                        </td>
+                        <td>{{ request.created_at.strftime('%Y-%m-%d') }}</td>
+                        <td>
+                            {% if request.approved_at %}
+                                {{ request.approved_at.strftime('%Y-%m-%d') }}
+                            {% else %}
+                                -
+                            {% endif %}
+                        </td>
+                        <td>{{ request.rejection_reason or '-' }}</td>
+                    </tr>
+                    {% endfor %}
+                </tbody>
+            </table>
+        </div>
+        {% else %}
+        <div class="text-center py-4">
+            <i class="fas fa-inbox fa-3x text-muted mb-3"></i>
+            <p class="text-muted">لا توجد طلبات إجازات سابقة</p>
+            <a href="{{ url_for('user_leave') }}" class="btn btn-primary">تقديم طلب إجازة جديدة</a>
+        </div>
+        {% endif %}
+    </div>
+</div>
+{% endblock %}

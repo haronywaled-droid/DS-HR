@@ -1,0 +1,538 @@
+<!DOCTYPE html>
+<html lang="ar" dir="rtl">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>نظام إدارة الموارد البشرية - تسجيل الدخول</title>
+    
+    <!-- Bootstrap 5 CSS -->
+    <link href="https://cdn.jsdelivr.net/npm/bootstrap@5.3.0/dist/css/bootstrap.min.css" rel="stylesheet">
+    
+    <!-- Bootstrap Icons -->
+    <link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/bootstrap-icons@1.10.0/font/bootstrap-icons.css">
+    
+    <style>
+        :root {
+            --primary-green: #10b981;
+            --dark-green: #059669;
+            --light-green: #34d399;
+            --accent-green: #a7f3d0;
+            --gradient-primary: linear-gradient(135deg, #10b981 0%, #059669 100%);
+            --gradient-secondary: linear-gradient(135deg, #34d399 0%, #10b981 100%);
+            --gradient-dark: linear-gradient(135deg, #065f46 0%, #047857 100%);
+            --gradient-success: linear-gradient(135deg, #a7f3d0 0%, #6ee7b7 100%);
+        }
+        
+        * {
+            margin: 0;
+            padding: 0;
+            box-sizing: border-box;
+        }
+  
+        /* Add this to your CSS section */
+        .batman-icon {
+            background: linear-gradient(135deg, #000 0%, #434343 100%);
+            -webkit-background-clip: text;
+            background-clip: text;
+            -webkit-text-fill-color: transparent;
+            position: relative;
+        }
+
+        .batman-icon::before {
+            content: "🦇";
+            font-size: 1.2rem;
+        }       
+
+        body {
+            font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif;
+            background: linear-gradient(135deg, #ecfdf5 0%, #d1fae5 100%);
+            min-height: 100vh;
+            overflow-x: hidden;
+        }
+        
+        /* Modern Glass Effect */
+        .glass-effect {
+            background: rgba(255, 255, 255, 0.25);
+            backdrop-filter: blur(20px);
+            border: 1px solid rgba(255, 255, 255, 0.3);
+            box-shadow: 0 8px 32px rgba(16, 185, 129, 0.1);
+        }
+        
+        .login-container {
+            min-height: 100vh;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            position: relative;
+        }
+        
+        .logo-container {
+            width: 100px;
+            height: 100px;
+            background: var(--gradient-primary);
+            border-radius: 25px;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            margin: 0 auto 2rem;
+            box-shadow: 0 15px 35px rgba(16, 185, 129, 0.4);
+            transition: all 0.4s ease;
+            position: relative;
+            overflow: hidden;
+        }
+        
+        .logo-container::before {
+            content: '';
+            position: absolute;
+            top: -50%;
+            left: -50%;
+            width: 200%;
+            height: 200%;
+            background: linear-gradient(45deg, transparent, rgba(255,255,255,0.3), transparent);
+            transform: rotate(45deg);
+            transition: all 0.6s ease;
+        }
+        
+        .logo-container:hover::before {
+            transform: rotate(45deg) translate(50%, 50%);
+        }
+        
+        .logo-container:hover {
+            transform: rotate(5deg) scale(1.1);
+        }
+        
+        .login-card {
+            background: rgba(255, 255, 255, 0.95);
+            backdrop-filter: blur(20px);
+            border: 1px solid rgba(255, 255, 255, 0.3);
+            border-radius: 25px;
+            box-shadow: 0 20px 50px rgba(16, 185, 129, 0.15);
+            transition: all 0.4s cubic-bezier(0.4, 0, 0.2, 1);
+            overflow: hidden;
+            position: relative;
+        }
+        
+        .login-card::before {
+            content: '';
+            position: absolute;
+            top: 0;
+            right: 0;
+            width: 100%;
+            height: 4px;
+            background: var(--gradient-primary);
+        }
+        
+        .login-card:hover {
+            transform: translateY(-10px) scale(1.02);
+            box-shadow: 0 30px 60px rgba(16, 185, 129, 0.25);
+        }
+        
+        .form-control {
+            border: 2px solid rgba(16, 185, 129, 0.1);
+            border-radius: 15px;
+            padding: 1rem 1.25rem;
+            transition: all 0.3s ease;
+            background: rgba(255, 255, 255, 0.8);
+        }
+        
+        .form-control:focus {
+            border-color: var(--primary-green);
+            box-shadow: 0 0 0 0.2rem rgba(16, 185, 129, 0.15);
+            background: white;
+            transform: translateY(-2px);
+        }
+        
+        .input-group {
+            position: relative;
+        }
+        
+        .input-group-text {
+            background: rgba(16, 185, 129, 0.05);
+            border: 2px solid rgba(16, 185, 129, 0.1);
+            border-right: none;
+            color: var(--dark-green);
+        }
+        
+        .btn-login {
+            background: var(--gradient-primary);
+            border: none;
+            border-radius: 15px;
+            padding: 1rem 2rem;
+            font-weight: 600;
+            font-size: 1.1rem;
+            transition: all 0.4s ease;
+            box-shadow: 0 8px 25px rgba(16, 185, 129, 0.3);
+            position: relative;
+            overflow: hidden;
+        }
+        
+        .btn-login::before {
+            content: '';
+            position: absolute;
+            top: 0;
+            right: -100%;
+            width: 100%;
+            height: 100%;
+            background: linear-gradient(90deg, transparent, rgba(255,255,255,0.2), transparent);
+            transition: right 0.6s ease;
+        }
+        
+        .btn-login:hover::before {
+            right: 100%;
+        }
+        
+        .btn-login:hover {
+            transform: translateY(-3px);
+            box-shadow: 0 15px 35px rgba(16, 185, 129, 0.4);
+        }
+        
+        .btn-toggle-password {
+            background: rgba(16, 185, 129, 0.05);
+            border: 2px solid rgba(16, 185, 129, 0.1);
+            border-left: none;
+            color: var(--dark-green);
+            transition: all 0.3s ease;
+        }
+        
+        .btn-toggle-password:hover {
+            background: rgba(16, 185, 129, 0.1);
+            color: var(--dark-green);
+        }
+        
+        /* Floating Animations */
+        .floating-element {
+            animation: float 6s ease-in-out infinite;
+        }
+        
+        
+        .pulse-effect {
+            animation: pulse 2s infinite;
+        }
+        
+
+        
+        /* Security Badge */
+        .security-badge {
+            background: rgba(16, 185, 129, 0.1);
+            border: 1px solid rgba(16, 185, 129, 0.2);
+            border-radius: 20px;
+            padding: 0.75rem 1.5rem;
+            transition: all 0.3s ease;
+        }
+        
+        .security-badge:hover {
+            background: rgba(16, 185, 129, 0.15);
+            transform: scale(1.05);
+        }
+        
+        /* Interactive Elements */
+        .interactive-item {
+            transition: all 0.3s ease;
+            cursor: pointer;
+        }
+        
+        .interactive-item:hover {
+            transform: translateX(-5px);
+        }
+        
+        /* Custom Checkbox */
+        .form-check-input:checked {
+            background-color: var(--primary-green);
+            border-color: var(--primary-green);
+        }
+        
+        .form-check-input:focus {
+            border-color: var(--primary-green);
+            box-shadow: 0 0 0 0.2rem rgba(16, 185, 129, 0.25);
+        }
+        
+        /* Background Animations */
+        .bg-animation {
+            position: fixed;
+            top: 0;
+            left: 0;
+            width: 100%;
+            height: 100%;
+            z-index: -1;
+            overflow: hidden;
+        }
+        
+        .bg-shape {
+            position: absolute;
+            border-radius: 50%;
+            background: var(--gradient-primary);
+            opacity: 0.1;
+            animation: float 8s ease-in-out infinite;
+        }
+        
+        .shape-1 {
+            width: 300px;
+            height: 300px;
+            top: 10%;
+            right: 10%;
+            animation-delay: 0s;
+        }
+        
+        .shape-2 {
+            width: 200px;
+            height: 200px;
+            bottom: 20%;
+            left: 15%;
+            animation-delay: 2s;
+        }
+        
+        .shape-3 {
+            width: 150px;
+            height: 150px;
+            top: 60%;
+            right: 20%;
+            animation-delay: 4s;
+        }
+    </style>
+</head>
+<body>
+    <!-- Background Animation -->
+    <div class="bg-animation">
+        <div class="bg-shape shape-1"></div>
+        <div class="bg-shape shape-2"></div>
+        <div class="bg-shape shape-3"></div>
+    </div>
+
+    <div class="container-fluid login-container">
+        <div class="row justify-content-center w-100">
+            <div class="col-12 col-md-8 col-lg-6 col-xl-5">
+                <div class="w-100 position-relative">
+                    <!-- Login Card -->
+                    <div class="login-card card p-4 p-xl-5 floating-element">
+                        <!-- Header -->
+                        <div class="text-center mb-4">
+                            <div class="logo-container">
+                                <i class="bi bi-building-gear fs-1 text-white"></i>
+                            </div>
+                            <h3 class="fw-bold text-dark mb-2">نظام إدارة الموارد البشرية</h3>
+                            <p class="text-muted">تسجيل الدخول إلى لوحة التحكم</p>
+                        </div>
+
+                        <!-- Login Form -->
+                        <form method="POST" action="{{ url_for('login') }}" class="needs-validation" novalidate id="loginForm">
+                            <!-- Username Field -->
+                            <div class="mb-4">
+                                <label for="username" class="form-label fw-semibold text-dark mb-2">
+                                    <i class="bi bi-person me-2 text-success"></i>
+                                    اسم المستخدم
+                                </label>
+                                <div class="input-group input-group-lg">
+                                    <input type="text" 
+                                           class="form-control" 
+                                           id="username" 
+                                           name="username" 
+                                           placeholder="أدخل اسم المستخدم" 
+                                           required 
+                                           autofocus>
+                                    <span class="input-group-text">
+                                        <i class="bi bi-at text-success"></i>
+                                    </span>
+                                </div>
+                                <div class="invalid-feedback mt-2">
+                                    ⚠️ يرجى إدخال اسم المستخدم
+                                </div>
+                            </div>
+
+                            <!-- Password Field -->
+                            <div class="mb-4">
+                                <div class="d-flex justify-content-between align-items-center mb-2">
+                                    <label for="password" class="form-label fw-semibold text-dark">
+                                        <i class="bi bi-key me-2 text-success"></i>
+                                        كلمة المرور
+                                    </label>
+                                    <a href="#" class="text-decoration-none text-success fs-7 fw-semibold interactive-item">
+                                        نسيت كلمة المرور؟
+                                    </a>
+                                </div>
+                                <div class="input-group input-group-lg">
+                                    <input type="password" 
+                                           class="form-control" 
+                                           id="password" 
+                                           name="password" 
+                                           placeholder="أدخل كلمة المرور" 
+                                           required>
+                                    <button class="btn btn-toggle-password" type="button" id="togglePassword">
+                                        <i class="bi bi-eye"></i>
+                                    </button>
+                                </div>
+                                <div class="invalid-feedback mt-2">
+                                    ⚠️ يرجى إدخال كلمة المرور
+                                </div>
+                            </div>
+
+                            <!-- Remember Me -->
+                            <div class="mb-4">
+                                <div class="form-check">
+                                    <input class="form-check-input" type="checkbox" id="rememberMe" name="rememberMe">
+                                    <label class="form-check-label text-muted" for="rememberMe">
+                                        تذكر بيانات الدخول
+                                    </label>
+                                </div>
+                            </div>
+
+                            <!-- Submit Button -->
+                            <div class="d-grid mb-3">
+                                <button type="submit" class="btn btn-login text-white fw-bold py-3">
+                                    <i class="bi bi-box-arrow-in-right me-2"></i>
+                                    تسجيل الدخول
+                                </button>
+                            </div>
+                        </form>
+                    </div>
+
+                    <div class="text-center mt-3 pt-3 border-top border-light">
+                        <p class="text-success fw-bold d-flex align-items-center justify-content-center gap-2">
+                            <span class="batman-icon"></span>
+                            Designed by Team Batman
+                        </p>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </div>
+
+    <!-- Bootstrap 5 JS -->
+    <script src="https://cdn.jsdelivr.net/npm/bootstrap@5.3.0/dist/js/bootstrap.bundle.min.js"></script>
+
+    <script>
+        // Enhanced Form Validation with Interactive Feedback
+        (function () {
+            'use strict'
+            const forms = document.querySelectorAll('.needs-validation')
+            Array.from(forms).forEach(form => {
+                form.addEventListener('submit', function (event) {
+                    if (!form.checkValidity()) {
+                        event.preventDefault()
+                        event.stopPropagation()
+                        
+                        // Add shake animation to invalid fields
+                        const invalidFields = form.querySelectorAll(':invalid');
+                        invalidFields.forEach(field => {
+                            field.style.animation = 'shake 0.5s ease-in-out';
+                            setTimeout(() => {
+                                field.style.animation = '';
+                            }, 500);
+                        });
+                    }
+                    form.classList.add('was-validated')
+                }, false)
+            })
+        })()
+
+        // Enhanced Toggle Password Visibility
+        document.getElementById('togglePassword').addEventListener('click', function () {
+            const passwordInput = document.getElementById('password');
+            const icon = this.querySelector('i');
+            
+            if (passwordInput.type === 'password') {
+                passwordInput.type = 'text';
+                icon.classList.remove('bi-eye');
+                icon.classList.add('bi-eye-slash');
+                this.classList.add('btn-success');
+            } else {
+                passwordInput.type = 'password';
+                icon.classList.remove('bi-eye-slash');
+                icon.classList.add('bi-eye');
+                this.classList.remove('btn-success');
+            }
+            
+            // Add pulse effect
+            this.classList.add('pulse-effect');
+            setTimeout(() => {
+                this.classList.remove('pulse-effect');
+            }, 600);
+        });
+
+        // Enhanced Input Interactions
+        document.querySelectorAll('.form-control').forEach(input => {
+            input.addEventListener('focus', function() {
+                this.parentElement.classList.add('border-success');
+                this.style.transform = 'translateY(-2px)';
+            });
+            
+            input.addEventListener('blur', function() {
+                this.parentElement.classList.remove('border-success');
+                this.style.transform = 'translateY(0)';
+            });
+            
+            input.addEventListener('input', function() {
+                if (this.value.length > 0) {
+                    this.classList.add('is-typing');
+                } else {
+                    this.classList.remove('is-typing');
+                }
+            });
+        });
+
+        document.head.appendChild(style);
+
+        // Interactive form submission
+        document.getElementById('loginForm').addEventListener('submit', function(e) {
+            const submitBtn = this.querySelector('button[type="submit"]');
+            const originalText = submitBtn.innerHTML;
+            
+            // Show loading state
+            submitBtn.innerHTML = `
+                <div class="spinner-border spinner-border-sm me-2" role="status">
+                    <span class="visually-hidden">جاري التحميل...</span>
+                </div>
+                جاري تسجيل الدخول...
+            `;
+            submitBtn.disabled = true;
+            
+            // Simulate API call (remove in production)
+            setTimeout(() => {
+                submitBtn.innerHTML = originalText;
+                submitBtn.disabled = false;
+            }, 2000);
+        });
+
+        // Add hover effects to interactive elements
+        document.querySelectorAll('.interactive-item').forEach(item => {
+            item.addEventListener('mouseenter', function() {
+                this.style.transform = 'translateX(-5px) scale(1.02)';
+            });
+            
+            item.addEventListener('mouseleave', function() {
+                this.style.transform = 'translateX(0) scale(1)';
+            });
+        });
+
+        // Add ripple effect to buttons
+        document.addEventListener('click', function(e) {
+            if (e.target.closest('.btn')) {
+                const btn = e.target.closest('.btn');
+                const ripple = document.createElement('span');
+                const rect = btn.getBoundingClientRect();
+                const size = Math.max(rect.width, rect.height);
+                const x = e.clientX - rect.left - size / 2;
+                const y = e.clientY - rect.top - size / 2;
+                
+                ripple.style.cssText = `
+                    position: absolute;
+                    border-radius: 50%;
+                    background: rgba(255, 255, 255, 0.6);
+                    transform: scale(0);
+                    animation: ripple 0.6s linear;
+                    width: ${size}px;
+                    height: ${size}px;
+                    left: ${x}px;
+                    top: ${y}px;
+                    pointer-events: none;
+                `;
+                
+                btn.style.position = 'relative';
+                btn.style.overflow = 'hidden';
+                btn.appendChild(ripple);
+                
+                setTimeout(() => ripple.remove(), 600);
+            }
+        });
+    </script>
+</body>
+</html>

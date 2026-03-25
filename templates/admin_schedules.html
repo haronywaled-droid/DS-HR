@@ -1,0 +1,1318 @@
+{% extends "layouts/admin_base.html" %}
+
+{% block title %}إدارة الجداول الأسبوعية{% endblock %}
+
+{% block admin_content %}
+<div class="main-content">
+    <!-- رأس الصفحة -->
+    <div class="page-header">
+        <!-- في قسم رأس الصفحة -->
+        <div class="header-actions">
+            <div class="search-box">
+                <input type="text" id="searchInput" placeholder="ابحث في الجداول..." class="form-control">
+                <i class="fas fa-search"></i>
+            </div>
+            <a href="{{ url_for('admin_dashboard') }}" class="btn btn-back">
+                <i class="fas fa-arrow-right"></i>
+                العودة للرئيسية
+            </a>
+        </div>
+        <div class="header-content">
+            <h1 class="page-title">
+                <i class="fas fa-calendar-alt"></i>
+                إدارة الجداول الأسبوعية
+            </h1>
+            <div class="header-actions">
+                <a href="{{ url_for('admin_dashboard') }}" class="btn btn-back">
+                    <i class="fas fa-arrow-right"></i>
+                    العودة للرئيسية
+                </a>
+            </div>
+        </div>
+        <p class="page-description">
+            إدارة واعتماد الجداول الأسبوعية للأقسام - الجداول المعتمدة أو المصدرة تصبح مقفولة ولا يمكن التعديل عليها
+        </p>
+    </div>
+
+    <!-- بطاقات الإحصائيات -->
+    <div class="stats-cards">
+        <div class="stat-card">
+            <div class="stat-icon primary">
+                <i class="fas fa-calendar"></i>
+            </div>
+            <div class="stat-info">
+                <div class="stat-number">{{ schedules|length }}</div>
+                <div class="stat-label">إجمالي الجداول</div>
+            </div>
+        </div>
+
+        <div class="stat-card">
+            <div class="stat-icon warning">
+                <i class="fas fa-clock"></i>
+            </div>
+            <div class="stat-info">
+                <div class="stat-number">
+                    {{ schedules|selectattr('is_approved', 'equalto', false)|list|length }}
+                </div>
+                <div class="stat-label">قيد الانتظار</div>
+            </div>
+        </div>
+
+        <div class="stat-card">
+            <div class="stat-icon success">
+                <i class="fas fa-check-circle"></i>
+            </div>
+            <div class="stat-info">
+                <div class="stat-number">
+                    {{ schedules|selectattr('is_approved', 'equalto', true)|list|length }}
+                </div>
+                <div class="stat-label">معتمدة</div>
+            </div>
+        </div>
+
+        <div class="stat-card">
+            <div class="stat-icon info">
+                <i class="fas fa-calendar-week"></i>
+            </div>
+            <div class="stat-info">
+                <div class="stat-number">
+                    {% set current_week_count = namespace(count=0) %}
+                    {% for schedule in schedules %}
+                        {% if schedule.week_start_date <= today and schedule.week_end_date >= today %}
+                            {% set current_week_count.count = current_week_count.count + 1 %}
+                        {% endif %}
+                    {% endfor %}
+                    {{ current_week_count.count }}
+                </div>
+                <div class="stat-label">هذا الأسبوع</div>
+            </div>
+        </div>
+    </div>
+
+    <!-- بعد قسم الإحصائيات -->
+    <div class="filters-section">
+        <div class="filter-cards">
+            <div class="filter-card">
+                <label>فلترة بالقسم:</label>
+                <select class="form-select" id="departmentFilter">
+                    <option value="">جميع الأقسام</option>
+                    {% for department in departments %}
+                    <option value="{{ department.id }}">{{ department.name }}</option>
+                    {% endfor %}
+                </select>
+            </div>
+            <div class="filter-card">
+                <label>فلترة بالحالة:</label>
+                <select class="form-select" id="statusFilter">
+                    <option value="">جميع الحالات</option>
+                    <option value="pending">في انتظار الاعتماد</option>
+                    <option value="approved">معتمدة</option>
+                    <option value="locked">مقفولة</option>
+                </select>
+            </div>
+            <div class="filter-card">
+                <label>فلترة بالأسبوع:</label>
+                <select class="form-select" id="weekFilter">
+                    <option value="">جميع الأسابيع</option>
+                    <option value="current">هذا الأسبوع</option>
+                    <option value="next">الأسبوع القادم</option>
+                    <option value="previous">الأسبوع الماضي</option>
+                </select>
+            </div>
+        </div>
+    </div>
+
+    <!-- الجداول المعلقة للاعتماد -->
+    <section class="content-section">
+        <div class="section-header warning">
+            <div class="section-title">
+                <i class="fas fa-clock"></i>
+                الجداول المعلقة للاعتماد
+                <span class="badge">{{ schedules|selectattr('is_approved', 'equalto', false)|list|length }}</span>
+            </div>
+        </div>
+
+        <div class="section-content">
+            {% set pending_schedules = schedules|selectattr('is_approved', 'equalto', false)|list %}
+            {% if pending_schedules %}
+            <div class="table-container">
+                <table class="data-table">
+                    <thead>
+                        <tr>
+                            <th>القسم</th>
+                            <th>الفترة الزمنية</th>
+                            <th>المُنشئ</th>
+                            <th>الحالة</th>
+                            <th>الإجراءات</th>
+                        </tr>
+                    </thead>
+                    <tbody>
+                        {% for schedule in pending_schedules %}
+                        <tr>
+                            <td>
+                                <div class="department-info">
+                                    <div class="dept-name">
+                                        {{ schedule.department.name if schedule.department else 'غير محدد' }}
+                                    </div>
+                                    <div class="dept-meta">
+                                        الأسبوع {{ schedule.week_start_date.strftime('%U') }}
+                                        <span class="version">v{{ schedule.version }}</span>
+                                    </div>
+                                </div>
+                            </td>
+                            <td>
+                                <div class="date-range">
+                                    <div class="date-from">
+                                        <i class="fas fa-play"></i>
+                                        {{ schedule.week_start_date.strftime('%Y-%m-%d') }}
+                                    </div>
+                                    <div class="date-to">
+                                        <i class="fas fa-stop"></i>
+                                        {{ schedule.week_end_date.strftime('%Y-%m-%d') }}
+                                    </div>
+                                </div>
+                            </td>
+                            <td>
+                                <div class="user-info">
+                                    <div class="user-avatar">
+                                        <i class="fas fa-user"></i>
+                                    </div>
+                                    <div class="user-details">
+                                        <div class="user-name">
+                                            {{ schedule.creator.name if schedule.creator else 'غير معروف' }}
+                                        </div>
+                                        <div class="user-time">
+                                            {{ schedule.created_at.strftime('%Y-%m-%d %H:%M') }}
+                                        </div>
+                                    </div>
+                                </div>
+                            </td>
+                            <td>
+                                <div class="status-badge pending">
+                                    <i class="fas fa-clock"></i>
+                                    في انتظار الاعتماد
+                                </div>
+                                {% if schedule.is_locked %}
+                                <div class="status-badge locked">
+                                    <i class="fas fa-lock"></i>
+                                    مقفل
+                                </div>
+                                {% endif %}
+                            </td>
+                            <td>
+                                <div class="action-buttons">
+                                    <button class="btn btn-view" 
+                                            data-bs-toggle="modal" 
+                                            data-bs-target="#viewModal{{ schedule.id }}">
+                                        <i class="fas fa-eye"></i>
+                                        معاينة
+                                    </button>
+                                    <a href="{{ url_for('approve_schedule', schedule_id=schedule.id) }}" 
+                                       class="btn btn-approve"
+                                       onclick="return confirm('هل أنت متأكد من اعتماد هذا الجدول؟ بعد الاعتماد لا يمكن للمدير تعديله.')">
+                                        <i class="fas fa-check"></i>
+                                        اعتماد
+                                    </a>
+                                    <a href="{{ url_for('export_schedule', schedule_id=schedule.id) }}" 
+                                       class="btn btn-export"
+                                       onclick="return confirm('سيتم قفل الجدول بعد التصدير. هل تريد المتابعة؟')">
+                                        <i class="fas fa-download"></i>
+                                        تصدير
+                                    </a>
+                                </div>
+                            </td>
+                        </tr>
+
+                        <!-- Modal for Viewing Schedule -->
+                        <div class="modal fade" id="viewModal{{ schedule.id }}" tabindex="-1">
+                            <div class="modal-dialog modal-xl">
+                                <div class="modal-content">
+                                    <div class="modal-header warning">
+                                        <h5 class="modal-title">
+                                            <i class="fas fa-calendar"></i>
+                                            معاينة الجدول - {{ schedule.department.name if schedule.department else 'غير محدد' }}
+                                        </h5>
+                                        <button type="button" class="btn-close" data-bs-dismiss="modal"></button>
+                                    </div>
+                                    <div class="modal-body">
+                                        <!-- معلومات الجدول -->
+                                        <div class="schedule-info-cards">
+                                            <div class="info-card">
+                                                <div class="info-icon">
+                                                    <i class="fas fa-calendar-week"></i>
+                                                </div>
+                                                <div class="info-content">
+                                                    <div class="info-label">الفترة</div>
+                                                    <div class="info-value">
+                                                        {{ schedule.week_start_date }} إلى {{ schedule.week_end_date }}
+                                                    </div>
+                                                </div>
+                                            </div>
+                                            <div class="info-card">
+                                                <div class="info-icon">
+                                                    <i class="fas fa-user"></i>
+                                                </div>
+                                                <div class="info-content">
+                                                    <div class="info-label">المُنشئ</div>
+                                                    <div class="info-value">
+                                                        {{ schedule.creator.name if schedule.creator else 'غير معروف' }}
+                                                    </div>
+                                                </div>
+                                            </div>
+                                            <div class="info-card">
+                                                <div class="info-icon">
+                                                    <i class="fas fa-clock"></i>
+                                                </div>
+                                                <div class="info-content">
+                                                    <div class="info-label">تاريخ الإنشاء</div>
+                                                    <div class="info-value">
+                                                        {{ schedule.created_at.strftime('%Y-%m-%d %H:%M') }}
+                                                    </div>
+                                                </div>
+                                            </div>
+                                        </div>
+
+                                        <!-- جدول البيانات -->
+                                        {% if schedule.schedule_data %}
+                                            {% set schedule_data = schedule.schedule_data | fromjson %}
+                                            <div class="schedule-table-container">
+                                                <table class="schedule-table">
+                                                    <thead>
+                                                        <tr>
+                                                            <th>الموظف</th>
+                                                            <th>السبت</th>
+                                                            <th>الأحد</th>
+                                                            <th>الإثنين</th>
+                                                            <th>الثلاثاء</th>
+                                                            <th>الأربعاء</th>
+                                                            <th>الخميس</th>
+                                                        </tr>
+                                                    </thead>
+                                                    <tbody>
+                                                        {% for employee_id, days in schedule_data.items() %}
+                                                        <tr>
+                                                            <td class="employee-name">
+                                                                {% set employee = users|selectattr('id', 'equalto', employee_id|int)|first %}
+                                                                {% if employee %}
+                                                                    {{ employee.name }}
+                                                                {% else %}
+                                                                    مستخدم غير معروف ({{ employee_id }})
+                                                                {% endif %}
+                                                            </td>
+                                                            <td>{{ days.get('السبت', '') }}</td>
+                                                            <td>{{ days.get('الأحد', '') }}</td>
+                                                            <td>{{ days.get('الإثنين', '') }}</td>
+                                                            <td>{{ days.get('الثلاثاء', '') }}</td>
+                                                            <td>{{ days.get('الأربعاء', '') }}</td>
+                                                            <td>{{ days.get('الخميس', '') }}</td>
+                                                        </tr>
+                                                        {% endfor %}
+                                                    </tbody>
+                                                </table>
+                                            </div>
+                                        {% else %}
+                                            <div class="empty-state">
+                                                <i class="fas fa-exclamation-triangle"></i>
+                                                <h4>لا توجد بيانات للجدول</h4>
+                                                <p>لم يتم العثور على أي بيانات لهذا الجدول الأسبوعي</p>
+                                            </div>
+                                        {% endif %}
+                                    </div>
+                                    <div class="modal-footer">
+                                        <button type="button" class="btn btn-secondary" data-bs-dismiss="modal">
+                                            <i class="fas fa-times"></i>
+                                            إغلاق
+                                        </button>
+                                        <a href="{{ url_for('export_schedule', schedule_id=schedule.id) }}" 
+                                           class="btn btn-export"
+                                           onclick="return confirm('سيتم قفل الجدول بعد التصدير. هل تريد المتابعة؟')">
+                                            <i class="fas fa-download"></i>
+                                            تصدير Excel
+                                        </a>
+                                        <a href="{{ url_for('approve_schedule', schedule_id=schedule.id) }}" 
+                                           class="btn btn-approve"
+                                           onclick="return confirm('هل أنت متأكد من اعتماد هذا الجدول؟')">
+                                            <i class="fas fa-check"></i>
+                                            اعتماد الجدول
+                                        </a>
+                                    </div>
+                                </div>
+                            </div>
+                        </div>
+                        {% endfor %}
+                    </tbody>
+                </table>
+            </div>
+            {% else %}
+            <div class="empty-state">
+                <i class="fas fa-calendar-check"></i>
+                <h3>لا توجد جداول معلقة</h3>
+                <p>جميع الجداول تم اعتمادها أو لم يتم إنشاء أي جداول جديدة</p>
+            </div>
+            {% endif %}
+        </div>
+    </section>
+
+    <!-- الجداول المعتمدة -->
+    <section class="content-section">
+        <div class="section-header success">
+            <div class="section-title">
+                <i class="fas fa-check-circle"></i>
+                الجداول المعتمدة
+                <span class="badge">{{ schedules|selectattr('is_approved', 'equalto', true)|list|length }}</span>
+            </div>
+        </div>
+
+        <div class="section-content">
+            {% set approved_schedules = schedules|selectattr('is_approved', 'equalto', true)|list %}
+            {% if approved_schedules %}
+            <div class="table-container">
+                <table class="data-table">
+                    <thead>
+                        <tr>
+                            <th>القسم</th>
+                            <th>الفترة الزمنية</th>
+                            <th>معلومات الاعتماد</th>
+                            <th>الحالة</th>
+                            <th>الإجراءات</th>
+                        </tr>
+                    </thead>
+                    <tbody>
+                        {% for schedule in approved_schedules %}
+                        <tr>
+                            <td>
+                                <div class="department-info">
+                                    <div class="dept-name">
+                                        {{ schedule.department.name if schedule.department else 'غير محدد' }}
+                                    </div>
+                                    <div class="dept-meta">
+                                        الأسبوع {{ schedule.week_start_date.strftime('%U') }}
+                                        <span class="version">v{{ schedule.version }}</span>
+                                    </div>
+                                </div>
+                            </td>
+                            <td>
+                                <div class="date-range">
+                                    <div class="date-from">
+                                        <i class="fas fa-play"></i>
+                                        {{ schedule.week_start_date.strftime('%Y-%m-%d') }}
+                                    </div>
+                                    <div class="date-to">
+                                        <i class="fas fa-stop"></i>
+                                        {{ schedule.week_end_date.strftime('%Y-%m-%d') }}
+                                    </div>
+                                </div>
+                            </td>
+                            <td>
+                                <div class="approval-info">
+                                    <div class="approver">
+                                        <i class="fas fa-user-check"></i>
+                                        {{ schedule.approver.name if schedule.approver else 'غير معروف' }}
+                                    </div>
+                                    <div class="approval-time">
+                                        <i class="fas fa-clock"></i>
+                                        {% if schedule.approved_at %}
+                                            {{ schedule.approved_at.strftime('%Y-%m-%d %H:%M') }}
+                                        {% else %}
+                                            -
+                                        {% endif %}
+                                    </div>
+                                </div>
+                            </td>
+                            <td>
+                                <div class="status-badge approved">
+                                    <i class="fas fa-check-circle"></i>
+                                    معتمد
+                                </div>
+                                <div class="status-badge locked">
+                                    <i class="fas fa-lock"></i>
+                                    مقفل
+                                </div>
+                            </td>
+                            <td>
+                                <div class="action-buttons">
+                                    <button class="btn btn-view" 
+                                            data-bs-toggle="modal" 
+                                            data-bs-target="#viewApprovedModal{{ schedule.id }}">
+                                        <i class="fas fa-eye"></i>
+                                        معاينة
+                                    </button>
+                                    <a href="{{ url_for('export_schedule', schedule_id=schedule.id) }}" 
+                                       class="btn btn-download">
+                                        <i class="fas fa-download"></i>
+                                        تحميل
+                                    </a>
+                                </div>
+                            </td>
+                        </tr>
+
+                        <!-- Modal for Viewing Approved Schedule -->
+                        <div class="modal fade" id="viewApprovedModal{{ schedule.id }}" tabindex="-1">
+                            <div class="modal-dialog modal-xl">
+                                <div class="modal-content">
+                                    <div class="modal-header success">
+                                        <h5 class="modal-title">
+                                            <i class="fas fa-calendar-check"></i>
+                                            الجدول المعتمد - {{ schedule.department.name if schedule.department else 'غير محدد' }}
+                                        </h5>
+                                        <button type="button" class="btn-close" data-bs-dismiss="modal"></button>
+                                    </div>
+                                    <div class="modal-body">
+                                        <!-- تنبيه الحالة -->
+                                        <div class="alert alert-success">
+                                            <div class="alert-content">
+                                                <i class="fas fa-info-circle"></i>
+                                                <div>
+                                                    <strong>هذا الجدول معتمد ومقفل</strong>
+                                                    <p>لا يمكن لمدير القسم التعديل عليه بعد الاعتماد والتصدير</p>
+                                                </div>
+                                            </div>
+                                        </div>
+
+                                        <!-- معلومات الاعتماد -->
+                                        <div class="schedule-info-cards">
+                                            <div class="info-card">
+                                                <div class="info-icon">
+                                                    <i class="fas fa-calendar-week"></i>
+                                                </div>
+                                                <div class="info-content">
+                                                    <div class="info-label">الفترة</div>
+                                                    <div class="info-value">
+                                                        {{ schedule.week_start_date }} إلى {{ schedule.week_end_date }}
+                                                    </div>
+                                                </div>
+                                            </div>
+                                            <div class="info-card">
+                                                <div class="info-icon">
+                                                    <i class="fas fa-user-check"></i>
+                                                </div>
+                                                <div class="info-content">
+                                                    <div class="info-label">المعتمد بواسطة</div>
+                                                    <div class="info-value">
+                                                        {{ schedule.approver.name if schedule.approver else 'غير معروف' }}
+                                                    </div>
+                                                </div>
+                                            </div>
+                                            <div class="info-card">
+                                                <div class="info-icon">
+                                                    <i class="fas fa-clock"></i>
+                                                </div>
+                                                <div class="info-content">
+                                                    <div class="info-label">تاريخ الاعتماد</div>
+                                                    <div class="info-value">
+                                                        {% if schedule.approved_at %}
+                                                            {{ schedule.approved_at.strftime('%Y-%m-%d %H:%M') }}
+                                                        {% else %}
+                                                            غير معروف
+                                                        {% endif %}
+                                                    </div>
+                                                </div>
+                                            </div>
+                                        </div>
+
+                                        <!-- جدول البيانات -->
+                                        {% if schedule.schedule_data %}
+                                            {% set schedule_data = schedule.schedule_data | fromjson %}
+                                            <div class="schedule-table-container">
+                                                <table class="schedule-table approved">
+                                                    <thead>
+                                                        <tr>
+                                                            <th>الموظف</th>
+                                                            <th>السبت</th>
+                                                            <th>الأحد</th>
+                                                            <th>الإثنين</th>
+                                                            <th>الثلاثاء</th>
+                                                            <th>الأربعاء</th>
+                                                            <th>الخميس</th>
+                                                        </tr>
+                                                    </thead>
+                                                    <tbody>
+                                                        {% for employee_id, days in schedule_data.items() %}
+                                                        <tr>
+                                                            <td class="employee-name">
+                                                                {% set employee = users|selectattr('id', 'equalto', employee_id|int)|first %}
+                                                                {% if employee %}
+                                                                    {{ employee.name }}
+                                                                {% else %}
+                                                                    مستخدم غير معروف ({{ employee_id }})
+                                                                {% endif %}
+                                                            </td>
+                                                            <td>{{ days.get('السبت', '') }}</td>
+                                                            <td>{{ days.get('الأحد', '') }}</td>
+                                                            <td>{{ days.get('الإثنين', '') }}</td>
+                                                            <td>{{ days.get('الثلاثاء', '') }}</td>
+                                                            <td>{{ days.get('الأربعاء', '') }}</td>
+                                                            <td>{{ days.get('الخميس', '') }}</td>
+                                                        </tr>
+                                                        {% endfor %}
+                                                    </tbody>
+                                                </table>
+                                            </div>
+                                        {% else %}
+                                            <div class="empty-state">
+                                                <i class="fas fa-exclamation-triangle"></i>
+                                                <h4>لا توجد بيانات للجدول</h4>
+                                                <p>لم يتم العثور على أي بيانات لهذا الجدول الأسبوعي</p>
+                                            </div>
+                                        {% endif %}
+                                    </div>
+                                    <div class="modal-footer">
+                                        <button type="button" class="btn btn-secondary" data-bs-dismiss="modal">
+                                            <i class="fas fa-times"></i>
+                                            إغلاق
+                                        </button>
+                                        <a href="{{ url_for('export_schedule', schedule_id=schedule.id) }}" 
+                                           class="btn btn-download">
+                                            <i class="fas fa-download"></i>
+                                            تحميل الجدول المعتمد
+                                        </a>
+                                    </div>
+                                </div>
+                            </div>
+                        </div>
+                        {% endfor %}
+                    </tbody>
+                </table>
+            </div>
+            {% else %}
+            <div class="empty-state">
+                <i class="fas fa-calendar-times"></i>
+                <h3>لا توجد جداول معتمدة</h3>
+                <p>لم يتم اعتماد أي جداول حتى الآن</p>
+            </div>
+            {% endif %}
+        </div>
+    </section>
+</div>
+{% endblock %}
+
+{% block extra_css %}
+<style>
+:root {
+    --primary: #4e73df;
+    --success: #1cc88a;
+    --warning: #f6c23e;
+    --danger: #e74a3b;
+    --info: #36b9cc;
+    --dark: #5a5c69;
+}
+/* إضافة هذه الأنماط لـ extra_css */
+
+.filters-section {
+    background: white;
+    padding: 20px;
+    border-radius: 10px;
+    box-shadow: 0 2px 10px rgba(0,0,0,0.1);
+    margin-bottom: 25px;
+}
+
+.filter-cards {
+    display: grid;
+    grid-template-columns: repeat(auto-fit, minmax(250px, 1fr));
+    gap: 15px;
+}
+
+.filter-card {
+    display: flex;
+    flex-direction: column;
+}
+
+.filter-card label {
+    font-weight: 600;
+    margin-bottom: 8px;
+    color: #5a5c69;
+}
+
+.form-select, .form-control {
+    padding: 10px;
+    border: 1px solid #d1d3e2;
+    border-radius: 6px;
+    font-size: 0.9rem;
+}
+
+.search-box {
+    position: relative;
+    width: 300px;
+}
+
+.search-box input {
+    padding-right: 40px;
+}
+
+.search-box i {
+    position: absolute;
+    right: 15px;
+    top: 50%;
+    transform: translateY(-50%);
+    color: #6c757d;
+}
+
+/* تحسينات للجدول المحدد */
+.data-table tbody tr.selected {
+    background-color: #f8f9fc;
+    border-left: 4px solid var(--primary);
+}
+
+/* تحسينات للاستجابة */
+@media (max-width: 768px) {
+    .filter-cards {
+        grid-template-columns: 1fr;
+    }
+    
+    .search-box {
+        width: 100%;
+        margin-bottom: 15px;
+    }
+    
+    .header-actions {
+        flex-direction: column;
+        width: 100%;
+    }
+}
+
+/* تحسينات للـ modals */
+.modal-xl {
+    max-width: 95%;
+}
+
+@media (max-width: 1200px) {
+    .modal-xl {
+        max-width: 90%;
+    }
+}
+
+/* تحسينات للجداول الداخلية */
+.schedule-table th, .schedule-table td {
+    white-space: nowrap;
+    min-width: 120px;
+}
+
+.employee-name {
+    min-width: 150px;
+    position: sticky;
+    right: 0;
+    background: white;
+    z-index: 1;
+}
+
+/* تأثيرات تحميل */
+.btn:disabled {
+    opacity: 0.6;
+    cursor: not-allowed;
+    transform: none !important;
+}
+
+.fa-spinner {
+    animation: spin 1s linear infinite;
+}
+
+@keyframes spin {
+    0% { transform: rotate(0deg); }
+    100% { transform: rotate(360deg); }
+}
+.main-content {
+    padding: 20px;
+    background: #f8f9fc;
+    min-height: calc(100vh - 80px);
+}
+
+.page-header {
+    background: white;
+    padding: 25px;
+    border-radius: 10px;
+    box-shadow: 0 2px 10px rgba(0,0,0,0.1);
+    margin-bottom: 25px;
+}
+
+.header-content {
+    display: flex;
+    justify-content: between;
+    align-items: center;
+    margin-bottom: 10px;
+}
+
+.page-title {
+    color: #2e59d9;
+    font-size: 1.8rem;
+    font-weight: 700;
+    margin: 0;
+}
+
+.page-title i {
+    margin-left: 10px;
+}
+
+.page-description {
+    color: #6c757d;
+    margin: 0;
+    font-size: 1rem;
+}
+
+.btn-back {
+    background: #6c757d;
+    color: white;
+    padding: 10px 20px;
+    border-radius: 6px;
+    text-decoration: none;
+    transition: all 0.3s;
+}
+
+.btn-back:hover {
+    background: #5a6268;
+    color: white;
+}
+
+.stats-cards {
+    display: grid;
+    grid-template-columns: repeat(auto-fit, minmax(250px, 1fr));
+    gap: 20px;
+    margin-bottom: 30px;
+}
+
+.stat-card {
+    background: white;
+    padding: 25px;
+    border-radius: 10px;
+    box-shadow: 0 2px 10px rgba(0,0,0,0.1);
+    display: flex;
+    align-items: center;
+    border-right: 4px solid var(--primary);
+}
+
+.stat-card.warning { border-right-color: var(--warning); }
+.stat-card.success { border-right-color: var(--success); }
+.stat-card.info { border-right-color: var(--info); }
+
+.stat-icon {
+    width: 60px;
+    height: 60px;
+    border-radius: 50%;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    margin-left: 15px;
+    font-size: 1.5rem;
+}
+
+.stat-icon.primary { background: #e8eaf6; color: var(--primary); }
+.stat-icon.warning { background: #fff8e1; color: var(--warning); }
+.stat-icon.success { background: #e8f5e8; color: var(--success); }
+.stat-icon.info { background: #e3f2fd; color: var(--info); }
+
+.stat-number {
+    font-size: 2rem;
+    font-weight: 700;
+    color: #5a5c69;
+    line-height: 1;
+}
+
+.stat-label {
+    color: #6c757d;
+    font-size: 0.9rem;
+    margin-top: 5px;
+}
+
+.content-section {
+    background: white;
+    border-radius: 10px;
+    box-shadow: 0 2px 10px rgba(0,0,0,0.1);
+    margin-bottom: 30px;
+    overflow: hidden;
+}
+
+.section-header {
+    padding: 20px 25px;
+    border-bottom: 1px solid #e3e6f0;
+}
+
+.section-header.warning { border-right: 4px solid var(--warning); }
+.section-header.success { border-right: 4px solid var(--success); }
+
+.section-title {
+    display: flex;
+    align-items: center;
+    font-size: 1.2rem;
+    font-weight: 600;
+    color: #5a5c69;
+}
+
+.section-title i {
+    margin-left: 10px;
+}
+
+.badge {
+    background: var(--warning);
+    color: white;
+    padding: 4px 8px;
+    border-radius: 12px;
+    font-size: 0.8rem;
+    margin-right: 10px;
+}
+
+.section-content {
+    padding: 25px;
+}
+
+.table-container {
+    overflow-x: auto;
+}
+
+.data-table {
+    width: 100%;
+    border-collapse: collapse;
+}
+
+.data-table th {
+    background: #f8f9fc;
+    padding: 15px;
+    text-align: right;
+    font-weight: 600;
+    color: #5a5c69;
+    border-bottom: 1px solid #e3e6f0;
+}
+
+.data-table td {
+    padding: 15px;
+    border-bottom: 1px solid #e3e6f0;
+    vertical-align: top;
+}
+
+.department-info .dept-name {
+    font-weight: 600;
+    color: #5a5c69;
+}
+
+.dept-meta {
+    font-size: 0.85rem;
+    color: #6c757d;
+    margin-top: 5px;
+}
+
+.version {
+    background: #e9ecef;
+    padding: 2px 6px;
+    border-radius: 4px;
+    font-size: 0.75rem;
+    margin-right: 5px;
+}
+
+.date-range {
+    font-size: 0.9rem;
+}
+
+.date-from, .date-to {
+    display: flex;
+    align-items: center;
+    margin-bottom: 5px;
+}
+
+.date-from i { color: var(--success); margin-left: 5px; }
+.date-to i { color: var(--danger); margin-left: 5px; }
+
+.user-info {
+    display: flex;
+    align-items: center;
+}
+
+.user-avatar {
+    width: 40px;
+    height: 40px;
+    background: #e8eaf6;
+    border-radius: 50%;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    margin-left: 10px;
+    color: var(--primary);
+}
+
+.user-name {
+    font-weight: 600;
+    color: #5a5c69;
+}
+
+.user-time {
+    font-size: 0.8rem;
+    color: #6c757d;
+    margin-top: 2px;
+}
+
+.status-badge {
+    display: inline-flex;
+    align-items: center;
+    padding: 6px 12px;
+    border-radius: 20px;
+    font-size: 0.8rem;
+    font-weight: 500;
+    margin-bottom: 5px;
+}
+
+.status-badge.pending { background: #fff3cd; color: #856404; }
+.status-badge.approved { background: #d1edff; color: #0c5460; }
+.status-badge.locked { background: #f8d7da; color: #721c24; }
+
+.status-badge i {
+    margin-left: 5px;
+}
+
+.action-buttons {
+    display: flex;
+    gap: 8px;
+    flex-wrap: wrap;
+}
+
+.btn {
+    padding: 8px 12px;
+    border: none;
+    border-radius: 6px;
+    font-size: 0.85rem;
+    font-weight: 500;
+    text-decoration: none;
+    display: inline-flex;
+    align-items: center;
+    transition: all 0.3s;
+    cursor: pointer;
+}
+
+.btn i {
+    margin-left: 5px;
+}
+
+.btn-view { background: #e3f2fd; color: #1976d2; }
+.btn-approve { background: #d4edda; color: #155724; }
+.btn-export { background: #d1ecf1; color: #0c5460; }
+.btn-download { background: #d1edff; color: #0c5460; }
+.btn-secondary { background: #6c757d; color: white; }
+
+.btn:hover {
+    transform: translateY(-2px);
+    box-shadow: 0 4px 8px rgba(0,0,0,0.2);
+}
+
+/* Modal Styles */
+.modal-header {
+    border-bottom: 1px solid #e3e6f0;
+    padding: 20px;
+}
+
+.modal-header.warning { background: var(--warning); color: white; }
+.modal-header.success { background: var(--success); color: white; }
+
+.modal-title {
+    font-weight: 600;
+    font-size: 1.3rem;
+}
+
+.modal-body {
+    padding: 25px;
+}
+
+.schedule-info-cards {
+    display: grid;
+    grid-template-columns: repeat(auto-fit, minmax(200px, 1fr));
+    gap: 15px;
+    margin-bottom: 25px;
+}
+
+.info-card {
+    background: #f8f9fc;
+    padding: 15px;
+    border-radius: 8px;
+    display: flex;
+    align-items: center;
+}
+
+.info-icon {
+    width: 40px;
+    height: 40px;
+    background: white;
+    border-radius: 50%;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    margin-left: 15px;
+    color: var(--primary);
+}
+
+.info-label {
+    font-size: 0.8rem;
+    color: #6c757d;
+    margin-bottom: 5px;
+}
+
+.info-value {
+    font-weight: 600;
+    color: #5a5c69;
+}
+
+.schedule-table-container {
+    overflow-x: auto;
+    border: 1px solid #e3e6f0;
+    border-radius: 8px;
+}
+
+.schedule-table {
+    width: 100%;
+    border-collapse: collapse;
+}
+
+.schedule-table th {
+    background: #5a5c69;
+    color: white;
+    padding: 12px;
+    text-align: center;
+    font-weight: 600;
+}
+
+.schedule-table td {
+    padding: 12px;
+    border: 1px solid #e3e6f0;
+    text-align: center;
+}
+
+.schedule-table.approved th {
+    background: var(--success);
+}
+
+.employee-name {
+    font-weight: 600;
+    color: #5a5c69;
+    text-align: right !important;
+}
+
+.alert {
+    padding: 15px;
+    border-radius: 8px;
+    margin-bottom: 20px;
+}
+
+.alert-success {
+    background: #d4edda;
+    border: 1px solid #c3e6cb;
+    color: #155724;
+}
+
+.alert-content {
+    display: flex;
+    align-items: flex-start;
+}
+
+.alert-content i {
+    margin-left: 10px;
+    font-size: 1.2rem;
+}
+
+.empty-state {
+    text-align: center;
+    padding: 60px 20px;
+    color: #6c757d;
+}
+
+.empty-state i {
+    font-size: 4rem;
+    margin-bottom: 20px;
+    opacity: 0.5;
+}
+
+.empty-state h3, .empty-state h4 {
+    color: #5a5c69;
+    margin-bottom: 10px;
+}
+
+/* Responsive Design */
+@media (max-width: 768px) {
+    .main-content {
+        padding: 10px;
+    }
+    
+    .stats-cards {
+        grid-template-columns: 1fr;
+    }
+    
+    .header-content {
+        flex-direction: column;
+        gap: 15px;
+        align-items: flex-start;
+    }
+    
+    .action-buttons {
+        flex-direction: column;
+    }
+    
+    .schedule-info-cards {
+        grid-template-columns: 1fr;
+    }
+    
+    .user-info {
+        flex-direction: column;
+        align-items: flex-start;
+    }
+    
+    .user-avatar {
+        margin-bottom: 10px;
+    }
+}
+</style>
+{% endblock %}
+
+{% block extra_js %}
+<script>
+document.addEventListener('DOMContentLoaded', function() {
+    // فلترة الجداول
+    const departmentFilter = document.getElementById('departmentFilter');
+    const statusFilter = document.getElementById('statusFilter');
+    const weekFilter = document.getElementById('weekFilter');
+    const searchInput = document.getElementById('searchInput');
+    
+    function filterSchedules() {
+        const departmentValue = departmentFilter.value;
+        const statusValue = statusFilter.value;
+        const weekValue = weekFilter.value;
+        const searchValue = searchInput.value.toLowerCase();
+        
+        const rows = document.querySelectorAll('.data-table tbody tr');
+        
+        rows.forEach(row => {
+            let showRow = true;
+            
+            // فلترة بالقسم
+            if (departmentValue) {
+                const departmentId = row.querySelector('.department-info').getAttribute('data-dept-id');
+                if (departmentId !== departmentValue) {
+                    showRow = false;
+                }
+            }
+            
+            // فلترة بالحالة
+            if (statusValue && showRow) {
+                if (statusValue === 'pending' && !row.querySelector('.status-badge.pending')) {
+                    showRow = false;
+                } else if (statusValue === 'approved' && !row.querySelector('.status-badge.approved')) {
+                    showRow = false;
+                } else if (statusValue === 'locked' && !row.querySelector('.status-badge.locked')) {
+                    showRow = false;
+                }
+            }
+            
+            // فلترة بالأسبوع
+            if (weekValue && showRow) {
+                const weekStart = row.querySelector('.date-from').textContent.trim();
+                const today = new Date();
+                const weekStartDate = new Date(weekStart);
+                
+                if (weekValue === 'current') {
+                    const startOfWeek = new Date(today);
+                    startOfWeek.setDate(today.getDate() - today.getDay() + 1);
+                    const endOfWeek = new Date(startOfWeek);
+                    endOfWeek.setDate(startOfWeek.getDate() + 6);
+                    
+                    if (weekStartDate < startOfWeek || weekStartDate > endOfWeek) {
+                        showRow = false;
+                    }
+                }
+                // يمكن إضافة فلترة الأسابيع الأخرى
+            }
+            
+            // بحث
+            if (searchValue && showRow) {
+                const rowText = row.textContent.toLowerCase();
+                if (!rowText.includes(searchValue)) {
+                    showRow = false;
+                }
+            }
+            
+            row.style.display = showRow ? '' : 'none';
+        });
+        
+        // تحديث أعداد الجداول المعروضة
+        updateVisibleCounts();
+    }
+    
+    function updateVisibleCounts() {
+        const pendingSection = document.querySelector('.section-header.warning');
+        const approvedSection = document.querySelector('.section-header.success');
+        
+        if (pendingSection) {
+            const pendingCount = document.querySelectorAll('.section-header.warning + .section-content .data-table tbody tr:not([style*="display: none"])').length;
+            const pendingBadge = pendingSection.querySelector('.badge');
+            if (pendingBadge) {
+                pendingBadge.textContent = pendingCount;
+            }
+        }
+        
+        if (approvedSection) {
+            const approvedCount = document.querySelectorAll('.section-header.success + .section-content .data-table tbody tr:not([style*="display: none"])').length;
+            const approvedBadge = approvedSection.querySelector('.badge');
+            if (approvedBadge) {
+                approvedBadge.textContent = approvedCount;
+            }
+        }
+    }
+    
+    // إضافة event listeners
+    [departmentFilter, statusFilter, weekFilter].forEach(filter => {
+        if (filter) {
+            filter.addEventListener('change', filterSchedules);
+        }
+    });
+    
+    if (searchInput) {
+        searchInput.addEventListener('input', filterSchedules);
+    }
+    
+    // تأثيرات للبطاقات
+    const cards = document.querySelectorAll('.stat-card, .content-section');
+    cards.forEach(card => {
+        card.addEventListener('mouseenter', function() {
+            this.style.transform = 'translateY(-5px)';
+            this.style.transition = 'all 0.3s ease';
+        });
+        
+        card.addEventListener('mouseleave', function() {
+            this.style.transform = 'translateY(0)';
+        });
+    });
+
+    // إدارة حالة التحميل للأزرار
+    const actionButtons = document.querySelectorAll('.btn-approve, .btn-export');
+    actionButtons.forEach(button => {
+        button.addEventListener('click', function(e) {
+            if (this.disabled) return;
+            
+            const originalText = this.innerHTML;
+            this.innerHTML = '<i class="fas fa-spinner fa-spin"></i> جاري المعالجة...';
+            this.disabled = true;
+            
+            // إعادة تعيين الزر بعد 5 ثواني في حالة عدم التحميل
+            setTimeout(() => {
+                if (this.disabled) {
+                    this.innerHTML = originalText;
+                    this.disabled = false;
+                }
+            }, 5000);
+        });
+    });
+
+    // تحسين تجربة المستخدم للجداول
+    const dataTables = document.querySelectorAll('.data-table');
+    dataTables.forEach(table => {
+        const rows = table.querySelectorAll('tbody tr');
+        rows.forEach(row => {
+            row.addEventListener('click', function(e) {
+                if (!e.target.closest('.action-buttons')) {
+                    rows.forEach(r => r.classList.remove('selected'));
+                    this.classList.add('selected');
+                }
+            });
+        });
+    });
+    
+    // إضافة سمة data-dept-id للصفوف
+    document.querySelectorAll('.department-info').forEach(dept => {
+        const deptName = dept.querySelector('.dept-name').textContent;
+        const deptRow = dept.closest('tr');
+        // يمكن إضافة منطق لاستخراج ID القسم من البيانات
+    });
+});
+</script>
+{% endblock %}

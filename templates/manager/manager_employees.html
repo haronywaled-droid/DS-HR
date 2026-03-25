@@ -1,0 +1,1882 @@
+<!DOCTYPE html>
+<html lang="ar" dir="rtl">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>موظفي القسم - نظام إدارة الموارد البشرية</title>
+    <link href="https://cdn.jsdelivr.net/npm/bootstrap@5.3.0/dist/css/bootstrap.min.css" rel="stylesheet">
+    <link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/bootstrap-icons@1.10.0/font/bootstrap-icons.css">
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.0.0/css/all.min.css">
+    <style>
+        :root {
+            --primary-green: #10b981;
+            --dark-green: #059669;
+            --light-green: #34d399;
+            --accent-green: #a7f3d0;
+            --gradient-primary: linear-gradient(135deg, #10b981 0%, #059669 100%);
+            --gradient-secondary: linear-gradient(135deg, #34d399 0%, #10b981 100%);
+            --gradient-dark: linear-gradient(135deg, #065f46 0%, #047857 100%);
+            --gradient-success: linear-gradient(135deg, #a7f3d0 0%, #6ee7b7 100%);
+            --header-height: 130px;
+        }
+        
+        * {
+            margin: 0;
+            padding: 0;
+            box-sizing: border-box;
+        }
+        
+        body {
+            font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif;
+            background: #f8fdf9;
+            min-height: 100vh;
+            overflow-x: hidden;
+            padding-top: var(--header-height);
+            color: #1a4731;
+        }
+        
+        /* Unified Navigation Bar */
+        .unified-nav {
+            background: var(--gradient-dark);
+            color: white;
+            position: fixed;
+            top: 0;
+            right: 0;
+            left: 0;
+            height: var(--header-height);
+            z-index: 1000;
+            box-shadow: 0 4px 20px rgba(5, 150, 105, 0.25);
+            border-bottom: 1px solid rgba(255, 255, 255, 0.1);
+        }
+        
+        .unified-nav-container {
+            display: flex;
+            flex-direction: column;
+            height: 100%;
+            padding: 0 1rem;
+        }
+        
+        .nav-top-section {
+            display: flex;
+            align-items: center;
+            justify-content: space-between;
+            height: 70px;
+            flex-shrink: 0;
+            padding: 0.5rem 0;
+        }
+        
+        .nav-bottom-section {
+            display: flex;
+            align-items: center;
+            justify-content: space-between;
+            height: 60px;
+            flex-shrink: 0;
+            border-top: 1px solid rgba(255, 255, 255, 0.15);
+            position: relative;
+        }
+        
+        .nav-brand-section {
+            display: flex;
+            align-items: center;
+            flex-shrink: 0;
+            min-width: 0;
+        }
+        
+        .logo-container {
+            width: 45px;
+            height: 45px;
+            background: var(--gradient-primary);
+            border-radius: 10px;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            box-shadow: 0 4px 12px rgba(16, 185, 129, 0.4);
+            margin-left: 0.5rem;
+            flex-shrink: 0;
+        }
+        
+        .welcome-section {
+            display: flex;
+            align-items: center;
+            flex-grow: 1;
+            justify-content: center;
+            color: white;
+            text-align: center;
+            min-width: 0;
+            overflow: hidden;
+        }
+        
+        .welcome-content {
+            min-width: 0;
+            overflow: hidden;
+        }
+        
+        .welcome-content h4 {
+            margin-bottom: 0.2rem;
+            font-weight: 600;
+            font-size: 1.1rem;
+            white-space: nowrap;
+            overflow: hidden;
+            text-overflow: ellipsis;
+        }
+        
+        .welcome-content p {
+            margin-bottom: 0;
+            font-size: 0.85rem;
+            opacity: 0.9;
+            white-space: nowrap;
+            overflow: hidden;
+            text-overflow: ellipsis;
+        }
+        
+        .nav-user-section {
+            display: flex;
+            align-items: center;
+            flex-shrink: 0;
+            min-width: 0;
+        }
+        
+        .nav-menu-section {
+            display: flex;
+            align-items: center;
+            flex-grow: 1;
+            height: 100%;
+            position: relative;
+            min-width: 0;
+        }
+        
+        .nav-menu-wrapper {
+            display: flex;
+            align-items: center;
+            height: 100%;
+            overflow-x: auto;
+            overflow-y: hidden;
+            scroll-behavior: smooth;
+            -webkit-overflow-scrolling: touch;
+            width: 100%;
+            padding: 0 0.5rem;
+            scrollbar-width: thin;
+            scrollbar-color: var(--primary-green) rgba(255, 255, 255, 0.1);
+            min-width: 0;
+        }
+        
+        /* Custom scrollbar for nav menu */
+        .nav-menu-wrapper::-webkit-scrollbar {
+            height: 6px;
+        }
+        
+        .nav-menu-wrapper::-webkit-scrollbar-track {
+            background: rgba(255, 255, 255, 0.1);
+            border-radius: 10px;
+        }
+        
+        .nav-menu-wrapper::-webkit-scrollbar-thumb {
+            background: var(--primary-green);
+            border-radius: 10px;
+        }
+        
+        .nav-menu-wrapper::-webkit-scrollbar-thumb:hover {
+            background: var(--light-green);
+        }
+        
+        .unified-nav .nav-link {
+            color: rgba(255, 255, 255, 0.9);
+            padding: 0.7rem 1.2rem;
+            margin: 0 0.2rem;
+            border-radius: 10px;
+            transition: all 0.3s ease;
+            font-weight: 500;
+            position: relative;
+            border: 1px solid transparent;
+            display: flex;
+            align-items: center;
+            text-decoration: none;
+            font-size: 0.9rem;
+            white-space: nowrap;
+            height: 80%;
+            flex-shrink: 0;
+            background: rgba(255, 255, 255, 0.05);
+            min-width: max-content;
+        }
+        
+        .unified-nav .nav-link:hover {
+            color: white;
+            background: rgba(255, 255, 255, 0.12);
+            border: 1px solid rgba(255, 255, 255, 0.2);
+            transform: translateY(-2px);
+            box-shadow: 0 4px 12px rgba(0, 0, 0, 0.15);
+        }
+        
+        .unified-nav .nav-link.active {
+            background: rgba(255, 255, 255, 0.15);
+            color: white;
+            border: 1px solid rgba(255, 255, 255, 0.25);
+            box-shadow: 0 4px 12px rgba(0, 0, 0, 0.2);
+        }
+        
+        .unified-nav .nav-link.active::after {
+            content: '';
+            position: absolute;
+            bottom: -10px;
+            right: 50%;
+            transform: translateX(50%);
+            width: 70%;
+            height: 3px;
+            background: var(--accent-green);
+            border-radius: 4px 4px 0 0;
+        }
+        
+        .nav-badge {
+            background: var(--accent-green);
+            color: #065f46;
+            padding: 0.2rem 0.4rem;
+            border-radius: 8px;
+            font-size: 0.65rem;
+            font-weight: bold;
+            margin-right: 0.3rem;
+            position: absolute;
+            top: 5px;
+            right: 5px;
+            box-shadow: 0 2px 4px rgba(0, 0, 0, 0.1);
+        }
+        
+        .nav-link-with-badge {
+            position: relative;
+        }
+        
+        .notification-badge {
+            position: absolute;
+            top: -5px;
+            right: -5px;
+            font-size: 0.7rem;
+            background: var(--gradient-secondary);
+            border: 2px solid white;
+            box-shadow: 0 2px 8px rgba(16, 185, 129, 0.4);
+        }
+        
+        .user-avatar {
+            width: 38px;
+            height: 38px;
+            background: var(--gradient-primary);
+            border-radius: 50%;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            color: white;
+            font-weight: bold;
+            font-size: 1rem;
+            box-shadow: 0 4px 10px rgba(16, 185, 129, 0.4);
+            transition: all 0.3s ease;
+            flex-shrink: 0;
+        }
+        
+        .user-avatar:hover {
+            transform: scale(1.08);
+            box-shadow: 0 6px 15px rgba(16, 185, 129, 0.5);
+        }
+        
+        .dropdown-menu {
+            background: white;
+            border: none;
+            border-radius: 12px;
+            box-shadow: 0 10px 30px rgba(16, 185, 129, 0.2);
+            overflow: hidden;
+            border: 1px solid rgba(16, 185, 129, 0.15);
+        }
+        
+        .dropdown-item {
+            padding: 0.8rem 1.2rem;
+            border-radius: 8px;
+            margin: 0.2rem 0.5rem;
+            transition: all 0.2s ease;
+            color: #065f46;
+        }
+        
+        .dropdown-item:hover {
+            background: rgba(16, 185, 129, 0.1);
+            color: #065f46;
+            transform: translateX(-5px);
+        }
+        
+        .nav-controls {
+            display: flex;
+            align-items: center;
+            position: absolute;
+            left: 0;
+            top: 0;
+            height: 100%;
+            background: linear-gradient(90deg, rgba(6, 95, 70, 0.9) 0%, transparent 100%);
+            padding: 0 0.5rem;
+            z-index: 5;
+        }
+        
+        .nav-prev, .nav-next {
+            background: rgba(255, 255, 255, 0.2);
+            border: 1px solid rgba(255, 255, 255, 0.3);
+            color: white;
+            width: 28px;
+            height: 28px;
+            border-radius: 50%;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            cursor: pointer;
+            transition: all 0.3s ease;
+            font-size: 0.8rem;
+            margin-left: 0.3rem;
+        }
+        
+        .nav-prev:hover, .nav-next:hover {
+            background: rgba(255, 255, 255, 0.3);
+            transform: scale(1.1);
+        }
+        
+        .nav-controls-right {
+            display: flex;
+            align-items: center;
+            position: absolute;
+            right: 0;
+            top: 0;
+            height: 100%;
+            background: linear-gradient(270deg, rgba(6, 95, 70, 0.9) 0%, transparent 100%);
+            padding: 0 0.5rem;
+            z-index: 5;
+        }
+        
+        /* Main Content */
+        .main-content {
+            min-height: 100vh;
+            background: transparent;
+            position: relative;
+        }
+        
+        /* Page Specific Styles */
+        .header-card {
+            background: var(--gradient-primary);
+            border: none;
+            border-radius: 20px;
+            color: white;
+            box-shadow: 0 15px 35px rgba(5, 150, 105, 0.2);
+        }
+        
+        .stats-card {
+            background: white;
+            border-radius: 15px;
+            padding: 20px;
+            text-align: center;
+            border: 1px solid rgba(16, 185, 129, 0.1);
+            transition: all 0.3s ease;
+            height: 100%;
+        }
+        
+        .stats-card:hover {
+            transform: translateY(-5px);
+            box-shadow: 0 10px 25px rgba(16, 185, 129, 0.15);
+        }
+        
+        .stats-value {
+            font-size: 2rem;
+            font-weight: 700;
+            color: var(--dark-green);
+            margin: 10px 0;
+        }
+        
+        .content-card {
+            background: white;
+            border-radius: 15px;
+            padding: 25px;
+            margin-bottom: 20px;
+            border: 1px solid rgba(16, 185, 129, 0.1);
+            box-shadow: 0 5px 15px rgba(0, 0, 0, 0.08);
+        }
+        
+        .employees-table {
+            width: 100%;
+            border-collapse: collapse;
+        }
+        
+        .employees-table th {
+            background: var(--gradient-primary);
+            color: white;
+            padding: 15px;
+            text-align: center;
+            font-weight: 600;
+        }
+        
+        .employees-table td {
+            padding: 15px;
+            border-bottom: 1px solid #e9ecef;
+            text-align: center;
+            vertical-align: middle;
+        }
+        
+        .badge-completed {
+            background: linear-gradient(135deg, #22c55e 0%, #16a34a 100%);
+        }
+        
+        .badge-pending {
+            background: linear-gradient(135deg, #f59e0b 0%, #d97706 100%);
+        }
+        
+        .badge-needs-update {
+            background: linear-gradient(135deg, #ef4444 0%, #dc2626 100%);
+        }
+        
+        .badge-not-started {
+            background: linear-gradient(135deg, #6b7280 0%, #4b5563 100%);
+        }
+        
+        .progress {
+            height: 15px;
+            border-radius: 10px;
+        }
+        
+        .progress-bar {
+            border-radius: 10px;
+            position: relative;
+        }
+        
+        .progress-text {
+            position: absolute;
+            left: 50%;
+            top: 50%;
+            transform: translate(-50%, -50%);
+            font-size: 10px;
+            font-weight: bold;
+            color: white;
+        }
+        
+        .avatar {
+            width: 40px;
+            height: 40px;
+            background: var(--gradient-primary);
+            border-radius: 50%;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            color: white;
+            font-weight: bold;
+            font-size: 16px;
+        }
+        
+        .btn-action {
+            border-radius: 10px;
+            padding: 8px 12px;
+            margin: 2px;
+        }
+        
+        .employee-progress-card {
+            background: white;
+            border-radius: 12px;
+            padding: 15px;
+            margin-bottom: 15px;
+            border: 1px solid rgba(16, 185, 129, 0.1);
+            transition: all 0.3s ease;
+            height: 100%;
+        }
+        
+        .employee-progress-card:hover {
+            transform: translateY(-3px);
+            box-shadow: 0 5px 15px rgba(16, 185, 129, 0.1);
+        }
+
+        .btn-form {
+            background: linear-gradient(135deg, #8b5cf6 0%, #7c3aed 100%);
+            color: white;
+            border: none;
+        }
+        
+        .btn-form:hover {
+            background: linear-gradient(135deg, #7c3aed 0%, #6d28d9 100%);
+            color: white;
+            transform: translateY(-2px);
+            box-shadow: 0 5px 15px rgba(139, 92, 246, 0.3);
+        }
+        
+        /* Filter and Pagination Styles */
+        .filters-card {
+            background: white;
+            border-radius: 15px;
+            padding: 20px;
+            margin-bottom: 20px;
+            border: 1px solid rgba(16, 185, 129, 0.1);
+            box-shadow: 0 5px 15px rgba(0, 0, 0, 0.08);
+        }
+        
+        .filter-group {
+            margin-bottom: 15px;
+        }
+        
+        .filter-label {
+            font-weight: 600;
+            margin-bottom: 8px;
+            color: #374151;
+        }
+        
+        .filter-select {
+            border-radius: 10px;
+            border: 1px solid #d1d5db;
+            padding: 10px 15px;
+            width: 100%;
+            background-color: #f9fafb;
+            transition: all 0.3s ease;
+        }
+        
+        .filter-select:focus {
+            border-color: var(--primary-green);
+            box-shadow: 0 0 0 3px rgba(16, 185, 129, 0.1);
+            outline: none;
+        }
+        
+        .pagination-container {
+            display: flex;
+            justify-content: center;
+            margin-top: 20px;
+            padding: 15px 0;
+        }
+        
+        .pagination {
+            display: flex;
+            list-style: none;
+            padding: 0;
+            margin: 0;
+        }
+        
+        .page-item {
+            margin: 0 5px;
+        }
+        
+        .page-link {
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            width: 40px;
+            height: 40px;
+            border-radius: 10px;
+            border: 1px solid #d1d5db;
+            background-color: white;
+            color: #374151;
+            text-decoration: none;
+            transition: all 0.3s ease;
+        }
+        
+        .page-link:hover {
+            background-color: #f3f4f6;
+            border-color: #9ca3af;
+        }
+        
+        .page-item.active .page-link {
+            background: var(--gradient-primary);
+            border-color: var(--primary-green);
+            color: white;
+        }
+        
+        .page-item.disabled .page-link {
+            color: #9ca3af;
+            background-color: #f9fafb;
+            border-color: #d1d5db;
+            cursor: not-allowed;
+        }
+        
+        .results-info {
+            text-align: center;
+            padding: 10px 0;
+            color: #6b7280;
+            font-size: 14px;
+        }
+        
+        .filter-reset-btn {
+            background: linear-gradient(135deg, #6b7280 0%, #4b5563 100%);
+            color: white;
+            border: none;
+            border-radius: 10px;
+            padding: 10px 20px;
+            transition: all 0.3s ease;
+        }
+        
+        .filter-reset-btn:hover {
+            background: linear-gradient(135deg, #4b5563 0%, #374151 100%);
+            color: white;
+            transform: translateY(-2px);
+            box-shadow: 0 5px 15px rgba(75, 85, 99, 0.3);
+        }
+        
+        .filter-apply-btn {
+            background: var(--gradient-primary);
+            color: white;
+            border: none;
+            border-radius: 10px;
+            padding: 10px 20px;
+            transition: all 0.3s ease;
+        }
+        
+        .filter-apply-btn:hover {
+            background: linear-gradient(135deg, #059669 0%, #047857 100%);
+            color: white;
+            transform: translateY(-2px);
+            box-shadow: 0 5px 15px rgba(5, 150, 105, 0.3);
+        }
+        
+        .sortable {
+            cursor: pointer;
+            position: relative;
+            padding-right: 20px !important;
+        }
+        
+        .sortable::after {
+            content: "↕";
+            position: absolute;
+            right: 5px;
+            top: 50%;
+            transform: translateY(-50%);
+            font-size: 12px;
+            opacity: 0.7;
+        }
+        
+        .sortable.asc::after {
+            content: "↑";
+        }
+        
+        .sortable.desc::after {
+            content: "↓";
+        }
+        
+        /* Mobile Menu Button */
+        .mobile-menu-btn {
+            display: none;
+            background: transparent;
+            border: 1px solid rgba(255, 255, 255, 0.3);
+            color: white;
+            width: 40px;
+            height: 40px;
+            border-radius: 8px;
+            align-items: center;
+            justify-content: center;
+            cursor: pointer;
+            transition: all 0.3s ease;
+            margin-right: 0.5rem;
+        }
+        
+        .mobile-menu-btn:hover {
+            background: rgba(255, 255, 255, 0.1);
+        }
+        
+        /* Mobile Menu */
+        .mobile-nav-menu {
+            position: fixed;
+            top: var(--header-height);
+            right: 0;
+            left: 0;
+            background: var(--gradient-dark);
+            z-index: 999;
+            padding: 1rem;
+            box-shadow: 0 4px 20px rgba(0, 0, 0, 0.2);
+            display: none;
+            flex-direction: column;
+            max-height: calc(100vh - var(--header-height));
+            overflow-y: auto;
+        }
+        
+        .mobile-nav-menu.active {
+            display: flex;
+        }
+        
+        .mobile-nav-link {
+            color: white;
+            padding: 1rem;
+            margin: 0.2rem 0;
+            border-radius: 8px;
+            text-decoration: none;
+            display: flex;
+            align-items: center;
+            transition: all 0.3s ease;
+            border: 1px solid transparent;
+            position: relative;
+        }
+        
+        .mobile-nav-link:hover,
+        .mobile-nav-link.active {
+            background: rgba(255, 255, 255, 0.1);
+            border: 1px solid rgba(255, 255, 255, 0.2);
+        }
+        
+        .mobile-nav-link i {
+            margin-left: 0.5rem;
+            width: 20px;
+            text-align: center;
+        }
+        
+        /* Mobile Responsive */
+        @media (max-width: 992px) {
+            :root {
+                --header-height: 100px;
+            }
+            
+            .unified-nav {
+                height: auto;
+                min-height: var(--header-height);
+            }
+            
+            .unified-nav-container {
+                padding: 0.5rem;
+            }
+            
+            .nav-top-section {
+                height: 60px;
+                flex-wrap: nowrap;
+                padding: 0;
+            }
+            
+            .nav-brand-section {
+                order: 1;
+                width: auto;
+                flex: 0 0 auto;
+            }
+            
+            .welcome-section {
+                order: 2;
+                flex: 1;
+                justify-content: flex-start;
+                padding: 0 0.5rem;
+                display: none;
+            }
+            
+            .nav-user-section {
+                order: 3;
+                width: auto;
+                flex: 0 0 auto;
+                justify-content: flex-end;
+            }
+            
+            .nav-bottom-section {
+                display: none;
+            }
+            
+            .mobile-menu-btn {
+                display: flex;
+            }
+            
+            .welcome-content h4 {
+                font-size: 0.9rem;
+            }
+            
+            .welcome-content p {
+                display: none;
+            }
+            
+            #live-clock {
+                display: none;
+            }
+            
+            body {
+                padding-top: var(--header-height);
+            }
+            
+            .nav-controls, .nav-controls-right {
+                display: none;
+            }
+            
+            /* Mobile specific fixes */
+            .nav-user-section .dropdown .btn {
+                padding: 0.3rem 0.6rem;
+            }
+            
+            .user-avatar {
+                width: 32px;
+                height: 32px;
+                font-size: 0.9rem;
+                margin-left: 0.3rem;
+            }
+            
+            .nav-brand-section .d-none.d-md-block {
+                display: none !important;
+            }
+        }
+        
+        @media (max-width: 768px) {
+            :root {
+                --header-height: 80px;
+            }
+            
+            .nav-top-section {
+                height: 50px;
+            }
+            
+            .logo-container {
+                width: 35px;
+                height: 35px;
+            }
+            
+            .logo-container i {
+                font-size: 1rem;
+            }
+            
+            .user-avatar {
+                width: 32px;
+                height: 32px;
+                font-size: 0.9rem;
+            }
+            
+            .mobile-menu-btn {
+                width: 35px;
+                height: 35px;
+            }
+            
+            .notification-badge {
+                font-size: 0.6rem;
+                top: -3px;
+                right: -3px;
+            }
+        }
+        
+        @media (max-width: 576px) {
+            :root {
+                --header-height: 70px;
+            }
+            
+            .nav-top-section {
+                height: 45px;
+            }
+            
+            .logo-container {
+                width: 30px;
+                height: 30px;
+                margin-left: 0.3rem;
+            }
+            
+            .user-avatar {
+                width: 28px;
+                height: 28px;
+                font-size: 0.8rem;
+            }
+            
+            .notification-badge {
+                font-size: 0.6rem;
+                top: -3px;
+                right: -3px;
+            }
+            
+            .btn {
+                padding: 0.3rem 0.6rem;
+                font-size: 0.8rem;
+            }
+            
+            .mobile-menu-btn {
+                width: 32px;
+                height: 32px;
+                margin-right: 0.3rem;
+            }
+            
+            .nav-user-section .dropdown .btn {
+                padding: 0.2rem 0.5rem;
+            }
+            
+            .dropdown .btn-outline-light {
+                font-size: 0.75rem;
+            }
+        }
+
+        /* Custom Scrollbar for whole page */
+        ::-webkit-scrollbar {
+            width: 8px;
+            height: 8px;
+        }
+        
+        ::-webkit-scrollbar-track {
+            background: rgba(16, 185, 129, 0.1);
+            border-radius: 10px;
+        }
+        
+        ::-webkit-scrollbar-thumb {
+            background: var(--gradient-primary);
+            border-radius: 10px;
+        }
+        
+        ::-webkit-scrollbar-thumb:hover {
+            background: var(--dark-green);
+        }
+        
+        /* Green accent elements */
+        .text-success {
+            color: var(--primary-green) !important;
+        }
+        
+        .bg-success {
+            background-color: var(--primary-green) !important;
+        }
+        
+        #live-clock {
+            font-size: 0.9rem;
+            background: rgba(255, 255, 255, 0.1);
+            padding: 0.3rem 0.7rem;
+            border-radius: 20px;
+            border: 1px solid rgba(255, 255, 255, 0.2);
+            flex-shrink: 0;
+        }
+        
+        /* Ensure text doesn't overflow */
+        .text-truncate {
+            overflow: hidden;
+            text-overflow: ellipsis;
+            white-space: nowrap;
+        }
+    </style>
+</head>
+<body>
+    <div class="container-fluid p-0">
+        <!-- Unified Navigation Bar -->
+        <nav class="unified-nav">
+            <div class="unified-nav-container">
+                <!-- Top Section: Brand, Welcome, User -->
+                <div class="nav-top-section">
+                    <!-- Brand Section -->
+                    <div class="nav-brand-section">
+                        <div class="logo-container">
+                            <i class="bi bi-person-gear text-white"></i>
+                        </div>
+                        <div class="d-none d-md-block ms-2">
+                            <h6 class="text-white mb-0 fw-bold text-truncate">نظام الموارد البشرية</h6>
+                            <small class="text-white-50">لوحة المدير</small>
+                        </div>
+                    </div>
+                    
+                    <!-- Welcome Section - Hidden on mobile -->
+                    <div class="welcome-section d-none d-lg-flex">
+                        <div class="welcome-content">
+                            <h4 class="text-white mb-1 text-truncate">مرحباً، {{ current_user.name }}</h4>
+                            <p class="text-white-50 mb-0 text-truncate">نظام الموارد البشرية - لوحة تحكم المدير</p>
+                        </div>
+                        <div class="text-white fw-bold me-3" id="live-clock">
+                            <i class="bi bi-clock me-2"></i>
+                            جاري التحميل...
+                        </div>
+                    </div>
+                    
+                    <!-- User Section -->
+                    <div class="nav-user-section">
+                        <!-- Notifications -->
+                        <div class="dropdown me-2">
+                            <button class="btn btn-light position-relative rounded-pill" 
+                                    type="button" data-bs-toggle="dropdown" 
+                                    style="padding: 0.4rem 0.8rem; border: 1px solid rgba(255, 255, 255, 0.3); background: rgba(255, 255, 255, 0.15); color: white;">
+                                <i class="bi bi-bell"></i>
+                                {% if notifications and notifications|length > 0 %}
+                                <span class="notification-badge badge">{{ notifications|length }}</span>
+                                {% endif %}
+                            </button>
+                            <ul class="dropdown-menu dropdown-menu-end">
+                                {% if notifications and notifications|length > 0 %}
+                                    {% for notification in notifications[:3] %}
+                                    <li>
+                                        <a class="dropdown-item" href="#">
+                                            <div class="d-flex align-items-start">
+                                                <div class="bg-success bg-opacity-10 rounded-circle p-2 me-3">
+                                                    <i class="bi bi-bell text-success"></i>
+                                                </div>
+                                                <div>
+                                                    <strong class="d-block text-dark">{{ notification.title }}</strong>
+                                                    <small class="text-muted">{{ notification.message|truncate(30) }}</small>
+                                                </div>
+                                            </div>
+                                        </a>
+                                    </li>
+                                    {% endfor %}
+                                    <li><hr class="dropdown-divider my-2"></li>
+                                {% else %}
+                                    <li>
+                                        <a class="dropdown-item text-muted text-center" href="#">
+                                            <i class="bi bi-bell-slash fs-4 d-block mb-2 text-success"></i>
+                                            لا توجد إشعارات جديدة
+                                        </a>
+                                    </li>
+                                    <li><hr class="dropdown-divider my-2"></li>
+                                {% endif %}
+                                <li>
+                                    <a class="dropdown-item text-center text-success fw-bold" href="{{ url_for('notifications') }}">
+                                        <i class="bi bi-arrow-left me-2"></i>
+                                        عرض جميع الإشعارات
+                                    </a>
+                                </li>
+                            </ul>
+                        </div>
+                        
+                        <!-- User Menu -->
+                        <div class="dropdown">
+                            <button class="btn btn-outline-light dropdown-toggle rounded-pill d-flex align-items-center" 
+                                    type="button" data-bs-toggle="dropdown"
+                                    style="padding: 0.4rem 0.9rem; border: 1px solid rgba(255, 255, 255, 0.4);">
+                                <div class="user-avatar me-2">
+                                    {{ current_user.name[0] }}
+                                </div>
+                                <span class="d-none d-md-inline text-truncate" style="max-width: 80px;">{{ current_user.username }}</span>
+                            </button>
+                            <ul class="dropdown-menu dropdown-menu-end">
+                                <li>
+                                    <a class="dropdown-item" href="{{ url_for('notifications') }}">
+                                        <i class="bi bi-bell me-2 text-success"></i>الإشعارات
+                                    </a>
+                                </li>
+                                <li>
+                                    <a class="dropdown-item" href="{{ url_for('edit_user', user_id=current_user.id) }}">
+                                        <i class="bi bi-key me-2 text-success"></i>تغير كلمة المرور
+                                    </a>
+                                </li>
+                                <li><hr class="dropdown-divider my-2"></li>
+                                <li>
+                                    <a class="dropdown-item text-danger fw-bold" href="{{ url_for('logout') }}">
+                                        <i class="bi bi-box-arrow-right me-2"></i>تسجيل الخروج
+                                    </a>
+                                </li>
+                            </ul>
+                        </div>
+                        
+                        <!-- Mobile Menu Button -->
+                        <button class="mobile-menu-btn d-lg-none" id="mobileMenuBtn">
+                            <i class="bi bi-list"></i>
+                        </button>
+                    </div>
+                </div>
+                
+                <!-- Bottom Section: Navigation Menu - Hidden on mobile -->
+                <!-- Bottom Section: Navigation Menu - Hidden on mobile -->
+                <div class="nav-bottom-section d-none d-lg-flex">
+                    <div class="nav-controls">
+
+                    </div>
+                    
+                    <div class="nav-menu-section">
+                        <div class="nav-menu-wrapper">
+                            <a class="nav-link" href="{{ url_for('manager_dashboard') }}">
+                                <i class="bi bi-speedometer2 me-2"></i>
+                                لوحة التحكم
+                            </a>
+                            <a class="nav-link active" href="{{ url_for('manager_employees') }}">
+                                <i class="bi bi-people me-2"></i>
+                                موظفي القسم
+                            </a>
+                            <a class="nav-link" href="{{ url_for('manager_schedules') }}">
+                                <i class="bi bi-calendar-check me-2"></i>
+                                جدولة الموظفين
+                            </a>
+                            <a class="nav-link nav-link-with-badge" href="{{ url_for('messages_inbox') }}">
+                                <i class="bi bi-envelope me-2"></i>
+                                الرسائل
+                                {% if unread_count and unread_count > 0 %}
+                                <span class="nav-badge">{{ unread_count }}</span>
+                                {% endif %}
+                            </a>
+                            <a class="nav-link nav-link-with-badge" href="{{ url_for('manager_leave_requests') }}">
+                                <i class="bi bi-calendar-minus me-2"></i>
+                                طلبات الإجازات
+                                {% if stats and stats.pending_leaves > 0 %}
+                                <span class="nav-badge">{{ stats.pending_leaves }}</span>
+                                {% endif %}
+                            </a>
+                            <a class="nav-link nav-link-with-badge" href="{{ url_for('manager_permission_requests') }}">
+                                <i class="bi bi-clock me-2"></i>
+                                طلبات الإذونات
+                                {% if stats and stats.pending_permissions > 0 %}
+                                <span class="nav-badge">{{ stats.pending_permissions }}</span>
+                                {% endif %}
+                            </a>
+                            <a class="nav-link nav-link-with-badge" href="{{ url_for('user_salary_slips') }}">
+                                <i class="bi bi-file-earmark-text me-2"></i>
+                                شيت المرتب
+                                {% if new_salary_slips and new_salary_slips > 0 %}
+                                <span class="nav-badge">{{ new_salary_slips }}</span>
+                                {% endif %}
+                            </a>
+                            <a class="nav-link nav-link-with-badge" href="{{ url_for('manager_advance_requests') }}">
+                                <i class="bi bi-cash-coin me-2"></i>
+                                طلبات السلف
+                                {% if stats and stats.pending_advances > 0 %}
+                                <span class="nav-badge">{{ stats.pending_advances }}</span>
+                                {% endif %}
+                            </a>
+                            <a class="nav-link" href="{{ url_for('manager_rewards_penalties') }}">
+                                <i class="bi bi-award me-2"></i>
+                                المكافآت والخصومات
+                            </a>
+                            <a class="nav-link" href="{{ url_for('manager_excel_data') }}">
+                                <i class="fas fa-file-excel me-2"></i>
+                                الحضور والانصراف
+                            </a>
+                            {% if current_user.is_admin %}
+                            <a class="nav-link text-warning" href="{{ url_for('admin_dashboard') }}">
+                                <i class="bi bi-person-shield me-2"></i>
+                                لوحة المسؤول
+                            </a>
+                            {% endif %}
+                        </div>
+                    </div>
+                    
+                    <div class="nav-controls-right">
+
+                    </div>
+                </div>
+            </div>
+        </nav>
+
+        <!-- Mobile Navigation Menu -->
+        <!-- Mobile Navigation Menu -->
+        <div class="mobile-nav-menu" id="mobileNavMenu">
+            <a class="mobile-nav-link" href="{{ url_for('manager_dashboard') }}">
+                <i class="bi bi-speedometer2"></i>
+                لوحة التحكم
+            </a>
+            <a class="mobile-nav-link active" href="{{ url_for('manager_employees') }}">
+                <i class="bi bi-people"></i>
+                موظفي القسم
+            </a>
+            <a class="mobile-nav-link" href="{{ url_for('manager_schedules') }}">
+                <i class="bi bi-calendar-check"></i>
+                جدولة الموظفين
+            </a>
+            <a class="mobile-nav-link nav-link-with-badge" href="{{ url_for('messages_inbox') }}">
+                <i class="bi bi-envelope"></i>
+                الرسائل
+                {% if unread_count and unread_count > 0 %}
+                <span class="nav-badge">{{ unread_count }}</span>
+                {% endif %}
+            </a>
+            <a class="mobile-nav-link" href="{{ url_for('manager_leave_requests') }}">
+                <i class="bi bi-calendar-minus"></i>
+                طلبات الإجازات
+                {% if stats and stats.pending_leaves > 0 %}
+                <span class="nav-badge">{{ stats.pending_leaves }}</span>
+                {% endif %}
+            </a>
+            <a class="mobile-nav-link" href="{{ url_for('manager_permission_requests') }}">
+                <i class="bi bi-clock"></i>
+                طلبات الإذونات
+                {% if stats and stats.pending_permissions > 0 %}
+                <span class="nav-badge">{{ stats.pending_permissions }}</span>
+                {% endif %}
+            </a>
+            <a class="mobile-nav-link" href="{{ url_for('user_salary_slips') }}">
+                <i class="bi bi-file-earmark-text"></i>
+                شيت المرتب
+                {% if new_salary_slips and new_salary_slips > 0 %}
+                <span class="nav-badge">{{ new_salary_slips }}</span>
+                {% endif %}
+            </a>
+            <a class="mobile-nav-link" href="{{ url_for('manager_advance_requests') }}">
+                <i class="bi bi-cash-coin"></i>
+                طلبات السلف
+                {% if stats and stats.pending_advances > 0 %}
+                <span class="nav-badge">{{ stats.pending_advances }}</span>
+                {% endif %}
+            </a>
+            <a class="mobile-nav-link" href="{{ url_for('manager_rewards_penalties') }}">
+                <i class="bi bi-award"></i>
+                المكافآت والخصومات
+            </a>
+            <a class="mobile-nav-link" href="{{ url_for('manager_excel_data') }}">
+                <i class="fas fa-file-excel me-2"></i>
+                الحضور والانصراف
+            </a>
+            {% if current_user.is_admin %}
+            <a class="mobile-nav-link text-warning" href="{{ url_for('admin_dashboard') }}">
+                <i class="bi bi-person-shield"></i>
+                لوحة المسؤول
+            </a>
+            {% endif %}
+        </div>
+
+        <!-- Main Content -->
+        <main class="main-content">
+            <!-- Page Content -->
+            <div class="container py-4">
+                <!-- Flash messages -->
+                {% with messages = get_flashed_messages() %}
+                    {% if messages %}
+                        {% for message in messages %}
+                            <div class="alert alert-success alert-dismissible fade show mb-4" role="alert">
+                                <div class="d-flex align-items-center">
+                                    <i class="bi bi-check-circle me-2 fs-5"></i>
+                                    <div class="flex-grow-1">{{ message }}</div>
+                                    <button type="button" class="btn-close" data-bs-dismiss="alert"></button>
+                                </div>
+                            </div>
+                        {% endfor %}
+                    {% endif %}
+                {% endwith %}
+                
+                <!-- Welcome Card for Mobile -->
+                <div class="card p-3 d-lg-none mb-4">
+                    <div class="d-flex justify-content-between align-items-center">
+                        <div>
+                            <h4 class="text-success mb-1">مرحباً، {{ current_user.name }}</h4>
+                            <p class="text-muted mb-0">نظام الموارد البشرية - لوحة تحكم المدير</p>
+                        </div>
+                        <div class="text-success fw-bold" id="mobile-clock">
+                            <i class="bi bi-clock me-2"></i>
+                            جاري التحميل...
+                        </div>
+                    </div>
+                </div>
+
+                <!-- Filters Section -->
+                <div class="filters-card">
+                    <div class="row">
+                        <div class="col-md-3">
+                            <div class="filter-group">
+                                <label class="filter-label">حالة البيانات</label>
+                                <select class="filter-select" id="status-filter">
+                                    <option value="all">جميع الحالات</option>
+                                    <option value="completed">مكتمل</option>
+                                    <option value="pending">غير مكتمل</option>
+                                    <option value="needs-update">يحتاج تحديث</option>
+                                    <option value="not-started">لم يبدأ</option>
+                                </select>
+                            </div>
+                        </div>
+                        <div class="col-md-3">
+                            <div class="filter-group">
+                                <label class="filter-label">نسبة الإكتمال</label>
+                                <select class="filter-select" id="completion-filter">
+                                    <option value="all">جميع النسب</option>
+                                    <option value="0-25">0% - 25%</option>
+                                    <option value="26-50">26% - 50%</option>
+                                    <option value="51-75">51% - 75%</option>
+                                    <option value="76-99">76% - 99%</option>
+                                    <option value="100">100% مكتمل</option>
+                                </select>
+                            </div>
+                        </div>
+                        <div class="col-md-6">
+                            <div class="filter-group">
+                                <label class="filter-label">البحث بالاسم</label>
+                                <input type="text" class="filter-select" id="search-filter" placeholder="ابحث باسم الموظف...">
+                            </div>
+                        </div>
+                    </div>
+                    <div class="row mt-3">
+                        <div class="col-md-6">
+                            <button class="filter-reset-btn w-100" id="reset-filters">
+                                <i class="fas fa-redo me-2"></i>إعادة تعيين الفلاتر
+                            </button>
+                        </div>
+                        <div class="col-md-6">
+                            <button class="filter-apply-btn w-100" id="apply-filters">
+                                <i class="fas fa-filter me-2"></i>تطبيق الفلاتر
+                            </button>
+                        </div>
+                    </div>
+                </div>
+
+                <!-- Employees Table -->
+                <div class="content-card">
+                    <div class="card-header bg-transparent border-0 pb-3 d-flex justify-content-between align-items-center">
+                        <h5 class="card-title mb-0 fw-bold">
+                            <i class="fas fa-list me-2"></i>
+                            قائمة الموظفين
+                        </h5>
+                        <div class="d-flex align-items-center">
+                            <div class="me-3">
+                                <select class="filter-select" id="rows-per-page" style="width: auto;">
+                                    <option value="5">5 صفوف</option>
+                                    <option value="10" selected>10 صفوف</option>
+                                    <option value="20">20 صفوف</option>
+                                    <option value="50">50 صفوف</option>
+                                </select>
+                            </div>
+                        </div>
+                    </div>
+                    <div class="card-body p-0">
+                        <div class="table-responsive">
+                            <table class="employees-table table table-hover">
+                                <thead>
+                                    <tr>
+                                        <th class="sortable" data-sort="name">الاسم</th>
+                                        <th class="sortable" data-sort="username">اسم المستخدم</th>
+                                        <th class="sortable" data-sort="email">البريد الإلكتروني</th>
+                                        <th class="sortable" data-sort="completion">نسبة إكمال البيانات</th>
+                                        <th class="sortable" data-sort="last_updated">آخر تحديث</th>
+                                        <th>الحالة</th>
+                                        <th>الإجراءات</th>
+                                    </tr>
+                                </thead>
+                                <tbody id="employees-table-body">
+                                    {% for employee in employees %}
+                                    <tr data-employee-id="{{ employee.id }}" 
+                                        data-status="{% if employee.employee_data and employee.employee_data.needs_update %}needs-update{% elif employee.employee_data and employee.employee_data.completion_percentage == 100 %}completed{% elif employee.employee_data and employee.employee_data.completion_percentage > 0 %}pending{% else %}not-started{% endif %}" 
+                                        data-completion="{{ employee.employee_data.completion_percentage if employee.employee_data else 0 }}">
+                                        <td>
+                                            <div class="d-flex align-items-center">
+                                                <div class="avatar me-3">
+                                                    {{ employee.name[0] }}
+                                                </div>
+                                                <div>
+                                                    <h6 class="mb-0 fw-bold">{{ employee.name }}</h6>
+                                                </div>
+                                            </div>
+                                        </td>
+                                        <td class="fw-medium">{{ employee.username }}</td>
+                                        <td>
+                                            {% if employee.employee_data and employee.employee_data.email %}
+                                                <span class="text-dark">{{ employee.employee_data.email }}</span>
+                                            {% else %}
+                                                <span class="text-muted">غير متوفر</span>
+                                            {% endif %}
+                                        </td>
+                                        <td style="min-width: 150px;">
+                                            {% if employee.employee_data %}
+                                                <div class="progress mb-2">
+                                                    <div class="progress-bar {% if employee.employee_data.completion_percentage == 100 %}bg-success{% elif employee.employee_data.completion_percentage > 50 %}bg-warning{% else %}bg-danger{% endif %}" 
+                                                         style="width: {{ employee.employee_data.completion_percentage }}%">
+                                                        <span class="progress-text">{{ employee.employee_data.completion_percentage }}%</span>
+                                                    </div>
+                                                </div>
+                                                <small class="text-muted">{{ employee.employee_data.completion_percentage }}%</small>
+                                            {% else %}
+                                                <span class="badge badge-not-started">0%</span>
+                                            {% endif %}
+                                        </td>
+                                        <td>
+                                            {% if employee.employee_data and employee.employee_data.last_updated %}
+                                                <span class="text-success">
+                                                    <i class="fas fa-check-circle me-1"></i>
+                                                    {{ employee.employee_data.last_updated.strftime('%Y-%m-%d') }}
+                                                </span>
+                                            {% else %}
+                                                <span class="text-muted">
+                                                    <i class="fas fa-times-circle me-1"></i>
+                                                    لم يتم التحديث
+                                                </span>
+                                            {% endif %}
+                                        </td>
+                                        <td>
+                                            {% if employee.employee_data and employee.employee_data.needs_update %}
+                                                <span class="badge badge-needs-update">
+                                                    <i class="fas fa-exclamation-triangle me-1"></i>
+                                                    يحتاج تحديث
+                                                </span>
+                                            {% elif employee.employee_data and employee.employee_data.completion_percentage == 100 %}
+                                                <span class="badge badge-completed">
+                                                    <i class="fas fa-check-circle me-1"></i>
+                                                    مكتمل
+                                                </span>
+                                            {% elif employee.employee_data and employee.employee_data.completion_percentage > 0 %}
+                                                <span class="badge badge-pending">
+                                                    <i class="fas fa-clock me-1"></i>
+                                                    غير مكتمل
+                                                </span>
+                                            {% else %}
+                                                <span class="badge badge-not-started">
+                                                    <i class="fas fa-times-circle me-1"></i>
+                                                    لم يبدأ
+                                                </span>
+                                            {% endif %}
+                                        </td>
+                                        <td>
+                                            <div class="btn-group">
+                                                <!-- New Form Action Button -->
+                                                <a href="{{ url_for('user_form', user_id=employee.id) }}" 
+                                                   class="btn btn-form btn-action" 
+                                                   title="عرض وتعديل بيانات النموذج">
+                                                    <i class="fas fa-user-edit"></i>
+                                                </a>
+                                                
+                                                {% if employee.employee_data %}
+                                                <a href="{{ url_for('view_user_data', user_id=employee.id) }}" 
+                                                   class="btn btn-outline-info btn-action" title="عرض البيانات">
+                                                    <i class="fas fa-eye"></i>
+                                                </a>
+                                                {% endif %}
+                                                <a href="{{ url_for('request_data_update', user_id=employee.id) }}" 
+                                                   class="btn btn-outline-warning btn-action" title="طلب تحديث البيانات"
+                                                   onclick="return confirm('هل تريد إرسال طلب تحديث البيانات لهذا الموظف؟')">
+                                                    <i class="fas fa-sync-alt"></i>
+                                                </a>
+                                                {% if employee.employee_data %}
+                                                <a href="{{ url_for('export_user_data', user_id=employee.id) }}" 
+                                                   class="btn btn-outline-success btn-action" title="تصدير البيانات">
+                                                    <i class="fas fa-download"></i>
+                                                </a>
+                                                {% endif %}
+                                            </div>
+                                        </td>
+                                    </tr>
+                                    {% endfor %}
+                                </tbody>
+                            </table>
+                        </div>
+                        
+                        <!-- Pagination and Results Info -->
+                        <div class="results-info" id="results-info">
+                            عرض 1 إلى {{ employees|length }} من أصل {{ employees|length }} موظف
+                        </div>
+                        <div class="pagination-container">
+                            <ul class="pagination" id="pagination">
+                                <!-- سيتم تعبئة هذا من خلال JavaScript -->
+                            </ul>
+                        </div>
+                    </div>
+                </div>
+
+                <!-- Employee Progress Summary -->
+                <div class="content-card mt-4">
+                    <div class="card-header bg-transparent border-0 pb-3">
+                        <h5 class="card-title mb-0 fw-bold">
+                            <i class="fas fa-chart-bar me-2"></i>
+                            ملخص تقدم الموظفين
+                        </h5>
+                    </div>
+                    <div class="card-body">
+                        <div class="row" id="progress-cards-container">
+                            {% for employee in employees if employee.employee_data %}
+                            <div class="col-md-6 col-lg-4 mb-3">
+                                <div class="employee-progress-card">
+                                    <div class="d-flex justify-content-between align-items-center mb-2">
+                                        <h6 class="card-title mb-0 fw-bold">{{ employee.name }}</h6>
+                                        <span class="badge {% if employee.employee_data.completion_percentage == 100 %}badge-completed{% else %}badge-pending{% endif %}">
+                                            {{ employee.employee_data.completion_percentage }}%
+                                        </span>
+                                    </div>
+                                    <div class="progress mb-2">
+                                        <div class="progress-bar {% if employee.employee_data.completion_percentage == 100 %}bg-success{% elif employee.employee_data.completion_percentage > 50 %}bg-warning{% else %}bg-danger{% endif %}" 
+                                             style="width: {{ employee.employee_data.completion_percentage }}%">
+                                        </div>
+                                    </div>
+                                    <div class="d-flex justify-content-between align-items-center">
+                                        <small class="text-muted">
+                                            آخر تحديث: {{ employee.employee_data.last_updated.strftime('%Y-%m-%d') if employee.employee_data.last_updated else 'غير متوفر' }}
+                                        </small>
+                                        {% if employee.employee_data.needs_update %}
+                                        <span class="badge badge-needs-update">يحتاج تحديث</span>
+                                        {% endif %}
+                                    </div>
+                                    <!-- Add form action to progress cards -->
+                                    <div class="mt-3">
+                                        <a href="{{ url_for('user_form', user_id=employee.id) }}" 
+                                           class="btn btn-form btn-sm w-100">
+                                            <i class="fas fa-user-edit me-1"></i>
+                                            إدارة النموذج
+                                        </a>
+                                    </div>
+                                </div>
+                            </div>
+                            {% endfor %}
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </main>
+    </div>
+
+    <script src="https://cdn.jsdelivr.net/npm/bootstrap@5.3.0/dist/js/bootstrap.bundle.min.js"></script>
+    <script>
+    // Global variables
+    let currentPage = 1;
+    let rowsPerPage = 10;
+    let currentSort = { column: 'name', direction: 'asc' };
+    let currentFilters = {
+        status: 'all',
+        completion: 'all',
+        search: ''
+    };
+
+    function requestAllUpdates() {
+        if (confirm('هل تريد إرسال طلب تحديث البيانات لجميع الموظفين؟')) {
+            // This would need to be implemented in the backend
+            alert('سيتم إرسال طلبات التحديث لجميع الموظفين');
+            return true;
+        }
+        return false;
+    }
+
+    // Initialize the page
+    document.addEventListener('DOMContentLoaded', function() {
+        // Mobile menu functionality
+        const mobileMenuBtn = document.getElementById('mobileMenuBtn');
+        const mobileNavMenu = document.getElementById('mobileNavMenu');
+        
+        if (mobileMenuBtn && mobileNavMenu) {
+            mobileMenuBtn.addEventListener('click', function() {
+                mobileNavMenu.classList.toggle('active');
+            });
+            
+            // Close mobile menu when clicking outside
+            document.addEventListener('click', function(event) {
+                if (!mobileMenuBtn.contains(event.target) && !mobileNavMenu.contains(event.target)) {
+                    mobileNavMenu.classList.remove('active');
+                }
+            });
+        }
+
+        // Real-time clock
+        function updateClock() {
+            const now = new Date();
+            const timeString = now.toLocaleTimeString('ar-EG');
+            const dateString = now.toLocaleDateString('ar-EG', {
+                weekday: 'long',
+                year: 'numeric',
+                month: 'long',
+                day: 'numeric'
+            });
+            
+            const clockElement = document.getElementById('live-clock');
+            const mobileClockElement = document.getElementById('mobile-clock');
+            
+            if (clockElement) {
+                clockElement.innerHTML = `
+                    <i class="bi bi-clock me-2"></i>
+                    ${timeString}
+                    <small class="text-white-50 ms-2 d-none d-md-inline">${dateString}</small>
+                `;
+            }
+            
+            if (mobileClockElement) {
+                mobileClockElement.innerHTML = `
+                    <i class="bi bi-clock me-2"></i>
+                    ${timeString}
+                `;
+            }
+        }
+        
+        updateClock();
+        setInterval(updateClock, 1000);
+        
+        // Set up event listeners
+        setupEventListeners();
+        
+        // Apply initial pagination
+        applyPagination();
+        
+        // Initialize sorting
+        initializeSorting();
+    });
+
+    // Set up event listeners
+    function setupEventListeners() {
+        // Rows per page change
+        document.getElementById('rows-per-page').addEventListener('change', function() {
+            rowsPerPage = parseInt(this.value);
+            currentPage = 1;
+            applyPagination();
+        });
+        
+        // Filter buttons
+        document.getElementById('apply-filters').addEventListener('click', applyFilters);
+        document.getElementById('reset-filters').addEventListener('click', resetFilters);
+        
+        // Search input (apply on enter)
+        document.getElementById('search-filter').addEventListener('keyup', function(event) {
+            if (event.key === 'Enter') {
+                applyFilters();
+            }
+        });
+    }
+
+    // Apply filters
+    function applyFilters() {
+        currentFilters = {
+            status: document.getElementById('status-filter').value,
+            completion: document.getElementById('completion-filter').value,
+            search: document.getElementById('search-filter').value.toLowerCase()
+        };
+        
+        currentPage = 1;
+        applyPagination();
+        updateStatistics();
+    }
+
+    // Reset filters
+    function resetFilters() {
+        document.getElementById('status-filter').value = 'all';
+        document.getElementById('completion-filter').value = 'all';
+        document.getElementById('search-filter').value = '';
+        
+        applyFilters();
+    }
+
+    // Initialize sorting
+    function initializeSorting() {
+        const sortableHeaders = document.querySelectorAll('.sortable');
+        
+        sortableHeaders.forEach(header => {
+            header.addEventListener('click', function() {
+                const column = this.getAttribute('data-sort');
+                
+                // Update sort direction
+                if (currentSort.column === column) {
+                    currentSort.direction = currentSort.direction === 'asc' ? 'desc' : 'asc';
+                } else {
+                    currentSort.column = column;
+                    currentSort.direction = 'asc';
+                }
+                
+                // Update UI
+                sortableHeaders.forEach(h => {
+                    h.classList.remove('asc', 'desc');
+                });
+                
+                this.classList.add(currentSort.direction);
+                
+                // Apply sorting and pagination
+                applyPagination();
+            });
+        });
+    }
+
+    // Apply pagination
+    function applyPagination() {
+        const rows = Array.from(document.querySelectorAll('#employees-table-body tr'));
+        const filteredRows = filterRows(rows);
+        const sortedRows = sortRows(filteredRows);
+        const totalPages = Math.ceil(sortedRows.length / rowsPerPage);
+        
+        // Ensure current page is valid
+        if (currentPage > totalPages) {
+            currentPage = Math.max(1, totalPages);
+        }
+        
+        // Calculate start and end indices
+        const startIndex = (currentPage - 1) * rowsPerPage;
+        const endIndex = Math.min(startIndex + rowsPerPage, sortedRows.length);
+        
+        // Hide all rows
+        rows.forEach(row => {
+            row.style.display = 'none';
+        });
+        
+        // Show rows for current page
+        for (let i = startIndex; i < endIndex; i++) {
+            sortedRows[i].style.display = '';
+        }
+        
+        // Update pagination UI
+        updatePaginationUI(totalPages);
+        
+        // Update results info
+        updateResultsInfo(startIndex + 1, endIndex, sortedRows.length);
+        
+        // Update progress cards
+        updateProgressCards(sortedRows);
+    }
+
+    // Filter rows based on current filters
+    function filterRows(rows) {
+        return rows.filter(row => {
+            // Status filter
+            if (currentFilters.status !== 'all') {
+                const rowStatus = row.getAttribute('data-status');
+                if (rowStatus !== currentFilters.status) {
+                    return false;
+                }
+            }
+            
+            // Completion filter
+            if (currentFilters.completion !== 'all') {
+                const completion = parseInt(row.getAttribute('data-completion'));
+                let min = 0, max = 100;
+                
+                switch (currentFilters.completion) {
+                    case '0-25': max = 25; break;
+                    case '26-50': min = 26; max = 50; break;
+                    case '51-75': min = 51; max = 75; break;
+                    case '76-99': min = 76; max = 99; break;
+                    case '100': min = 100; max = 100; break;
+                }
+                
+                if (completion < min || completion > max) {
+                    return false;
+                }
+            }
+                  
+            // Search filter
+            if (currentFilters.search) {
+                const name = row.querySelector('h6').textContent.toLowerCase();
+                if (!name.includes(currentFilters.search)) {
+                    return false;
+                }
+            }
+            
+            return true;
+        });
+    }
+
+    // Sort rows based on current sort
+    function sortRows(rows) {
+        return rows.sort((a, b) => {
+            let aValue, bValue;
+            
+            switch (currentSort.column) {
+                case 'name':
+                    aValue = a.querySelector('h6').textContent;
+                    bValue = b.querySelector('h6').textContent;
+                    break;
+                case 'username':
+                    aValue = a.cells[1].textContent;
+                    bValue = b.cells[1].textContent;
+                    break;
+                case 'email':
+                    aValue = a.cells[2].textContent;
+                    bValue = b.cells[2].textContent;
+                    break;
+                case 'completion':
+                    aValue = parseInt(a.getAttribute('data-completion'));
+                    bValue = parseInt(b.getAttribute('data-completion'));
+                    break;
+                case 'last_updated':
+                    aValue = a.cells[4].textContent;
+                    bValue = b.cells[4].textContent;
+                    // Simple date comparison (assuming YYYY-MM-DD format)
+                    if (aValue.includes('لم يتم')) aValue = '0000-00-00';
+                    if (bValue.includes('لم يتم')) bValue = '0000-00-00';
+                    break;
+                default:
+                    aValue = a.querySelector('h6').textContent;
+                    bValue = b.querySelector('h6').textContent;
+            }
+            
+            // Compare values
+            let result = 0;
+            if (aValue < bValue) result = -1;
+            if (aValue > bValue) result = 1;
+            
+            // Apply sort direction
+            return currentSort.direction === 'asc' ? result : -result;
+        });
+    }
+
+    // Update pagination UI
+    function updatePaginationUI(totalPages) {
+        const pagination = document.getElementById('pagination');
+        pagination.innerHTML = '';
+        
+        // Previous button
+        const prevLi = document.createElement('li');
+        prevLi.className = `page-item ${currentPage === 1 ? 'disabled' : ''}`;
+        prevLi.innerHTML = `<a class="page-link" href="#" data-page="${currentPage - 1}">السابق</a>`;
+        pagination.appendChild(prevLi);
+        
+        // Page numbers
+        const maxVisiblePages = 5;
+        let startPage = Math.max(1, currentPage - Math.floor(maxVisiblePages / 2));
+        let endPage = Math.min(totalPages, startPage + maxVisiblePages - 1);
+        
+        if (endPage - startPage + 1 < maxVisiblePages) {
+            startPage = Math.max(1, endPage - maxVisiblePages + 1);
+        }
+        
+        for (let i = startPage; i <= endPage; i++) {
+            const pageLi = document.createElement('li');
+            pageLi.className = `page-item ${i === currentPage ? 'active' : ''}`;
+            pageLi.innerHTML = `<a class="page-link" href="#" data-page="${i}">${i}</a>`;
+            pagination.appendChild(pageLi);
+        }
+        
+        // Next button
+        const nextLi = document.createElement('li');
+        nextLi.className = `page-item ${currentPage === totalPages ? 'disabled' : ''}`;
+        nextLi.innerHTML = `<a class="page-link" href="#" data-page="${currentPage + 1}">التالي</a>`;
+        pagination.appendChild(nextLi);
+        
+        // Add event listeners to pagination buttons
+        pagination.querySelectorAll('.page-link').forEach(link => {
+            link.addEventListener('click', function(e) {
+                e.preventDefault();
+                const page = parseInt(this.getAttribute('data-page'));
+                if (page >= 1 && page <= totalPages) {
+                    currentPage = page;
+                    applyPagination();
+                }
+            });
+        });
+    }
+
+    // Update results info
+    function updateResultsInfo(start, end, total) {
+        const resultsInfo = document.getElementById('results-info');
+        resultsInfo.textContent = `عرض ${start} إلى ${end} من أصل ${total} موظف`;
+    }
+
+    // Update progress cards
+    function updateProgressCards(rows) {
+        const container = document.getElementById('progress-cards-container');
+        container.innerHTML = '';
+        
+        // Show only first 6 employees in progress cards for performance
+        const displayRows = rows.slice(0, 6);
+        
+        displayRows.forEach(row => {
+            const employeeId = row.getAttribute('data-employee-id');
+            const name = row.querySelector('h6').textContent;
+            const completion = parseInt(row.getAttribute('data-completion'));
+            const status = row.getAttribute('data-status');
+            const lastUpdated = row.cells[4].textContent;
+            
+            const card = document.createElement('div');
+            card.className = 'col-md-6 col-lg-4 mb-3';
+            card.innerHTML = `
+                <div class="employee-progress-card">
+                    <div class="d-flex justify-content-between align-items-center mb-2">
+                        <h6 class="card-title mb-0 fw-bold">${name}</h6>
+                        <span class="badge ${completion === 100 ? 'badge-completed' : 'badge-pending'}">
+                            ${completion}%
+                        </span>
+                    </div>
+                    <div class="progress mb-2">
+                        <div class="progress-bar ${completion === 100 ? 'bg-success' : completion > 50 ? 'bg-warning' : 'bg-danger'}" 
+                             style="width: ${completion}%">
+                        </div>
+                    </div>
+                    <div class="d-flex justify-content-between align-items-center">
+                        <small class="text-muted">
+                            آخر تحديث: ${lastUpdated.includes('لم يتم') ? 'غير متوفر' : lastUpdated}
+                        </small>
+                        ${status === 'needs-update' ? '<span class="badge badge-needs-update">يحتاج تحديث</span>' : ''}
+                    </div>
+                    <div class="mt-3">
+                        <a href="{{ url_for('user_form', user_id=0) }}".replace('0', ${employeeId}) 
+                           class="btn btn-form btn-sm w-100">
+                            <i class="fas fa-user-edit me-1"></i>
+                            إدارة النموذج
+                        </a>
+                    </div>
+                </div>
+            `;
+            
+            container.appendChild(card);
+        });
+        
+        // Show message if no employees match filters
+        if (displayRows.length === 0) {
+            container.innerHTML = `
+                <div class="col-12 text-center py-4">
+                    <i class="fas fa-users fa-3x text-muted mb-3"></i>
+                    <p class="text-muted">لا توجد نتائج تطابق معايير البحث المحددة</p>
+                </div>
+            `;
+        }
+    }
+
+    // Update statistics based on filtered data
+    function updateStatistics() {
+        const rows = Array.from(document.querySelectorAll('#employees-table-body tr'));
+        const filteredRows = filterRows(rows);
+        
+        // Update total employees
+        document.getElementById('total-employees').textContent = filteredRows.length;
+        
+        // Update completed employees
+        const completed = filteredRows.filter(row => row.getAttribute('data-status') === 'completed').length;
+        document.getElementById('completed-employees').textContent = completed;
+        
+        // Update needs update employees
+        const needsUpdate = filteredRows.filter(row => row.getAttribute('data-status') === 'needs-update').length;
+        document.getElementById('needs-update-employees').textContent = needsUpdate;
+        
+        // Update average completion
+        const totalCompletion = filteredRows.reduce((sum, row) => {
+            return sum + parseInt(row.getAttribute('data-completion'));
+        }, 0);
+        
+        const average = filteredRows.length > 0 ? Math.round(totalCompletion / filteredRows.length) : 0;
+        document.getElementById('average-completion').textContent = `${average}%`;
+    }
+    </script>
+</body>
+</html>

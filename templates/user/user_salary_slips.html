@@ -1,0 +1,67 @@
+{% extends "layouts/user_base.html" %}
+
+{% block title %}شيتات المرتب{% endblock %}
+
+{% block user_content %}
+<div class="d-flex justify-content-between flex-wrap flex-md-nowrap align-items-center pt-3 pb-2 mb-3 border-bottom">
+    <h1 class="h2">شيتات المرتب</h1>
+</div>
+
+<div class="card">
+    <div class="card-header">
+        <h5 class="card-title mb-0">شيتات المرتب المتاحة</h5>
+    </div>
+    <div class="card-body">
+        {% if salary_slips %}
+        <div class="table-responsive">
+            <table class="table table-striped">
+                <thead>
+                    <tr>
+                        <th>الشهر</th>
+                        <th>تاريخ الرفع</th>
+                        <th>الحالة</th>
+                        <th>الإجراءات</th>
+                    </tr>
+                </thead>
+                <tbody>
+                    {% for slip in salary_slips %}
+                    <tr>
+                        <td>{{ slip.month }}</td>
+                        <td>{{ slip.uploaded_at.strftime('%Y-%m-%d') }}</td>
+                        <td>
+                            {% if slip.is_viewed %}
+                                <span class="badge bg-success">تم المشاهدة</span>
+                            {% else %}
+                                <span class="badge bg-warning">جديد</span>
+                            {% endif %}
+                        </td>
+                        <td>
+                            <a href="{{ url_for('download_salary_slip', slip_id=slip.id) }}" 
+                               class="btn btn-outline-primary btn-sm" target="_blank">
+                                <i class="fas fa-download me-1"></i>تحميل
+                            </a>
+                            {% if not slip.is_viewed %}
+                            <span class="badge bg-danger me-2">جديد</span>
+                            {% endif %}
+                        </td>
+                    </tr>
+                    {% endfor %}
+                </tbody>
+            </table>
+        </div>
+        {% else %}
+        <div class="text-center py-4">
+            <i class="fas fa-file-invoice-dollar fa-3x text-muted mb-3"></i>
+            <p class="text-muted">لا توجد شيتات مرتب متاحة حالياً</p>
+        </div>
+        {% endif %}
+    </div>
+</div>
+
+{% if not salary_slips %}
+<div class="alert alert-info mt-4">
+    <i class="fas fa-info-circle me-2"></i>
+    سيتم رفع شيتات المرتب من قبل الإدارة وسيتم إشعارك عند توفر أي شيت جديد.
+</div>
+{% endif %}
+{% endblock %}

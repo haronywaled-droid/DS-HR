@@ -1,0 +1,1795 @@
+<!DOCTYPE html>
+<html lang="ar" dir="rtl">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>البيانات الشخصية - نظام إدارة الموارد البشرية</title>
+    
+    <!-- Bootstrap 5 CSS -->
+    <link href="https://cdn.jsdelivr.net/npm/bootstrap@5.3.0/dist/css/bootstrap.min.css" rel="stylesheet">
+    
+    <!-- Bootstrap Icons -->
+    <link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/bootstrap-icons@1.10.0/font/bootstrap-icons.css">
+    
+    <!-- Font Awesome -->
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.0.0/css/all.min.css">
+    
+    <style>
+        :root {
+            --primary-green: #10b981;
+            --dark-green: #059669;
+            --light-green: #34d399;
+            --accent-green: #a7f3d0;
+            --gradient-primary: linear-gradient(135deg, #10b981 0%, #059669 100%);
+            --gradient-secondary: linear-gradient(135deg, #34d399 0%, #10b981 100%);
+            --gradient-dark: linear-gradient(135deg, #065f46 0%, #047857 100%);
+            --gradient-success: linear-gradient(135deg, #a7f3d0 0%, #6ee7b7 100%);
+            --gradient-warning: linear-gradient(135deg, #f59e0b 0%, #d97706 100%);
+            --gradient-danger: linear-gradient(135deg, #ef4444 0%, #dc2626 100%);
+            --gradient-info: linear-gradient(135deg, #0ea5e9 0%, #0284c7 100%);
+            --header-height: 130px;
+        }
+        
+        * {
+            margin: 0;
+            padding: 0;
+            box-sizing: border-box;
+        }
+        
+        body {
+            font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif;
+            background: linear-gradient(135deg, #ecfdf5 0%, #d1fae5 100%);
+            min-height: 100vh;
+            overflow-x: hidden;
+            padding-top: var(--header-height);
+            color: #1a4731;
+        }
+        
+        /* Unified Navigation Bar */
+        .unified-nav {
+            background: var(--gradient-dark);
+            color: white;
+            position: fixed;
+            top: 0;
+            right: 0;
+            left: 0;
+            height: var(--header-height);
+            z-index: 1000;
+            box-shadow: 0 4px 20px rgba(5, 150, 105, 0.25);
+            border-bottom: 1px solid rgba(255, 255, 255, 0.1);
+        }
+        
+        .unified-nav-container {
+            display: flex;
+            flex-direction: column;
+            height: 100%;
+            padding: 0 1rem;
+        }
+        
+        .nav-top-section {
+            display: flex;
+            align-items: center;
+            justify-content: space-between;
+            height: 70px;
+            flex-shrink: 0;
+            padding: 0.5rem 0;
+        }
+        
+        .nav-bottom-section {
+            display: flex;
+            align-items: center;
+            justify-content: space-between;
+            height: 60px;
+            flex-shrink: 0;
+            border-top: 1px solid rgba(255, 255, 255, 0.15);
+            position: relative;
+        }
+        
+        .nav-brand-section {
+            display: flex;
+            align-items: center;
+            flex-shrink: 0;
+            min-width: 0;
+        }
+        
+        .logo-container {
+            width: 45px;
+            height: 45px;
+            background: var(--gradient-primary);
+            border-radius: 10px;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            box-shadow: 0 4px 12px rgba(16, 185, 129, 0.4);
+            margin-left: 0.5rem;
+            flex-shrink: 0;
+        }
+        
+        .welcome-section {
+            display: flex;
+            align-items: center;
+            flex-grow: 1;
+            justify-content: center;
+            color: white;
+            text-align: center;
+            min-width: 0;
+            overflow: hidden;
+        }
+        
+        .welcome-content {
+            min-width: 0;
+            overflow: hidden;
+        }
+        
+        .welcome-content h4 {
+            margin-bottom: 0.2rem;
+            font-weight: 600;
+            font-size: 1.1rem;
+            white-space: nowrap;
+            overflow: hidden;
+            text-overflow: ellipsis;
+        }
+        
+        .welcome-content p {
+            margin-bottom: 0;
+            font-size: 0.85rem;
+            opacity: 0.9;
+            white-space: nowrap;
+            overflow: hidden;
+            text-overflow: ellipsis;
+        }
+        
+        .nav-user-section {
+            display: flex;
+            align-items: center;
+            flex-shrink: 0;
+            min-width: 0;
+        }
+        
+        .nav-menu-section {
+            display: flex;
+            align-items: center;
+            flex-grow: 1;
+            height: 100%;
+            position: relative;
+            min-width: 0;
+        }
+        
+        .nav-menu-wrapper {
+            display: flex;
+            align-items: center;
+            height: 100%;
+            overflow-x: auto;
+            overflow-y: hidden;
+            scroll-behavior: smooth;
+            -webkit-overflow-scrolling: touch;
+            width: 100%;
+            padding: 0 0.5rem;
+            scrollbar-width: thin;
+            scrollbar-color: var(--primary-green) rgba(255, 255, 255, 0.1);
+            min-width: 0;
+        }
+        
+        /* Custom scrollbar for nav menu */
+        .nav-menu-wrapper::-webkit-scrollbar {
+            height: 6px;
+        }
+        
+        .nav-menu-wrapper::-webkit-scrollbar-track {
+            background: rgba(255, 255, 255, 0.1);
+            border-radius: 10px;
+        }
+        
+        .nav-menu-wrapper::-webkit-scrollbar-thumb {
+            background: var(--primary-green);
+            border-radius: 10px;
+        }
+        
+        .nav-menu-wrapper::-webkit-scrollbar-thumb:hover {
+            background: var(--light-green);
+        }
+        
+        .unified-nav .nav-link {
+            color: rgba(255, 255, 255, 0.9);
+            padding: 0.7rem 1.2rem;
+            margin: 0 0.2rem;
+            border-radius: 10px;
+            transition: all 0.3s ease;
+            font-weight: 500;
+            position: relative;
+            border: 1px solid transparent;
+            display: flex;
+            align-items: center;
+            text-decoration: none;
+            font-size: 0.9rem;
+            white-space: nowrap;
+            height: 80%;
+            flex-shrink: 0;
+            background: rgba(255, 255, 255, 0.05);
+            min-width: max-content;
+        }
+        
+        .unified-nav .nav-link:hover {
+            color: white;
+            background: rgba(255, 255, 255, 0.12);
+            border: 1px solid rgba(255, 255, 255, 0.2);
+            transform: translateY(-2px);
+            box-shadow: 0 4px 12px rgba(0, 0, 0, 0.15);
+        }
+        
+        .unified-nav .nav-link.active {
+            background: rgba(255, 255, 255, 0.15);
+            color: white;
+            border: 1px solid rgba(255, 255, 255, 0.25);
+            box-shadow: 0 4px 12px rgba(0, 0, 0, 0.2);
+        }
+        
+        .unified-nav .nav-link.active::after {
+            content: '';
+            position: absolute;
+            bottom: -10px;
+            right: 50%;
+            transform: translateX(50%);
+            width: 70%;
+            height: 3px;
+            background: var(--accent-green);
+            border-radius: 4px 4px 0 0;
+        }
+        
+        .nav-badge {
+            background: var(--accent-green);
+            color: #065f46;
+            padding: 0.2rem 0.4rem;
+            border-radius: 8px;
+            font-size: 0.65rem;
+            font-weight: bold;
+            margin-right: 0.3rem;
+            position: absolute;
+            top: 5px;
+            right: 5px;
+            box-shadow: 0 2px 4px rgba(0, 0, 0, 0.1);
+        }
+        
+        .nav-link-with-badge {
+            position: relative;
+        }
+        
+        .notification-badge {
+            position: absolute;
+            top: -5px;
+            right: -5px;
+            font-size: 0.7rem;
+            background: var(--gradient-secondary);
+            border: 2px solid white;
+            box-shadow: 0 2px 8px rgba(16, 185, 129, 0.4);
+        }
+        
+        .user-avatar {
+            width: 38px;
+            height: 38px;
+            background: var(--gradient-primary);
+            border-radius: 50%;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            color: white;
+            font-weight: bold;
+            font-size: 1rem;
+            box-shadow: 0 4px 10px rgba(16, 185, 129, 0.4);
+            transition: all 0.3s ease;
+            flex-shrink: 0;
+        }
+        
+        .user-avatar:hover {
+            transform: scale(1.08);
+            box-shadow: 0 6px 15px rgba(16, 185, 129, 0.5);
+        }
+        
+        .dropdown-menu {
+            background: white;
+            border: none;
+            border-radius: 12px;
+            box-shadow: 0 10px 30px rgba(16, 185, 129, 0.2);
+            overflow: hidden;
+            border: 1px solid rgba(16, 185, 129, 0.15);
+        }
+        
+        .dropdown-item {
+            padding: 0.8rem 1.2rem;
+            border-radius: 8px;
+            margin: 0.2rem 0.5rem;
+            transition: all 0.2s ease;
+            color: #065f46;
+        }
+        
+        .dropdown-item:hover {
+            background: rgba(16, 185, 129, 0.1);
+            color: #065f46;
+            transform: translateX(-5px);
+        }
+        
+        .nav-controls {
+            display: flex;
+            align-items: center;
+            position: absolute;
+            left: 0;
+            top: 0;
+            height: 100%;
+            background: linear-gradient(90deg, rgba(6, 95, 70, 0.9) 0%, transparent 100%);
+            padding: 0 0.5rem;
+            z-index: 5;
+        }
+        
+        .nav-prev, .nav-next {
+            background: rgba(255, 255, 255, 0.2);
+            border: 1px solid rgba(255, 255, 255, 0.3);
+            color: white;
+            width: 28px;
+            height: 28px;
+            border-radius: 50%;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            cursor: pointer;
+            transition: all 0.3s ease;
+            font-size: 0.8rem;
+            margin-left: 0.3rem;
+        }
+        
+        .nav-prev:hover, .nav-next:hover {
+            background: rgba(255, 255, 255, 0.3);
+            transform: scale(1.1);
+        }
+        
+        .nav-controls-right {
+            display: flex;
+            align-items: center;
+            position: absolute;
+            right: 0;
+            top: 0;
+            height: 100%;
+            background: linear-gradient(270deg, rgba(6, 95, 70, 0.9) 0%, transparent 100%);
+            padding: 0 0.5rem;
+            z-index: 5;
+        }
+        
+        /* Main Content */
+        .main-content {
+            min-height: 100vh;
+            background: transparent;
+            position: relative;
+        }
+        
+        /* Form Styles from first template */
+        .header-card {
+            background: var(--gradient-primary);
+            border: none;
+            border-radius: 20px;
+            color: white;
+            box-shadow: 0 15px 35px rgba(5, 150, 105, 0.2);
+            margin-bottom: 2rem;
+        }
+        
+        .form-section-card {
+            background: white;
+            border-radius: 15px;
+            padding: 25px;
+            margin-bottom: 25px;
+            border: 1px solid rgba(16, 185, 129, 0.1);
+            box-shadow: 0 5px 15px rgba(0, 0, 0, 0.08);
+            transition: all 0.3s ease;
+        }
+        
+        .form-section-card:hover {
+            transform: translateY(-2px);
+            box-shadow: 0 8px 25px rgba(0, 0, 0, 0.12);
+        }
+        
+        .section-header {
+            background: var(--gradient-primary);
+            color: white;
+            padding: 15px 20px;
+            border-radius: 12px;
+            margin: -25px -25px 25px -25px;
+        }
+        
+        .section-header-warning {
+            background: var(--gradient-warning);
+        }
+        
+        .section-header-success {
+            background: var(--gradient-success);
+        }
+        
+        .section-header-info {
+            background: var(--gradient-info);
+        }
+        
+        .section-header-danger {
+            background: var(--gradient-danger);
+        }
+        
+        .form-label {
+            font-weight: 600;
+            color: #374151;
+            margin-bottom: 8px;
+        }
+        
+        .form-control, .form-select {
+            border-radius: 10px;
+            padding: 12px 15px;
+            border: 2px solid #e5e7eb;
+            transition: all 0.3s ease;
+        }
+        
+        .form-control:focus, .form-select:focus {
+            border-color: var(--primary-green);
+            box-shadow: 0 0 0 3px rgba(16, 185, 129, 0.1);
+        }
+        
+        .progress-container {
+            background: white;
+            border-radius: 15px;
+            padding: 20px;
+            margin-bottom: 25px;
+            box-shadow: 0 5px 15px rgba(0, 0, 0, 0.08);
+        }
+        
+        .progress {
+            height: 20px;
+            border-radius: 10px;
+            background-color: #e5e7eb;
+        }
+        
+        .progress-bar {
+            border-radius: 10px;
+            background: var(--gradient-primary);
+            position: relative;
+            overflow: visible;
+        }
+        
+        .progress-percentage {
+            position: absolute;
+            right: 10px;
+            top: 50%;
+            transform: translateY(-50%);
+            color: white;
+            font-weight: bold;
+            font-size: 12px;
+        }
+        
+        .btn-success {
+            background: var(--gradient-success);
+            border: none;
+            border-radius: 12px;
+            padding: 12px 30px;
+            font-weight: 600;
+            transition: all 0.3s ease;
+        }
+        
+        .btn-success:hover {
+            transform: translateY(-2px);
+            box-shadow: 0 8px 25px rgba(34, 197, 94, 0.3);
+        }
+        
+        .btn-outline-primary {
+            border: 2px solid var(--primary-green);
+            color: var(--primary-green);
+            border-radius: 12px;
+            padding: 12px 30px;
+            font-weight: 600;
+            transition: all 0.3s ease;
+        }
+        
+        .btn-outline-primary:hover {
+            background: var(--gradient-primary);
+            color: white;
+            transform: translateY(-2px);
+        }
+        
+        .alert-warning-custom {
+            background: linear-gradient(135deg, #fef3c7 0%, #fef7cd 100%);
+            border: 2px solid #f59e0b;
+            border-radius: 15px;
+            color: #92400e;
+            padding: 20px;
+            margin-bottom: 25px;
+        }
+        
+        .missing-fields-card {
+            background: white;
+            border-radius: 15px;
+            padding: 25px;
+            margin-top: 25px;
+            border: 2px solid #f59e0b;
+            box-shadow: 0 5px 15px rgba(245, 158, 11, 0.1);
+        }
+        
+        .field-group {
+            background: #f8fafc;
+            border-radius: 10px;
+            padding: 15px;
+            margin-bottom: 15px;
+            border-left: 4px solid var(--primary-green);
+        }
+        
+        .required::after {
+            content: " *";
+            color: #ef4444;
+        }
+        
+        .file-upload {
+            border: 2px dashed #d1d5db;
+            border-radius: 10px;
+            padding: 20px;
+            text-align: center;
+            transition: all 0.3s ease;
+            background: #f9fafb;
+        }
+        
+        .file-upload:hover {
+            border-color: var(--primary-green);
+            background: #f0fdf4;
+        }
+        
+        .completion-badge {
+            background: var(--gradient-primary);
+            color: white;
+            padding: 10px 20px;
+            border-radius: 25px;
+            font-weight: 600;
+            font-size: 1.1rem;
+        }
+        
+        .card {
+            background: white;
+            border: none;
+            border-radius: 12px;
+            box-shadow: 0 6px 15px rgba(16, 185, 129, 0.1);
+            transition: all 0.3s ease;
+            margin-bottom: 1.5rem;
+            border: 1px solid rgba(16, 185, 129, 0.1);
+        }
+        
+        .card:hover {
+            transform: translateY(-5px);
+            box-shadow: 0 12px 25px rgba(16, 185, 129, 0.15);
+        }
+        
+        .alert-success {
+            background-color: rgba(16, 185, 129, 0.1);
+            border-color: rgba(16, 185, 255, 0.2);
+            color: #065f46;
+            border-radius: 10px;
+        }
+        
+        /* Mobile Menu Button */
+        .mobile-menu-btn {
+            display: none;
+            background: transparent;
+            border: 1px solid rgba(255, 255, 255, 0.3);
+            color: white;
+            width: 40px;
+            height: 40px;
+            border-radius: 8px;
+            align-items: center;
+            justify-content: center;
+            cursor: pointer;
+            transition: all 0.3s ease;
+        }
+        
+        .mobile-menu-btn:hover {
+            background: rgba(255, 255, 255, 0.1);
+        }
+        
+        /* Mobile Menu */
+        .mobile-nav-menu {
+            position: fixed;
+            top: var(--header-height);
+            right: 0;
+            left: 0;
+            background: var(--gradient-dark);
+            z-index: 999;
+            padding: 1rem;
+            box-shadow: 0 4px 20px rgba(0, 0, 0, 0.2);
+            display: none;
+            flex-direction: column;
+            max-height: calc(100vh - var(--header-height));
+            overflow-y: auto;
+        }
+        
+        .mobile-nav-menu.active {
+            display: flex;
+        }
+        
+        .mobile-nav-link {
+            color: white;
+            padding: 1rem;
+            margin: 0.2rem 0;
+            border-radius: 8px;
+            text-decoration: none;
+            display: flex;
+            align-items: center;
+            transition: all 0.3s ease;
+            border: 1px solid transparent;
+        }
+        
+        .mobile-nav-link:hover,
+        .mobile-nav-link.active {
+            background: rgba(255, 255, 255, 0.1);
+            border: 1px solid rgba(255, 255, 255, 0.2);
+        }
+        
+        .mobile-nav-link i {
+            margin-left: 0.5rem;
+            width: 20px;
+            text-align: center;
+        }
+        
+        /* Mobile Responsive */
+        @media (max-width: 1200px) {
+            :root {
+                --header-height: 120px;
+            }
+            
+            .unified-nav .nav-link {
+                padding: 0.6rem 1rem;
+                font-size: 0.85rem;
+            }
+        }
+        
+        @media (max-width: 992px) {
+            :root {
+                --header-height: 100px;
+            }
+            
+            .unified-nav {
+                height: auto;
+                min-height: var(--header-height);
+            }
+            
+            .unified-nav-container {
+                padding: 0.5rem;
+            }
+            
+            .nav-top-section {
+                height: 60px;
+                flex-wrap: nowrap;
+                padding: 0;
+            }
+            
+            .nav-brand-section {
+                order: 1;
+                width: auto;
+                flex: 0 0 auto;
+            }
+            
+            .welcome-section {
+                order: 2;
+                flex: 1;
+                justify-content: flex-start;
+                padding: 0 0.5rem;
+                display: none; /* إخفاء قسم الترحيب على الشاشات المتوسطة */
+            }
+            
+            .nav-user-section {
+                order: 3;
+                width: auto;
+                flex: 0 0 auto;
+                justify-content: flex-end;
+            }
+            
+            .nav-bottom-section {
+                order: 4;
+                height: 40px;
+                margin-top: 0;
+                display: none; /* إخفاء القائمة الأفقية */
+            }
+            
+            .mobile-menu-btn {
+                display: flex;
+                margin-left: 0.5rem;
+            }
+            
+            .welcome-content h4 {
+                font-size: 0.9rem;
+            }
+            
+            .welcome-content p {
+                display: none;
+            }
+            
+            #live-clock {
+                display: none;
+            }
+            
+            body {
+                padding-top: var(--header-height);
+            }
+            
+            .nav-controls, .nav-controls-right {
+                display: none;
+            }
+        }
+        
+        @media (max-width: 768px) {
+            :root {
+                --header-height: 80px;
+            }
+            
+            .nav-top-section {
+                height: 50px;
+            }
+            
+            .logo-container {
+                width: 35px;
+                height: 35px;
+            }
+            
+            .logo-container i {
+                font-size: 1rem;
+            }
+            
+            .user-avatar {
+                width: 32px;
+                height: 32px;
+                font-size: 0.9rem;
+            }
+            
+            .nav-brand-section .d-none.d-md-block {
+                display: none !important;
+            }
+            
+            .mobile-menu-btn {
+                width: 35px;
+                height: 35px;
+            }
+        }
+        
+        @media (max-width: 576px) {
+            :root {
+                --header-height: 70px;
+            }
+            
+            .nav-top-section {
+                height: 45px;
+            }
+            
+            .logo-container {
+                width: 30px;
+                height: 30px;
+                margin-left: 0.3rem;
+            }
+            
+            .user-avatar {
+                width: 28px;
+                height: 28px;
+                font-size: 0.8rem;
+            }
+            
+            .notification-badge {
+                font-size: 0.6rem;
+                top: -3px;
+                right: -3px;
+            }
+            
+            .btn {
+                padding: 0.3rem 0.6rem;
+                font-size: 0.8rem;
+            }
+        }
+
+        /* Custom Scrollbar for whole page */
+        ::-webkit-scrollbar {
+            width: 8px;
+            height: 8px;
+        }
+        
+        ::-webkit-scrollbar-track {
+            background: rgba(16, 185, 129, 0.1);
+            border-radius: 10px;
+        }
+        
+        ::-webkit-scrollbar-thumb {
+            background: var(--gradient-primary);
+            border-radius: 10px;
+        }
+        
+        ::-webkit-scrollbar-thumb:hover {
+            background: var(--dark-green);
+        }
+        
+        /* Green accent elements */
+        .text-success {
+            color: var(--primary-green) !important;
+        }
+        
+        .bg-success {
+            background-color: var(--primary-green) !important;
+        }
+        
+        #live-clock {
+            font-size: 0.9rem;
+            background: rgba(255, 255, 255, 0.1);
+            padding: 0.3rem 0.7rem;
+            border-radius: 20px;
+            border: 1px solid rgba(255, 255, 255, 0.2);
+            flex-shrink: 0;
+        }
+        
+        /* Ensure text doesn't overflow */
+        .text-truncate {
+            overflow: hidden;
+            text-overflow: ellipsis;
+            white-space: nowrap;
+        }
+    </style>
+</head>
+<body>
+    <div class="container-fluid p-0">
+        <!-- Unified Navigation Bar -->
+        <nav class="unified-nav">
+            <div class="unified-nav-container">
+                <!-- Top Section: Brand, Welcome, User -->
+                <div class="nav-top-section">
+                    <!-- Brand Section -->
+                    <div class="nav-brand-section">
+                        <div class="logo-container">
+                            {% if current_user.is_admin %}
+                                <i class="bi bi-person-shield text-white"></i>
+                            {% elif current_user.is_manager %}
+                                <i class="bi bi-person-gear text-white"></i>
+                            {% else %}
+                                <i class="bi bi-person-circle text-white"></i>
+                            {% endif %}
+                        </div>
+                        <div class="d-none d-md-block ms-2">
+                            <h6 class="text-white mb-0 fw-bold text-truncate">نظام الموارد البشرية</h6>
+                            <small class="text-white-50">
+                                {% if current_user.is_admin %}
+                                    لوحة المسؤول
+                                {% elif current_user.is_manager %}
+                                    لوحة المدير
+                                {% else %}
+                                    لوحة الموظف
+                                {% endif %}
+                            </small>
+                        </div>
+                    </div>
+                    
+                    <!-- Welcome Section - Hidden on mobile -->
+                    <div class="welcome-section d-none d-lg-flex">
+                        <div class="welcome-content">
+                            <h4 class="text-white mb-1 text-truncate">مرحباً، {{ current_user.name }}</h4>
+                            <p class="text-white-50 mb-0 text-truncate">
+                                نظام الموارد البشرية - 
+                                {% if current_user.is_admin %}
+                                    لوحة تحكم المسؤول
+                                {% elif current_user.is_manager %}
+                                    لوحة تحكم المدير
+                                {% else %}
+                                    لوحة تحكم الموظف
+                                {% endif %}
+                            </p>
+                        </div>
+                        <div class="text-white fw-bold me-3" id="live-clock">
+                            <i class="bi bi-clock me-2"></i>
+                            جاري التحميل...
+                        </div>
+                    </div>
+                    
+                    <!-- User Section -->
+                    <div class="nav-user-section">
+                        <!-- Notifications -->
+                        <div class="dropdown me-2">
+                            <button class="btn btn-light position-relative rounded-pill" 
+                                    type="button" data-bs-toggle="dropdown" 
+                                    style="padding: 0.4rem 0.8rem; border: 1px solid rgba(255, 255, 255, 0.3); background: rgba(255, 255, 255, 0.15); color: white;">
+                                <i class="bi bi-bell"></i>
+                                {% if notifications and notifications|length > 0 %}
+                                <span class="notification-badge badge">{{ notifications|length }}</span>
+                                {% endif %}
+                            </button>
+                            <ul class="dropdown-menu dropdown-menu-end">
+                                {% if notifications and notifications|length > 0 %}
+                                    {% for notification in notifications[:3] %}
+                                    <li>
+                                        <a class="dropdown-item" href="#">
+                                            <div class="d-flex align-items-start">
+                                                <div class="bg-success bg-opacity-10 rounded-circle p-2 me-3">
+                                                    <i class="bi bi-bell text-success"></i>
+                                                </div>
+                                                <div>
+                                                    <strong class="d-block text-dark">{{ notification.title }}</strong>
+                                                    <small class="text-muted">{{ notification.message|truncate(30) }}</small>
+                                                </div>
+                                            </div>
+                                        </a>
+                                    </li>
+                                    {% endfor %}
+                                    <li><hr class="dropdown-divider my-2"></li>
+                                {% else %}
+                                    <li>
+                                        <a class="dropdown-item text-muted text-center" href="#">
+                                            <i class="bi bi-bell-slash fs-4 d-block mb-2 text-success"></i>
+                                            لا توجد إشعارات جديدة
+                                        </a>
+                                    </li>
+                                    <li><hr class="dropdown-divider my-2"></li>
+                                {% endif %}
+                                <li>
+                                    <a class="dropdown-item text-center text-success fw-bold" href="{{ url_for('notifications') }}">
+                                        <i class="bi bi-arrow-left me-2"></i>
+                                        عرض جميع الإشعارات
+                                    </a>
+                                </li>
+                            </ul>
+                        </div>
+                        
+                        <!-- User Menu -->
+                        <div class="dropdown">
+                            <button class="btn btn-outline-light dropdown-toggle rounded-pill d-flex align-items-center" 
+                                    type="button" data-bs-toggle="dropdown"
+                                    style="padding: 0.4rem 0.9rem; border: 1px solid rgba(255, 255, 255, 0.4);">
+                                <div class="user-avatar me-2">
+                                    {{ current_user.name[0] }}
+                                </div>
+                                <span class="d-none d-md-inline text-truncate" style="max-width: 80px;">{{ current_user.username }}</span>
+                            </button>
+                            <ul class="dropdown-menu dropdown-menu-end">
+                                <li>
+                                    <a class="dropdown-item" href="{{ url_for('notifications') }}">
+                                        <i class="bi bi-bell me-2 text-success"></i>الإشعارات
+                                    </a>
+                                </li>
+                                <li>
+                                    <a class="dropdown-item" href="{{ url_for('edit_user', user_id=current_user.id) }}">
+                                        <i class="bi bi-key me-2 text-success"></i>تغير كلمة المرور
+                                    </a>
+                                </li>
+                                <li><hr class="dropdown-divider my-2"></li>
+                                <li>
+                                    <a class="dropdown-item text-danger fw-bold" href="{{ url_for('logout') }}">
+                                        <i class="bi bi-box-arrow-right me-2"></i>تسجيل الخروج
+                                    </a>
+                                </li>
+                            </ul>
+                        </div>
+                        
+                        <!-- Mobile Menu Button -->
+                        <button class="mobile-menu-btn d-lg-none" id="mobileMenuBtn">
+                            <i class="bi bi-list"></i>
+                        </button>
+                    </div>
+                </div>
+                
+                <!-- Bottom Section: Navigation Menu - Hidden on mobile -->
+                <div class="nav-bottom-section d-none d-lg-flex">
+                    <div class="nav-controls">
+                        <!-- Navigation scroll controls -->
+                        <button class="nav-prev">
+                            <i class="bi bi-chevron-right"></i>
+                        </button>
+                        <button class="nav-next">
+                            <i class="bi bi-chevron-left"></i>
+                        </button>
+                    </div>
+                    
+                    <div class="nav-menu-section">
+                        <div class="nav-menu-wrapper">
+                            {% if current_user.is_admin %}
+                                <!-- Admin Navigation -->
+                                <a class="nav-link {% if request.endpoint == 'admin_dashboard' %}active{% endif %}" href="{{ url_for('admin_dashboard') }}">
+                                    <i class="bi bi-speedometer2 me-2"></i>
+                                    لوحة التحكم
+                                </a>
+                                <a class="nav-link {% if request.endpoint == 'admin_users' %}active{% endif %}" href="{{ url_for('admin_users') }}">
+                                    <i class="bi bi-people me-2"></i>
+                                    إدارة المستخدمين
+                                </a>
+                                <a class="nav-link {% if request.endpoint == 'admin_departments' %}active{% endif %}" href="{{ url_for('admin_departments') }}">
+                                    <i class="bi bi-building me-2"></i>
+                                    إدارة الأقسام
+                                </a>
+                                
+                                <!-- الرسائل - للمسؤول -->
+                                <a class="nav-link nav-link-with-badge {% if request.endpoint == 'messages_inbox' %}active{% endif %}" href="{{ url_for('messages_inbox') }}">
+                                    <i class="bi bi-envelope me-2"></i>
+                                    الرسائل
+                                    {% if unread_count and unread_count > 0 %}
+                                    <span class="nav-badge">{{ unread_count }}</span>
+                                    {% endif %}
+                                </a>
+                                
+                                <a class="nav-link {% if request.endpoint == 'admin_employee_progress' %}active{% endif %}" href="{{ url_for('admin_employee_progress') }}">
+                                    <i class="bi bi-graph-up me-2"></i>
+                                    تقدم الموظفين
+                                </a>
+                                <a class="nav-link {% if request.endpoint == 'admin_schedules' %}active{% endif %}" href="{{ url_for('admin_schedules') }}">
+                                    <i class="bi bi-calendar-check me-2"></i>
+                                    اعتماد الجداول
+                                </a>
+                                <a class="nav-link" href="{{ url_for('admin_all_leaves') }}">
+                                    <i class="bi bi-calendar-minus me-2"></i>
+                                    طلبات الإجازات
+                                </a>
+                                <a class="nav-link" href="{{ url_for('admin_all_permissions') }}">
+                                    <i class="bi bi-clock me-2"></i>
+                                    طلبات الإذونات
+                                </a>
+                                <a class="nav-link" href="{{ url_for('manager_advance_requests') }}">
+                                    <i class="bi bi-cash-coin me-2"></i>
+                                    طلبات السلف
+                                </a>
+                                
+                            {% elif current_user.is_manager %}
+                                <!-- Manager Navigation -->
+                                <a class="nav-link {% if request.endpoint == 'manager_dashboard' %}active{% endif %}" href="{{ url_for('manager_dashboard') }}">
+                                    <i class="bi bi-speedometer2 me-2"></i>
+                                    لوحة التحكم
+                                </a>
+                                <a class="nav-link {% if request.endpoint == 'manager_employees' %}active{% endif %}" href="{{ url_for('manager_employees') }}">
+                                    <i class="bi bi-people me-2"></i>
+                                    موظفي القسم
+                                </a>
+                                <a class="nav-link {% if request.endpoint == 'manager_schedules' %}active{% endif %}" href="{{ url_for('manager_schedules') }}">
+                                    <i class="bi bi-calendar-check me-2"></i>
+                                    جدولة الموظفين
+                                </a>
+                                
+                                <!-- الرسائل - للمدير -->
+                                <a class="nav-link nav-link-with-badge {% if request.endpoint == 'messages_inbox' %}active{% endif %}" href="{{ url_for('messages_inbox') }}">
+                                    <i class="bi bi-envelope me-2"></i>
+                                    الرسائل
+                                    {% if unread_count and unread_count > 0 %}
+                                    <span class="nav-badge">{{ unread_count }}</span>
+                                    {% endif %}
+                                </a>
+                                
+                                <a class="nav-link nav-link-with-badge {% if request.endpoint == 'manager_leave_requests' %}active{% endif %}" href="{{ url_for('manager_leave_requests') }}">
+                                    <i class="bi bi-calendar-minus me-2"></i>
+                                    طلبات الإجازات
+                                    {% if stats and stats.pending_leaves > 0 %}
+                                    <span class="nav-badge">{{ stats.pending_leaves }}</span>
+                                    {% endif %}
+                                </a>
+                                <a class="nav-link nav-link-with-badge {% if request.endpoint == 'manager_permission_requests' %}active{% endif %}" href="{{ url_for('manager_permission_requests') }}">
+                                    <i class="bi bi-clock me-2"></i>
+                                    طلبات الإذونات
+                                    {% if stats and stats.pending_permissions > 0 %}
+                                    <span class="nav-badge">{{ stats.pending_permissions }}</span>
+                                    {% endif %}
+                                </a>
+                                <a class="nav-link nav-link-with-badge {% if request.endpoint == 'user_salary_slips' %}active{% endif %}" href="{{ url_for('user_salary_slips') }}">
+                                    <i class="bi bi-file-earmark-text me-2"></i>
+                                    شيت المرتب
+                                    {% if new_salary_slips and new_salary_slips > 0 %}
+                                    <span class="nav-badge">{{ new_salary_slips }}</span>
+                                    {% endif %}
+                                </a>
+                                <a class="nav-link nav-link-with-badge {% if request.endpoint == 'manager_advance_requests' %}active{% endif %}" href="{{ url_for('manager_advance_requests') }}">
+                                    <i class="bi bi-cash-coin me-2"></i>
+                                    طلبات السلف
+                                    {% if stats and stats.pending_advances > 0 %}
+                                    <span class="nav-badge">{{ stats.pending_advances }}</span>
+                                    {% endif %}
+                                </a>
+                                <a class="nav-link {% if request.endpoint == 'manager_rewards_penalties' %}active{% endif %}" href="{{ url_for('manager_rewards_penalties') }}">
+                                    <i class="bi bi-award me-2"></i>
+                                    المكافآت والخصومات
+                                </a>
+                                <a class="nav-link {% if request.endpoint == 'manager_excel_data' %}active{% endif %}" href="{{ url_for('manager_excel_data') }}">
+                                    <i class="fas fa-file-excel me-2"></i>
+                                    الحضور والانصراف
+                                </a>
+                                {% if current_user.is_admin %}
+                                <a class="nav-link text-warning" href="{{ url_for('admin_dashboard') }}">
+                                    <i class="bi bi-person-shield me-2"></i>
+                                    لوحة المسؤول
+                                </a>
+                                {% endif %}
+                                
+                            {% else %}
+                                <!-- User Navigation -->
+                                <a class="nav-link {% if request.endpoint == 'user_dashboard' %}active{% endif %}" href="{{ url_for('user_dashboard') }}">
+                                    <i class="bi bi-speedometer2 me-2"></i>
+                                    لوحة التحكم
+                                </a>
+                                <a class="nav-link {% if request.endpoint == 'user_form' %}active{% endif %}" href="{{ url_for('user_form') }}">
+                                    <i class="bi bi-person-lines-fill me-2"></i>
+                                    البيانات الشخصية
+                                </a>
+                                
+                                <!-- الرسائل - للموظف -->
+                                <a class="nav-link nav-link-with-badge {% if request.endpoint == 'messages_inbox' %}active{% endif %}" href="{{ url_for('messages_inbox') }}">
+                                    <i class="bi bi-envelope me-2"></i>
+                                    الرسائل
+                                    {% if unread_count and unread_count > 0 %}
+                                    <span class="nav-badge">{{ unread_count }}</span>
+                                    {% endif %}
+                                </a>
+                                
+                                <a class="nav-link {% if request.endpoint == 'user_leave' %}active{% endif %}" href="{{ url_for('user_leave') }}">
+                                    <i class="bi bi-calendar-minus me-2"></i>
+                                    طلب إجازة
+                                </a>
+                                <a class="nav-link {% if request.endpoint == 'user_permission' %}active{% endif %}" href="{{ url_for('user_permission') }}">
+                                    <i class="bi bi-clock me-2"></i>
+                                    طلب إذن
+                                </a>
+                                <a class="nav-link nav-link-with-badge {% if request.endpoint == 'user_salary_slips' %}active{% endif %}" href="{{ url_for('user_salary_slips') }}">
+                                    <i class="bi bi-file-earmark-text me-2"></i>
+                                    شيت المرتب
+                                    {% if new_salary_slips and new_salary_slips > 0 %}
+                                    <span class="nav-badge">{{ new_salary_slips }}</span>
+                                    {% endif %}
+                                </a>
+                                <a class="nav-link {% if request.endpoint == 'user_schedule' %}active{% endif %}" href="{{ url_for('user_schedule') }}">
+                                    <i class="bi bi-calendar-week me-2"></i>
+                                    الجدول الأسبوعي
+                                </a>
+                                <a class="nav-link {% if request.endpoint == 'user_rewards_penalties' %}active{% endif %}" href="{{ url_for('user_rewards_penalties') }}">
+                                    <i class="bi bi-award me-2"></i>
+                                    المكافآت والخصومات
+                                </a>
+                                <a class="nav-link {% if request.endpoint == 'user_leave_requests' %}active{% endif %}" href="{{ url_for('user_leave_requests') }}">
+                                    <i class="bi bi-clock-history me-2"></i>
+                                    طلباتي السابقة
+                                </a>
+                                <a class="nav-link {% if request.endpoint == 'user_excel_data' %}active{% endif %}" href="{{ url_for('user_excel_data') }}">
+                                    <i class="fas fa-file-excel me-2"></i>
+                                    الحضور والانصراف
+                                </a>
+                            {% endif %}
+                        </div>
+                    </div>
+                    
+                    <div class="nav-controls-right">
+                        <!-- Navigation scroll controls -->
+                        <button class="nav-next">
+                            <i class="bi bi-chevron-left"></i>
+                        </button>
+                        <button class="nav-prev">
+                            <i class="bi bi-chevron-right"></i>
+                        </button>
+                    </div>
+                </div>
+            </div>
+        </nav>
+
+        <!-- Mobile Navigation Menu -->
+        <div class="mobile-nav-menu" id="mobileNavMenu">
+            {% if current_user.is_admin %}
+                <!-- Admin Mobile Navigation -->
+                <a class="mobile-nav-link {% if request.endpoint == 'admin_dashboard' %}active{% endif %}" href="{{ url_for('admin_dashboard') }}">
+                    <i class="bi bi-speedometer2"></i>
+                    لوحة التحكم
+                </a>
+                <a class="mobile-nav-link {% if request.endpoint == 'admin_users' %}active{% endif %}" href="{{ url_for('admin_users') }}">
+                    <i class="bi bi-people"></i>
+                    إدارة المستخدمين
+                </a>
+                <a class="mobile-nav-link {% if request.endpoint == 'admin_departments' %}active{% endif %}" href="{{ url_for('admin_departments') }}">
+                    <i class="bi bi-building"></i>
+                    إدارة الأقسام
+                </a>
+                
+                <!-- الرسائل - للمسؤول (موبايل) -->
+                <a class="mobile-nav-link nav-link-with-badge {% if request.endpoint == 'messages_inbox' %}active{% endif %}" href="{{ url_for('messages_inbox') }}">
+                    <i class="bi bi-envelope"></i>
+                    الرسائل
+                    {% if unread_count and unread_count > 0 %}
+                    <span class="nav-badge">{{ unread_count }}</span>
+                    {% endif %}
+                </a>
+                
+                <a class="mobile-nav-link {% if request.endpoint == 'admin_employee_progress' %}active{% endif %}" href="{{ url_for('admin_employee_progress') }}">
+                    <i class="bi bi-graph-up"></i>
+                    تقدم الموظفين
+                </a>
+                <a class="mobile-nav-link {% if request.endpoint == 'admin_schedules' %}active{% endif %}" href="{{ url_for('admin_schedules') }}">
+                    <i class="bi bi-calendar-check"></i>
+                    اعتماد الجداول
+                </a>
+                <a class="mobile-nav-link" href="{{ url_for('admin_all_leaves') }}">
+                    <i class="bi bi-calendar-minus"></i>
+                    طلبات الإجازات
+                </a>
+                <a class="mobile-nav-link" href="{{ url_for('admin_all_permissions') }}">
+                    <i class="bi bi-clock"></i>
+                    طلبات الإذونات
+                </a>
+                <a class="mobile-nav-link" href="{{ url_for('manager_advance_requests') }}">
+                    <i class="bi bi-cash-coin"></i>
+                    طلبات السلف
+                </a>
+                
+            {% elif current_user.is_manager %}
+                <!-- Manager Mobile Navigation -->
+                <a class="mobile-nav-link {% if request.endpoint == 'manager_dashboard' %}active{% endif %}" href="{{ url_for('manager_dashboard') }}">
+                    <i class="bi bi-speedometer2"></i>
+                    لوحة التحكم
+                </a>
+                <a class="mobile-nav-link {% if request.endpoint == 'manager_employees' %}active{% endif %}" href="{{ url_for('manager_employees') }}">
+                    <i class="bi bi-people"></i>
+                    موظفي القسم
+                </a>
+                <a class="mobile-nav-link {% if request.endpoint == 'manager_schedules' %}active{% endif %}" href="{{ url_for('manager_schedules') }}">
+                    <i class="bi bi-calendar-check"></i>
+                    جدولة الموظفين
+                </a>
+                
+                <!-- الرسائل - للمدير (موبايل) -->
+                <a class="mobile-nav-link nav-link-with-badge {% if request.endpoint == 'messages_inbox' %}active{% endif %}" href="{{ url_for('messages_inbox') }}">
+                    <i class="bi bi-envelope"></i>
+                    الرسائل
+                    {% if unread_count and unread_count > 0 %}
+                    <span class="nav-badge">{{ unread_count }}</span>
+                    {% endif %}
+                </a>
+                
+                <a class="mobile-nav-link {% if request.endpoint == 'manager_leave_requests' %}active{% endif %}" href="{{ url_for('manager_leave_requests') }}">
+                    <i class="bi bi-calendar-minus"></i>
+                    طلبات الإجازات
+                    {% if stats and stats.pending_leaves > 0 %}
+                    <span class="nav-badge">{{ stats.pending_leaves }}</span>
+                    {% endif %}
+                </a>
+                <a class="mobile-nav-link {% if request.endpoint == 'manager_permission_requests' %}active{% endif %}" href="{{ url_for('manager_permission_requests') }}">
+                    <i class="bi bi-clock"></i>
+                    طلبات الإذونات
+                    {% if stats and stats.pending_permissions > 0 %}
+                    <span class="nav-badge">{{ stats.pending_permissions }}</span>
+                    {% endif %}
+                </a>
+                <a class="mobile-nav-link {% if request.endpoint == 'user_salary_slips' %}active{% endif %}" href="{{ url_for('user_salary_slips') }}">
+                    <i class="bi bi-file-earmark-text"></i>
+                    شيت المرتب
+                    {% if new_salary_slips and new_salary_slips > 0 %}
+                    <span class="nav-badge">{{ new_salary_slips }}</span>
+                    {% endif %}
+                </a>
+                <a class="mobile-nav-link {% if request.endpoint == 'manager_advance_requests' %}active{% endif %}" href="{{ url_for('manager_advance_requests') }}">
+                    <i class="bi bi-cash-coin"></i>
+                    طلبات السلف
+                    {% if stats and stats.pending_advances > 0 %}
+                    <span class="nav-badge">{{ stats.pending_advances }}</span>
+                    {% endif %}
+                </a>
+                <a class="mobile-nav-link {% if request.endpoint == 'manager_rewards_penalties' %}active{% endif %}" href="{{ url_for('manager_rewards_penalties') }}">
+                    <i class="bi bi-award"></i>
+                    المكافآت والخصومات
+                </a>
+                <a class="mobile-nav-link {% if request.endpoint == 'manager_excel_data' %}active{% endif %}" href="{{ url_for('manager_excel_data') }}">
+                    <i class="fas fa-file-excel"></i>
+                    الحضور والانصراف
+                </a>
+                {% if current_user.is_admin %}
+                <a class="mobile-nav-link text-warning" href="{{ url_for('admin_dashboard') }}">
+                    <i class="bi bi-person-shield"></i>
+                    لوحة المسؤول
+                </a>
+                {% endif %}
+                
+            {% else %}
+                <!-- User Mobile Navigation -->
+                <a class="mobile-nav-link {% if request.endpoint == 'user_dashboard' %}active{% endif %}" href="{{ url_for('user_dashboard') }}">
+                    <i class="bi bi-speedometer2"></i>
+                    لوحة التحكم
+                </a>
+                <a class="mobile-nav-link {% if request.endpoint == 'user_form' %}active{% endif %}" href="{{ url_for('user_form') }}">
+                    <i class="bi bi-person-lines-fill"></i>
+                    البيانات الشخصية
+                </a>
+                
+                <!-- الرسائل - للموظف (موبايل) -->
+                <a class="mobile-nav-link nav-link-with-badge {% if request.endpoint == 'messages_inbox' %}active{% endif %}" href="{{ url_for('messages_inbox') }}">
+                    <i class="bi bi-envelope"></i>
+                    الرسائل
+                    {% if unread_count and unread_count > 0 %}
+                    <span class="nav-badge">{{ unread_count }}</span>
+                    {% endif %}
+                </a>
+                
+                <a class="mobile-nav-link {% if request.endpoint == 'user_leave' %}active{% endif %}" href="{{ url_for('user_leave') }}">
+                    <i class="bi bi-calendar-minus"></i>
+                    طلب إجازة
+                </a>
+                <a class="mobile-nav-link {% if request.endpoint == 'user_permission' %}active{% endif %}" href="{{ url_for('user_permission') }}">
+                    <i class="bi bi-clock"></i>
+                    طلب إذن
+                </a>
+                <a class="mobile-nav-link {% if request.endpoint == 'user_salary_slips' %}active{% endif %}" href="{{ url_for('user_salary_slips') }}">
+                    <i class="bi bi-file-earmark-text"></i>
+                    شيت المرتب
+                    {% if new_salary_slips and new_salary_slips > 0 %}
+                    <span class="nav-badge">{{ new_salary_slips }}</span>
+                    {% endif %}
+                </a>
+                <a class="mobile-nav-link {% if request.endpoint == 'user_schedule' %}active{% endif %}" href="{{ url_for('user_schedule') }}">
+                    <i class="bi bi-calendar-week"></i>
+                    الجدول الأسبوعي
+                </a>
+                <a class="mobile-nav-link {% if request.endpoint == 'user_rewards_penalties' %}active{% endif %}" href="{{ url_for('user_rewards_penalties') }}">
+                    <i class="bi bi-award"></i>
+                    المكافآت والخصومات
+                </a>
+                <a class="mobile-nav-link {% if request.endpoint == 'user_leave_requests' %}active{% endif %}" href="{{ url_for('user_leave_requests') }}">
+                    <i class="bi bi-clock-history"></i>
+                    طلباتي السابقة
+                </a>
+                <a class="mobile-nav-link {% if request.endpoint == 'user_excel_data' %}active{% endif %}" href="{{ url_for('user_excel_data') }}">
+                    <i class="fas fa-file-excel"></i>
+                    الحضور والانصراف
+                </a>
+            {% endif %}
+        </div>
+        
+
+        <!-- Main Content -->
+        <main class="main-content">
+            <!-- Page Content -->
+            <div class="container py-4">
+                <!-- Flash messages -->
+                {% with messages = get_flashed_messages() %}
+                    {% if messages %}
+                        {% for message in messages %}
+                            <div class="alert alert-success alert-dismissible fade show mb-4" role="alert">
+                                <div class="d-flex align-items-center">
+                                    <i class="bi bi-check-circle me-2 fs-5"></i>
+                                    <div class="flex-grow-1">{{ message }}</div>
+                                    <button type="button" class="btn-close" data-bs-dismiss="alert"></button>
+                                </div>
+                            </div>
+                        {% endfor %}
+                    {% endif %}
+                {% endwith %}
+                
+                <!-- Welcome Card for Mobile -->
+                <div class="card p-3 d-lg-none mb-4">
+                    <div class="d-flex justify-content-between align-items-center">
+                        <div>
+                            <h4 class="text-success mb-1">مرحباً، {{ current_user.name }}</h4>
+                            <p class="text-muted mb-0">نظام الموارد البشرية - لوحة تحكم الموظف</p>
+                        </div>
+                        <div class="text-success fw-bold" id="mobile-clock">
+                            <i class="bi bi-clock me-2"></i>
+                            جاري التحميل...
+                        </div>
+                    </div>
+                </div>
+                
+                <!-- Personal Information Form Content -->
+
+                {% if employee_data and employee_data.needs_update %}
+                <div class="alert-warning-custom">
+                    <div class="d-flex align-items-center">
+                        <i class="fas fa-exclamation-triangle fa-2x me-3"></i>
+                        <div>
+                            <h5 class="fw-bold mb-1">تنبيه: مطلوب تحديث البيانات</h5>
+                            <p class="mb-0">يجب تحديث بياناتك الشخصية. يرجى مراجعة وتحديث جميع الحقول المطلوبة أدناه.</p>
+                        </div>
+                    </div>
+                </div>
+                {% endif %}
+
+                <!-- Progress Section -->
+                <div class="progress-container">
+                    <div class="row align-items-center">
+                        <div class="col-md-8">
+                            <h5 class="fw-bold mb-3">تقدم إكمال البيانات</h5>
+                            <div class="progress mb-2">
+                                <div class="progress-bar" style="width: {{ completion_percentage }}%">
+                                    <span class="progress-percentage">{{ completion_percentage }}%</span>
+                                </div>
+                            </div>
+                        </div>
+                        <div class="col-md-4 text-start">
+                            <div class="text-muted">
+                                <i class="fas fa-info-circle me-2"></i>
+                                أكمل جميع الحقول المطلوبة للوصول إلى 100%
+                            </div>
+                        </div>
+                    </div>
+                </div>
+
+                <form method="POST" enctype="multipart/form-data">
+                    <!-- Personal Information Section -->
+                    <div class="form-section-card">
+                        <div class="section-header">
+                            <h5 class="card-title mb-0">
+                                <i class="fas fa-id-card me-2"></i>
+                                البيانات الشخصية الأساسية
+                            </h5>
+                        </div>
+                        <div class="row">
+                            <div class="col-md-6 mb-3">
+                                <label for="arabic_name" class="form-label required">الاسم رباعي باللغة العربية</label>
+                                <input type="text" class="form-control" id="arabic_name" name="arabic_name" 
+                                       value="{{ employee_data.arabic_name if employee_data else '' }}">
+                                <div class="form-text">أدخل اسمك الرباعي كما في البطاقة الشخصية</div>
+                            </div>
+                            <div class="col-md-6 mb-3">
+                                <label for="english_name" class="form-label required">الاسم رباعي باللغة الإنجليزية</label>
+                                <input type="text" class="form-control" id="english_name" name="english_name" 
+                                       value="{{ employee_data.english_name if employee_data else '' }}">
+                                <div class="form-text">أدخل اسمك الرباعي بالحروف الإنجليزية</div>
+                            </div>
+                        </div>
+
+                        <div class="row">
+                            <div class="col-md-4 mb-3">
+                                <label for="national_id" class="form-label required">الرقم القومي</label>
+                                <input type="text" class="form-control" id="national_id" name="national_id" 
+                                       value="{{ employee_data.national_id if employee_data else '' }}">
+                            </div>
+                            <div class="col-md-4 mb-3">
+                                <label for="id_issue_date" class="form-label">تاريخ إصدار البطاقة</label>
+                                <input type="date" class="form-control" id="id_issue_date" name="id_issue_date" 
+                                       value="{{ employee_data.id_issue_date if employee_data and employee_data.id_issue_date else '' }}">
+                            </div>
+                            <div class="col-md-4 mb-3">
+                                <label for="marital_status" class="form-label required">الحالة الاجتماعية</label>
+                                <select class="form-select" id="marital_status" name="marital_status">
+                                    <option value="">اختر الحالة</option>
+                                    <option value="أعزب" {% if employee_data and employee_data.marital_status == 'أعزب' %}selected{% endif %}>أعزب</option>
+                                    <option value="متزوج" {% if employee_data and employee_data.marital_status == 'متزوج' %}selected{% endif %}>متزوج</option>
+                                    <option value="مطلق" {% if employee_data and employee_data.marital_status == 'مطلق' %}selected{% endif %}>مطلق</option>
+                                    <option value="أرمل" {% if employee_data and employee_data.marital_status == 'أرمل' %}selected{% endif %}>أرمل</option>
+                                </select>
+                            </div>
+                        </div>
+
+                        <div class="row">
+                            <div class="col-md-6 mb-3">
+                                <label for="birth_date" class="form-label required">تاريخ الميلاد</label>
+                                <input type="date" class="form-control" id="birth_date" name="birth_date" 
+                                       value="{{ employee_data.birth_date if employee_data and employee_data.birth_date else '' }}">
+                            </div>
+                            <div class="col-md-6 mb-3">
+                                <label for="national_id_image" class="form-label">صورة البطاقة الشخصية</label>
+                                <div class="file-upload">
+                                    <i class="fas fa-cloud-upload-alt fa-2x text-muted mb-3"></i>
+                                    <p class="text-muted mb-2">اسحب وأفلت الملف هنا أو انقر للرفع</p>
+                                    <input type="file" class="form-control" id="national_id_image" name="national_id_image" 
+                                           accept=".png,.jpg,.jpeg,.pdf">
+                                    <small class="text-muted">الملفات المسموحة: PNG, JPG, JPEG, PDF</small>
+                                </div>
+                            </div>
+                        </div>
+                    </div>
+
+                    <!-- Contact Information Section -->
+                    <div class="form-section-card">
+                        <div class="section-header section-header-success">
+                            <h5 class="card-title mb-0">
+                                <i class="fas fa-phone-alt me-2"></i>
+                                معلومات الاتصال
+                            </h5>
+                        </div>
+                        <div class="row">
+                            <div class="col-md-6 mb-3">
+                                <label for="phone" class="form-label required">رقم الهاتف</label>
+                                <input type="tel" class="form-control" id="phone" name="phone" 
+                                       value="{{ employee_data.phone if employee_data else '' }}">
+                                <div class="form-text">رقم هاتفك الشخصي النشط</div>
+                            </div>
+                            <div class="col-md-6 mb-3">
+                                <label for="whatsapp" class="form-label required">رقم الواتساب</label>
+                                <input type="tel" class="form-control" id="whatsapp" name="whatsapp" 
+                                       value="{{ employee_data.whatsapp if employee_data else '' }}">
+                                <div class="form-text">رقم واتسابك النشط للتواصل</div>
+                            </div>
+                        </div>
+
+                        <div class="mb-3">
+                            <label for="address" class="form-label required">العنوان التفصيلي</label>
+                            <textarea class="form-control" id="address" name="address" rows="3">{{ employee_data.address if employee_data else '' }}</textarea>
+                            <div class="form-text">أدخل عنوان السكن التفصيلي بالكامل</div>
+                        </div>
+
+                        <div class="row">
+                            <div class="col-md-6 mb-3">
+                                <label for="military_status" class="form-label">الموقف من التجنيد</label>
+                                <select class="form-select" id="military_status" name="military_status">
+                                    <option value="">اختر الموقف</option>
+                                    <option value="معافى" {% if employee_data and employee_data.military_status == 'معافى' %}selected{% endif %}>معافى</option>
+                                    <option value="مؤجل" {% if employee_data and employee_data.military_status == 'مؤجل' %}selected{% endif %}>مؤجل</option>
+                                    <option value="أدى الخدمة" {% if employee_data and employee_data.military_status == 'أدى الخدمة' %}selected{% endif %}>أدى الخدمة</option>
+                                    <option value="غير مطلوب" {% if employee_data and employee_data.military_status == 'غير مطلوب' %}selected{% endif %}>غير مطلوب</option>
+                                </select>
+                            </div>
+                            <div class="col-md-6 mb-3">
+                                <label for="military_status_image" class="form-label">صورة موقف التجنيد</label>
+                                <div class="file-upload">
+                                    <i class="fas fa-cloud-upload-alt fa-2x text-muted mb-3"></i>
+                                    <p class="text-muted mb-2">اسحب وأفلت الملف هنا أو انقر للرفع</p>
+                                    <input type="file" class="form-control" id="military_status_image" name="military_status_image" 
+                                           accept=".png,.jpg,.jpeg,.pdf">
+                                </div>
+                            </div>
+                        </div>
+                    </div>
+
+                    <!-- Educational Information Section -->
+                    <div class="form-section-card">
+                        <div class="section-header section-header-info">
+                            <h5 class="card-title mb-0">
+                                <i class="fas fa-graduation-cap me-2"></i>
+                                البيانات الدراسية والمؤهلات
+                            </h5>
+                        </div>
+                        <div class="row">
+                            <div class="col-md-6 mb-3">
+                                <label for="qualification" class="form-label required">المؤهل الدراسي</label>
+                                <input type="text" class="form-control" id="qualification" name="qualification" 
+                                       value="{{ employee_data.qualification if employee_data else '' }}">
+                                <div class="form-text">أدخل أعلى مؤهل دراسي حاصل عليه</div>
+                            </div>
+                            <div class="col-md-6 mb-3">
+                                <label for="qualification_image" class="form-label">صورة المؤهل الدراسي</label>
+                                <div class="file-upload">
+                                    <i class="fas fa-cloud-upload-alt fa-2x text-muted mb-3"></i>
+                                    <p class="text-muted mb-2">اسحب وأفلت الملف هنا أو انقر للرفع</p>
+                                    <input type="file" class="form-control" id="qualification_image" name="qualification_image" 
+                                           accept=".png,.jpg,.jpeg,.pdf">
+                                </div>
+                            </div>
+                        </div>
+
+                        <div class="row">
+                            <div class="col-md-6 mb-3">
+                                <label for="graduation_year" class="form-label required">سنة التخرج</label>
+                                <input type="number" class="form-control" id="graduation_year" name="graduation_year" 
+                                       value="{{ employee_data.graduation_year if employee_data else '' }}" min="1950" max="2030">
+                            </div>
+                            <div class="col-md-6 mb-3">
+                                <label for="grade" class="form-label">التقدير</label>
+                                <input type="text" class="form-control" id="grade" name="grade" 
+                                       value="{{ employee_data.grade if employee_data else '' }}">
+                                <div class="form-text">مثال: جيد، جيد جداً، امتياز</div>
+                            </div>
+                        </div>
+                    </div>
+
+                    <!-- Emergency Contacts Section -->
+                    <div class="form-section-card">
+                        <div class="section-header section-header-warning">
+                            <h5 class="card-title mb-0">
+                                <i class="fas fa-address-book me-2"></i>
+                                جهات الاتصال في حالات الطوارئ
+                            </h5>
+                        </div>
+                        
+                        <div class="field-group">
+                            <h6 class="fw-bold text-primary mb-3">
+                                <i class="fas fa-user-plus me-2"></i>
+                                جهة الاتصال الأولى
+                            </h6>
+                            <div class="row">
+                                <div class="col-md-3 mb-3">
+                                    <label for="emergency1_name" class="form-label required">الاسم</label>
+                                    <input type="text" class="form-control" id="emergency1_name" name="emergency1_name" 
+                                           value="{{ employee_data.emergency1_name if employee_data else '' }}">
+                                </div>
+                                <div class="col-md-3 mb-3">
+                                    <label for="emergency1_phone" class="form-label required">التليفون</label>
+                                    <input type="tel" class="form-control" id="emergency1_phone" name="emergency1_phone" 
+                                           value="{{ employee_data.emergency1_phone if employee_data else '' }}">
+                                </div>
+                                <div class="col-md-3 mb-3">
+                                    <label for="emergency1_relation" class="form-label required">صلة القرابة</label>
+                                    <input type="text" class="form-control" id="emergency1_relation" name="emergency1_relation" 
+                                           value="{{ employee_data.emergency1_relation if employee_data else '' }}">
+                                </div>
+                                <div class="col-md-3 mb-3">
+                                    <label for="emergency1_address" class="form-label">العنوان</label>
+                                    <input type="text" class="form-control" id="emergency1_address" name="emergency1_address" 
+                                           value="{{ employee_data.emergency1_address if employee_data else '' }}">
+                                </div>
+                            </div>
+                        </div>
+
+                        <div class="field-group">
+                            <h6 class="fw-bold text-primary mb-3">
+                                <i class="fas fa-user-plus me-2"></i>
+                                جهة الاتصال الثانية
+                            </h6>
+                            <div class="row">
+                                <div class="col-md-3 mb-3">
+                                    <label for="emergency2_name" class="form-label">الاسم</label>
+                                    <input type="text" class="form-control" id="emergency2_name" name="emergency2_name" 
+                                           value="{{ employee_data.emergency2_name if employee_data else '' }}">
+                                </div>
+                                <div class="col-md-3 mb-3">
+                                    <label for="emergency2_phone" class="form-label">التليفون</label>
+                                    <input type="tel" class="form-control" id="emergency2_phone" name="emergency2_phone" 
+                                           value="{{ employee_data.emergency2_phone if employee_data else '' }}">
+                                </div>
+                                <div class="col-md-3 mb-3">
+                                    <label for="emergency2_relation" class="form-label">صلة القرابة</label>
+                                    <input type="text" class="form-control" id="emergency2_relation" name="emergency2_relation" 
+                                           value="{{ employee_data.emergency2_relation if employee_data else '' }}">
+                                </div>
+                                <div class="col-md-3 mb-3">
+                                    <label for="emergency2_address" class="form-label">العنوان</label>
+                                    <input type="text" class="form-control" id="emergency2_address" name="emergency2_address" 
+                                           value="{{ employee_data.emergency2_address if employee_data else '' }}">
+                                </div>
+                            </div>
+                        </div>
+                    </div>
+
+                    <!-- Action Buttons -->
+                    <div class="text-center mt-4">
+                        <button type="submit" name="save_complete" class="btn btn-success btn-lg me-3">
+                            <i class="fas fa-check-circle me-2"></i>تحديث البيانات
+                        </button>
+                    </div>
+                </form>
+
+                {% if missing_fields %}
+                <div class="missing-fields-card">
+                    <div class="d-flex align-items-center mb-3">
+                        <i class="fas fa-exclamation-circle fa-2x text-warning me-3"></i>
+                        <h5 class="fw-bold mb-0 text-warning">الحقول المطلوبة لإكمال البيانات</h5>
+                    </div>
+                    <p class="text-muted mb-3">لإكمال بياناتك بنسبة 100%، يرجى تعبئة الحقول التالية:</p>
+                    <div class="row">
+                        {% for field in missing_fields %}
+                        <div class="col-md-6 col-lg-4 mb-2">
+                            <div class="d-flex align-items-center">
+                                <i class="fas fa-arrow-left text-warning me-2"></i>
+                                <span class="text-dark">{{ field }}</span>
+                            </div>
+                        </div>
+                        {% endfor %}
+                    </div>
+                </div>
+                {% endif %}
+            </div>
+        </main>
+    </div>
+
+    <!-- Bootstrap 5 JS -->
+    <script src="https://cdn.jsdelivr.net/npm/bootstrap@5.3.0/dist/js/bootstrap.bundle.min.js"></script>
+
+    <script>
+        // Enhanced interactive elements
+        document.addEventListener('DOMContentLoaded', function() {
+            // Mobile menu functionality
+            const mobileMenuBtn = document.getElementById('mobileMenuBtn');
+            const mobileNavMenu = document.getElementById('mobileNavMenu');
+            
+            if (mobileMenuBtn && mobileNavMenu) {
+                mobileMenuBtn.addEventListener('click', function() {
+                    mobileNavMenu.classList.toggle('active');
+                });
+                
+                // Close mobile menu when clicking outside
+                document.addEventListener('click', function(event) {
+                    if (!mobileMenuBtn.contains(event.target) && !mobileNavMenu.contains(event.target)) {
+                        mobileNavMenu.classList.remove('active');
+                    }
+                });
+            }
+            
+            // Navigation controls for horizontal scrolling
+            const navWrapper = document.querySelector('.nav-menu-wrapper');
+            const navPrevButtons = document.querySelectorAll('.nav-prev');
+            const navNextButtons = document.querySelectorAll('.nav-next');
+            
+            if (navWrapper && navPrevButtons.length > 0 && navNextButtons.length > 0) {
+                const scrollAmount = 200;
+                
+                navNextButtons.forEach(button => {
+                    button.addEventListener('click', function() {
+                        navWrapper.scrollBy({ left: -scrollAmount, behavior: 'smooth' });
+                    });
+                });
+                
+                navPrevButtons.forEach(button => {
+                    button.addEventListener('click', function() {
+                        navWrapper.scrollBy({ left: scrollAmount, behavior: 'smooth' });
+                    });
+                });
+                
+                // Show/hide controls based on scroll position
+                const updateNavControls = () => {
+                    const showLeft = navWrapper.scrollLeft > 0;
+                    const showRight = navWrapper.scrollLeft < (navWrapper.scrollWidth - navWrapper.clientWidth);
+                    
+                    document.querySelector('.nav-controls').style.display = showLeft ? 'flex' : 'none';
+                    document.querySelector('.nav-controls-right').style.display = showRight ? 'flex' : 'none';
+                };
+                
+                navWrapper.addEventListener('scroll', updateNavControls);
+                window.addEventListener('resize', updateNavControls);
+                updateNavControls();
+            }
+
+            // Real-time clock
+            function updateClock() {
+                const now = new Date();
+                const timeString = now.toLocaleTimeString('ar-EG');
+                const dateString = now.toLocaleDateString('ar-EG', {
+                    weekday: 'long',
+                    year: 'numeric',
+                    month: 'long',
+                    day: 'numeric'
+                });
+                
+                const clockElement = document.getElementById('live-clock');
+                const mobileClockElement = document.getElementById('mobile-clock');
+                
+                if (clockElement) {
+                    clockElement.innerHTML = `
+                        <i class="bi bi-clock me-2"></i>
+                        ${timeString}
+                        <small class="text-white-50 ms-2 d-none d-md-inline">${dateString}</small>
+                    `;
+                }
+                
+                if (mobileClockElement) {
+                    mobileClockElement.innerHTML = `
+                        <i class="bi bi-clock me-2"></i>
+                        ${timeString}
+                    `;
+                }
+            }
+            
+            updateClock();
+            setInterval(updateClock, 1000);
+            
+            // Add touch scrolling for mobile
+            let touchStartX = 0;
+            let touchEndX = 0;
+            
+            if (navWrapper) {
+                navWrapper.addEventListener('touchstart', e => {
+                    touchStartX = e.changedTouches[0].screenX;
+                });
+                
+                navWrapper.addEventListener('touchend', e => {
+                    touchEndX = e.changedTouches[0].screenX;
+                    handleSwipe();
+                });
+                
+                function handleSwipe() {
+                    const swipeThreshold = 50;
+                    const diff = touchStartX - touchEndX;
+                    
+                    if (Math.abs(diff) > swipeThreshold) {
+                        if (diff > 0) {
+                            // Swipe left
+                            navWrapper.scrollBy({ left: scrollAmount, behavior: 'smooth' });
+                        } else {
+                            // Swipe right
+                            navWrapper.scrollBy({ left: -scrollAmount, behavior: 'smooth' });
+                        }
+                    }
+                }
+            }
+
+            // File upload preview (basic implementation)
+            const fileInputs = document.querySelectorAll('input[type="file"]');
+            fileInputs.forEach(input => {
+                input.addEventListener('change', function() {
+                    const fileName = this.files[0]?.name;
+                    if (fileName) {
+                        const label = this.previousElementSibling;
+                        if (label && label.classList.contains('file-upload')) {
+                            const textElement = label.querySelector('p');
+                            if (textElement) {
+                                textElement.textContent = `تم اختيار الملف: ${fileName}`;
+                                textElement.classList.remove('text-muted');
+                                textElement.classList.add('text-success');
+                            }
+                        }
+                    }
+                });
+            });
+        });
+    </script>
+</body>
+</html>

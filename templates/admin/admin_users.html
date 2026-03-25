@@ -1,0 +1,98 @@
+{% extends "layouts/admin_base.html" %}
+
+{% block title %}إدارة المستخدمين{% endblock %}
+
+{% block admin_content %}
+<div class="d-flex justify-content-between flex-wrap flex-md-nowrap align-items-center pt-3 pb-2 mb-3 border-bottom">
+    <h1 class="h2">إدارة المستخدمين</h1>
+    <a href="{{ url_for('create_user') }}" class="btn btn-primary">
+        <i class="fas fa-user-plus me-2"></i>إضافة مستخدم جديد
+    </a>
+</div>
+
+<div class="card">
+    <div class="card-header">
+        <h5 class="card-title mb-0">قائمة المستخدمين</h5>
+    </div>
+    <div class="card-body">
+        <div class="table-responsive">
+            <table class="table table-striped">
+                <thead>
+                    <tr>
+                        <th>اسم المستخدم</th>
+                        <th>الاسم الكامل</th>
+                        <th>الصفة</th>
+                        <th>القسم</th>
+                        <th>نسبة الإكتمال</th>
+                        <th>آخر تحديث</th>
+                        <th>الإجراءات</th>
+                    </tr>
+                </thead>
+                <tbody>
+                    {% for user in users %}
+                    <tr>
+                        <td>{{ user.username }}</td>
+                        <td>{{ user.name }}</td>
+                        <td>
+                            {% if user.is_admin %}
+                                <span class="badge bg-danger">مسؤول</span>
+                            {% elif user.is_manager %}
+                                <span class="badge bg-warning">مدير</span>
+                            {% else %}
+                                <span class="badge bg-success">موظف</span>
+                            {% endif %}
+                        </td>
+                        <td>
+                            {% if user.department_id %}
+                                {% for dept in departments %}
+                                    {% if dept.id == user.department_id %}
+                                        {{ dept.name }}
+                                    {% endif %}
+                                {% endfor %}
+                            {% else %}
+                                <span class="text-muted">غير معين</span>
+                            {% endif %}
+                        </td>
+                        <td>
+                            {% if user.employee_data %}
+                                <div class="progress" style="height: 10px;">
+                                    <div class="progress-bar {% if user.employee_data.completion_percentage == 100 %}bg-success{% else %}bg-warning{% endif %}" 
+                                         style="width: {{ user.employee_data.completion_percentage }}%">
+                                    </div>
+                                </div>
+                                <small>{{ user.employee_data.completion_percentage }}%</small>
+                            {% else %}
+                                <span class="badge bg-secondary">0%</span>
+                            {% endif %}
+                        </td>
+                        <td>
+                            {% if user.employee_data and user.employee_data.last_updated %}
+                                {{ user.employee_data.last_updated.strftime('%Y-%m-%d') }}
+                            {% else %}
+                                <span class="text-muted">لم يتم التحديث</span>
+                            {% endif %}
+                        </td>
+                        <td>
+                            <div class="btn-group btn-group-sm">
+                                {% if not user.is_admin %}
+                                <a href="{{ url_for('view_user_data', user_id=user.id) }}" 
+                                   class="btn btn-outline-info" title="عرض البيانات">
+                                    <i class="fas fa-eye"></i>
+                                </a>
+                                {% if user.employee_data %}
+                                <a href="{{ url_for('export_user_data', user_id=user.id) }}" 
+                                   class="btn btn-outline-success" title="تصدير البيانات">
+                                    <i class="fas fa-download"></i>
+                                </a>
+                                {% endif %}
+                                {% endif %}
+                            </div>
+                        </td>
+                    </tr>
+                    {% endfor %}
+                </tbody>
+            </table>
+        </div>
+    </div>
+</div>
+{% endblock %}

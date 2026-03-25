@@ -1,0 +1,738 @@
+<!DOCTYPE html>
+<html lang="ar" dir="rtl">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>تقدم الموظفين - نظام إدارة الموارد البشرية</title>
+    
+    <!-- Bootstrap 5 CSS -->
+    <link href="https://cdn.jsdelivr.net/npm/bootstrap@5.3.0/dist/css/bootstrap.min.css" rel="stylesheet">
+    
+    <!-- Bootstrap Icons -->
+    <link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/bootstrap-icons@1.10.0/font/bootstrap-icons.css">
+    
+    <!-- Font Awesome -->
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css">
+    
+    <!-- Chart.js -->
+    <script src="https://cdn.jsdelivr.net/npm/chart.js"></script>
+    
+    <style>
+        .back-btn {
+            background: rgba(255, 255, 255, 0.2);
+            border: 2px solid rgba(255, 255, 255, 0.3);
+            color: white;
+            border-radius: 15px;
+            padding: 10px 20px;
+            transition: all 0.3s ease;
+            font-weight: 600;
+        }
+        
+        .back-btn:hover {
+            background: rgba(255, 255, 255, 0.3);
+            border-color: rgba(255, 255, 255, 0.5);
+            transform: translateY(-2px);
+            color: white;
+        }
+
+        :root {
+            --primary-green: #10b981;
+            --dark-green: #059669;
+            --light-green: #34d399;
+            --accent-green: #a7f3d0;
+            --gradient-primary: linear-gradient(135deg, #10b981 0%, #059669 100%);
+            --gradient-secondary: linear-gradient(135deg, #34d399 0%, #10b981 100%);
+            --gradient-dark: linear-gradient(135deg, #065f46 0%, #047857 100%);
+        }
+        
+        body {
+            font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif;
+            background: linear-gradient(135deg, #ecfdf5 0%, #d1fae5 100%);
+            min-height: 100vh;
+            padding: 20px;
+        }
+        
+        .admin-container {
+            max-width: 1400px;
+            margin: 0 auto;
+        }
+        
+        .header-card {
+            background: var(--gradient-dark);
+            border: none;
+            border-radius: 20px;
+            color: white;
+            box-shadow: 0 15px 35px rgba(5, 150, 105, 0.2);
+            transition: all 0.3s ease;
+            margin-bottom: 30px;
+        }
+        
+        .header-card:hover {
+            transform: translateY(-5px);
+            box-shadow: 0 20px 40px rgba(5, 150, 105, 0.3);
+        }
+        
+        .content-card {
+            border: none;
+            border-radius: 20px;
+            box-shadow: 0 15px 35px rgba(16, 185, 129, 0.1);
+            backdrop-filter: blur(10px);
+            background: rgba(255, 255, 255, 0.95);
+            transition: all 0.3s ease;
+            margin-bottom: 25px;
+        }
+        
+        .content-card:hover {
+            box-shadow: 0 20px 45px rgba(16, 185, 129, 0.15);
+        }
+        
+        .card-header {
+            border-radius: 20px 20px 0 0 !important;
+            border-bottom: 2px solid rgba(255, 255, 255, 0.1);
+            padding: 20px 25px;
+        }
+        
+        .card-header-primary {
+            background: var(--gradient-primary);
+            color: white;
+        }
+        
+        .card-header-success {
+            background: var(--gradient-secondary);
+            color: white;
+        }
+        
+        .card-header-info {
+            background: linear-gradient(135deg, #0ea5e9 0%, #0284c7 100%);
+            color: white;
+        }
+        
+        .btn-primary {
+            background: var(--gradient-primary);
+            border: none;
+            border-radius: 15px;
+            padding: 12px 30px;
+            font-weight: 600;
+            transition: all 0.3s ease;
+            box-shadow: 0 4px 15px rgba(16, 185, 129, 0.3);
+        }
+        
+        .btn-primary:hover {
+            transform: translateY(-3px);
+            box-shadow: 0 8px 25px rgba(16, 185, 129, 0.4);
+        }
+        
+        .btn-success {
+            background: linear-gradient(135deg, #10b981 0%, #059669 100%);
+            border: none;
+            border-radius: 15px;
+            padding: 12px 30px;
+            font-weight: 600;
+            transition: all 0.3s ease;
+            box-shadow: 0 4px 15px rgba(16, 185, 129, 0.3);
+        }
+        
+        .btn-warning {
+            background: linear-gradient(135deg, #f59e0b 0%, #d97706 100%);
+            border: none;
+            border-radius: 15px;
+            padding: 12px 30px;
+            font-weight: 600;
+            transition: all 0.3s ease;
+            box-shadow: 0 4px 15px rgba(245, 158, 11, 0.3);
+        }
+        
+        .btn-info {
+            background: linear-gradient(135deg, #0ea5e9 0%, #0284c7 100%);
+            border: none;
+            border-radius: 15px;
+            padding: 12px 30px;
+            font-weight: 600;
+            transition: all 0.3s ease;
+            box-shadow: 0 4px 15px rgba(14, 165, 233, 0.3);
+        }
+        
+        .btn-outline-primary {
+            border: 2px solid var(--primary-green);
+            color: var(--primary-green);
+            border-radius: 12px;
+            padding: 8px 16px;
+            font-weight: 600;
+            transition: all 0.3s ease;
+        }
+        
+        .btn-outline-primary:hover {
+            background: var(--primary-green);
+            color: white;
+            transform: translateY(-2px);
+        }
+        
+        .floating-shape {
+            position: fixed;
+            width: 200px;
+            height: 200px;
+            background: var(--gradient-primary);
+            opacity: 0.1;
+            border-radius: 50%;
+            z-index: -1;
+            animation: float 6s ease-in-out infinite;
+        }
+        
+        .shape-1 {
+            top: 10%;
+            left: 10%;
+        }
+        
+        .shape-2 {
+            bottom: 10%;
+            right: 10%;
+            animation-delay: 2s;
+        }
+        
+        @keyframes float {
+            0%, 100% { transform: translateY(0px) rotate(0deg); }
+            50% { transform: translateY(-20px) rotate(10deg); }
+        }
+        
+        .form-control, .form-select {
+            border: 2px solid rgba(16, 185, 129, 0.1);
+            border-radius: 15px;
+            padding: 12px 15px;
+            transition: all 0.3s ease;
+            background: rgba(255, 255, 255, 0.8);
+        }
+        
+        .form-control:focus, .form-select:focus {
+            border-color: var(--primary-green);
+            box-shadow: 0 0 0 0.2rem rgba(16, 185, 129, 0.15);
+            background: white;
+            transform: translateY(-2px);
+        }
+        
+        .progress-table {
+            width: 100%;
+            border-collapse: separate;
+            border-spacing: 0 10px;
+        }
+        
+        .progress-table th {
+            color: var(--dark-green);
+            font-weight: 600;
+            padding: 15px;
+            background: rgba(16, 185, 129, 0.05);
+            border-radius: 10px 0 0 10px;
+        }
+        
+        .progress-table td {
+            padding: 15px;
+            background: rgba(255, 255, 255, 0.9);
+            border-radius: 0 10px 10px 0;
+            border: 1px solid rgba(16, 185, 129, 0.1);
+            vertical-align: middle;
+        }
+        
+        .progress-table tr {
+            transition: all 0.3s ease;
+        }
+        
+        .progress-table tr:hover {
+            transform: translateY(-2px);
+            box-shadow: 0 5px 15px rgba(16, 185, 129, 0.1);
+        }
+        
+        .badge {
+            font-size: 0.8rem;
+            padding: 6px 12px;
+            border-radius: 10px;
+            font-weight: 500;
+        }
+        
+        .stats-card {
+            background: rgba(255, 255, 255, 0.9);
+            border-radius: 15px;
+            padding: 20px;
+            text-align: center;
+            border: 1px solid rgba(16, 185, 129, 0.1);
+            transition: all 0.3s ease;
+            height: 100%;
+        }
+        
+        .stats-card:hover {
+            transform: translateY(-5px);
+            box-shadow: 0 10px 25px rgba(16, 185, 129, 0.15);
+        }
+        
+        .stats-value {
+            font-size: 2rem;
+            font-weight: 700;
+            color: var(--dark-green);
+            margin: 10px 0;
+        }
+        
+        .stats-label {
+            color: #6b7280;
+            font-size: 0.9rem;
+        }
+        
+        .modal-content {
+            border-radius: 20px;
+            border: none;
+            box-shadow: 0 20px 60px rgba(0, 0, 0, 0.1);
+        }
+        
+        .modal-header {
+            border-radius: 20px 20px 0 0;
+            background: var(--gradient-primary);
+            color: white;
+            border-bottom: none;
+            padding: 20px 25px;
+        }
+        
+        .modal-footer {
+            border-radius: 0 0 20px 20px;
+            border-top: 1px solid rgba(16, 185, 129, 0.1);
+            padding: 20px 25px;
+        }
+        
+        .employee-actions {
+            display: flex;
+            gap: 8px;
+            flex-wrap: wrap;
+            justify-content: center;
+        }
+        
+        .empty-state {
+            text-align: center;
+            padding: 40px 20px;
+            color: #6b7280;
+        }
+        
+        .empty-state i {
+            font-size: 3rem;
+            margin-bottom: 15px;
+            opacity: 0.5;
+        }
+
+        .progress {
+            height: 8px;
+            border-radius: 10px;
+            background-color: rgba(16, 185, 129, 0.1);
+        }
+        
+        .progress-bar {
+            border-radius: 10px;
+            transition: width 0.6s ease;
+        }
+        
+        .chart-container {
+            position: relative;
+            height: 300px;
+            padding: 20px;
+        }
+        
+        .avatar-sm {
+            width: 40px;
+            height: 40px;
+            border-radius: 50%;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            font-size: 1rem;
+            color: white;
+        }
+        
+        .avatar-primary {
+            background: var(--gradient-primary);
+        }
+        
+        .avatar-success {
+            background: var(--gradient-secondary);
+        }
+        
+        .avatar-warning {
+            background: linear-gradient(135deg, #f59e0b 0%, #d97706 100%);
+        }
+        
+        .avatar-info {
+            background: linear-gradient(135deg, #0ea5e9 0%, #0284c7 100%);
+        }
+
+        /* Fix modal z-index issues */
+        .modal {
+            z-index: 1060 !important;
+        }
+        
+        .modal-backdrop {
+            z-index: 1050 !important;
+        }
+        
+        .dropdown-menu {
+            border-radius: 15px;
+            border: 1px solid rgba(16, 185, 129, 0.1);
+            box-shadow: 0 10px 30px rgba(0, 0, 0, 0.1);
+        }
+        
+        .dropdown-item.active {
+            background: var(--gradient-primary);
+        }
+    </style>
+</head>
+<body>
+    <!-- Background Shapes -->
+    <div class="floating-shape shape-1"></div>
+    <div class="floating-shape shape-2"></div>
+    
+    <div class="admin-container">
+        <!-- Header -->
+        <div class="header-card card">
+            <div class="card-body">
+                <div class="row align-items-center">
+                    <div class="col-md-8">
+                        <h1 class="h2 fw-bold mb-2">
+                            <i class="bi bi-graph-up me-3"></i>
+                            تقدم الموظفين
+                        </h1>
+                        <p class="mb-0 opacity-75">متابعة تقدم الموظفين في تعبئة البيانات وإكمال الملف الشخصي</p>
+                    </div>
+                    <div class="col-md-4 text-start">
+                        <a href="{{ url_for('admin_dashboard') }}" class="btn back-btn">
+                            <i class="bi bi-arrow-right me-2"></i>
+                            العودة للوحة التحكم
+                        </a>
+                    </div>
+                </div>
+            </div>
+        </div>
+
+        <!-- Search and Filter -->
+        <div class="content-card card mb-4">
+            <div class="card-body">
+                <div class="row">
+                    <div class="col-md-6">
+                        <div class="input-group">
+                            <input type="text" id="searchInput" class="form-control" placeholder="بحث باسم الموظف..." onkeyup="searchTable()">
+                            <button class="btn btn-outline-primary" type="button">
+                                <i class="bi bi-search"></i>
+                            </button>
+                        </div>
+                    </div>
+                    <div class="col-md-6 text-start">
+                        <div class="dropdown">
+                            <button class="btn btn-outline-primary dropdown-toggle" type="button" id="filterDropdown" data-bs-toggle="dropdown" aria-expanded="false">
+                                <i class="bi bi-funnel me-2"></i> تصفية حسب الحالة
+                            </button>
+                            <ul class="dropdown-menu" aria-labelledby="filterDropdown">
+                                <li><a class="dropdown-item filter-item active" href="#" data-filter="all">الكل ({{ employee_data_list | length }})</a></li>
+                                <li><a class="dropdown-item filter-item" href="#" data-filter="completed">مكتملون فقط ({{ completed_count | length }})</a></li>
+                                <li><a class="dropdown-item filter-item" href="#" data-filter="incomplete">غير مكتملين ({{ incomplete_count | length }})</a></li>
+                                <li><a class="dropdown-item filter-item" href="#" data-filter="not-started">لم يبدؤوا ({{ not_started_count | length }})</a></li>
+                            </ul>
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </div>
+
+        <!-- Employee Progress Table -->
+        <div class="content-card card">
+            <div class="card-header card-header-success">
+                <h5 class="card-title mb-0">
+                    <i class="bi bi-list-check me-2"></i>
+                    تفاصيل تقدم الموظفين
+                </h5>
+            </div>
+            <div class="card-body">
+                {% if employee_data_list %}
+                    <div class="table-responsive">
+                        <table class="progress-table" id="employeeProgressTable">
+                            <thead>
+                                <tr>
+                                    <th width="5%">#</th>
+                                    <th width="15%">الموظف</th>
+                                    <th width="10%">القسم</th>
+                                    <th width="15%">نسبة الإكتمال</th>
+                                    <th width="15%">الحقول المفقودة</th>
+                                    <th width="10%">آخر تحديث</th>
+                                    <th width="10%">الحالة</th>
+                                    <th width="20%">الإجراءات</th>
+                                </tr>
+                            </thead>
+                            <tbody>
+                                {% for item in employee_data_list %}
+                                <tr class="progress-row" data-status="
+                                    {% if item.data and item.data.completion_percentage == 100 %}completed
+                                    {% elif item.data and item.data.completion_percentage > 0 %}incomplete
+                                    {% else %}not-started
+                                    {% endif %}">
+                                    <td>{{ loop.index }}</td>
+                                    <td>
+                                        <div class="d-flex align-items-center">
+                                            <div class="avatar-sm avatar-primary me-3">
+                                                <i class="bi bi-person-fill"></i>
+                                            </div>
+                                            <div>
+                                                <strong>{{ item.user.name }}</strong>
+                                                <br>
+                                                <small class="text-muted">{{ item.user.username }}</small>
+                                            </div>
+                                        </div>
+                                    </td>
+                                    <td>
+                                        {% if item.user.department %}
+                                            <span class="badge bg-info">{{ item.user.department.name }}</span>
+                                        {% else %}
+                                            <span class="badge bg-secondary">غير معين</span>
+                                        {% endif %}
+                                    </td>
+                                    <td>
+                                        {% if item.data %}
+                                        <div class="progress mb-2">
+                                            <div class="progress-bar {% if item.data.completion_percentage == 100 %}bg-success{% elif item.data.completion_percentage > 50 %}bg-warning{% else %}bg-danger{% endif %}" 
+                                                 style="width: {{ item.data.completion_percentage }}%">
+                                            </div>
+                                        </div>
+                                        <small class="text-muted">{{ item.data.completion_percentage }}%</small>
+                                        {% else %}
+                                        <div class="progress mb-2">
+                                            <div class="progress-bar bg-danger" style="width: 0%"></div>
+                                        </div>
+                                        <small class="text-muted">0%</small>
+                                        {% endif %}
+                                    </td>
+                                    <td>
+                                        {% if item.data and item.missing_fields %}
+                                            <button type="button" class="btn btn-sm btn-outline-danger" data-bs-toggle="tooltip" 
+                                                    title="{{ item.missing_fields | join('، ') }}">
+                                                {{ item.missing_fields | length }} حقول
+                                            </button>
+                                        {% elif item.data %}
+                                            <span class="badge bg-success">مكتمل</span>
+                                        {% else %}
+                                            <span class="badge bg-danger">لا توجد بيانات</span>
+                                        {% endif %}
+                                    </td>
+                                    <td>
+                                        {% if item.data and item.data.last_updated %}
+                                            <small class="text-success">{{ item.data.last_updated.strftime('%Y-%m-%d %H:%M') }}</small>
+                                        {% else %}
+                                            <small class="text-muted">لم يتم التحديث</small>
+                                        {% endif %}
+                                    </td>
+                                    <td>
+                                        {% if item.data and item.data.completion_percentage == 100 %}
+                                            <span class="badge bg-success"><i class="bi bi-check me-1"></i> مكتمل</span>
+                                        {% elif item.data and item.data.completion_percentage > 0 %}
+                                            <span class="badge bg-warning"><i class="bi bi-arrow-repeat me-1"></i> غير مكتمل</span>
+                                        {% else %}
+                                            <span class="badge bg-danger"><i class="bi bi-x me-1"></i> لم يبدأ</span>
+                                        {% endif %}
+                                    </td>
+                                    <td>
+                                        <div class="employee-actions">
+                                            {% if item.data %}
+                                            <a href="{{ url_for('view_user_data', user_id=item.user.id) }}" 
+                                               class="btn btn-outline-info btn-sm" title="عرض البيانات" data-bs-toggle="tooltip">
+                                                <i class="bi bi-eye"></i>
+                                            </a>
+                                            {% if item.data.completion_percentage < 100 %}
+                                            <a href="{{ url_for('request_data_update', user_id=item.user.id) }}" 
+                                               class="btn btn-outline-warning btn-sm request-update" 
+                                               title="طلب تحديث البيانات" 
+                                               data-bs-toggle="tooltip"
+                                               data-user-name="{{ item.user.name }}">
+                                                <i class="bi bi-arrow-repeat"></i>
+                                            </a>
+                                            {% endif %}
+                                            <a href="{{ url_for('export_user_data', user_id=item.user.id) }}" 
+                                               class="btn btn-outline-success btn-sm" title="تصدير البيانات" data-bs-toggle="tooltip">
+                                                <i class="bi bi-download"></i>
+                                            </a>
+                                            {% else %}
+                                            <button class="btn btn-outline-secondary btn-sm" title="لا توجد بيانات" data-bs-toggle="tooltip" disabled>
+                                                <i class="bi bi-eye"></i>
+                                            </button>
+                                            <a href="{{ url_for('request_data_update', user_id=item.user.id) }}" 
+                                               class="btn btn-outline-warning btn-sm request-update" 
+                                               title="طلب إدخال البيانات" 
+                                               data-bs-toggle="tooltip"
+                                               data-user-name="{{ item.user.name }}">
+                                                <i class="bi bi-plus"></i>
+                                            </a>
+                                            <button class="btn btn-outline-secondary btn-sm" title="لا توجد بيانات للتصدير" data-bs-toggle="tooltip" disabled>
+                                                <i class="bi bi-download"></i>
+                                            </button>
+                                            {% endif %}
+                                            <a href="{{ url_for('admin_users') }}" 
+                                               class="btn btn-outline-primary btn-sm" title="إدارة المستخدم" data-bs-toggle="tooltip">
+                                                <i class="bi bi-gear"></i>
+                                            </a>
+                                        </div>
+                                    </td>
+                                </tr>
+                                {% endfor %}
+                            </tbody>
+                        </table>
+                    </div>
+                {% else %}
+                    <div class="empty-state">
+                        <i class="bi bi-people display-4"></i>
+                        <h5 class="text-muted mt-3">لا توجد بيانات للموظفين</h5>
+                        <p class="text-muted">لا يوجد موظفين مسجلين في النظام بعد</p>
+                    </div>
+                {% endif %}
+            </div>
+        </div>
+    </div>
+
+    <!-- Bootstrap 5 JS -->
+    <script src="https://cdn.jsdelivr.net/npm/bootstrap@5.3.0/dist/js/bootstrap.bundle.min.js"></script>
+
+    <script>
+        // Initialize tooltips
+        document.addEventListener('DOMContentLoaded', function() {
+            var tooltipTriggerList = [].slice.call(document.querySelectorAll('[data-bs-toggle="tooltip"]'))
+            var tooltipList = tooltipTriggerList.map(function (tooltipTriggerEl) {
+                return new bootstrap.Tooltip(tooltipTriggerEl)
+            });
+
+            // Pie Chart
+            var completed = {{ completed_count | length }};
+            var incomplete = {{ incomplete_count | length }};
+            var notStarted = {{ not_started_count | length }};
+
+            var ctx = document.getElementById('completionChart').getContext('2d');
+            var completionChart = new Chart(ctx, {
+                type: 'doughnut',
+                data: {
+                    labels: ['مكتمل', 'غير مكتمل', 'لم يبدأ'],
+                    datasets: [{
+                        data: [completed, incomplete, notStarted],
+                        backgroundColor: ['#10b981', '#f59e0b', '#ef4444'],
+                        hoverBackgroundColor: ['#059669', '#d97706', '#dc2626'],
+                        borderWidth: 2,
+                        borderColor: '#ffffff'
+                    }],
+                },
+                options: {
+                    responsive: true,
+                    maintainAspectRatio: false,
+                    plugins: {
+                        legend: {
+                            position: 'bottom',
+                            rtl: true,
+                            labels: {
+                                usePointStyle: true,
+                                padding: 20,
+                                font: {
+                                    family: 'Segoe UI, Tahoma, Geneva, Verdana, sans-serif'
+                                }
+                            }
+                        },
+                        tooltip: {
+                            rtl: true,
+                            bodyFont: {
+                                family: 'Segoe UI, Tahoma, Geneva, Verdana, sans-serif'
+                            }
+                        }
+                    },
+                    cutout: '70%',
+                    animation: {
+                        animateScale: true,
+                        animateRotate: true
+                    }
+                },
+            });
+
+            // Filter table rows
+            document.querySelectorAll('.filter-item').forEach(item => {
+                item.addEventListener('click', function(e) {
+                    e.preventDefault();
+                    
+                    // Remove active class from all items
+                    document.querySelectorAll('.filter-item').forEach(i => i.classList.remove('active'));
+                    // Add active class to clicked item
+                    this.classList.add('active');
+                    
+                    const filter = this.getAttribute('data-filter');
+                    const rows = document.querySelectorAll('.progress-row');
+                    
+                    rows.forEach(row => {
+                        if (filter === 'all' || row.getAttribute('data-status') === filter) {
+                            row.style.display = '';
+                        } else {
+                            row.style.display = 'none';
+                        }
+                    });
+                });
+            });
+
+            // Confirm update request
+            document.querySelectorAll('.request-update').forEach(link => {
+                link.addEventListener('click', function(e) {
+                    const userName = this.getAttribute('data-user-name');
+                    if (!confirm(`هل تريد إرسال طلب تحديث البيانات للموظف ${userName}؟`)) {
+                        e.preventDefault();
+                    }
+                });
+            });
+
+            // Add animations to cards
+            const cards = document.querySelectorAll('.content-card');
+            
+            cards.forEach((card, index) => {
+                card.style.opacity = '0';
+                card.style.transform = 'translateY(20px)';
+                card.style.transition = 'all 0.6s ease';
+                
+                setTimeout(() => {
+                    card.style.opacity = '1';
+                    card.style.transform = 'translateY(0)';
+                }, index * 100);
+            });
+        });
+
+        // Request updates for all incomplete users
+        function requestAllUpdates() {
+            if (confirm('هل تريد إرسال طلب تحديث البيانات لجميع الموظفين غير المكتملين؟')) {
+                const incompleteUsers = document.querySelectorAll('.progress-row[data-status="incomplete"], .progress-row[data-status="not-started"]');
+                
+                incompleteUsers.forEach(row => {
+                    const updateLink = row.querySelector('.request-update');
+                    if (updateLink) {
+                        // Send AJAX request for update
+                        fetch(updateLink.href)
+                            .then(response => {
+                                if (response.ok) {
+                                    console.log('تم إرسال طلب التحديث');
+                                }
+                            })
+                            .catch(error => console.error('Error:', error));
+                    }
+                });
+                
+                alert('تم إرسال طلبات التحديث لجميع الموظفين غير المكتملين');
+            }
+        }
+
+        // Search table
+        function searchTable() {
+            const input = document.getElementById('searchInput');
+            const filter = input.value.toUpperCase();
+            const table = document.getElementById('employeeProgressTable');
+            const tr = table.getElementsByTagName('tr');
+
+            for (let i = 1; i < tr.length; i++) {
+                const td = tr[i].getElementsByTagName('td')[1]; // Employee name column
+                if (td) {
+                    const txtValue = td.textContent || td.innerText;
+                    if (txtValue.toUpperCase().indexOf(filter) > -1) {
+                        tr[i].style.display = '';
+                    } else {
+                        tr[i].style.display = 'none';
+                    }
+                }
+            }
+        }
+    </script>
+</body>
+</html>

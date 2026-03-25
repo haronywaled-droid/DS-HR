@@ -1,0 +1,774 @@
+<!DOCTYPE html>
+<html lang="ar" dir="rtl">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>إدارة الأقسام - نظام إدارة الموارد البشرية</title>
+    
+    <!-- Bootstrap 5 CSS -->
+    <link href="https://cdn.jsdelivr.net/npm/bootstrap@5.3.0/dist/css/bootstrap.min.css" rel="stylesheet">
+    
+    <!-- Bootstrap Icons -->
+    <link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/bootstrap-icons@1.10.0/font/bootstrap-icons.css">
+    
+    <style>
+        /* Keep all your existing styles */
+        .back-btn {
+            background: rgba(255, 255, 255, 0.2);
+            border: 2px solid rgba(255, 255, 255, 0.3);
+            color: white;
+            border-radius: 15px;
+            padding: 10px 20px;
+            transition: all 0.3s ease;
+            font-weight: 600;
+        }
+        
+        .back-btn:hover {
+            background: rgba(255, 255, 255, 0.3);
+            border-color: rgba(255, 255, 255, 0.5);
+            transform: translateY(-2px);
+            color: white;
+        }
+
+        :root {
+            --primary-green: #10b981;
+            --dark-green: #059669;
+            --light-green: #34d399;
+            --accent-green: #a7f3d0;
+            --gradient-primary: linear-gradient(135deg, #10b981 0%, #059669 100%);
+            --gradient-secondary: linear-gradient(135deg, #34d399 0%, #10b981 100%);
+            --gradient-dark: linear-gradient(135deg, #065f46 0%, #047857 100%);
+        }
+        
+        body {
+            font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif;
+            background: linear-gradient(135deg, #ecfdf5 0%, #d1fae5 100%);
+            min-height: 100vh;
+            padding: 20px;
+        }
+        
+        .admin-container {
+            max-width: 1400px;
+            margin: 0 auto;
+        }
+        
+        .header-card {
+            background: var(--gradient-dark);
+            border: none;
+            border-radius: 20px;
+            color: white;
+            box-shadow: 0 15px 35px rgba(5, 150, 105, 0.2);
+            transition: all 0.3s ease;
+            margin-bottom: 30px;
+        }
+        
+        .header-card:hover {
+            transform: translateY(-5px);
+            box-shadow: 0 20px 40px rgba(5, 150, 105, 0.3);
+        }
+        
+        .content-card {
+            border: none;
+            border-radius: 20px;
+            box-shadow: 0 15px 35px rgba(16, 185, 129, 0.1);
+            backdrop-filter: blur(10px);
+            background: rgba(255, 255, 255, 0.95);
+            transition: all 0.3s ease;
+            margin-bottom: 25px;
+        }
+        
+        .content-card:hover {
+            box-shadow: 0 20px 45px rgba(16, 185, 129, 0.15);
+        }
+        
+        .card-header {
+            border-radius: 20px 20px 0 0 !important;
+            border-bottom: 2px solid rgba(255, 255, 255, 0.1);
+            padding: 20px 25px;
+        }
+        
+        .card-header-primary {
+            background: var(--gradient-primary);
+            color: white;
+        }
+        
+        .card-header-success {
+            background: var(--gradient-secondary);
+            color: white;
+        }
+        
+        .card-header-info {
+            background: linear-gradient(135deg, #0ea5e9 0%, #0284c7 100%);
+            color: white;
+        }
+        
+        .btn-primary {
+            background: var(--gradient-primary);
+            border: none;
+            border-radius: 15px;
+            padding: 12px 30px;
+            font-weight: 600;
+            transition: all 0.3s ease;
+            box-shadow: 0 4px 15px rgba(16, 185, 129, 0.3);
+        }
+        
+        .btn-primary:hover {
+            transform: translateY(-3px);
+            box-shadow: 0 8px 25px rgba(16, 185, 129, 0.4);
+        }
+        
+        .btn-outline-primary {
+            border: 2px solid var(--primary-green);
+            color: var(--primary-green);
+            border-radius: 12px;
+            padding: 8px 16px;
+            font-weight: 600;
+            transition: all 0.3s ease;
+        }
+        
+        .btn-outline-primary:hover {
+            background: var(--primary-green);
+            color: white;
+            transform: translateY(-2px);
+        }
+        
+        .permission-badge {
+            font-size: 0.75rem;
+            margin: 2px;
+            display: inline-block;
+        }
+        
+        .manager-item {
+            padding: 8px;
+            margin: 4px 0;
+            border-radius: 8px;
+            background: rgba(16, 185, 129, 0.05);
+            border: 1px solid rgba(16, 185, 129, 0.1);
+        }
+        
+        /* Add new styles for multi-manager system */
+        .permissions-grid {
+            display: grid;
+            grid-template-columns: repeat(2, 1fr);
+            gap: 10px;
+            margin-top: 10px;
+        }
+        
+        .permission-item {
+            display: flex;
+            align-items: center;
+            gap: 8px;
+        }
+        
+        .permission-icon {
+            font-size: 0.9rem;
+        }
+        
+        .manager-avatar {
+            width: 32px;
+            height: 32px;
+            border-radius: 50%;
+            background: var(--gradient-primary);
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            color: white;
+            font-weight: bold;
+        }
+        
+        .primary-badge {
+            background: linear-gradient(135deg, #f59e0b 0%, #d97706 100%);
+            color: white;
+            padding: 2px 8px;
+            border-radius: 12px;
+            font-size: 0.7rem;
+            margin-right: 5px;
+        }
+        
+        .manager-list {
+            max-height: 200px;
+            overflow-y: auto;
+        }
+        
+        .permission-active {
+            color: #10b981;
+        }
+        
+        .permission-inactive {
+            color: #9ca3af;
+        }
+        
+        /* Fix for tables */
+        .department-table {
+            width: 100%;
+            border-collapse: separate;
+            border-spacing: 0 10px;
+        }
+        
+        .department-table th {
+            color: var(--dark-green);
+            font-weight: 600;
+            padding: 15px;
+            background: rgba(16, 185, 129, 0.05);
+            border-radius: 10px 0 0 10px;
+        }
+        
+        .department-table td {
+            padding: 15px;
+            background: rgba(255, 255, 255, 0.9);
+            border-radius: 0 10px 10px 0;
+            border: 1px solid rgba(16, 185, 129, 0.1);
+            vertical-align: top;
+        }
+        
+        .empty-state {
+            text-align: center;
+            padding: 40px 20px;
+            color: #6b7280;
+        }
+        
+        .empty-state i {
+            font-size: 3rem;
+            margin-bottom: 15px;
+            opacity: 0.5;
+        }
+    </style>
+</head>
+<body>
+    <!-- Background Shapes -->
+    <div class="floating-shape shape-1"></div>
+    <div class="floating-shape shape-2"></div>
+    
+    <div class="admin-container">
+        <!-- Header -->
+        <div class="header-card card">
+            <div class="card-body">
+                <div class="row align-items-center">
+                    <div class="col-md-8">
+                        <h1 class="h2 fw-bold mb-2">
+                            <i class="bi bi-building me-3"></i>
+                            إدارة الأقسام والمديرين
+                        </h1>
+                        <p class="mb-0 opacity-75">إدارة أقسام الشركة وتعيين مديرين متعددين لكل قسم مع تحديد الصلاحيات</p>
+                    </div>
+                    <div class="col-md-4 text-start">
+                        <a href="{{ url_for('admin_dashboard') }}" class="btn back-btn">
+                            <i class="bi bi-arrow-right me-2"></i>
+                            العودة للوحة التحكم
+                        </a>
+                    </div>
+                </div>
+            </div>
+        </div>
+
+        <div class="row">
+            <!-- Left Column: Add Department and Add Manager Forms -->
+            <div class="col-lg-5">
+                <!-- Add Department Form -->
+                <div class="content-card card">
+                    <div class="card-header card-header-success">
+                        <h5 class="card-title mb-0">
+                            <i class="bi bi-plus-circle me-2"></i>
+                            إضافة قسم جديد
+                        </h5>
+                    </div>
+                    <div class="card-body">
+                        <form method="POST">
+                            <div class="mb-3">
+                                <label for="name" class="form-label fw-semibold">
+                                    <i class="bi bi-building me-2 text-success"></i>
+                                    اسم القسم
+                                </label>
+                                <input type="text" class="form-control" id="name" name="name" required
+                                       placeholder="أدخل اسم القسم الجديد">
+                            </div>
+                            
+                            <div class="mb-3">
+                                <label for="primary_manager_id" class="form-label fw-semibold">
+                                    <i class="bi bi-person-fill-gear me-2 text-success"></i>
+                                    المدير الرئيسي (اختياري)
+                                </label>
+                                <select class="form-select" id="primary_manager_id" name="primary_manager_id">
+                                    <option value="">اختر المدير الرئيسي للقسم</option>
+                                    {% for manager in managers %}
+                                        <option value="{{ manager.id }}">
+                                            {{ manager.name }} ({{ manager.username }})
+                                        </option>
+                                    {% endfor %}
+                                </select>
+                            </div>
+                            
+                            <button type="submit" class="btn btn-primary w-100 mt-3">
+                                <i class="bi bi-plus-circle me-2"></i>
+                                إضافة القسم
+                            </button>
+                        </form>
+                    </div>
+                </div>
+
+                <!-- Add Manager to Department Form -->
+                <div class="content-card card mt-4">
+                    <div class="card-header card-header-info">
+                        <h5 class="card-title mb-0">
+                            <i class="bi bi-person-add me-2"></i>
+                            إضافة مدير لقسم
+                        </h5>
+                    </div>
+                    <div class="card-body">
+                        <form method="POST" action="{{ url_for('admin_add_manager_to_department') }}">
+                            <div class="mb-3">
+                                <label class="form-label fw-semibold">
+                                    <i class="bi bi-building me-2"></i>
+                                    اختر القسم
+                                </label>
+                                <select class="form-select" name="department_id" required>
+                                    <option value="">اختر القسم</option>
+                                    {% for department in departments %}
+                                        <option value="{{ department.id }}">
+                                            {{ department.name }}
+                                        </option>
+                                    {% endfor %}
+                                </select>
+                            </div>
+                            
+                            <div class="mb-3">
+                                <label class="form-label fw-semibold">
+                                    <i class="bi bi-person me-2"></i>
+                                    اختر المستخدم
+                                </label>
+                                <select class="form-select" name="user_id" required>
+                                    <option value="">اختر المستخدم</option>
+                                    {% for user in users %}
+                                        {% if not user.is_admin %}
+                                            <option value="{{ user.id }}">
+                                                {{ user.name }} ({{ user.username }})
+                                                {% if user.is_manager %} - مدير حالياً{% endif %}
+                                            </option>
+                                        {% endif %}
+                                    {% endfor %}
+                                </select>
+                            </div>
+                            
+                            <!-- Permissions Section -->
+                            <div class="mb-3">
+                                <label class="form-label fw-semibold">
+                                    <i class="bi bi-shield-check me-2"></i>
+                                    صلاحيات المدير
+                                </label>
+                                <div class="border rounded p-3 bg-light">
+                                    <div class="permissions-grid">
+                                        <div class="permission-item">
+                                            <input class="form-check-input" type="checkbox" 
+                                                   name="can_manage_schedules" id="manageSchedules" checked>
+                                            <label class="form-check-label" for="manageSchedules">
+                                                <i class="bi bi-calendar-week permission-icon"></i>
+                                                إدارة الجداول
+                                            </label>
+                                        </div>
+                                        
+                                        <div class="permission-item">
+                                            <input class="form-check-input" type="checkbox" 
+                                                   name="can_manage_leaves" id="manageLeaves" checked>
+                                            <label class="form-check-label" for="manageLeaves">
+                                                <i class="bi bi-calendar-check permission-icon"></i>
+                                                إدارة الإجازات
+                                            </label>
+                                        </div>
+                                        
+                                        <div class="permission-item">
+                                            <input class="form-check-input" type="checkbox" 
+                                                   name="can_manage_permissions" id="managePermissions" checked>
+                                            <label class="form-check-label" for="managePermissions">
+                                                <i class="bi bi-clock-history permission-icon"></i>
+                                                إدارة الإذونات
+                                            </label>
+                                        </div>
+                                        
+                                        <div class="permission-item">
+                                            <input class="form-check-input" type="checkbox" 
+                                                   name="can_manage_advances" id="manageAdvances">
+                                            <label class="form-check-label" for="manageAdvances">
+                                                <i class="bi bi-cash-coin permission-icon"></i>
+                                                إدارة السلف
+                                            </label>
+                                        </div>
+                                        
+                                        <div class="permission-item">
+                                            <input class="form-check-input" type="checkbox" 
+                                                   name="can_manage_rewards" id="manageRewards">
+                                            <label class="form-check-label" for="manageRewards">
+                                                <i class="bi bi-award permission-icon"></i>
+                                                إدارة المكافآت
+                                            </label>
+                                        </div>
+                                        
+                                        <div class="permission-item">
+                                            <input class="form-check-input" type="checkbox" 
+                                                   name="can_view_reports" id="viewReports">
+                                            <label class="form-check-label" for="viewReports">
+                                                <i class="bi bi-graph-up permission-icon"></i>
+                                                عرض التقارير
+                                            </label>
+                                        </div>
+                                    </div>
+                                </div>
+                            </div>
+                            
+                            <div class="form-check form-switch mb-3">
+                                <input class="form-check-input" type="checkbox" 
+                                       name="is_primary_manager" id="isPrimaryManager">
+                                <label class="form-check-label" for="isPrimaryManager">
+                                    <i class="bi bi-star-fill text-warning me-1"></i>
+                                    تعيين كمدير رئيسي
+                                </label>
+                            </div>
+                            
+                            <button type="submit" class="btn btn-success w-100">
+                                <i class="bi bi-person-add me-2"></i>
+                                إضافة مدير
+                            </button>
+                        </form>
+                    </div>
+                </div>
+            </div>
+
+            <!-- Right Column: Departments List -->
+            <div class="col-lg-7">
+                <div class="content-card card">
+                    <div class="card-header card-header-primary">
+                        <div class="d-flex justify-content-between align-items-center">
+                            <h5 class="card-title mb-0">
+                                <i class="bi bi-list-ul me-2"></i>
+                                قائمة الأقسام والمديرين
+                            </h5>
+                            <span class="badge bg-light text-dark">
+                                {{ departments|length }} قسم
+                            </span>
+                        </div>
+                    </div>
+                    <div class="card-body">
+                        {% if departments %}
+                            <div class="table-responsive">
+                                <table class="department-table">
+                                    <thead>
+                                        <tr>
+                                            <th>القسم</th>
+                                            <th>المديرين</th>
+                                            <th>الموظفين</th>
+                                            <th>الإجراءات</th>
+                                        </tr>
+                                    </thead>
+                                    <tbody>
+                                        {% for department in departments %}
+                                        <tr>
+                                            <td>
+                                                <div class="d-flex align-items-center">
+                                                    <div class="manager-avatar me-3">
+                                                        <i class="bi bi-building"></i>
+                                                    </div>
+                                                    <div>
+                                                        <strong>{{ department.name }}</strong>
+                                                        {% if department.primary_manager_id %}
+                                                            <br>
+                                                            <small class="text-success">
+                                                                <i class="bi bi-star-fill me-1"></i>
+                                                                لديه مدير رئيسي
+                                                            </small>
+                                                        {% endif %}
+                                                    </div>
+                                                </div>
+                                            </td>
+                                            <td>
+                                                {% if department.managers %}
+                                                    <div class="manager-list">
+                                                        {% for manager in department.managers %}
+                                                        <div class="manager-item">
+                                                            <div class="d-flex justify-content-between align-items-center">
+                                                                <div class="d-flex align-items-center">
+                                                                    {% if manager.user_id == department.primary_manager_id %}
+                                                                        <span class="primary-badge">رئيسي</span>
+                                                                    {% endif %}
+                                                                    <div class="manager-avatar me-2">
+                                                                        {{ manager.user_name[0] if manager.user_name else '?' }}
+                                                                    </div>
+                                                                    <div>
+                                                                        <strong>{{ manager.user_name }}</strong>
+                                                                        <br>
+                                                                        <small class="text-muted">{{ manager.user_username }}</small>
+                                                                    </div>
+                                                                </div>
+                                                                <div>
+                                                                    <button type="button" class="btn btn-sm btn-outline-primary"
+                                                                            onclick="showManagerPermissions({{ manager|tojson }})">
+                                                                        <i class="bi bi-eye"></i>
+                                                                    </button>
+                                                                    <a href="{{ url_for('admin_remove_department_manager', manager_id=manager.manager_id) }}"
+                                                                       class="btn btn-sm btn-outline-danger"
+                                                                       onclick="return confirm('هل أنت متأكد من حذف هذا المدير؟')">
+                                                                        <i class="bi bi-trash"></i>
+                                                                    </a>
+                                                                </div>
+                                                            </div>
+                                                            
+                                                            <!-- Permissions Preview -->
+                                                            <div class="mt-2">
+                                                                {% if manager.can_manage_schedules %}
+                                                                    <span class="badge bg-primary permission-badge">جدول</span>
+                                                                {% endif %}
+                                                                {% if manager.can_manage_leaves %}
+                                                                    <span class="badge bg-success permission-badge">إجازة</span>
+                                                                {% endif %}
+                                                                {% if manager.can_manage_permissions %}
+                                                                    <span class="badge bg-info permission-badge">إذن</span>
+                                                                {% endif %}
+                                                                {% if manager.can_manage_advances %}
+                                                                    <span class="badge bg-warning permission-badge">سلفة</span>
+                                                                {% endif %}
+                                                                {% if manager.can_manage_rewards %}
+                                                                    <span class="badge bg-purple permission-badge">مكافأة</span>
+                                                                {% endif %}
+                                                                {% if manager.can_view_reports %}
+                                                                    <span class="badge bg-secondary permission-badge">تقارير</span>
+                                                                {% endif %}
+                                                            </div>
+                                                        </div>
+                                                        {% endfor %}
+                                                    </div>
+                                                    <small class="text-muted">{{ department.managers|length }} مدير</small>
+                                                {% else %}
+                                                    <span class="badge bg-warning">
+                                                        <i class="bi bi-person-x me-1"></i>
+                                                        لا يوجد مديرين
+                                                    </span>
+                                                {% endif %}
+                                            </td>
+                                            <td>
+                                                <div class="text-center">
+                                                    <span class="stats-value" style="font-size: 1.5rem;">{{ department.employee_count or 0 }}</span>
+                                                    <div class="stats-label">موظف</div>
+                                                </div>
+                                            </td>
+                                            <td>
+                                                <div class="btn-group">
+                                                    <a href="{{ url_for('admin_schedule_structure', dept_id=department.id) }}" 
+                                                       class="btn btn-outline-primary btn-sm" 
+                                                       title="هيكل الجدول">
+                                                        <i class="bi bi-calendar-week"></i>
+                                                    </a>
+                                                </div>
+                                            </td>
+                                        </tr>
+                                        {% endfor %}
+                                    </tbody>
+                                </table>
+                            </div>
+                        {% else %}
+                            <div class="empty-state text-center py-5">
+                                <i class="bi bi-building-slash display-4 text-muted"></i>
+                                <h5 class="text-muted mt-3">لا توجد أقسام</h5>
+                                <p class="text-muted">ابدأ بإضافة أول قسم في النظام</p>
+                            </div>
+                        {% endif %}
+                    </div>
+                </div>
+            </div>
+        </div>
+    </div>
+
+    <!-- Modals using JavaScript (to avoid template complexity) -->
+    
+    <!-- Manager Permissions Modal -->
+    <div class="modal fade" id="managerPermissionsModal" tabindex="-1">
+        <div class="modal-dialog">
+            <div class="modal-content">
+                <div class="modal-header">
+                    <h5 class="modal-title">
+                        <i class="bi bi-shield-check me-2"></i>
+                        صلاحيات المدير
+                    </h5>
+                    <button type="button" class="btn-close" data-bs-dismiss="modal"></button>
+                </div>
+                <div class="modal-body" id="managerPermissionsContent">
+                    <!-- Content will be filled by JavaScript -->
+                </div>
+                <div class="modal-footer">
+                    <button type="button" class="btn btn-secondary" data-bs-dismiss="modal">إغلاق</button>
+                </div>
+            </div>
+        </div>
+    </div>
+    
+    <!-- Bootstrap 5 JS -->
+    <script src="https://cdn.jsdelivr.net/npm/bootstrap@5.3.0/dist/js/bootstrap.bundle.min.js"></script>
+
+    <script>
+        // Show manager permissions modal
+        function showManagerPermissions(manager) {
+            console.log('Manager data:', manager);
+            
+            // Build permissions HTML
+            let permissionsHtml = `
+                <div class="mb-3">
+                    <strong>المعلومات:</strong>
+                    <p class="mb-1">الاسم: ${manager.user_name || 'غير معروف'}</p>
+                    <p class="mb-1">اسم المستخدم: ${manager.user_username || 'غير معروف'}</p>
+                    <p class="mb-1">رقم المدير: ${manager.manager_id}</p>
+                </div>
+                
+                <hr>
+                
+                <div>
+                    <strong>الصلاحيات:</strong>
+                    <div class="mt-2">
+            `;
+            
+            // Add each permission
+            const permissions = [
+                { key: 'can_manage_schedules', label: 'إدارة الجداول', icon: 'calendar-week' },
+                { key: 'can_manage_leaves', label: 'إدارة الإجازات', icon: 'calendar-check' },
+                { key: 'can_manage_permissions', label: 'إدارة الإذونات', icon: 'clock-history' },
+                { key: 'can_manage_advances', label: 'إدارة السلف', icon: 'cash-coin' },
+                { key: 'can_manage_rewards', label: 'إدارة المكافآت', icon: 'award' },
+                { key: 'can_view_reports', label: 'عرض التقارير', icon: 'graph-up' }
+            ];
+            
+            permissions.forEach(perm => {
+                if (manager[perm.key]) {
+                    permissionsHtml += `
+                        <div class="alert alert-success py-2">
+                            <i class="bi bi-${perm.icon}"></i> ${perm.label}
+                        </div>
+                    `;
+                } else {
+                    permissionsHtml += `
+                        <div class="alert alert-secondary py-2">
+                            <i class="bi bi-${perm.icon}"></i> ${perm.label} (غير مفعل)
+                        </div>
+                    `;
+                }
+            });
+            
+            permissionsHtml += '</div></div>';
+            
+            // Set content and show modal
+            document.getElementById('managerPermissionsContent').innerHTML = permissionsHtml;
+            const modal = new bootstrap.Modal(document.getElementById('managerPermissionsModal'));
+            modal.show();
+        }
+        
+        // Show set primary manager modal
+        function showSetPrimaryManagerModal(departmentId, managers) {
+            console.log('Department ID:', departmentId, 'Managers:', managers);
+            
+            // Build form HTML
+            let formHtml = `
+                <input type="hidden" name="department_id" value="${departmentId}">
+                <div class="mb-3">
+                    <label class="form-label">اختر المدير الرئيسي:</label>
+                    <select class="form-select" name="manager_id">
+                        <option value="">لا يوجد (إزالة المدير الرئيسي)</option>
+            `;
+            
+            // Add manager options
+            if (managers && managers.length > 0) {
+                managers.forEach(manager => {
+                    formHtml += `
+                        <option value="${manager.user_id}">
+                            ${manager.user_name} (${manager.user_username})
+                        </option>
+                    `;
+                });
+            }
+            
+            formHtml += `
+                    </select>
+                </div>
+                <div class="alert alert-info">
+                    <i class="bi bi-info-circle me-2"></i>
+                    المدير الرئيسي له صلاحيات إضافية وإمكانية الوصول الكامل للقسم
+                </div>
+            `;
+            
+            // Set form action and content
+            document.getElementById('setPrimaryManagerForm').action = `/admin/set_primary_manager/${departmentId}`;
+            document.getElementById('setPrimaryManagerContent').innerHTML = formHtml;
+            
+            // Show modal
+            const modal = new bootstrap.Modal(document.getElementById('setPrimaryManagerModal'));
+            modal.show();
+        }
+        
+        // Show department info modal
+        function showDepartmentInfo(department) {
+            console.log('Department info:', department);
+            
+            // Build info HTML
+            let infoHtml = `
+                <div class="row">
+                    <div class="col-md-6">
+                        <h6 class="fw-semibold text-success mb-3">معلومات أساسية</h6>
+                        <p><strong>اسم القسم:</strong> ${department.name || 'غير معروف'}</p>
+                        <p><strong>رقم القسم:</strong> ${department.id}</p>
+                        <p><strong>عدد الموظفين:</strong> ${department.employee_count || 0}</p>
+                        <p><strong>عدد المديرين:</strong> ${department.managers ? department.managers.length : 0}</p>
+                    </div>
+                    <div class="col-md-6">
+                        <h6 class="fw-semibold text-success mb-3">المدير الرئيسي</h6>
+            `;
+            
+            if (department.primary_manager_id) {
+                const primaryManager = department.managers ? 
+                    department.managers.find(m => m.user_id == department.primary_manager_id) : null;
+                
+                if (primaryManager) {
+                    infoHtml += `
+                        <p><strong>الاسم:</strong> ${primaryManager.user_name}</p>
+                        <p><strong>اسم المستخدم:</strong> ${primaryManager.user_username}</p>
+                    `;
+                } else {
+                    infoHtml += `<p class="text-warning">المدير الرئيسي غير موجود في قائمة المديرين الحاليين</p>`;
+                }
+            } else {
+                infoHtml += `<p class="text-muted">لا يوجد مدير رئيسي معين</p>`;
+            }
+            
+            infoHtml += `
+                    </div>
+                </div>
+            `;
+            
+            // Set content and show modal
+            document.getElementById('departmentInfoContent').innerHTML = infoHtml;
+            const modal = new bootstrap.Modal(document.getElementById('departmentInfoModal'));
+            modal.show();
+        }
+        
+        // Initialize when page loads
+        document.addEventListener('DOMContentLoaded', function() {
+            // Add event listener for toggle all permissions button
+            const toggleAllBtn = document.getElementById('toggleAllPermissions');
+            if (toggleAllBtn) {
+                toggleAllBtn.addEventListener('click', function() {
+                    const checkboxes = document.querySelectorAll('.permissions-grid input[type="checkbox"]');
+                    const shouldCheck = this.dataset.checked !== 'true';
+                    
+                    checkboxes.forEach(checkbox => {
+                        checkbox.checked = shouldCheck;
+                    });
+                    
+                    this.dataset.checked = shouldCheck;
+                    this.innerHTML = shouldCheck ? 
+                        '<i class="bi bi-check-square me-1"></i> إلغاء كل الصلاحيات' :
+                        '<i class="bi bi-square me-1"></i> تفعيل كل الصلاحيات';
+                });
+            }
+            
+            // Initialize tooltips
+            var tooltipTriggerList = [].slice.call(document.querySelectorAll('[data-bs-toggle="tooltip"]'));
+            var tooltipList = tooltipTriggerList.map(function (tooltipTriggerEl) {
+                return new bootstrap.Tooltip(tooltipTriggerEl);
+            });
+        });
+    </script>
+</body>
+</html>

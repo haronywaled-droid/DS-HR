@@ -1,0 +1,57 @@
+{% extends "base.html" %}
+
+{% block title %}رفع شيتات المرتب{% endblock %}
+
+{% block content %}
+<div class="row">
+    <div class="col-md-8 mx-auto">
+        <div class="card">
+            <div class="card-header bg-primary text-white">
+                <h5 class="mb-0"><i class="fas fa-file-upload me-2"></i>رفع شيت مرتب جديد</h5>
+            </div>
+            <div class="card-body">
+                <form method="POST" enctype="multipart/form-data">
+                    <div class="mb-3">
+                        <label for="user_id" class="form-label">الموظف</label>
+                        <select class="form-select" id="user_id" name="user_id" required>
+                            <option value="">اختر الموظف</option>
+                            {% for user in users %}
+                            <option value="{{ user.id }}">{{ user.name }} ({{ user.username }})</option>
+                            {% endfor %}
+                        </select>
+                    </div>
+                    
+                    <div class="mb-3">
+                        <label for="month" class="form-label">الشهر</label>
+                        <input type="month" class="form-control" id="month" name="month" required>
+                    </div>
+                    
+                    <div class="mb-3">
+                        <label for="salary_file" class="form-label">ملف شيت المرتب (PDF)</label>
+                        <input type="file" class="form-control" id="salary_file" name="salary_file" accept=".pdf" required>
+                        <div class="form-text">يجب أن يكون الملف بصيغة PDF</div>
+                    </div>
+                    
+                    <div class="alert alert-info">
+                        <h6><i class="fas fa-info-circle me-2"></i>ملاحظات هامة:</h6>
+                        <ul class="mb-0">
+                            <li>سيتم إرسال إشعار للموظف تلقائياً</li>
+                            <li>يمكن للموظف تحميل الشيت من صفحة شيتات المرتب</li>
+                            <li>تأكد من صحة الشهر والموظف قبل الرفع</li>
+                        </ul>
+                    </div>
+                    
+                    <div class="d-grid gap-2">
+                        <button type="submit" class="btn btn-success">
+                            <i class="fas fa-upload me-2"></i>رفع شيت المرتب
+                        </button>
+                        <a href="{{ url_for('admin_salary_slips') }}" class="btn btn-secondary">
+                            <i class="fas fa-list me-2"></i>عرض جميع الشيتات
+                        </a>
+                    </div>
+                </form>
+            </div>
+        </div>
+    </div>
+</div>
+{% endblock %}

@@ -1,0 +1,86 @@
+<!DOCTYPE html>
+<html lang="ar" dir="rtl">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>اختبار المكتبات المحملة</title>
+    <link href="bootstrap.min.css" rel="stylesheet">
+    <link href="bootstrap-icons.css" rel="stylesheet">
+    <link href="select2.min.css" rel="stylesheet">
+    <link href="sweetalert2.min.css" rel="stylesheet">
+    <link href="sweetalert2-bootstrap.css" rel="stylesheet">
+    <style>
+        body { padding: 20px; direction: rtl; }
+        .test-section { margin: 20px 0; padding: 20px; border: 1px solid #ddd; border-radius: 5px; }
+        .success { color: green; }
+        .error { color: red; }
+    </style>
+</head>
+<body>
+    <h1>اختبار المكتبات المحملة محلياً</h1>
+    
+    <div class="test-section">
+        <h3>Bootstrap 5.3.0</h3>
+        <button class="btn btn-primary">زر تجريبي</button>
+        <div class="alert alert-success mt-2">تنبيه تجريبي</div>
+    </div>
+    
+    <div class="test-section">
+        <h3>Bootstrap Icons</h3>
+        <i class="bi bi-house fs-1 text-success"></i>
+        <i class="bi bi-person fs-1 text-primary mx-2"></i>
+        <i class="bi bi-gear fs-1 text-warning"></i>
+    </div>
+    
+    <div class="test-section">
+        <h3>Select2</h3>
+        <select class="form-select" id="testSelect2" style="width: 300px;">
+            <option value="">اختر...</option>
+            <option value="1">خيار ١</option>
+            <option value="2">خيار ٢</option>
+            <option value="3">خيار ٣</option>
+        </select>
+    </div>
+    
+    <div class="test-section">
+        <h3>jQuery</h3>
+        <button class="btn btn-secondary" id="testJquery">اختبار jQuery</button>
+        <div id="jqueryResult" class="mt-2"></div>
+    </div>
+    
+    <div class="test-section">
+        <h3>SweetAlert2</h3>
+        <button class="btn btn-warning" id="testSwal">اختبار SweetAlert2</button>
+    </div>
+    
+    <script src="../js/jquery.min.js"></script>
+    <script src="../js/bootstrap.bundle.min.js"></script>
+    <script src="../js/select2.min.js"></script>
+    <script src="../js/sweetalert2.min.js"></script>
+    
+    <script>
+        $(document).ready(function() {
+            // اختبار jQuery
+            $('#testJquery').click(function() {
+                $('#jqueryResult').html('<span class="success">✓ jQuery يعمل</span>');
+            });
+            
+            // تهيئة Select2
+            $('#testSelect2').select2({
+                placeholder: "اختر خياراً",
+                allowClear: true
+            });
+            
+            // اختبار SweetAlert2
+            $('#testSwal').click(function() {
+                Swal.fire({
+                    title: 'نجاح!',
+                    text: 'SweetAlert2 يعمل',
+                    icon: 'success',
+                    confirmButtonText: 'حسناً'
+                });
+            });
+        });
+    </script>
+</body>
+</html>

@@ -1,0 +1,265 @@
+<!DOCTYPE html>
+<html lang="ar" dir="rtl">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>نسخ الجدول - نظام إدارة الموظفين</title>
+    <link href="https://cdn.jsdelivr.net/npm/bootstrap@5.1.3/dist/css/bootstrap.min.css" rel="stylesheet">
+    <link href="https://cdn.jsdelivr.net/npm/bootstrap@5.1.3/dist/css/bootstrap.rtl.min.css" rel="stylesheet">
+    <link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/bootstrap-icons@1.8.1/font/bootstrap-icons.css">
+    <style>
+        body {
+            font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif;
+            background-color: #f8f9fa;
+        }
+        .navbar-brand {
+            font-weight: bold;
+        }
+        .card {
+            border-radius: 15px;
+            box-shadow: 0 4px 6px rgba(0,0,0,.1);
+            margin-bottom: 20px;
+        }
+        .card-header {
+            background-color: #007bff;
+            color: white;
+            border-radius: 15px 15px 0 0 !important;
+            padding: 15px 20px;
+        }
+        .card-header h5 {
+            margin: 0;
+        }
+        .info-item {
+            padding: 10px;
+            background-color: #f8f9fa;
+            border-radius: 8px;
+            margin-bottom: 10px;
+        }
+        .info-label {
+            font-weight: bold;
+            color: #495057;
+        }
+        .info-value {
+            color: #007bff;
+            font-size: 1.1em;
+        }
+        .week-option {
+            padding: 15px;
+            border: 2px solid #dee2e6;
+            border-radius: 10px;
+            margin-bottom: 10px;
+            cursor: pointer;
+            transition: all 0.3s;
+        }
+        .week-option:hover {
+            border-color: #007bff;
+            background-color: #f0f7ff;
+        }
+        .week-option.selected {
+            border-color: #28a745;
+            background-color: #f0fff0;
+        }
+        .week-option input[type="radio"] {
+            margin-left: 10px;
+        }
+    </style>
+</head>
+<body>
+    <!-- Navigation -->
+    <nav class="navbar navbar-expand-lg navbar-dark bg-primary">
+        <div class="container-fluid">
+            <a class="navbar-brand" href="{{ url_for('manager_dashboard') }}">
+                <i class="bi bi-calendar2-week"></i> نظام إدارة الموظفين
+            </a>
+            <button class="navbar-toggler" type="button" data-bs-toggle="collapse" data-bs-target="#navbarNav">
+                <span class="navbar-toggler-icon"></span>
+            </button>
+            <div class="collapse navbar-collapse" id="navbarNav">
+                <ul class="navbar-nav me-auto">
+                    <li class="nav-item">
+                        <a class="nav-link" href="{{ url_for('manager_dashboard') }}">
+                            <i class="bi bi-speedometer2"></i> لوحة التحكم
+                        </a>
+                    </li>
+                    <li class="nav-item">
+                        <a class="nav-link active" href="{{ url_for('manager_schedules') }}">
+                            <i class="bi bi-calendar-week"></i> الجداول الأسبوعية
+                        </a>
+                    </li>
+                </ul>
+                <ul class="navbar-nav">
+                    <li class="nav-item dropdown">
+                        <a class="nav-link dropdown-toggle" href="#" id="navbarDropdown" role="button" data-bs-toggle="dropdown">
+                            <i class="bi bi-person-circle"></i> {{ current_user.name }}
+                        </a>
+                        <ul class="dropdown-menu dropdown-menu-end">
+                            <li><a class="dropdown-item" href="{{ url_for('logout') }}"><i class="bi bi-box-arrow-right"></i> تسجيل خروج</a></li>
+                        </ul>
+                    </li>
+                </ul>
+            </div>
+        </div>
+    </nav>
+
+    <!-- Main Content -->
+    <div class="container-fluid py-4">
+        <div class="row">
+            <div class="col-md-8 mx-auto">
+                <!-- Header -->
+                <div class="d-flex justify-content-between align-items-center mb-4">
+                    <h2><i class="bi bi-files"></i> نسخ الجدول الأسبوعي</h2>
+                    <a href="{{ url_for('manager_schedules') }}" class="btn btn-secondary">
+                        <i class="bi bi-arrow-right"></i> العودة للجداول
+                    </a>
+                </div>
+
+                <!-- Source Schedule Info -->
+                <div class="card">
+                    <div class="card-header">
+                        <h5><i class="bi bi-file-earmark-text"></i> معلومات الجدول المصدر</h5>
+                    </div>
+                    <div class="card-body">
+                        <div class="row">
+                            <div class="col-md-6">
+                                <div class="info-item">
+                                    <div class="info-label">القسم:</div>
+                                    <div class="info-value">{{ department.name }}</div>
+                                </div>
+                                <div class="info-item">
+                                    <div class="info-label">تاريخ البداية:</div>
+                                    <div class="info-value">{{ source_schedule.week_start_date.strftime('%Y-%m-%d') }}</div>
+                                </div>
+                                <div class="info-item">
+                                    <div class="info-label">تاريخ النهاية:</div>
+                                    <div class="info-value">{{ source_schedule.week_end_date.strftime('%Y-%m-%d') }}</div>
+                                </div>
+                            </div>
+                            <div class="col-md-6">
+                                <div class="info-item">
+                                    <div class="info-label">رقم الأسبوع:</div>
+                                    <div class="info-value">{{ source_schedule.week_number }}</div>
+                                </div>
+                                <div class="info-item">
+                                    <div class="info-label">الشهر:</div>
+                                    <div class="info-value">{{ get_month_name_arabic(source_schedule.month) }} {{ source_schedule.year }}</div>
+                                </div>
+                                <div class="info-item">
+                                    <div class="info-label">الحالة:</div>
+                                    <div class="info-value">
+                                        {% if source_schedule.is_approved %}
+                                            <span class="badge bg-success">معتمد</span>
+                                        {% elif source_schedule.is_locked %}
+                                            <span class="badge bg-warning">مقفل</span>
+                                        {% else %}
+                                            <span class="badge bg-secondary">مسودة</span>
+                                        {% endif %}
+                                    </div>
+                                </div>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+
+                <!-- Copy Form -->
+                <div class="card mt-4">
+                    <div class="card-header">
+                        <h5><i class="bi bi-calendar-plus"></i> تحديد الجدول المستهدف</h5>
+                    </div>
+                    <div class="card-body">
+                        <form method="POST" id="copyForm">
+                            <div class="mb-4">
+                                <label class="form-label">اختر الأسبوع المستهدف:</label>
+                                
+                                {% if available_weeks %}
+                                    {% for week in available_weeks %}
+                                    <div class="week-option" onclick="selectWeek(this, '{{ week.start_date }}')">
+                                        <div class="form-check">
+                                            <input class="form-check-input" type="radio" name="target_date" 
+                                                   value="{{ week.start_date }}" id="week{{ loop.index }}" required>
+                                            <label class="form-check-label" for="week{{ loop.index }}">
+                                                <strong>{{ week.start_date.strftime('%Y-%m-%d') }}</strong> إلى 
+                                                <strong>{{ week.end_date.strftime('%Y-%m-%d') }}</strong>
+                                                <br>
+                                                <small class="text-muted">
+                                                    ({{ get_arabic_day_name(week.start_date) }} - {{ get_arabic_day_name(week.end_date) }})
+                                                </small>
+                                            </label>
+                                        </div>
+                                    </div>
+                                    {% endfor %}
+                                {% else %}
+                                    <div class="alert alert-warning">
+                                        <i class="bi bi-exclamation-triangle"></i>
+                                        لا توجد أسابيع متاحة للنسخ. جميع الأسابيع القادمة تحتوي على جداول بالفعل.
+                                    </div>
+                                {% endif %}
+                            </div>
+
+                            <div class="mb-3">
+                                <label class="form-label">ملاحظات (اختياري):</label>
+                                <textarea class="form-control" name="notes" rows="3" 
+                                          placeholder="أضف أي ملاحظات حول عملية النسخ..."></textarea>
+                            </div>
+
+                            <div class="alert alert-info">
+                                <i class="bi bi-info-circle"></i>
+                                <strong>ملاحظة:</strong> سيتم نسخ جميع تفاصيل الجدول بما في ذلك توزيع الموظفين على الشيفتات.
+                                سيتم تعديل التواريخ تلقائياً لتتناسب مع الأسبوع المستهدف.
+                            </div>
+
+                            <div class="d-grid gap-2">
+                                <button type="submit" class="btn btn-success btn-lg" {% if not available_weeks %}disabled{% endif %}>
+                                    <i class="bi bi-files"></i> نسخ الجدول
+                                </button>
+                                <a href="{{ url_for('manager_schedules') }}" class="btn btn-outline-secondary">
+                                    <i class="bi bi-x-circle"></i> إلغاء
+                                </a>
+                            </div>
+                        </form>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </div>
+
+    <script src="https://cdn.jsdelivr.net/npm/bootstrap@5.1.3/dist/js/bootstrap.bundle.min.js"></script>
+    <script>
+        function selectWeek(element, date) {
+            // Remove selected class from all options
+            document.querySelectorAll('.week-option').forEach(opt => {
+                opt.classList.remove('selected');
+            });
+            
+            // Add selected class to clicked option
+            element.classList.add('selected');
+            
+            // Check the radio button
+            const radio = element.querySelector('input[type="radio"]');
+            if (radio) {
+                radio.checked = true;
+            }
+        }
+
+        // Form validation
+        document.getElementById('copyForm').addEventListener('submit', function(e) {
+            const selectedRadio = document.querySelector('input[name="target_date"]:checked');
+            if (!selectedRadio) {
+                e.preventDefault();
+                alert('الرجاء اختيار الأسبوع المستهدف');
+            }
+        });
+
+        // Auto-select first option if available
+        window.addEventListener('load', function() {
+            const firstOption = document.querySelector('.week-option');
+            if (firstOption) {
+                const firstRadio = firstOption.querySelector('input[type="radio"]');
+                if (firstRadio && !firstRadio.checked) {
+                    firstRadio.checked = true;
+                    firstOption.classList.add('selected');
+                }
+            }
+        });
+    </script>
+</body>
+</html>

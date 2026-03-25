@@ -1,0 +1,286 @@
+
+<div class="container-fluid">
+    <div class="row mb-4">
+        <div class="col-12">
+            <h1 class="h3 mb-0">تقرير مزامنة الجداول</h1>
+            <p class="text-muted">تفاصيل مزامنة جميع الجداول مع هياكل الأقسام</p>
+        </div>
+    </div>
+
+    <!-- الإحصائيات العامة -->
+    <div class="row mb-4">
+        <div class="col-12">
+            <div class="card">
+                <div class="card-header">
+                    <h5 class="mb-0">نظرة عامة</h5>
+                </div>
+                <div class="card-body">
+                    <div class="row">
+                        <div class="col-md-4">
+                            <div class="d-flex align-items-center">
+                                <div class="flex-shrink-0">
+                                    <i class="fas fa-calendar-alt fa-3x text-primary"></i>
+                                </div>
+                                <div class="flex-grow-1 ms-3">
+                                    <h4 class="mb-0">{{ total_schedules }}</h4>
+                                    <p class="text-muted mb-0">إجمالي الجداول</p>
+                                </div>
+                            </div>
+                        </div>
+                        
+                        <div class="col-md-4">
+                            <div class="d-flex align-items-center">
+                                <div class="flex-shrink-0">
+                                    <i class="fas fa-check-circle fa-3x text-success"></i>
+                                </div>
+                                <div class="flex-grow-1 ms-3">
+                                    <h4 class="mb-0">{{ total_synced }}</h4>
+                                    <p class="text-muted mb-0">جداول مزامنة</p>
+                                </div>
+                            </div>
+                        </div>
+                        
+                        <div class="col-md-4">
+                            <div class="d-flex align-items-center">
+                                <div class="flex-shrink-0">
+                                    <i class="fas fa-chart-pie fa-3x text-info"></i>
+                                </div>
+                                <div class="flex-grow-1 ms-3">
+                                    <h4 class="mb-0">{{ "%.1f"|format(overall_sync_percentage) }}%</h4>
+                                    <p class="text-muted mb-0">نسبة المزامنة</p>
+                                </div>
+                            </div>
+                        </div>
+                    </div>
+                    
+                    <div class="progress mt-4" style="height: 25px;">
+                        <div class="progress-bar bg-success" 
+                             style="width: {{ overall_sync_percentage }}%"
+                             role="progressbar">
+                            {{ "%.1f"|format(overall_sync_percentage) }}% مزامنة
+                        </div>
+                        <div class="progress-bar bg-danger" 
+                             style="width: {{ 100 - overall_sync_percentage }}%"
+                             role="progressbar">
+                            {{ "%.1f"|format(100 - overall_sync_percentage) }}% غير مزامنة
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </div>
+
+    <!-- تقرير كل قسم -->
+    {% for report in department_reports %}
+    <div class="row mb-4">
+        <div class="col-12">
+            <div class="card">
+                <div class="card-header d-flex justify-content-between align-items-center">
+                    <h5 class="mb-0">
+                        {{ report.department.name }}
+                        <span class="badge bg-{{ 'success' if report.has_structure else 'warning' }}">
+                            {{ 'له هيكل' if report.has_structure else 'بدون هيكل' }}
+                        </span>
+                        {% if report.structure_version %}
+                        <span class="badge bg-info">الإصدار: {{ report.structure_version }}</span>
+                        {% endif %}
+                    </h5>
+                    
+                    <div>
+                        <button class="btn btn-sm btn-primary sync-department-btn" 
+                                data-dept-id="{{ report.department.id }}">
+                            <i class="fas fa-sync"></i> مزامنة القسم
+                        </button>
+                    </div>
+                </div>
+                
+                <div class="card-body">
+                    <!-- إحصائيات القسم -->
+                    <div class="row mb-3">
+                        <div class="col-md-3">
+                            <div class="card bg-light">
+                                <div class="card-body text-center">
+                                    <h6 class="card-title text-muted">إجمالي الجداول</h6>
+                                    <h3 class="text-primary">{{ report.total_schedules }}</h3>
+                                </div>
+                            </div>
+                        </div>
+                        
+                        <div class="col-md-3">
+                            <div class="card bg-light">
+                                <div class="card-body text-center">
+                                    <h6 class="card-title text-muted">مزامنة</h6>
+                                    <h3 class="text-success">{{ report.synced_count }}</h3>
+                                </div>
+                            </div>
+                        </div>
+                        
+                        <div class="col-md-3">
+                            <div class="card bg-light">
+                                <div class="card-body text-center">
+                                    <h6 class="card-title text-muted">غير مزامنة</h6>
+                                    <h3 class="text-danger">{{ report.unsynced_count }}</h3>
+                                </div>
+                            </div>
+                        </div>
+                        
+                        <div class="col-md-3">
+                            <div class="card bg-light">
+                                <div class="card-body text-center">
+                                    <h6 class="card-title text-muted">النسبة</h6>
+                                    <h3 class="text-info">{{ "%.1f"|format(report.sync_percentage) }}%</h3>
+                                </div>
+                            </div>
+                        </div>
+                    </div>
+                    
+                    <!-- تفاصيل الجداول -->
+                    <div class="table-responsive">
+                        <table class="table table-sm table-hover">
+                            <thead>
+                                <tr>
+                                    <th>رقم الجدول</th>
+                                    <th>الفترة</th>
+                                    <th>الحالة</th>
+                                    <th>الهيكل</th>
+                                    <th>المزامنة</th>
+                                    <th>البصمة</th>
+                                    <th>الإجراءات</th>
+                                </tr>
+                            </thead>
+                            <tbody>
+                                {% for schedule in report.schedule_details %}
+                                <tr class="{{ 'table-success' if schedule.is_synced else 'table-warning' }}">
+                                    <td>#{{ schedule.id }}</td>
+                                    <td>
+                                        {{ schedule.week_start.strftime('%Y-%m-%d') }}<br>
+                                        <small class="text-muted">إلى {{ schedule.week_end.strftime('%Y-%m-%d') }}</small>
+                                    </td>
+                                    <td>
+                                        <span class="badge bg-{{ 'success' if schedule.is_approved else 'secondary' }}">
+                                            {{ 'معتمد' if schedule.is_approved else 'مسودة' }}
+                                        </span>
+                                        {% if schedule.is_locked %}
+                                        <span class="badge bg-danger">مقفل</span>
+                                        {% endif %}
+                                    </td>
+                                    <td>
+                                        <span class="badge bg-{{ 
+                                            'success' if schedule.structure_type == 'new_format' 
+                                            else 'warning' if schedule.structure_type == 'old_format'
+                                            else 'info' if schedule.structure_type == 'list_format'
+                                            else 'secondary'
+                                        }}">
+                                            {{ schedule.structure_type }}
+                                        </span>
+                                    </td>
+                                    <td>
+                                        {% if schedule.is_synced %}
+                                        <span class="badge bg-success">
+                                            <i class="fas fa-check"></i> مزامن
+                                        </span>
+                                        {% else %}
+                                        <span class="badge bg-danger">
+                                            <i class="fas fa-times"></i> غير مزامن
+                                        </span>
+                                        {% endif %}
+                                    </td>
+                                    <td>
+                                        {% if schedule.structure_hash_match %}
+                                        <span class="badge bg-success">مطابق</span>
+                                        {% else %}
+                                        <span class="badge bg-warning">غير مطابق</span>
+                                        {% endif %}
+                                    </td>
+                                    <td>
+                                        <button class="btn btn-sm btn-outline-primary force-sync-btn"
+                                                data-schedule-id="{{ schedule.id }}">
+                                            <i class="fas fa-redo"></i>
+                                        </button>
+                                        
+                                        <a href="{{ url_for('view_schedule', schedule_id=schedule.id) }}"
+                                           class="btn btn-sm btn-outline-info"
+                                           target="_blank">
+                                            <i class="fas fa-eye"></i>
+                                        </a>
+                                    </td>
+                                </tr>
+                                {% endfor %}
+                            </tbody>
+                        </table>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </div>
+    {% endfor %}
+</div>
+
+<!-- JavaScript -->
+<script>
+$(document).ready(function() {
+    // مزامنة قسم معين
+    $('.sync-department-btn').click(function() {
+        const btn = $(this);
+        const deptId = btn.data('dept-id');
+        
+        btn.prop('disabled', true);
+        btn.html('<i class="fas fa-spinner fa-spin"></i> جاري المزامنة...');
+        
+        $.ajax({
+            url: '/admin/sync_department_schedules/' + deptId,
+            method: 'POST',
+            contentType: 'application/json',
+            success: function(response) {
+                if (response.success) {
+                    showAlert('success', response.message);
+                    setTimeout(() => location.reload(), 2000);
+                } else {
+                    showAlert('danger', response.message);
+                }
+            },
+            error: function() {
+                showAlert('danger', 'حدث خطأ في مزامنة القسم');
+            }
+        });
+    });
+    
+    // إجبار مزامنة جدول معين
+    $('.force-sync-btn').click(function() {
+        const btn = $(this);
+        const scheduleId = btn.data('schedule-id');
+        
+        btn.prop('disabled', true);
+        btn.html('<i class="fas fa-spinner fa-spin"></i>');
+        
+        $.ajax({
+            url: '/admin/force_sync_schedule/' + scheduleId,
+            method: 'POST',
+            contentType: 'application/json',
+            success: function(response) {
+                if (response.success) {
+                    showAlert('success', response.message);
+                    setTimeout(() => location.reload(), 1500);
+                } else {
+                    showAlert('danger', response.message);
+                }
+            },
+            error: function() {
+                showAlert('danger', 'حدث خطأ في المزامنة');
+            }
+        });
+    });
+    
+    function showAlert(type, message) {
+        const alert = $('<div class="alert alert-' + type + ' alert-dismissible fade show mt-3">' +
+                       '<button type="button" class="btn-close" data-bs-dismiss="alert"></button>' +
+                       message + '</div>');
+        
+        $('.container-fluid').prepend(alert);
+        
+        setTimeout(() => {
+            alert.alert('close');
+        }, 5000);
+    }
+});
+</script>

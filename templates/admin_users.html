@@ -1,0 +1,617 @@
+<!DOCTYPE html>
+<html lang="ar" dir="rtl">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>إدارة المستخدمين - نظام إدارة الموارد البشرية</title>
+    
+    <!-- Bootstrap 5 CSS -->
+    <link href="https://cdn.jsdelivr.net/npm/bootstrap@5.3.0/dist/css/bootstrap.min.css" rel="stylesheet">
+    
+    <!-- Bootstrap Icons -->
+    <link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/bootstrap-icons@1.10.0/font/bootstrap-icons.css">
+    
+    <style>
+
+        /* Add to your existing CSS */
+        .status-badge.active {
+            background: var(--gradient-primary);
+            color: white;
+        }
+
+        .status-badge.inactive {
+            background: #6c757d;
+            color: white;
+        }
+
+        .btn-outline-warning {
+            border-color: #f59e0b;
+            color: #f59e0b;
+        }
+
+        .btn-outline-warning:hover {
+            background: #f59e0b;
+            border-color: #f59e0b;
+            color: white;
+        }
+
+        :root {
+            --primary-green: #10b981;
+            --dark-green: #059669;
+            --light-green: #34d399;
+            --accent-green: #a7f3d0;
+            --gradient-primary: linear-gradient(135deg, #10b981 0%, #059669 100%);
+            --gradient-secondary: linear-gradient(135deg, #34d399 0%, #10b981 100%);
+            --gradient-dark: linear-gradient(135deg, #065f46 0%, #047857 100%);
+        }
+        
+        body {
+            font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif;
+            background: linear-gradient(135deg, #ecfdf5 0%, #d1fae5 100%);
+            min-height: 100vh;
+            padding: 20px;
+        }
+        
+        .users-container {
+            max-width: 1400px;
+            margin: 0 auto;
+        }
+        
+        .header-card {
+            background: var(--gradient-dark);
+            border: none;
+            border-radius: 20px;
+            color: white;
+            box-shadow: 0 15px 35px rgba(5, 150, 105, 0.2);
+            transition: all 0.3s ease;
+        }
+        
+        .header-card:hover {
+            transform: translateY(-5px);
+            box-shadow: 0 20px 40px rgba(5, 150, 105, 0.3);
+        }
+        
+        .users-card {
+            border: none;
+            border-radius: 20px;
+            box-shadow: 0 15px 35px rgba(16, 185, 129, 0.1);
+            backdrop-filter: blur(10px);
+            background: rgba(255, 255, 255, 0.95);
+            transition: all 0.3s ease;
+        }
+        
+        .users-card:hover {
+            box-shadow: 0 20px 45px rgba(16, 185, 129, 0.15);
+        }
+        
+        .stats-card {
+            background: white;
+            border: none;
+            border-radius: 15px;
+            box-shadow: 0 5px 15px rgba(16, 185, 129, 0.1);
+            padding: 20px;
+            text-align: center;
+            transition: all 0.3s ease;
+            cursor: pointer;
+        }
+        
+        .stats-card:hover {
+            transform: translateY(-5px);
+            box-shadow: 0 10px 25px rgba(16, 185, 129, 0.2);
+        }
+        
+        .stats-number {
+            font-size: 2.5rem;
+            font-weight: bold;
+            background: var(--gradient-primary);
+            -webkit-background-clip: text;
+            -webkit-text-fill-color: transparent;
+            background-clip: text;
+            transition: all 0.3s ease;
+        }
+        
+        .stats-card:hover .stats-number {
+            transform: scale(1.1);
+        }
+        
+        .btn-primary {
+            background: var(--gradient-primary);
+            border: none;
+            border-radius: 15px;
+            padding: 12px 25px;
+            font-weight: 600;
+            transition: all 0.3s ease;
+            box-shadow: 0 4px 15px rgba(16, 185, 129, 0.3);
+        }
+        
+        .btn-primary:hover {
+            transform: translateY(-3px);
+            box-shadow: 0 8px 25px rgba(16, 185, 129, 0.4);
+        }
+        
+        .btn-success {
+            background: var(--gradient-secondary);
+            border: none;
+            border-radius: 15px;
+            padding: 12px 25px;
+            font-weight: 600;
+            transition: all 0.3s ease;
+            box-shadow: 0 4px 15px rgba(52, 211, 153, 0.3);
+        }
+        
+        .btn-success:hover {
+            transform: translateY(-3px);
+            box-shadow: 0 8px 25px rgba(52, 211, 153, 0.4);
+        }
+        
+        .table {
+            border-radius: 15px;
+            overflow: hidden;
+        }
+        
+        .table thead th {
+            background: var(--gradient-primary);
+            color: white;
+            border: none;
+            padding: 15px;
+            font-weight: 600;
+        }
+        
+        .table tbody tr {
+            transition: all 0.3s ease;
+        }
+        
+        .table tbody tr:hover {
+            background: rgba(16, 185, 129, 0.05);
+            transform: translateX(-5px);
+        }
+        
+        .progress {
+            height: 10px;
+            border-radius: 10px;
+            background: rgba(16, 185, 129, 0.1);
+        }
+        
+        .progress-bar {
+            border-radius: 10px;
+            background: var(--gradient-primary);
+            transition: width 1s ease-in-out;
+        }
+        
+        .badge {
+            padding: 8px 12px;
+            border-radius: 10px;
+            font-weight: 600;
+        }
+        
+        .btn-outline-info {
+            border-color: var(--primary-green);
+            color: var(--primary-green);
+            border-radius: 10px;
+            transition: all 0.3s ease;
+        }
+        
+        .btn-outline-info:hover {
+            background: var(--primary-green);
+            border-color: var(--primary-green);
+            transform: scale(1.1);
+        }
+        
+        .btn-outline-success {
+            border-color: var(--light-green);
+            color: var(--light-green);
+            border-radius: 10px;
+            transition: all 0.3s ease;
+        }
+        
+        .btn-outline-success:hover {
+            background: var(--light-green);
+            border-color: var(--light-green);
+            transform: scale(1.1);
+        }
+        
+        .back-btn {
+            background: rgba(255, 255, 255, 0.2);
+            border: 2px solid rgba(255, 255, 255, 0.3);
+            color: white;
+            border-radius: 15px;
+            padding: 10px 20px;
+            transition: all 0.3s ease;
+            font-weight: 600;
+        }
+        
+        .back-btn:hover {
+            background: rgba(255, 255, 255, 0.3);
+            border-color: rgba(255, 255, 255, 0.5);
+            transform: translateY(-2px);
+            color: white;
+        }
+        
+        .floating-shape {
+            position: fixed;
+            width: 200px;
+            height: 200px;
+            background: var(--gradient-primary);
+            opacity: 0.1;
+            border-radius: 50%;
+            z-index: -1;
+            animation: float 6s ease-in-out infinite;
+        }
+        
+        .shape-1 {
+            top: 10%;
+            left: 10%;
+        }
+        
+        .shape-2 {
+            bottom: 10%;
+            right: 10%;
+            animation-delay: 2s;
+        }
+        
+        @keyframes float {
+            0%, 100% { transform: translateY(0px) rotate(0deg); }
+            50% { transform: translateY(-20px) rotate(10deg); }
+        }
+        
+        .search-box {
+            background: white;
+            border: 2px solid rgba(16, 185, 129, 0.1);
+            border-radius: 15px;
+            padding: 10px 20px;
+            transition: all 0.3s ease;
+        }
+        
+        .search-box:focus {
+            border-color: var(--primary-green);
+            box-shadow: 0 0 0 0.2rem rgba(16, 185, 129, 0.15);
+        }
+        
+        .filter-btn {
+            background: rgba(16, 185, 129, 0.1);
+            border: 2px solid rgba(16, 185, 129, 0.2);
+            color: var(--dark-green);
+            border-radius: 15px;
+            padding: 10px 20px;
+            transition: all 0.3s ease;
+        }
+        
+        .filter-btn:hover {
+            background: var(--primary-green);
+            color: white;
+            transform: translateY(-2px);
+        }
+        
+        .user-avatar {
+            width: 40px;
+            height: 40px;
+            background: var(--gradient-primary);
+            border-radius: 50%;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            color: white;
+            font-weight: bold;
+            font-size: 1.1rem;
+        }
+    </style>
+</head>
+<body>
+    <!-- Background Shapes -->
+    <div class="floating-shape shape-1"></div>
+    <div class="floating-shape shape-2"></div>
+    
+    <div class="users-container">
+        <!-- Header -->
+        <div class="header-card card mb-4">
+            <div class="card-body">
+                <div class="row align-items-center">
+                    <div class="col-md-8">
+                        <h1 class="h2 fw-bold mb-2">
+                            <i class="bi bi-people-fill me-3"></i>
+                            إدارة المستخدمين
+                        </h1>
+                        <p class="mb-0 opacity-75">إدارة وتتبع جميع مستخدمي النظام</p>
+                    </div>
+                    <div class="col-md-4 text-start">
+                        <a href="{{ url_for('admin_dashboard') }}" class="btn back-btn">
+                            <i class="bi bi-arrow-right me-2"></i>
+                            العودة للوحة التحكم
+                        </a>
+                    </div>
+                </div>
+            </div>
+        </div>
+        <!-- Actions Bar -->
+        <div class="row mb-4">
+            <div class="col-md-8">
+                <div class="d-flex gap-2">
+                    <input type="text" class="form-control search-box" placeholder="🔍 بحث في المستخدمين...">
+                    <button class="btn filter-btn">
+                        <i class="bi bi-funnel me-2"></i>تصفية
+                    </button>
+                </div>
+            </div>
+            <div class="col-md-4 text-start">
+                <div class="d-flex gap-2">
+                    <a href="{{ url_for('export_all_users') }}" class="btn btn-success">
+                        <i class="bi bi-download me-2"></i>تحميل الكل
+                    </a>
+                    <a href="{{ url_for('create_user') }}" class="btn btn-primary">
+                        <i class="bi bi-person-plus me-2"></i>إضافة مستخدم
+                    </a>
+                </div>
+            </div>
+        </div>
+
+        <!-- Users Table -->
+        <div class="users-card card">
+            <div class="card-header bg-transparent border-bottom-0 py-4">
+                <h5 class="card-title fw-bold mb-0 text-dark">
+                    <i class="bi bi-list-ul me-2 text-success"></i>
+                    قائمة المستخدمين
+                </h5>
+            </div>
+            
+            <div class="card-body">
+                <div class="table-responsive">
+                    <table class="table table-hover">
+                        <thead>
+                            <tr>
+                                <th>المستخدم</th>
+                                <th>الاسم الكامل</th>
+                                <th>الصفة</th>
+                                <th>القسم</th>
+                                <th>نسبة الإكتمال</th>
+                                <th>آخر تحديث</th>
+                                <th>الإجراءات</th>
+                            </tr>
+                        </thead>
+                        <tbody>
+                            {% for user in users %}
+                            <tr>
+                                <td>
+                                    <div class="d-flex align-items-center">
+                                        <div class="user-avatar me-3">
+                                            {{ user.name[0] if user.name else '?' }}
+                                        </div>
+                                        <div>
+                                            <strong>{{ user.username }}</strong>
+                                            <br>
+                                        </div>
+                                    </div>
+                                </td>
+                                <td>
+                                    <strong>{{ user.name }}</strong>
+                                </td>
+                                <td>
+                                    {% if user.is_admin %}
+                                        <span class="badge bg-danger">مسؤول</span>
+                                    {% elif user.is_manager %}
+                                        <span class="badge bg-warning">مدير</span>
+                                    {% else %}
+                                        <span class="badge bg-success">موظف</span>
+                                    {% endif %}
+                                    <br>
+                                    <small class="status-badge {% if user.is_active %}active{% else %}inactive{% endif %}">
+                                        {% if user.is_active %}مفعل{% else %}معطل{% endif %}
+                                    </small>
+                                </td>
+                                <td>
+                                    {% if user.department_id %}
+                                        {% for dept in departments %}
+                                            {% if dept.id == user.department_id %}
+                                                <span class="badge bg-info text-dark">{{ dept.name }}</span>
+                                            {% endif %}
+                                        {% endfor %}
+                                    {% else %}
+                                        <span class="badge bg-secondary">غير معين</span>
+                                    {% endif %}
+                                </td>
+                                <td>
+                                    <div class="d-flex align-items-center gap-3">
+                                        {% if user.employee_data %}
+                                            <div class="flex-grow-1">
+                                                <div class="progress" style="height: 8px;">
+                                                    <div class="progress-bar {% if user.employee_data.completion_percentage == 100 %}bg-success{% else %}bg-warning{% endif %}" 
+                                                         style="width: {{ user.employee_data.completion_percentage }}%">
+                                                    </div>
+                                                </div>
+                                            </div>
+                                            <small class="fw-bold {% if user.employee_data.completion_percentage == 100 %}text-success{% else %}text-warning{% endif %}">
+                                                {{ user.employee_data.completion_percentage }}%
+                                            </small>
+                                        {% else %}
+                                            <span class="badge bg-secondary">0%</span>
+                                        {% endif %}
+                                    </div>
+                                </td>
+                                <td>
+                                    {% if user.employee_data and user.employee_data.last_updated %}
+                                        <small class="text-muted">{{ user.employee_data.last_updated.strftime('%Y-%m-%d') }}</small>
+                                    {% else %}
+                                        <span class="badge bg-light text-dark">لم يتم التحديث</span>
+                                    {% endif %}
+                                </td>
+                                <td>
+                                    <div class="btn-group btn-group-sm">
+                                        {% if not user.is_admin %}
+                                        <a href="{{ url_for('view_user_data', user_id=user.id) }}" 
+                                        class="btn btn-outline-info" title="عرض البيانات">
+                                            <i class="bi bi-eye"></i>
+                                        </a>
+                                        {% if user.employee_data %}
+                                        <a href="{{ url_for('export_user_data', user_id=user.id) }}" 
+                                        class="btn btn-outline-success" title="تصدير البيانات">
+                                            <i class="bi bi-download"></i>
+                                        </a>
+                                        {% endif %}
+                                        <a href="{{ url_for('edit_user', user_id=user.id) }}" 
+                                        class="btn btn-outline-warning" title="تعديل المستخدم">
+                                            <i class="bi bi-pencil"></i>
+                                        </a>
+                                        
+                                        <!-- Status Toggle Button -->
+                                        <form method="POST" action="{{ url_for('toggle_user_status', user_id=user.id) }}" 
+                                            class="d-inline" onsubmit="return confirm('هل أنت متأكد من تغيير حالة هذا المستخدم؟');">
+                                            <button type="submit" class="btn btn-outline-{% if user.is_active %}warning{% else %}success{% endif %}" 
+                                                    title="{% if user.is_active %}تعطيل{% else %}تفعيل{% endif %} المستخدم">
+                                                <i class="bi bi-{% if user.is_active %}pause{% else %}play{% endif %}-fill"></i>
+                                            </button>
+                                        </form>
+                                        
+                                        <!-- Delete Button -->
+                                        <form method="POST" action="{{ url_for('delete_user', user_id=user.id) }}" 
+                                            class="d-inline" onsubmit="return confirm('هل أنت متأكد من حذف هذا المستخدم؟ هذا الإجراء لا يمكن التراجع عنه.');">
+                                            <button type="submit" class="btn btn-outline-danger" title="حذف المستخدم">
+                                                <i class="bi bi-trash"></i>
+                                            </button>
+                                        </form>
+                                        {% endif %}
+                                    </div>
+                                </td>
+                            </tr>
+                            {% endfor %}
+                        </tbody>
+                    </table>
+                </div>
+            </div>
+            
+            <!-- Pagination or Summary -->
+            <div class="card-footer bg-transparent border-top-0 py-3">
+                <div class="d-flex justify-content-between align-items-center">
+                    <small class="text-muted">عرض {{ users|length }} مستخدم</small>
+                    <div class="d-flex gap-2">
+                        <button class="btn btn-outline-primary btn-sm">
+                            <i class="bi bi-arrow-right me-2"></i>السابق
+                        </button>
+                        <button class="btn btn-outline-primary btn-sm">
+                            التالي <i class="bi bi-arrow-left me-2"></i>
+                        </button>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </div>
+
+    <!-- Bootstrap 5 JS -->
+    <script src="https://cdn.jsdelivr.net/npm/bootstrap@5.3.0/dist/js/bootstrap.bundle.min.js"></script>
+
+    <script>
+        // Add smooth animations
+        document.addEventListener('DOMContentLoaded', function() {
+            // Animate progress bars on load
+            const progressBars = document.querySelectorAll('.progress-bar');
+            progressBars.forEach(bar => {
+                const width = bar.style.width;
+                bar.style.width = '0';
+                setTimeout(() => {
+                    bar.style.transition = 'width 1.5s ease-in-out';
+                    bar.style.width = width;
+                }, 300);
+            });
+
+            // Add search functionality
+            const searchBox = document.querySelector('.search-box');
+            const tableRows = document.querySelectorAll('tbody tr');
+            
+            searchBox.addEventListener('input', function() {
+                const searchTerm = this.value.toLowerCase();
+                
+                tableRows.forEach(row => {
+                    const text = row.textContent.toLowerCase();
+                    if (text.includes(searchTerm)) {
+                        row.style.display = '';
+                        row.style.opacity = '0';
+                        row.style.transform = 'translateX(30px)';
+                        setTimeout(() => {
+                            row.style.transition = 'all 0.5s ease';
+                            row.style.opacity = '1';
+                            row.style.transform = 'translateX(0)';
+                        }, 100);
+                    } else {
+                        row.style.transition = 'all 0.3s ease';
+                        row.style.opacity = '0';
+                        row.style.transform = 'translateX(30px)';
+                        setTimeout(() => {
+                            row.style.display = 'none';
+                        }, 300);
+                    }
+                });
+            });
+
+            // Add hover effects to table rows
+            tableRows.forEach(row => {
+                row.addEventListener('mouseenter', function() {
+                    this.style.transform = 'translateX(-5px)';
+                });
+                
+                row.addEventListener('mouseleave', function() {
+                    this.style.transform = 'translateX(0)';
+                });
+            });
+
+            // Add click effects to buttons
+            const buttons = document.querySelectorAll('.btn');
+            buttons.forEach(btn => {
+                btn.addEventListener('click', function(e) {
+                    // Create ripple effect
+                    const ripple = document.createElement('span');
+                    const rect = this.getBoundingClientRect();
+                    const size = Math.max(rect.width, rect.height);
+                    const x = e.clientX - rect.left - size / 2;
+                    const y = e.clientY - rect.top - size / 2;
+                    
+                    ripple.style.cssText = `
+                        position: absolute;
+                        border-radius: 50%;
+                        background: rgba(255, 255, 255, 0.6);
+                        transform: scale(0);
+                        animation: ripple 0.6s linear;
+                        width: ${size}px;
+                        height: ${size}px;
+                        left: ${x}px;
+                        top: ${y}px;
+                        pointer-events: none;
+                    `;
+                    
+                    this.style.position = 'relative';
+                    this.style.overflow = 'hidden';
+                    this.appendChild(ripple);
+                    
+                    setTimeout(() => ripple.remove(), 600);
+                });
+            });
+
+            // Auto-refresh progress bars when they come into view
+            const observer = new IntersectionObserver((entries) => {
+                entries.forEach(entry => {
+                    if (entry.isIntersecting) {
+                        const progressBar = entry.target;
+                        const width = progressBar.style.width;
+                        progressBar.style.width = '0';
+                        setTimeout(() => {
+                            progressBar.style.transition = 'width 1s ease-in-out';
+                            progressBar.style.width = width;
+                        }, 100);
+                    }
+                });
+            });
+
+            progressBars.forEach(bar => observer.observe(bar));
+        });
+
+        // Add ripple animation
+        const style = document.createElement('style');
+        style.textContent = `
+            @keyframes ripple {
+                to {
+                    transform: scale(4);
+                    opacity: 0;
+                }
+            }
+        `;
+        document.head.appendChild(style);
+    </script>
+</body>
+</html>

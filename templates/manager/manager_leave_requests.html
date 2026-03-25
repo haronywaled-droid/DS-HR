@@ -1,0 +1,4310 @@
+<!DOCTYPE html>
+<html lang="ar" dir="rtl">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>إدارة طلبات الإجازات - نظام إدارة الموارد البشرية</title>
+    
+    <!-- Bootstrap 5 CSS -->
+    <link href="https://cdn.jsdelivr.net/npm/bootstrap@5.3.0/dist/css/bootstrap.min.css" rel="stylesheet">
+    
+    <!-- Bootstrap Icons -->
+    <link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/bootstrap-icons@1.10.0/font/bootstrap-icons.css">
+    
+    <!-- Font Awesome -->
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css">
+    
+    <!-- ApexCharts for Statistics -->
+    <link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/apexcharts@3.35.0/dist/apexcharts.css">   
+    
+    <style>
+
+        /* Status Badge Colors */
+        .badge-approved {
+            background: linear-gradient(135deg, #d1fae5 0%, #10b981 100%);
+            color: #065f46;
+            border: 1px solid #a7f3d0;
+        }
+
+        .badge-rejected {
+            background: linear-gradient(135deg, #fee2e2 0%, #ef4444 100%);
+            color: #7f1d1d;
+            border: 1px solid #fca5a5;
+        }
+
+        /* Mobile Card View for Processed Requests */
+        #mobile-processed-cards .request-card.approved::before {
+            background: #10b981;
+        }
+
+        #mobile-processed-cards .request-card.rejected::before {
+            background: #ef4444;
+        }
+
+        #mobile-processed-cards .request-card.partially_approved::before {
+            background: linear-gradient(135deg, #10b981 0%, #f59e0b 100%);
+        }
+
+        /* Reason text styling */
+        .reason-text {
+            max-width: 200px;
+            white-space: nowrap;
+            overflow: hidden;
+            text-overflow: ellipsis;
+            font-size: 0.9rem;
+            color: #4b5563;
+        }
+
+        /* Mobile status badge variations */
+        .mobile-card-header .status-badge {
+            padding: 6px 12px;
+            font-size: 0.8rem;
+            margin-top: 5px;
+        }
+
+        /* Enhanced mobile card styling for processed requests */
+        #mobile-processed-cards .request-card {
+            position: relative;
+        }
+
+        #mobile-processed-cards .request-card::after {
+            content: '';
+            position: absolute;
+            top: 0;
+            left: 0;
+            right: 0;
+            height: 4px;
+            background: inherit;
+            opacity: 0.3;
+        }
+
+        #mobile-processed-cards .request-card.approved::after {
+            background: linear-gradient(90deg, #10b981 0%, #34d399 100%);
+        }
+
+        #mobile-processed-cards .request-card.rejected::after {
+            background: linear-gradient(90deg, #ef4444 0%, #f87171 100%);
+        }
+
+        #mobile-processed-cards .request-card.partially_approved::after {
+            background: linear-gradient(90deg, #10b981 0%, #f59e0b 100%);
+        }
+
+        /* Mobile card header enhancement */
+        #mobile-processed-cards .mobile-card-header {
+            position: relative;
+            padding-bottom: 15px;
+        }
+
+        #mobile-processed-cards .mobile-card-header::after {
+            content: '';
+            position: absolute;
+            bottom: 0;
+            right: 0;
+            left: 0;
+            height: 1px;
+            background: linear-gradient(90deg, transparent 0%, rgba(16, 185, 129, 0.2) 50%, transparent 100%);
+        }
+
+        /* Status indicator dot */
+        .mobile-card-section .status-indicator {
+            display: inline-block;
+            width: 8px;
+            height: 8px;
+            border-radius: 50%;
+            margin-left: 8px;
+            background-color: currentColor;
+        }
+
+        /* Responsive text sizes for processed requests */
+        @media (max-width: 576px) {
+            #mobile-processed-cards .mobile-card-value {
+                font-size: 0.85rem;
+            }
+            
+            #mobile-processed-cards .mobile-card-label {
+                font-size: 0.8rem;
+            }
+            
+            #mobile-processed-cards .status-badge {
+                font-size: 0.75rem;
+                padding: 5px 10px;
+            }
+        }
+
+        /* Hover effects for mobile cards */
+        @media (min-width: 577px) {
+            #mobile-processed-cards .request-card:hover {
+                transform: translateY(-5px) scale(1.02);
+                box-shadow: 0 20px 40px rgba(0, 0, 0, 0.1);
+            }
+        }
+
+        /* Processed request specific animations */
+        #mobile-processed-cards .request-card {
+            animation: fadeInUp 0.5s ease forwards;
+            opacity: 0;
+            transform: translateY(20px);
+        }
+
+        #mobile-processed-cards .request-card:nth-child(1) { animation-delay: 0.1s; }
+        #mobile-processed-cards .request-card:nth-child(2) { animation-delay: 0.2s; }
+        #mobile-processed-cards .request-card:nth-child(3) { animation-delay: 0.3s; }
+        #mobile-processed-cards .request-card:nth-child(4) { animation-delay: 0.4s; }
+        #mobile-processed-cards .request-card:nth-child(5) { animation-delay: 0.5s; }
+        #mobile-processed-cards .request-card:nth-child(6) { animation-delay: 0.6s; }
+
+        @keyframes fadeInUp {
+            to {
+                opacity: 1;
+                transform: translateY(0);
+            }
+        }
+
+        /* Mobile Card View Styles */
+        .request-card {
+            background: linear-gradient(135deg, #f8fafc 0%, #f1f5f9 100%);
+            border-radius: 18px;
+            padding: 25px;
+            margin-bottom: 20px;
+            border: 2px solid rgba(16, 185, 129, 0.15);
+            transition: all 0.3s ease;
+            position: relative;
+            overflow: hidden;
+        }
+
+        .request-card::before {
+            content: '';
+            position: absolute;
+            top: 0;
+            right: 0;
+            width: 4px;
+            height: 100%;
+            background: var(--primary-green);
+        }
+
+        .request-card:hover {
+            transform: translateY(-5px);
+            box-shadow: 0 15px 30px rgba(16, 185, 129, 0.2);
+        }
+
+        .request-card.pending {
+            background: linear-gradient(135deg, #fffbeb 0%, #fef3c7 100%);
+            border-color: rgba(245, 158, 11, 0.3);
+        }
+
+        .request-card.pending::before {
+            background: #f59e0b;
+        }
+
+        .request-card.approved {
+            background: linear-gradient(135deg, #f0fdf4 0%, #dcfce7 100%);
+            border-color: rgba(16, 185, 129, 0.3);
+        }
+
+        .request-card.approved::before {
+            background: #10b981;
+        }
+
+        .request-card.rejected {
+            background: linear-gradient(135deg, #fef2f2 0%, #fee2e2 100%);
+            border-color: rgba(239, 68, 68, 0.3);
+        }
+
+        .request-card.rejected::before {
+            background: #ef4444;
+        }
+
+        .mobile-card-header {
+            display: flex;
+            justify-content: space-between;
+            align-items: flex-start;
+            margin-bottom: 15px;
+            border-bottom: 1px solid rgba(0, 0, 0, 0.1);
+            padding-bottom: 10px;
+        }
+
+        .mobile-card-section {
+            margin-bottom: 12px;
+        }
+
+        .mobile-card-label {
+            color: #6b7280;
+            font-size: 0.85rem;
+            margin-bottom: 4px;
+            display: flex;
+            align-items: center;
+        }
+
+        .mobile-card-label i {
+            margin-left: 5px;
+            width: 16px;
+        }
+
+        .mobile-card-value {
+            font-weight: 600;
+            color: #1a4731;
+            font-size: 0.9rem;
+        }
+
+        .mobile-card-actions {
+            display: flex;
+            flex-direction: column;
+            gap: 10px;
+            margin-top: 20px;
+            width: 100%;
+        }
+
+        .mobile-card-actions .action-btn {
+            width: 100%;
+            height: 48px;
+            border-radius: 12px;
+            border: none;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            font-size: 1rem;
+            font-weight: 600;
+            transition: all 0.3s ease;
+            cursor: pointer;
+            box-shadow: 0 4px 12px rgba(0, 0, 0, 0.15);
+            padding: 0 20px;
+            margin: 0;
+            min-height: 48px;
+        }
+
+        .mobile-card-actions .action-btn i {
+            margin-left: 8px;
+            font-size: 1.1rem;
+        }
+
+        .mobile-card-actions .action-btn.approve {
+            background: var(--gradient-primary);
+            color: white;
+        }
+
+        .mobile-card-actions .action-btn.reject {
+            background: var(--gradient-danger);
+            color: white;
+        }
+
+        .mobile-card-actions .action-btn.view {
+            background: var(--gradient-info);
+            color: white;
+        }
+
+        .mobile-card-actions .action-btn:hover {
+            transform: translateY(-3px);
+            box-shadow: 0 8px 20px rgba(0, 0, 0, 0.2);
+        }
+
+        .mobile-card-actions.single-button {
+            flex-direction: row;
+        }
+
+        .mobile-card-actions.single-button .action-btn {
+            flex: 1;
+        }
+
+        .mobile-card-actions.two-buttons {
+            flex-direction: row;
+            gap: 10px;
+        }
+
+        .mobile-card-actions.two-buttons .action-btn {
+            flex: 1;
+            min-width: 0;
+        }
+
+        .employee-avatar {
+            width: 38px;
+            height: 38px;
+            background: var(--gradient-primary);
+            border-radius: 50%;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            color: white;
+            font-weight: bold;
+            font-size: 1rem;
+            box-shadow: 0 4px 10px rgba(16, 185, 129, 0.4);
+            transition: all 0.3s ease;
+            flex-shrink: 0;
+        }
+
+        .employee-avatar:hover {
+            transform: scale(1.08);
+            box-shadow: 0 6px 15px rgba(16, 185, 129, 0.5);
+        }
+
+        .shift-badge {
+            display: inline-block;
+            padding: 6px 12px;
+            border-radius: 8px;
+            font-size: 0.85rem;
+            font-weight: 600;
+            margin: 2px 3px;
+            transition: all 0.3s ease;
+        }
+
+        .shift-badge.morning {
+            background: linear-gradient(135deg, #fef3c7 0%, #fbbf24 100%);
+            color: #92400e;
+            border: 1px solid #f59e0b;
+        }
+
+        .shift-badge.evening {
+            background: linear-gradient(135deg, #dbeafe 0%, #3b82f6 100%);
+            color: #1e40af;
+            border: 1px solid #2563eb;
+        }
+
+        .shift-badge i {
+            margin-left: 4px;
+        }
+
+        .job-badge {
+            display: inline-block;
+            background: rgba(16, 185, 129, 0.15);
+            color: #065f46;
+            padding: 4px 10px;
+            border-radius: 6px;
+            font-size: 0.8rem;
+            margin-right: 5px;
+            border: 1px solid rgba(16, 185, 129, 0.3);
+        }
+
+        .status-badge {
+            padding: 8px 16px;
+            border-radius: 20px;
+            font-weight: 600;
+            font-size: 0.85rem;
+        }
+
+        .badge-pending {
+            background: #fef3c7;
+            color: #92400e;
+        }
+
+        .mobile-card-badges {
+            display: flex;
+            flex-wrap: wrap;
+            gap: 5px;
+            margin-top: 5px;
+        }
+
+        .empty-state {
+            text-align: center;
+            padding: 80px 20px;
+            color: #6b7280;
+        }
+
+        .empty-state i {
+            font-size: 3rem;
+            color: #9ca3af;
+            margin-bottom: 1rem;
+            opacity: 0.5;
+        }
+
+        /* Responsive adjustments */
+        @media (max-width: 576px) {
+            .mobile-card-actions {
+                flex-direction: column;
+            }
+            
+            .mobile-card-actions.two-buttons {
+                flex-direction: column;
+            }
+            
+            .mobile-card-actions .action-btn {
+                height: 52px;
+                font-size: 1.05rem;
+            }
+            
+            .mobile-card-actions .action-btn span {
+                display: inline !important;
+            }
+            
+            .request-card {
+                padding: 20px;
+            }
+        }
+
+        @media (max-width: 768px) {
+            .mobile-card-actions .action-btn span {
+                display: inline !important;
+                margin-right: 4px;
+            }
+            
+            .mobile-card-actions .action-btn i {
+                margin-left: 4px;
+                margin-right: 4px;
+            }
+            
+            .d-lg-none {
+                display: block !important;
+            }
+            
+            .requests-table-container {
+                display: none !important;
+            }
+        }
+
+        @media (min-width: 769px) {
+            .d-lg-none {
+                display: none !important;
+            }
+            
+            .requests-table-container {
+                display: block !important;
+            }
+        }
+
+        @media (min-width: 577px) and (max-width: 768px) {
+            .mobile-card-actions.two-buttons {
+                flex-direction: row;
+            }
+            
+            .mobile-card-actions .action-btn {
+                height: 50px;
+            }
+        }
+        /* Mobile Card View for Leave Requests */
+        .request-card {
+            background: linear-gradient(135deg, #f8fafc 0%, #f1f5f9 100%);
+            border-radius: 18px;
+            padding: 25px;
+            margin-bottom: 20px;
+            border: 2px solid rgba(16, 185, 129, 0.15);
+            transition: all 0.3s ease;
+            position: relative;
+            overflow: hidden;
+        }
+
+        .request-card::before {
+            content: '';
+            position: absolute;
+            top: 0;
+            right: 0;
+            width: 4px;
+            height: 100%;
+            background: var(--primary-green);
+        }
+
+        .request-card:hover {
+            transform: translateY(-5px);
+            box-shadow: 0 15px 30px rgba(16, 185, 129, 0.2);
+        }
+
+        .request-card.pending {
+            background: linear-gradient(135deg, #fffbeb 0%, #fef3c7 100%);
+            border-color: rgba(245, 158, 11, 0.3);
+        }
+
+        .request-card.pending::before {
+            background: #f59e0b;
+        }
+
+        .request-card.approved {
+            background: linear-gradient(135deg, #f0fdf4 0%, #dcfce7 100%);
+            border-color: rgba(16, 185, 129, 0.3);
+        }
+
+        .request-card.approved::before {
+            background: #10b981;
+        }
+
+        .request-card.rejected {
+            background: linear-gradient(135deg, #fef2f2 0%, #fee2e2 100%);
+            border-color: rgba(239, 68, 68, 0.3);
+        }
+
+        .request-card.rejected::before {
+            background: #ef4444;
+        }
+
+        /* Mobile Card Header */
+        .mobile-card-header {
+            display: flex;
+            justify-content: space-between;
+            align-items: flex-start;
+            margin-bottom: 15px;
+            border-bottom: 1px solid rgba(0, 0, 0, 0.1);
+            padding-bottom: 10px;
+        }
+
+        .mobile-card-section {
+            margin-bottom: 12px;
+        }
+
+        .mobile-card-label {
+            color: #6b7280;
+            font-size: 0.85rem;
+            margin-bottom: 4px;
+            display: flex;
+            align-items: center;
+        }
+
+        .mobile-card-label i {
+            margin-left: 5px;
+            width: 16px;
+        }
+
+        .mobile-card-value {
+            font-weight: 600;
+            color: #1a4731;
+            font-size: 0.9rem;
+        }
+
+        .mobile-card-actions {
+            display: flex;
+            flex-direction: column;
+            gap: 10px;
+            margin-top: 20px;
+            width: 100%;
+        }
+
+        .mobile-card-actions .action-btn {
+            width: 100%;
+            height: 48px;
+            border-radius: 12px;
+            border: none;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            font-size: 1rem;
+            font-weight: 600;
+            transition: all 0.3s ease;
+            cursor: pointer;
+            box-shadow: 0 4px 12px rgba(0, 0, 0, 0.15);
+            text-decoration: none;
+            padding: 0 20px;
+            margin: 0;
+            min-height: 48px;
+        }
+
+        .mobile-card-actions .action-btn i {
+            margin-left: 8px;
+            font-size: 1.1rem;
+        }
+
+        .mobile-card-actions .action-btn.approve {
+            background: var(--gradient-primary);
+            color: white;
+        }
+
+        .mobile-card-actions .action-btn.reject {
+            background: var(--gradient-danger);
+            color: white;
+        }
+
+        .mobile-card-actions .action-btn.view {
+            background: var(--gradient-info);
+            color: white;
+        }
+
+        .mobile-card-actions .action-btn:hover {
+            transform: translateY(-3px);
+            box-shadow: 0 8px 20px rgba(0, 0, 0, 0.2);
+        }
+
+        .mobile-card-actions.single-button {
+            flex-direction: row;
+        }
+
+        .mobile-card-actions.single-button .action-btn {
+            flex: 1;
+        }
+
+        .mobile-card-actions.two-buttons {
+            flex-direction: row;
+            gap: 10px;
+        }
+
+        .mobile-card-actions.two-buttons .action-btn {
+            flex: 1;
+            min-width: 0;
+        }
+
+        /* Responsive adjustments */
+        @media (max-width: 576px) {
+            .mobile-card-actions {
+                flex-direction: column;
+            }
+            
+            .mobile-card-actions.two-buttons {
+                flex-direction: column;
+            }
+            
+            .mobile-card-actions .action-btn {
+                height: 52px;
+                font-size: 1.05rem;
+            }
+            
+            .mobile-card-actions .action-btn span {
+                display: inline !important;
+            }
+        }
+
+        /* Ensure button text is always visible on mobile */
+        @media (max-width: 768px) {
+            .mobile-card-actions .action-btn span {
+                display: inline !important;
+                margin-right: 4px;
+            }
+            
+            .mobile-card-actions .action-btn i {
+                margin-left: 4px;
+                margin-right: 4px;
+            }
+        }
+
+        /* Tablet adjustments */
+        @media (min-width: 577px) and (max-width: 768px) {
+            .mobile-card-actions.two-buttons {
+                flex-direction: row;
+            }
+            
+            .mobile-card-actions .action-btn {
+                height: 50px;
+            }
+        }
+
+        /* Shift Badges for Mobile Cards */
+        .shift-badge {
+            display: inline-block;
+            padding: 6px 12px;
+            border-radius: 8px;
+            font-size: 0.85rem;
+            font-weight: 600;
+            margin: 2px 3px;
+            transition: all 0.3s ease;
+        }
+
+        .shift-badge.morning {
+            background: linear-gradient(135deg, #fef3c7 0%, #fbbf24 100%);
+            color: #92400e;
+            border: 1px solid #f59e0b;
+        }
+
+        .shift-badge.evening {
+            background: linear-gradient(135deg, #dbeafe 0%, #3b82f6 100%);
+            color: #1e40af;
+            border: 1px solid #2563eb;
+        }
+
+        .shift-badge i {
+            margin-left: 4px;
+        }
+
+        .job-badge {
+            display: inline-block;
+            background: rgba(16, 185, 129, 0.15);
+            color: #065f46;
+            padding: 4px 10px;
+            border-radius: 6px;
+            font-size: 0.8rem;
+            margin-right: 5px;
+            border: 1px solid rgba(16, 185, 129, 0.3);
+        }
+
+        .status-badge {
+            padding: 8px 16px;
+            border-radius: 20px;
+            font-weight: 600;
+            font-size: 0.85rem;
+        }
+
+        .mobile-card-badges {
+            display: flex;
+            flex-wrap: wrap;
+            gap: 5px;
+            margin-top: 5px;
+        }
+
+        /* Empty State */
+        .empty-state {
+            text-align: center;
+            padding: 80px 20px;
+            color: #6b7280;
+        }
+
+        .empty-state .file-icon {
+            font-size: 4rem;
+            color: var(--primary-green);
+            opacity: 0.7;
+            margin-bottom: 20px;
+        }
+
+
+        :root {
+            --primary-green: #10b981;
+            --dark-green: #059669;
+            --light-green: #34d399;
+            --accent-green: #a7f3d0;
+            --gradient-primary: linear-gradient(135deg, #10b981 0%, #059669 100%);
+            --gradient-secondary: linear-gradient(135deg, #34d399 0%, #10b981 100%);
+            --gradient-dark: linear-gradient(135deg, #065f46 0%, #047857 100%);
+            --gradient-warning: linear-gradient(135deg, #f59e0b 0%, #d97706 100%);
+            --gradient-danger: linear-gradient(135deg, #ef4444 0%, #dc2626 100%);
+            --gradient-info: linear-gradient(135deg, #0ea5e9 0%, #0284c7 100%);
+            --header-height: 130px;
+        }
+        
+        * {
+            margin: 0;
+            padding: 0;
+            box-sizing: border-box;
+        }
+        
+        body {
+            font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif;
+            background: #f8fdf9;
+            min-height: 100vh;
+            overflow-x: hidden;
+            padding-top: var(--header-height);
+            color: #1a4731;
+        }
+        
+        /* Unified Navigation Bar */
+        .unified-nav {
+            background: var(--gradient-dark);
+            color: white;
+            position: fixed;
+            top: 0;
+            right: 0;
+            left: 0;
+            height: var(--header-height);
+            z-index: 1000;
+            box-shadow: 0 4px 20px rgba(5, 150, 105, 0.25);
+            border-bottom: 1px solid rgba(255, 255, 255, 0.1);
+        }
+        
+        .unified-nav-container {
+            display: flex;
+            flex-direction: column;
+            height: 100%;
+            padding: 0 1rem;
+        }
+        
+        .nav-top-section {
+            display: flex;
+            align-items: center;
+            justify-content: space-between;
+            height: 70px;
+            flex-shrink: 0;
+            padding: 0.5rem 0;
+        }
+        
+        .nav-bottom-section {
+            display: flex;
+            align-items: center;
+            justify-content: space-between;
+            height: 60px;
+            flex-shrink: 0;
+            border-top: 1px solid rgba(255, 255, 255, 0.15);
+            position: relative;
+        }
+        
+        .nav-brand-section {
+            display: flex;
+            align-items: center;
+            flex-shrink: 0;
+            min-width: 0;
+        }
+        
+        .logo-container {
+            width: 45px;
+            height: 45px;
+            background: var(--gradient-primary);
+            border-radius: 10px;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            box-shadow: 0 4px 12px rgba(16, 185, 129, 0.4);
+            margin-left: 0.5rem;
+            flex-shrink: 0;
+        }
+        
+        .welcome-section {
+            display: flex;
+            align-items: center;
+            flex-grow: 1;
+            justify-content: center;
+            color: white;
+            text-align: center;
+            min-width: 0;
+            overflow: hidden;
+        }
+        
+        .welcome-content {
+            min-width: 0;
+            overflow: hidden;
+        }
+        
+        .welcome-content h4 {
+            margin-bottom: 0.2rem;
+            font-weight: 600;
+            font-size: 1.1rem;
+            white-space: nowrap;
+            overflow: hidden;
+            text-overflow: ellipsis;
+        }
+        
+        .welcome-content p {
+            margin-bottom: 0;
+            font-size: 0.85rem;
+            opacity: 0.9;
+            white-space: nowrap;
+            overflow: hidden;
+            text-overflow: ellipsis;
+        }
+        
+        .nav-user-section {
+            display: flex;
+            align-items: center;
+            flex-shrink: 0;
+            min-width: 0;
+        }
+        
+        .nav-menu-section {
+            display: flex;
+            align-items: center;
+            flex-grow: 1;
+            height: 100%;
+            position: relative;
+            min-width: 0;
+        }
+        
+        .nav-menu-wrapper {
+            display: flex;
+            align-items: center;
+            height: 100%;
+            overflow-x: auto;
+            overflow-y: hidden;
+            scroll-behavior: smooth;
+            -webkit-overflow-scrolling: touch;
+            width: 100%;
+            padding: 0 0.5rem;
+            scrollbar-width: thin;
+            scrollbar-color: var(--primary-green) rgba(255, 255, 255, 0.1);
+            min-width: 0;
+        }
+        
+        .nav-menu-wrapper::-webkit-scrollbar {
+            height: 6px;
+        }
+        
+        .nav-menu-wrapper::-webkit-scrollbar-track {
+            background: rgba(255, 255, 255, 0.1);
+            border-radius: 10px;
+        }
+        
+        .nav-menu-wrapper::-webkit-scrollbar-thumb {
+            background: var(--primary-green);
+            border-radius: 10px;
+        }
+        
+        .nav-menu-wrapper::-webkit-scrollbar-thumb:hover {
+            background: var(--light-green);
+        }
+        
+        .unified-nav .nav-link {
+            color: rgba(255, 255, 255, 0.9);
+            padding: 0.7rem 1.2rem;
+            margin: 0 0.2rem;
+            border-radius: 10px;
+            transition: all 0.3s ease;
+            font-weight: 500;
+            position: relative;
+            border: 1px solid transparent;
+            display: flex;
+            align-items: center;
+            text-decoration: none;
+            font-size: 0.9rem;
+            white-space: nowrap;
+            height: 80%;
+            flex-shrink: 0;
+            background: rgba(255, 255, 255, 0.05);
+            min-width: max-content;
+        }
+        
+        .unified-nav .nav-link:hover {
+            color: white;
+            background: rgba(255, 255, 255, 0.12);
+            border: 1px solid rgba(255, 255, 255, 0.2);
+            transform: translateY(-2px);
+            box-shadow: 0 4px 12px rgba(0, 0, 0, 0.15);
+        }
+        
+        .unified-nav .nav-link.active {
+            background: rgba(255, 255, 255, 0.15);
+            color: white;
+            border: 1px solid rgba(255, 255, 255, 0.25);
+            box-shadow: 0 4px 12px rgba(0, 0, 0, 0.2);
+        }
+        
+        .unified-nav .nav-link.active::after {
+            content: '';
+            position: absolute;
+            bottom: -10px;
+            right: 50%;
+            transform: translateX(50%);
+            width: 70%;
+            height: 3px;
+            background: var(--accent-green);
+            border-radius: 4px 4px 0 0;
+        }
+        
+        .nav-badge {
+            background: var(--accent-green);
+            color: #065f46;
+            padding: 0.2rem 0.4rem;
+            border-radius: 8px;
+            font-size: 0.65rem;
+            font-weight: bold;
+            margin-right: 0.3rem;
+            position: absolute;
+            top: 5px;
+            right: 5px;
+            box-shadow: 0 2px 4px rgba(0, 0, 0, 0.1);
+        }
+        
+        .nav-link-with-badge {
+            position: relative;
+        }
+        
+        .notification-badge {
+            position: absolute;
+            top: -5px;
+            right: -5px;
+            font-size: 0.7rem;
+            background: var(--gradient-secondary);
+            border: 2px solid white;
+            box-shadow: 0 2px 8px rgba(16, 185, 129, 0.4);
+        }
+        
+        .user-avatar {
+            width: 38px;
+            height: 38px;
+            background: var(--gradient-primary);
+            border-radius: 50%;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            color: white;
+            font-weight: bold;
+            font-size: 1rem;
+            box-shadow: 0 4px 10px rgba(16, 185, 129, 0.4);
+            transition: all 0.3s ease;
+            flex-shrink: 0;
+        }
+        
+        .user-avatar:hover {
+            transform: scale(1.08);
+            box-shadow: 0 6px 15px rgba(16, 185, 129, 0.5);
+        }
+        
+        .dropdown-menu {
+            background: white;
+            border: none;
+            border-radius: 12px;
+            box-shadow: 0 10px 30px rgba(16, 185, 129, 0.2);
+            overflow: hidden;
+            border: 1px solid rgba(16, 185, 129, 0.15);
+        }
+        
+        .dropdown-item {
+            padding: 0.8rem 1.2rem;
+            border-radius: 8px;
+            margin: 0.2rem 0.5rem;
+            transition: all 0.2s ease;
+            color: #065f46;
+        }
+        
+        .dropdown-item:hover {
+            background: rgba(16, 185, 129, 0.1);
+            color: #065f46;
+            transform: translateX(-5px);
+        }
+        
+        .mobile-menu-btn {
+            display: none;
+            background: transparent;
+            border: 1px solid rgba(255, 255, 255, 0.3);
+            color: white;
+            width: 40px;
+            height: 40px;
+            border-radius: 8px;
+            align-items: center;
+            justify-content: center;
+            cursor: pointer;
+            transition: all 0.3s ease;
+            margin-right: 0.5rem;
+        }
+        
+        .mobile-menu-btn:hover {
+            background: rgba(255, 255, 255, 0.1);
+        }
+        
+        .mobile-nav-menu {
+            position: fixed;
+            top: var(--header-height);
+            right: 0;
+            left: 0;
+            background: var(--gradient-dark);
+            z-index: 999;
+            padding: 1rem;
+            box-shadow: 0 4px 20px rgba(0, 0, 0, 0.2);
+            display: none;
+            flex-direction: column;
+            max-height: calc(100vh - var(--header-height));
+            overflow-y: auto;
+        }
+        
+        .mobile-nav-menu.active {
+            display: flex;
+        }
+        
+        .mobile-nav-link {
+            color: white;
+            padding: 1rem;
+            margin: 0.2rem 0;
+            border-radius: 8px;
+            text-decoration: none;
+            display: flex;
+            align-items: center;
+            transition: all 0.3s ease;
+            border: 1px solid transparent;
+            position: relative;
+        }
+        
+        .mobile-nav-link:hover,
+        .mobile-nav-link.active {
+            background: rgba(255, 255, 255, 0.1);
+            border: 1px solid rgba(255, 255, 255, 0.2);
+        }
+        
+        @media (max-width: 992px) {
+            :root {
+                --header-height: 100px;
+            }
+            
+            .unified-nav {
+                height: auto;
+                min-height: var(--header-height);
+            }
+            
+            .unified-nav-container {
+                padding: 0.5rem;
+            }
+            
+            .nav-top-section {
+                height: 60px;
+                flex-wrap: nowrap;
+                padding: 0;
+            }
+            
+            .nav-brand-section {
+                order: 1;
+                width: auto;
+                flex: 0 0 auto;
+            }
+            
+            .welcome-section {
+                order: 2;
+                flex: 1;
+                justify-content: flex-start;
+                padding: 0 0.5rem;
+                display: none;
+            }
+            
+            .nav-user-section {
+                order: 3;
+                width: auto;
+                flex: 0 0 auto;
+                justify-content: flex-end;
+            }
+            
+            .nav-bottom-section {
+                display: none;
+            }
+            
+            .mobile-menu-btn {
+                display: flex;
+            }
+            
+            body {
+                padding-top: var(--header-height);
+            }
+        }
+        
+        @media (max-width: 768px) {
+            :root {
+                --header-height: 80px;
+            }
+            
+            .nav-top-section {
+                height: 50px;
+            }
+            
+            .logo-container {
+                width: 35px;
+                height: 35px;
+            }
+            
+            .user-avatar {
+                width: 32px;
+                height: 32px;
+                font-size: 0.9rem;
+            }
+        }
+        
+        @media (max-width: 576px) {
+            :root {
+                --header-height: 70px;
+            }
+            
+            .nav-top-section {
+                height: 45px;
+            }
+            
+            .logo-container {
+                width: 30px;
+                height: 30px;
+                margin-left: 0.3rem;
+            }
+            
+            .user-avatar {
+                width: 28px;
+                height: 28px;
+                font-size: 0.8rem;
+            }
+        }
+
+        /* Main Content Styles */
+        .main-content {
+            padding: 20px;
+            max-width: 1400px;
+            margin: 0 auto;
+        }
+        
+        /* Header Card */
+        .header-card {
+            background: var(--gradient-dark);
+            border: none;
+            border-radius: 20px;
+            color: white;
+            box-shadow: 0 15px 35px rgba(5, 150, 105, 0.2);
+            margin-bottom: 30px;
+            overflow: hidden;
+        }
+        
+        .header-content {
+            padding: 2rem;
+        }
+        
+        .page-title {
+            font-size: 1.8rem;
+            font-weight: 700;
+            display: flex;
+            align-items: center;
+            gap: 15px;
+        }
+        
+        .page-title i {
+            font-size: 2.2rem;
+            background: rgba(255, 255, 255, 0.2);
+            width: 60px;
+            height: 60px;
+            border-radius: 15px;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+        }
+        
+        /* Content Tabs */
+        .content-tabs {
+            background: white;
+            border-radius: 20px;
+            box-shadow: 0 10px 30px rgba(16, 185, 129, 0.1);
+            margin-bottom: 30px;
+            overflow: hidden;
+        }
+        
+        .tabs-nav {
+            display: flex;
+            background: #f8fafc;
+            border-bottom: 2px solid #e5e7eb;
+            overflow-x: auto;
+            scrollbar-width: none;
+        }
+        
+        .tabs-nav::-webkit-scrollbar {
+            display: none;
+        }
+        
+        .tab-btn {
+            padding: 1.2rem 2rem;
+            background: transparent;
+            border: none;
+            color: #6b7280;
+            font-weight: 600;
+            font-size: 1rem;
+            cursor: pointer;
+            transition: all 0.3s ease;
+            white-space: nowrap;
+            position: relative;
+            display: flex;
+            align-items: center;
+            gap: 10px;
+        }
+        
+        .tab-btn:hover {
+            color: var(--primary-green);
+            background: rgba(16, 185, 129, 0.05);
+        }
+        
+        .tab-btn.active {
+            color: var(--primary-green);
+            background: white;
+        }
+        
+        .tab-btn.active::after {
+            content: '';
+            position: absolute;
+            bottom: -2px;
+            right: 0;
+            left: 0;
+            height: 3px;
+            background: var(--primary-green);
+        }
+        
+        .tab-badge {
+            background: var(--accent-green);
+            color: #065f46;
+            padding: 0.3rem 0.6rem;
+            border-radius: 20px;
+            font-size: 0.8rem;
+            font-weight: bold;
+        }
+        
+        .tab-content {
+            display: none;
+            padding: 2rem;
+        }
+        
+        .tab-content.active {
+            display: block;
+            animation: fadeIn 0.5s ease;
+        }
+        
+        @keyframes fadeIn {
+            from { opacity: 0; transform: translateY(10px); }
+            to { opacity: 1; transform: translateY(0); }
+        }
+        
+        /* Statistics Cards */
+        .stats-grid {
+            display: grid;
+            grid-template-columns: repeat(auto-fit, minmax(250px, 1fr));
+            gap: 1.5rem;
+            margin-bottom: 2rem;
+        }
+        
+        .stat-card {
+            background: white;
+            border-radius: 20px;
+            padding: 1.5rem;
+            box-shadow: 0 10px 30px rgba(16, 185, 129, 0.1);
+            border: 2px solid rgba(16, 185, 129, 0.1);
+            transition: all 0.3s ease;
+            height: 100%;
+        }
+        
+        .stat-card:hover {
+            transform: translateY(-5px);
+            box-shadow: 0 15px 40px rgba(16, 185, 129, 0.2);
+            border-color: var(--light-green);
+        }
+        
+        .stat-header {
+            display: flex;
+            align-items: center;
+            justify-content: space-between;
+            margin-bottom: 1rem;
+        }
+        
+        .stat-icon {
+            width: 50px;
+            height: 50px;
+            border-radius: 12px;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            font-size: 1.5rem;
+        }
+        
+        .stat-icon.pending { background: #fef3c7; color: #d97706; }
+        .stat-icon.approved { background: #d1fae5; color: #059669; }
+        .stat-icon.rejected { background: #fee2e2; color: #dc2626; }
+        .stat-icon.total { background: #dbeafe; color: #2563eb; }
+        
+        .stat-value {
+            font-size: 2.5rem;
+            font-weight: 800;
+            margin-bottom: 0.5rem;
+            background: var(--gradient-primary);
+            -webkit-background-clip: text;
+            -webkit-text-fill-color: transparent;
+        }
+        
+        .stat-label {
+            color: #6b7280;
+            font-size: 0.9rem;
+            margin-bottom: 1rem;
+        }
+        
+        .stat-trend {
+            display: flex;
+            align-items: center;
+            gap: 5px;
+            font-size: 0.85rem;
+            font-weight: 500;
+        }
+        
+        .stat-trend.up { color: #059669; }
+        .stat-trend.down { color: #dc2626; }
+        
+        /* Charts Container */
+        .charts-container {
+            display: grid;
+            grid-template-columns: repeat(auto-fit, minmax(400px, 1fr));
+            gap: 2rem;
+            margin-bottom: 2rem;
+        }
+        
+        @media (max-width: 768px) {
+            .charts-container {
+                grid-template-columns: 1fr;
+            }
+        }
+        
+        .chart-card {
+            background: white;
+            border-radius: 20px;
+            padding: 1.5rem;
+            box-shadow: 0 10px 30px rgba(16, 185, 129, 0.1);
+            border: 2px solid rgba(16, 185, 129, 0.1);
+        }
+        
+        .chart-header {
+            display: flex;
+            align-items: center;
+            justify-content: space-between;
+            margin-bottom: 1rem;
+        }
+        
+        .chart-title {
+            font-weight: 600;
+            color: #1f2937;
+            font-size: 1.1rem;
+        }
+        
+        /* Detailed Reports */
+        .reports-container {
+            background: white;
+            border-radius: 20px;
+            padding: 2rem;
+            box-shadow: 0 10px 30px rgba(16, 185, 129, 0.1);
+            margin-bottom: 2rem;
+        }
+        
+        .reports-header {
+            display: flex;
+            align-items: center;
+            justify-content: space-between;
+            margin-bottom: 1.5rem;
+            flex-wrap: wrap;
+            gap: 1rem;
+        }
+        
+        .reports-actions {
+            display: flex;
+            gap: 1rem;
+            flex-wrap: wrap;
+        }
+        
+        .date-range-picker {
+            display: flex;
+            align-items: center;
+            gap: 1rem;
+            background: #f9fafb;
+            padding: 0.8rem 1.2rem;
+            border-radius: 12px;
+            border: 2px solid #e5e7eb;
+        }
+        
+        .date-range-picker input {
+            border: none;
+            background: transparent;
+            font-family: inherit;
+            color: #374151;
+            width: 120px;
+        }
+        
+        .export-btn {
+            background: var(--gradient-primary);
+            color: white;
+            border: none;
+            padding: 0.8rem 1.5rem;
+            border-radius: 12px;
+            font-weight: 600;
+            display: flex;
+            align-items: center;
+            gap: 8px;
+            cursor: pointer;
+            transition: all 0.3s ease;
+        }
+        
+        .export-btn:hover {
+            transform: translateY(-2px);
+            box-shadow: 0 5px 15px rgba(16, 185, 129, 0.3);
+        }
+        
+        /* Employee Details Table */
+        .employee-details-table {
+            width: 100%;
+            border-collapse: collapse;
+            margin-top: 1.5rem;
+        }
+        
+        .employee-details-table th {
+            background: linear-gradient(135deg, #f0fdf4 0%, #dcfce7 100%);
+            padding: 1rem;
+            text-align: right;
+            font-weight: 600;
+            color: var(--dark-green);
+            border-bottom: 3px solid #e5e7eb;
+        }
+        
+        .employee-details-table td {
+            padding: 1rem;
+            border-bottom: 1px solid #f1f5f9;
+            vertical-align: middle;
+        }
+        
+        .employee-details-table tr:hover {
+            background: #f9fafb;
+        }
+        
+        /* Mobile Responsive Adjustments */
+        @media (max-width: 768px) {
+            .main-content {
+                padding: 10px;
+            }
+            
+            .header-content {
+                padding: 1.5rem;
+            }
+            
+            .page-title {
+                font-size: 1.4rem;
+            }
+            
+            .tabs-nav {
+                flex-direction: column;
+            }
+            
+            .tab-btn {
+                width: 100%;
+                justify-content: center;
+                padding: 1rem;
+            }
+            
+            .stats-grid {
+                grid-template-columns: 1fr;
+            }
+            
+            .charts-container {
+                gap: 1rem;
+            }
+            
+            .chart-card {
+                padding: 1rem;
+            }
+            
+            .reports-header {
+                flex-direction: column;
+                align-items: stretch;
+            }
+            
+            .reports-actions {
+                flex-direction: column;
+            }
+            
+            .date-range-picker {
+                justify-content: center;
+            }
+            
+            .employee-details-table {
+                display: block;
+                overflow-x: auto;
+            }
+        }
+        
+        /* Loading States */
+        .loading {
+            opacity: 0.6;
+            pointer-events: none;
+        }
+        
+        .loading-overlay {
+            position: fixed;
+            top: 0;
+            left: 0;
+            width: 100%;
+            height: 100%;
+            background: rgba(0, 0, 0, 0.7);
+            display: flex;
+            justify-content: center;
+            align-items: center;
+            z-index: 9999;
+            flex-direction: column;
+            gap: 1.5rem;
+            backdrop-filter: blur(5px);
+        }
+        
+        .loading-spinner {
+            width: 60px;
+            height: 60px;
+            border: 5px solid rgba(255, 255, 255, 0.3);
+            border-top: 5px solid var(--primary-green);
+            border-radius: 50%;
+            animation: spin 1s linear infinite;
+        }
+        
+        @keyframes spin {
+            0% { transform: rotate(0deg); }
+            100% { transform: rotate(360deg); }
+        }
+        
+        /* Alert Container */
+        .alert-container {
+            position: fixed;
+            top: calc(var(--header-height) + 20px);
+            right: 20px;
+            z-index: 1000;
+            min-width: 300px;
+            max-width: 400px;
+        }
+        
+        .alert-container .alert {
+            border-radius: 12px;
+            border: 1px solid rgba(16, 185, 129, 0.2);
+            box-shadow: 0 5px 20px rgba(16, 185, 129, 0.15);
+            backdrop-filter: blur(10px);
+            background: rgba(255, 255, 255, 0.95);
+        }
+        
+        /* Filters Section */
+        .filters-section {
+            background: white;
+            border-radius: 20px;
+            padding: 1.5rem;
+            margin-bottom: 2rem;
+            box-shadow: 0 10px 30px rgba(16, 185, 129, 0.1);
+        }
+        
+        .filter-row {
+            display: grid;
+            grid-template-columns: repeat(auto-fit, minmax(200px, 1fr));
+            gap: 1rem;
+            margin-bottom: 1rem;
+        }
+        
+        .filter-group {
+            margin-bottom: 0;
+        }
+        
+        .filter-select {
+            width: 100%;
+            padding: 0.8rem 1rem;
+            border: 2px solid #e5e7eb;
+            border-radius: 12px;
+            background: white;
+            font-family: inherit;
+            color: #374151;
+            transition: all 0.3s ease;
+        }
+        
+        .filter-select:focus {
+            outline: none;
+            border-color: var(--primary-green);
+            box-shadow: 0 0 0 3px rgba(16, 185, 129, 0.2);
+        }
+        
+        /* Requests Table */
+        .requests-table-container {
+            overflow-x: auto;
+            border-radius: 12px;
+            border: 2px solid rgba(16, 185, 129, 0.1);
+            background: white;
+        }
+        
+        .requests-table {
+            width: 100%;
+            min-width: 1000px;
+            border-collapse: collapse;
+        }
+        
+        .requests-table th {
+            background: linear-gradient(135deg, #f0fdf4 0%, #dcfce7 100%);
+            padding: 1rem;
+            text-align: right;
+            font-weight: 600;
+            color: var(--dark-green);
+            border-bottom: 3px solid #e5e7eb;
+            position: sticky;
+            top: 0;
+            z-index: 10;
+        }
+        
+        .requests-table td {
+            padding: 1rem;
+            border-bottom: 1px solid #f1f5f9;
+            vertical-align: middle;
+        }
+        
+        .requests-table tr:hover {
+            background: #f9fafb;
+        }
+        
+        .status-badge {
+            padding: 0.5rem 1rem;
+            border-radius: 25px;
+            font-size: 0.85rem;
+            font-weight: 600;
+            display: inline-flex;
+            align-items: center;
+            gap: 6px;
+        }
+        
+        .badge-pending { background: #fef3c7; color: #92400e; }
+        .badge-approved { background: #d1fae5; color: #065f46; }
+        .badge-rejected { background: #fee2e2; color: #7f1d1d; }
+        
+        /* Actions */
+        .actions-cell {
+            min-width: 120px;
+        }
+        
+        .actions-container {
+            display: flex;
+            gap: 8px;
+            flex-wrap: wrap;
+        }
+        
+        .action-btn {
+            width: 36px;
+            height: 36px;
+            border-radius: 10px;
+            border: none;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            font-size: 1rem;
+            transition: all 0.3s ease;
+            cursor: pointer;
+            box-shadow: 0 4px 8px rgba(0, 0, 0, 0.1);
+        }
+        
+        .action-btn.approve { background: var(--gradient-primary); color: white; }
+        .action-btn.reject { background: var(--gradient-danger); color: white; }
+        .action-btn.view { background: var(--gradient-info); color: white; }
+        
+        .action-btn:hover {
+            transform: translateY(-2px);
+            box-shadow: 0 6px 12px rgba(0, 0, 0, 0.15);
+        }
+        
+        /* Empty State */
+        .empty-state {
+            padding: 3rem 1rem;
+            text-align: center;
+            color: #6b7280;
+        }
+        
+        .empty-state i {
+            font-size: 3rem;
+            color: #9ca3af;
+            margin-bottom: 1rem;
+            opacity: 0.5;
+        }
+        
+        /* Custom Scrollbar */
+        ::-webkit-scrollbar {
+            width: 8px;
+            height: 8px;
+        }
+        
+        ::-webkit-scrollbar-track {
+            background: rgba(16, 185, 129, 0.1);
+            border-radius: 10px;
+        }
+        
+        ::-webkit-scrollbar-thumb {
+            background: var(--gradient-primary);
+            border-radius: 10px;
+        }
+        
+        ::-webkit-scrollbar-thumb:hover {
+            background: var(--dark-green);
+        }
+    </style>
+</head>
+<body>
+    <!-- Unified Navigation Bar -->
+    <nav class="unified-nav">
+        <div class="unified-nav-container">
+            <!-- Top Section: Brand, Welcome, User -->
+            <div class="nav-top-section">
+                <!-- Brand Section -->
+                <div class="nav-brand-section">
+                    <div class="logo-container">
+                        <i class="bi bi-person-gear text-white"></i>
+                    </div>
+                    <div class="d-none d-md-block ms-2">
+                        <h6 class="text-white mb-0 fw-bold text-truncate">نظام الموارد البشرية</h6>
+                        <small class="text-white-50">لوحة المدير</small>
+                    </div>
+                </div>
+                
+                <!-- Welcome Section -->
+                <div class="welcome-section d-none d-lg-flex">
+                    <div class="welcome-content">
+                        <h4 class="text-white mb-1 text-truncate">مرحباً، {{ current_user.name if current_user else 'المدير' }}</h4>
+                        <p class="text-white-50 mb-0 text-truncate">نظام الموارد البشرية - إدارة طلبات الإجازات</p>
+                    </div>
+                    <div class="text-white fw-bold me-3" id="live-clock">
+                        <i class="bi bi-clock me-2"></i>
+                        جاري التحميل...
+                    </div>
+                </div>
+                
+                <!-- User Section -->
+                <div class="nav-user-section">
+                    <!-- Notifications -->
+                    <div class="dropdown me-2">
+                        <button class="btn btn-light position-relative rounded-pill" 
+                                type="button" data-bs-toggle="dropdown" 
+                                style="padding: 0.4rem 0.8rem; border: 1px solid rgba(255, 255, 255, 0.3); background: rgba(255, 255, 255, 0.15); color: white;">
+                            <i class="bi bi-bell"></i>
+                            {% if notifications and notifications|length > 0 %}
+                            <span class="notification-badge badge">{{ notifications|length }}</span>
+                            {% endif %}
+                        </button>
+                        <ul class="dropdown-menu dropdown-menu-end">
+                            {% if notifications and notifications|length > 0 %}
+                                {% for notification in notifications[:3] %}
+                                <li>
+                                    <a class="dropdown-item" href="#">
+                                        <div class="d-flex align-items-start">
+                                            <div class="bg-success bg-opacity-10 rounded-circle p-2 me-3">
+                                                <i class="bi bi-bell text-success"></i>
+                                            </div>
+                                            <div>
+                                                <strong class="d-block text-dark">{{ notification.title }}</strong>
+                                                <small class="text-muted">{{ notification.message|truncate(30) }}</small>
+                                            </div>
+                                        </div>
+                                    </a>
+                                </li>
+                                {% endfor %}
+                                <li><hr class="dropdown-divider my-2"></li>
+                            {% else %}
+                                <li>
+                                    <a class="dropdown-item text-muted text-center" href="#">
+                                        <i class="bi bi-bell-slash fs-4 d-block mb-2 text-success"></i>
+                                        لا توجد إشعارات جديدة
+                                    </a>
+                                </li>
+                                <li><hr class="dropdown-divider my-2"></li>
+                            {% endif %}
+                            <li>
+                                <a class="dropdown-item text-center text-success fw-bold" href="#">
+                                    <i class="bi bi-arrow-left me-2"></i>
+                                    عرض جميع الإشعارات
+                                </a>
+                            </li>
+                        </ul>
+                    </div>
+                    
+                    <!-- User Menu -->
+                    <div class="dropdown">
+                        <button class="btn btn-outline-light dropdown-toggle rounded-pill d-flex align-items-center" 
+                                type="button" data-bs-toggle="dropdown"
+                                style="padding: 0.4rem 0.9rem; border: 1px solid rgba(255, 255, 255, 0.4);">
+                            <div class="user-avatar me-2">
+                                {{ current_user.name[0] if current_user else 'م' }}
+                            </div>
+                            <span class="d-none d-md-inline text-truncate" style="max-width: 80px;">{{ current_user.username if current_user else 'مدير' }}</span>
+                        </button>
+                        <ul class="dropdown-menu dropdown-menu-end">
+                            <li>
+                                <a class="dropdown-item" href="#">
+                                    <i class="bi bi-bell me-2 text-success"></i>الإشعارات
+                                </a>
+                            </li>
+                            <li>
+                                <a class="dropdown-item" href="#">
+                                    <i class="bi bi-key me-2 text-success"></i>تغير كلمة المرور
+                                </a>
+                            </li>
+                            <li><hr class="dropdown-divider my-2"></li>
+                            <li>
+                                <a class="dropdown-item text-danger fw-bold" href="{{ url_for('logout') }}">
+                                    <i class="bi bi-box-arrow-right me-2"></i>تسجيل الخروج
+                                </a>
+                            </li>
+                        </ul>
+                    </div>
+                    
+                    <!-- Mobile Menu Button -->
+                    <button class="mobile-menu-btn d-lg-none" id="mobileMenuBtn">
+                        <i class="bi bi-list"></i>
+                    </button>
+                </div>
+            </div>
+            
+            <!-- Bottom Section: Navigation Menu -->
+            <!-- Bottom Section: Navigation Menu - Hidden on mobile -->
+            <div class="nav-bottom-section d-none d-lg-flex">
+                <div class="nav-menu-section">
+                    <div class="nav-menu-wrapper">
+                        <a class="nav-link" href="{{ url_for('manager_dashboard') }}">
+                            <i class="bi bi-speedometer2 me-2"></i>
+                            لوحة التحكم
+                        </a>
+                        <a class="nav-link" href="{{ url_for('manager_employees') }}">
+                            <i class="bi bi-people me-2"></i>
+                            موظفي القسم
+                        </a>
+                        <a class="nav-link" href="{{ url_for('manager_schedules') }}">
+                            <i class="bi bi-calendar-check me-2"></i>
+                            جدولة الموظفين
+                        </a>
+                        <!-- Add Messages Link Here -->
+                        <a class="nav-link nav-link-with-badge" href="{{ url_for('messages_inbox') }}">
+                            <i class="bi bi-envelope me-2"></i>
+                            الرسائل
+                            {% if unread_count and unread_count > 0 %}
+                            <span class="nav-badge">{{ unread_count }}</span>
+                            {% endif %}
+                        </a>
+                        <a class="nav-link nav-link-with-badge active" href="{{ url_for('manager_leave_requests') }}">
+                            <i class="bi bi-calendar-minus me-2"></i>
+                            طلبات الإجازات
+                            {% if stats and stats.pending_leaves > 0 %}
+                            <span class="nav-badge">{{ stats.pending_leaves }}</span>
+                            {% endif %}
+                        </a>
+                        <a class="nav-link nav-link-with-badge" href="{{ url_for('manager_permission_requests') }}">
+                            <i class="bi bi-clock me-2"></i>
+                            طلبات الإذونات
+                            {% if stats and stats.get('pending_permissions', 0) > 0 %}
+                            <span class="nav-badge">{{ stats.pending_permissions }}</span>
+                            {% endif %}
+                        </a>
+                        <a class="nav-link nav-link-with-badge" href="{{ url_for('user_salary_slips') }}">
+                            <i class="bi bi-file-earmark-text me-2"></i>
+                            شيت المرتب
+                            {% if new_salary_slips and new_salary_slips > 0 %}
+                            <span class="nav-badge">{{ new_salary_slips }}</span>
+                            {% endif %}
+                        </a>
+                        <a class="nav-link nav-link-with-badge" href="{{ url_for('manager_advance_requests') }}">
+                            <i class="bi bi-cash-coin me-2"></i>
+                            طلبات السلف
+                            {% if stats and stats.pending_advances > 0 %}
+                            <span class="nav-badge">{{ stats.pending_advances }}</span>
+                            {% endif %}
+                        </a>
+                        <a class="nav-link" href="{{ url_for('manager_rewards_penalties') }}">
+                            <i class="bi bi-award me-2"></i>
+                            المكافآت والخصومات
+                        </a>
+                        <a class="nav-link" href="{{ url_for('manager_excel_data') }}">
+                            <i class="fas fa-file-excel me-2"></i>
+                            الحضور والانصراف
+                        </a>
+                        {% if current_user and current_user.is_admin %}
+                        <a class="nav-link text-warning" href="{{ url_for('admin_dashboard') }}">
+                            <i class="bi bi-person-shield me-2"></i>
+                            لوحة المسؤول
+                        </a>
+                        {% endif %}
+                    </div>
+                </div>
+            </div>
+
+
+        </div>
+    </nav>
+
+    <!-- Mobile Navigation Menu -->
+    <!-- Mobile Navigation Menu -->
+    <div class="mobile-nav-menu" id="mobileNavMenu">
+        <a class="mobile-nav-link" href="{{ url_for('manager_dashboard') }}">
+            <i class="bi bi-speedometer2"></i>
+            لوحة التحكم
+        </a>
+        <a class="mobile-nav-link" href="{{ url_for('manager_employees') }}">
+            <i class="bi bi-people"></i>
+            موظفي القسم
+        </a>
+        <a class="mobile-nav-link" href="{{ url_for('manager_schedules') }}">
+            <i class="bi bi-calendar-check"></i>
+            جدولة الموظفين
+        </a>
+        <!-- Add Messages Link Here -->
+        <a class="mobile-nav-link nav-link-with-badge" href="{{ url_for('messages_inbox') }}">
+            <i class="bi bi-envelope"></i>
+            الرسائل
+            {% if unread_count and unread_count > 0 %}
+            <span class="nav-badge">{{ unread_count }}</span>
+            {% endif %}
+        </a>
+        <a class="mobile-nav-link active" href="{{ url_for('manager_leave_requests') }}">
+            <i class="bi bi-calendar-minus"></i>
+            طلبات الإجازات
+            {% if stats and stats.pending_leaves > 0 %}
+            <span class="nav-badge">{{ stats.pending_leaves }}</span>
+            {% endif %}
+        </a>
+        <a class="mobile-nav-link" href="{{ url_for('manager_permission_requests') }}">
+            <i class="bi bi-clock"></i>
+            طلبات الإذونات
+            {% if stats and stats.get('pending_permissions', 0) > 0 %}
+            <span class="nav-badge">{{ stats.pending_permissions }}</span>
+            {% endif %}
+        </a>
+        <a class="mobile-nav-link" href="{{ url_for('user_salary_slips') }}">
+            <i class="bi bi-file-earmark-text"></i>
+            شيت المرتب
+            {% if new_salary_slips and new_salary_slips > 0 %}
+            <span class="nav-badge">{{ new_salary_slips }}</span>
+            {% endif %}
+        </a>
+        <a class="mobile-nav-link" href="{{ url_for('manager_advance_requests') }}">
+            <i class="bi bi-cash-coin"></i>
+            طلبات السلف
+            {% if stats and stats.pending_advances > 0 %}
+            <span class="nav-badge">{{ stats.pending_advances }}</span>
+            {% endif %}
+        </a>
+        <a class="mobile-nav-link" href="{{ url_for('manager_rewards_penalties') }}">
+            <i class="bi bi-award"></i>
+            المكافآت والخصومات
+        </a>
+        <a class="mobile-nav-link" href="{{ url_for('manager_excel_data') }}">
+            <i class="fas fa-file-excel me-2"></i>
+            الحضور والانصراف
+        </a>
+        {% if current_user and current_user.is_admin %}
+        <a class="mobile-nav-link text-warning" href="{{ url_for('admin_dashboard') }}">
+            <i class="bi bi-person-shield"></i>
+            لوحة المسؤول
+        </a>
+        {% endif %}
+    </div>
+
+    <!-- Main Content -->
+    <div class="main-content">
+        <!-- Alert Container -->
+        <div class="alert-container">
+            {% with messages = get_flashed_messages(with_categories=true) %}
+                {% if messages %}
+                    {% for category, message in messages %}
+                        <div class="alert alert-{{ category if category in ['success', 'danger', 'warning', 'info'] else 'info' }} alert-dismissible fade show mb-2" role="alert">
+                            <i class="bi bi-{{ 'check-circle' if category == 'success' else 'exclamation-triangle' if category == 'danger' else 'info-circle' if category == 'info' else 'exclamation-circle' }} me-2"></i>
+                            {{ message }}
+                            <button type="button" class="btn-close" data-bs-dismiss="alert" aria-label="Close"></button>
+                        </div>
+                    {% endfor %}
+                {% endif %}
+            {% endwith %}
+        </div>
+
+        <!-- Content Tabs -->
+        <div class="content-tabs">
+            <div class="tabs-nav">
+                <button class="tab-btn active" data-tab="pending">
+                    <i class="fas fa-clock"></i>
+                    الطلبات المعلقة
+                    {% if pending_requests and pending_requests|length > 0 %}
+                    <span class="tab-badge">{{ pending_requests|length }}</span>
+                    {% endif %}
+                </button>
+                <button class="tab-btn" data-tab="history">
+                    <i class="fas fa-history"></i>
+                    سجل الطلبات
+                    {% if processed_requests and processed_requests|length > 0 %}
+                    <span class="tab-badge">{{ processed_requests|length }}</span>
+                    {% endif %}
+                </button>
+                <button class="tab-btn" data-tab="submit-permission" onclick="window.location.href='{{ url_for('user_leave') }}'">
+                    <i class="fas fa-plus-circle"></i>
+                    تقديم إجازة
+                </button>
+                <button class="tab-btn" data-tab="statistics">
+                    <i class="fas fa-chart-bar"></i>
+                    الإحصائيات
+                </button>
+                <button class="tab-btn" data-tab="reports">
+                    <i class="fas fa-file-alt"></i>
+                    التقارير التفصيلية
+                </button>
+            </div>
+
+            <!-- Pending Requests Tab -->
+            <div class="tab-content active" id="pending-tab">
+                <div class="filters-section">
+                    <div class="filter-row">
+                        <div class="filter-group">
+                            <label class="form-label">نوع الإجازة</label>
+                            <select class="filter-select" id="leaveTypeFilter">
+                                <option value="all">جميع الأنواع</option>
+                                <option value="من رصيد الإجازات">من رصيد الإجازات</option>
+                                <option value="أجازة مرضية">أجازة مرضية</option>
+                                <option value="أجازة زواج">أجازة زواج</option>
+                                <option value="أجازة عارضة">أجازة عارضة</option>
+                                <option value="أجازة وضع">أجازة وضع</option>
+                            </select>
+                        </div>
+                        <div class="filter-group">
+                            <label class="form-label">القسم</label>
+                            <select class="filter-select" id="departmentFilter">
+                                <option value="all">جميع الأقسام</option>
+                                {% for dept in departments %}
+                                <option value="{{ dept.id }}">{{ dept.name }}</option>
+                                {% endfor %}
+                            </select>
+                        </div>
+                        <div class="filter-group">
+                            <label class="form-label">التاريخ</label>
+                            <select class="filter-select" id="dateFilter">
+                                <option value="all">جميع التواريخ</option>
+                                <option value="today">اليوم</option>
+                                <option value="week">هذا الأسبوع</option>
+                                <option value="month">هذا الشهر</option>
+                            </select>
+                        </div>
+                        <div class="filter-group">
+                            <label class="form-label">&nbsp;</label>
+                            <button class="export-btn" id="resetFilters">
+                                <i class="fas fa-redo"></i>
+                                إعادة التعيين
+                            </button>
+                        </div>
+                    </div>
+                </div>
+
+                {% if pending_requests and pending_requests|length > 0 %}
+                <!-- Desktop Table View -->
+                <div class="requests-table-container d-none d-lg-block">
+                    <table class="requests-table">
+                        <thead>
+                            <tr>
+                                <th>الموظف</th>
+                                <th>نوع الإجازة</th>
+                                <th>التاريخ</th>
+                                <th>الشيفت</th>
+                                <th>السبب</th>
+                                <th>تاريخ الطلب</th>
+                                <th>الإجراءات</th>
+                            </tr>
+                        </thead>
+                        <tbody>
+                            {% for request in pending_requests %}
+                            <tr data-type="{{ request.leave_type }}" 
+                                data-department="{{ request.department_id }}"
+                                data-date="{{ request.created_at.strftime('%Y-%m-%d') }}">
+                                <td>
+                                    <div class="d-flex align-items-center gap-3">
+                                        <div class="employee-avatar">
+                                            {% if request.user and request.user.name %}
+                                            {{ request.user.name[0] }}
+                                            {% else %}
+                                            ?
+                                            {% endif %}
+                                        </div>
+                                        <div>
+                                            <h6 class="mb-1">
+                                                {% if request.user and request.user.name %}
+                                                {{ request.user.name }}
+                                                {% else %}
+                                                غير معروف
+                                                {% endif %}
+                                            </h6>
+                                            <small class="text-muted">
+                                                {% if request.department and request.department.name %}
+                                                {{ request.department.name }}
+                                                {% else %}
+                                                غير معين
+                                                {% endif %}
+                                            </small>
+                                        </div>
+                                    </div>
+                                </td>
+                                <td>
+                                    <span class="status-badge badge-pending">
+                                        {{ request.leave_type if request.leave_type else 'غير محدد' }}
+                                    </span>
+                                </td>
+                                <td>
+                                    <strong>{{ request.start_date.strftime('%Y-%m-%d') if request.start_date else '-' }}</strong>
+                                </td>
+                                <td>
+                                    {% if request.shift_name %}
+                                    <span class="badge bg-info">{{ request.shift_name }}</span>
+                                    {% endif %}
+                                    {% if request.shift_job %}
+                                    <small class="d-block text-muted">{{ request.shift_job }}</small>
+                                    {% endif %}
+                                </td>
+                                <td>
+                                    {% if request.reason %}
+                                    <div class="reason-text">{{ request.reason|truncate(50) }}</div>
+                                    {% else %}
+                                    <span class="text-muted">لا يوجد</span>
+                                    {% endif %}
+                                </td>
+                                <td>
+                                    <div>
+                                        <small class="text-muted d-block">{{ request.created_at.strftime('%Y-%m-%d') if request.created_at else '-' }}</small>
+                                        <small class="text-success">{{ request.created_at.strftime('%H:%M') if request.created_at else '-' }}</small>
+                                    </div>
+                                </td>
+                                <td class="actions-cell">
+                                    <div class="actions-container">
+                                        <button type="button" class="action-btn approve"
+                                                onclick="approveSingleShift({{ request.id }})"
+                                                title="موافقة">
+                                            <i class="fas fa-check"></i>
+                                        </button>
+                                        <button type="button" class="action-btn reject"
+                                                onclick="openRejectModal({{ request.id }})"
+                                                title="رفض">
+                                            <i class="fas fa-times"></i>
+                                        </button>
+                                    </div>
+                                </td>
+                            </tr>
+                            {% endfor %}
+                        </tbody>
+                    </table>
+                </div>
+
+                <!-- Mobile Card View -->
+                <div class="d-lg-none" id="mobile-leave-cards">
+                    {% for request in pending_requests %}
+                    <div class="request-card pending" data-id="{{ request.id }}">
+                        <div class="mobile-card-header">
+                            <div>
+                                <div class="d-flex align-items-center mb-2">
+                                    <div class="employee-avatar me-3">
+                                        {% if request.user and request.user.name %}
+                                        {{ request.user.name[0] }}
+                                        {% else %}
+                                        ?
+                                        {% endif %}
+                                    </div>
+                                    <div>
+                                        <h6 class="mb-0">{{ request.user.name if request.user and request.user.name else 'غير معروف' }}</h6>
+                                        <small class="text-muted">{{ request.department.name if request.department and request.department.name else 'غير معين' }}</small>
+                                    </div>
+                                </div>
+                            </div>
+                            <div class="text-end">
+                                <span class="status-badge badge-pending">
+                                    {{ request.leave_type if request.leave_type else 'غير محدد' }}
+                                </span>
+                            </div>
+                        </div>
+                        
+                        <div class="row g-3">
+                            <div class="col-6">
+                                <div class="mobile-card-section">
+                                    <div class="mobile-card-label">
+                                        <i class="fas fa-calendar"></i>
+                                        تاريخ الإجازة
+                                    </div>
+                                    <div class="mobile-card-value">
+                                        {{ request.start_date.strftime('%Y-%m-%d') if request.start_date else '-' }}
+                                    </div>
+                                </div>
+                            </div>
+                            
+                            <div class="col-6">
+                                <div class="mobile-card-section">
+                                    <div class="mobile-card-label">
+                                        <i class="fas fa-clock"></i>
+                                        تاريخ الطلب
+                                    </div>
+                                    <div class="mobile-card-value">
+                                        <small>{{ request.created_at.strftime('%Y-%m-%d') if request.created_at else '-' }}</small>
+                                        <small class="text-success d-block">{{ request.created_at.strftime('%H:%M') if request.created_at else '-' }}</small>
+                                    </div>
+                                </div>
+                            </div>
+                            
+                            {% if request.shift_name %}
+                            <div class="col-6">
+                                <div class="mobile-card-section">
+                                    <div class="mobile-card-label">
+                                        <i class="fas fa-clock"></i>
+                                        الشيفت
+                                    </div>
+                                    <div class="mobile-card-value">
+                                        <span class="shift-badge {% if request.shift_name == 'صباحي' %}morning{% elif request.shift_name == 'مسائي' %}evening{% endif %}">
+                                            {{ request.shift_name }}
+                                        </span>
+                                    </div>
+                                </div>
+                            </div>
+                            {% endif %}
+                            
+                            {% if request.shift_job %}
+                            <div class="col-6">
+                                <div class="mobile-card-section">
+                                    <div class="mobile-card-label">
+                                        <i class="fas fa-briefcase"></i>
+                                        الوظيفة
+                                    </div>
+                                    <div class="mobile-card-value">
+                                        <span class="job-badge">{{ request.shift_job }}</span>
+                                    </div>
+                                </div>
+                            </div>
+                            {% endif %}
+                            
+                            <div class="col-12">
+                                <div class="mobile-card-section">
+                                    <div class="mobile-card-label">
+                                        <i class="fas fa-comment"></i>
+                                        سبب الإجازة
+                                    </div>
+                                    <div class="mobile-card-value">
+                                        {{ request.reason|truncate(100) if request.reason else 'لا يوجد' }}
+                                    </div>
+                                </div>
+                            </div>
+                        </div>
+                        
+                        <!-- في Mobile Card View للطلبات المعلقة - أضف زر الحذف في قسم الأزرار -->
+                        <div class="mobile-card-actions two-buttons">
+                            <button type="button" class="action-btn approve"
+                                    onclick="approveSingleShift({{ request.id }})"
+                                    title="موافقة">
+                                <i class="fas fa-check"></i>
+                                <span>موافقة</span>
+                            </button>
+                            <button type="button" class="action-btn reject"
+                                    onclick="openRejectModal({{ request.id }})"
+                                    title="رفض">
+                                <i class="fas fa-times"></i>
+                                <span>رفض</span>
+                            </button>
+                            {% if can_delete_today %}
+                            <button type="button" class="action-btn delete-mobile"
+                                    onclick="deleteLeaveRequest({{ request.id }}, '{{ request.user.name if request.user and request.user.name else 'غير معروف' }}', '{{ request.leave_type }}', '{{ request.start_date.strftime('%Y-%m-%d') if request.start_date else '' }}', {{ 'true' if request.leave_type == 'من رصيد الإجازات' else 'false' }})"
+                                    title="حذف">
+                                <i class="fas fa-trash"></i>
+                                <span>حذف</span>
+                            </button>
+                            {% endif %}
+                        </div>
+
+                        <!-- في Mobile Card View للطلبات السابقة - أضف زر الحذف في نهاية البطاقة -->
+                        {% if can_delete_today %}
+                        <div class="mobile-card-actions single-button mt-3">
+                            <button type="button" class="action-btn delete-mobile"
+                                    onclick="deleteLeaveRequest({{ request.id }}, '{{ request.user.name if request.user and request.user.name else 'غير معروف' }}', '{{ request.leave_type }}', '{{ request.start_date.strftime('%Y-%m-%d') if request.start_date else '' }}', {{ 'true' if request.leave_type == 'من رصيد الإجازات' else 'false' }})"
+                                    title="حذف">
+                                <i class="fas fa-trash me-2"></i>
+                                <span>حذف الطلب</span>
+                            </button>
+                        </div>
+                        {% endif %}
+                        
+                    </div>
+                    {% endfor %}
+                </div>
+
+                {% else %}
+                <div class="empty-state">
+                    <i class="fas fa-check-circle"></i>
+                    <h5>لا توجد طلبات إجازات معلقة</h5>
+                    <p>جميع الطلبات تمت معالجتها</p>
+                </div>
+                {% endif %}
+            </div>
+
+            <!-- History Tab -->
+            <div class="tab-content" id="history-tab">
+                <div class="filters-section">
+                    <div class="filter-row">
+                        <div class="filter-group">
+                            <label class="form-label">الحالة</label>
+                            <select class="filter-select" id="historyStatusFilter">
+                                <option value="all">جميع الحالات</option>
+                                <option value="approved">مقبولة</option>
+                                <option value="rejected">مرفوضة</option>
+                                <option value="partially_approved">مقبولة جزئياً</option>
+                            </select>
+                        </div>
+                        <div class="filter-group">
+                            <label class="form-label">الفترة</label>
+                            <select class="filter-select" id="historyPeriodFilter">
+                                <option value="all">جميع الفترات</option>
+                                <option value="week">آخر أسبوع</option>
+                                <option value="month">آخر شهر</option>
+                                <option value="3months">آخر 3 أشهر</option>
+                            </select>
+                        </div>
+                        <div class="filter-group">
+                            <label class="form-label">بحث</label>
+                            <input type="text" class="filter-select" id="historySearch" placeholder="بحث باسم الموظف...">
+                        </div>
+                    </div>
+                </div>
+
+                {% if processed_requests and processed_requests|length > 0 %}
+                <!-- Desktop Table View -->
+                <div class="requests-table-container d-none d-lg-block">
+                    <table class="requests-table">
+                        <!-- في Desktop Table View لسجل الطلبات -->
+                        <thead>
+                            <tr>
+                                {% if can_delete_today %}
+                                <th width="50"><input type="checkbox" class="form-check-input" id="selectAllHistory"></th>
+                                {% endif %}
+                                <th>الموظف</th>
+                                <th>نوع الإجازة</th>
+                                <th>التاريخ</th>
+                                <th>الحالة</th>
+                                <th>تاريخ القرار</th>
+                                <th>سبب الرفض</th>
+                                <th>تمت المعالجة بواسطة</th>
+                                {% if can_delete_today %}
+                                <th>حذف</th>
+                                {% endif %}
+                            </tr>
+                        </thead>
+                        <tbody>
+                            {% for request in processed_requests %}
+                            <tr data-status="{{ request.status }}">
+                                {% if can_delete_today %}
+                                <td><input type="checkbox" class="row-checkbox history-checkbox" data-id="{{ request.id }}"></td>
+                                {% endif %}
+                                <!-- باقي الأعمدة موجودة بالفعل -->
+                                <td>
+                                    <div class="d-flex align-items-center gap-3">
+                                        <div class="employee-avatar">
+                                            {% if request.user and request.user.name %}
+                                            {{ request.user.name[0] }}
+                                            {% else %}
+                                            ?
+                                            {% endif %}
+                                        </div>
+                                        <div>
+                                            <h6 class="mb-1">
+                                                {% if request.user and request.user.name %}
+                                                {{ request.user.name }}
+                                                {% else %}
+                                                غير معروف
+                                                {% endif %}
+                                            </h6>
+                                            <small class="text-muted">
+                                                {% if request.department and request.department.name %}
+                                                {{ request.department.name }}
+                                                {% else %}
+                                                غير معين
+                                                {% endif %}
+                                            </small>
+                                        </div>
+                                    </div>
+                                </td>
+                                <td>
+                                    <span class="status-badge {% if request.status == 'approved' %}badge-approved{% elif request.status == 'rejected' %}badge-rejected{% else %}badge-pending{% endif %}">
+                                        {{ request.leave_type if request.leave_type else 'غير محدد' }}
+                                    </span>
+                                </td>
+                                <td>
+                                    <strong>{{ request.start_date.strftime('%Y-%m-%d') if request.start_date else '-' }}</strong>
+                                </td>
+                                <td>
+                                    {% if request.status == 'approved' %}
+                                    <span class="status-badge badge-approved">
+                                        <i class="fas fa-check me-1"></i>مقبولة
+                                    </span>
+                                    {% elif request.status == 'rejected' %}
+                                    <span class="status-badge badge-rejected">
+                                        <i class="fas fa-times me-1"></i>مرفوضة
+                                    </span>
+                                    {% elif request.status == 'partially_approved' %}
+                                    <span class="status-badge" style="background: linear-gradient(135deg, #d1fae5 0%, #fef3c7 100%); color: #92400e;">
+                                        <i class="fas fa-check-circle me-1"></i>مقبولة جزئياً
+                                    </span>
+                                    {% else %}
+                                    <span class="status-badge badge-pending">
+                                        <i class="fas fa-clock me-1"></i>معلقة
+                                    </span>
+                                    {% endif %}
+                                </td>
+                                <td>
+                                    {% if request.approved_at %}
+                                    <div>
+                                        <small class="text-muted d-block">{{ request.approved_at.strftime('%Y-%m-%d') }}</small>
+                                        <small class="text-success">{{ request.approved_at.strftime('%H:%M') }}</small>
+                                    </div>
+                                    {% else %}
+                                    <span class="text-muted">-</span>
+                                    {% endif %}
+                                </td>
+                                <td>
+                                    {% if request.rejection_reason %}
+                                    <div class="reason-text">{{ request.rejection_reason|truncate(50) }}</div>
+                                    {% else %}
+                                    <span class="text-muted">-</span>
+                                    {% endif %}
+                                </td>
+                                <td>
+                                    {% if request.approved_by and request.approver %}
+                                    <div>
+                                        <span class="fw-bold text-success">{{ request.approver.name }}</span>
+                                        {% if request.approver.username %}
+                                        <small class="d-block text-muted">{{ request.approver.username }}</small>
+                                        {% endif %}
+                                    </div>
+                                    {% else %}
+                                    <span class="text-muted">-</span>
+                                    {% endif %}
+                                </td>
+                                {% if can_delete_today %}
+                                <td>
+                                    <button type="button" class="btn btn-sm btn-danger delete-single-btn" 
+                                            data-id="{{ request.id }}" 
+                                            data-name="{{ request.user.name if request.user and request.user.name else 'غير معروف' }}"
+                                            data-type="{{ request.leave_type }}"
+                                            data-date="{{ request.start_date.strftime('%Y-%m-%d') if request.start_date else '' }}"
+                                            data-status="{{ request.status }}"
+                                            data-from-balance="{% if request.leave_type == 'من رصيد الإجازات' %}true{% else %}false{% endif %}"
+                                            title="حذف">
+                                        <i class="fas fa-trash"></i>
+                                    </button>
+                                </td>
+                                {% endif %}
+                            </tr>
+                            {% endfor %}
+                        </tbody>
+                    </table>
+                </div>
+
+                <!-- Mobile Card View -->
+                <div class="d-lg-none" id="mobile-processed-cards">
+                    {% for request in processed_requests %}
+                    <div class="request-card {{ request.status }}" data-id="{{ request.id }}" data-status="{{ request.status }}">
+                        <div class="mobile-card-header">
+                            <div>
+                                <div class="d-flex align-items-center mb-2">
+                                    <div class="employee-avatar me-3">
+                                        {% if request.user and request.user.name %}
+                                        {{ request.user.name[0] }}
+                                        {% else %}
+                                        ?
+                                        {% endif %}
+                                    </div>
+                                    <div>
+                                        <h6 class="mb-0">{{ request.user.name if request.user and request.user.name else 'غير معروف' }}</h6>
+                                        <small class="text-muted">{{ request.department.name if request.department and request.department.name else 'غير معين' }}</small>
+                                    </div>
+                                </div>
+                                <div class="mobile-card-badges">
+                                    <span class="status-badge {% if request.status == 'approved' %}badge-approved{% elif request.status == 'rejected' %}badge-rejected{% else %}badge-pending{% endif %}">
+                                        {{ request.leave_type if request.leave_type else 'غير محدد' }}
+                                    </span>
+                                </div>
+                            </div>
+                            <div class="text-end">
+                                {% if request.status == 'approved' %}
+                                <span class="status-badge badge-approved">
+                                    <i class="fas fa-check me-1"></i>مقبولة
+                                </span>
+                                {% elif request.status == 'rejected' %}
+                                <span class="status-badge badge-rejected">
+                                    <i class="fas fa-times me-1"></i>مرفوضة
+                                </span>
+                                {% elif request.status == 'partially_approved' %}
+                                <span class="status-badge" style="background: linear-gradient(135deg, #d1fae5 0%, #fef3c7 100%); color: #92400e;">
+                                    <i class="fas fa-check-circle me-1"></i>مقبولة جزئياً
+                                </span>
+                                {% else %}
+                                <span class="status-badge badge-pending">
+                                    <i class="fas fa-clock me-1"></i>معلقة
+                                </span>
+                                {% endif %}
+                            </div>
+                        </div>
+                        
+                        <div class="row g-3">
+                            <div class="col-6">
+                                <div class="mobile-card-section">
+                                    <div class="mobile-card-label">
+                                        <i class="fas fa-calendar"></i>
+                                        تاريخ الإجازة
+                                    </div>
+                                    <div class="mobile-card-value">
+                                        {{ request.start_date.strftime('%Y-%m-%d') if request.start_date else '-' }}
+                                    </div>
+                                </div>
+                            </div>
+                            
+                            {% if request.approved_at %}
+                            <div class="col-6">
+                                <div class="mobile-card-section">
+                                    <div class="mobile-card-label">
+                                        <i class="fas fa-calendar-check"></i>
+                                        تاريخ القرار
+                                    </div>
+                                    <div class="mobile-card-value">
+                                        <small>{{ request.approved_at.strftime('%Y-%m-%d') }}</small>
+                                        <small class="text-success d-block">{{ request.approved_at.strftime('%H:%M') }}</small>
+                                    </div>
+                                </div>
+                            </div>
+                            {% endif %}
+                            
+                            {% if request.shift_name %}
+                            <div class="col-6">
+                                <div class="mobile-card-section">
+                                    <div class="mobile-card-label">
+                                        <i class="fas fa-clock"></i>
+                                        الشيفت
+                                    </div>
+                                    <div class="mobile-card-value">
+                                        <span class="shift-badge {% if request.shift_name == 'صباحي' %}morning{% elif request.shift_name == 'مسائي' %}evening{% endif %}">
+                                            {{ request.shift_name }}
+                                        </span>
+                                    </div>
+                                </div>
+                            </div>
+                            {% endif %}
+                            
+                            {% if request.shift_job %}
+                            <div class="col-6">
+                                <div class="mobile-card-section">
+                                    <div class="mobile-card-label">
+                                        <i class="fas fa-briefcase"></i>
+                                        الوظيفة
+                                    </div>
+                                    <div class="mobile-card-value">
+                                        <span class="job-badge">{{ request.shift_job }}</span>
+                                    </div>
+                                </div>
+                            </div>
+                            {% endif %}
+                            
+                            {% if request.reason %}
+                            <div class="col-12">
+                                <div class="mobile-card-section">
+                                    <div class="mobile-card-label">
+                                        <i class="fas fa-comment"></i>
+                                        سبب الإجازة
+                                    </div>
+                                    <div class="mobile-card-value">
+                                        {{ request.reason|truncate(100) if request.reason else 'لا يوجد' }}
+                                    </div>
+                                </div>
+                            </div>
+                            {% endif %}
+                            
+                            {% if request.rejection_reason %}
+                            <div class="col-12">
+                                <div class="mobile-card-section">
+                                    <div class="mobile-card-label text-danger">
+                                        <i class="fas fa-times-circle"></i>
+                                        سبب الرفض
+                                    </div>
+                                    <div class="mobile-card-value text-danger">
+                                        {{ request.rejection_reason|truncate(100) }}
+                                    </div>
+                                </div>
+                            </div>
+                            {% endif %}
+                            
+                            {% if request.approved_by and request.approver %}
+                            <div class="col-12">
+                                <div class="mobile-card-section">
+                                    <div class="mobile-card-label">
+                                        <i class="fas fa-user-check"></i>
+                                        معالج بواسطة
+                                    </div>
+                                    <div class="mobile-card-value">
+                                        <span class="fw-bold text-success">{{ request.approver.name }}</span>
+                                        {% if request.approver.username %}
+                                        <small class="d-block text-muted">{{ request.approver.username }}</small>
+                                        {% endif %}
+                                    </div>
+                                </div>
+                            </div>
+                            {% endif %}
+                        </div>
+                    </div>
+                    {% endfor %}
+                </div>
+
+                {% else %}
+                <div class="empty-state">
+                    <i class="fas fa-inbox"></i>
+                    <h5>لا توجد طلبات سابقة</h5>
+                    <p>لم يتم معالجة أي طلبات بعد</p>
+                </div>
+                {% endif %}
+            </div>
+
+            <!-- Statistics Tab -->
+            <div class="tab-content" id="statistics-tab">
+                <!-- Statistics Overview -->
+                <div class="stats-grid">
+                    <div class="stat-card">
+                        <div class="stat-header">
+                            <div>
+                                <h3 class="stat-value">{{ stats.total_leaves if stats and stats.total_leaves is defined else 0 }}</h3>
+                                <p class="stat-label">إجمالي الطلبات</p>
+                            </div>
+                            <div class="stat-icon total">
+                                <i class="fas fa-file-alt"></i>
+                            </div>
+                        </div>
+                        <div class="stat-trend {% if stats and stats.current_month_requests > 0 %}up{% else %}down{% endif %}">
+                            <i class="fas fa-arrow-{% if stats and stats.current_month_requests > 0 %}up{% else %}down{% endif %}"></i>
+                            <span>{{ stats.current_month_requests if stats and stats.current_month_requests is defined else 0 }} هذا الشهر</span>
+                        </div>
+                    </div>
+                    
+                    <div class="stat-card">
+                        <div class="stat-header">
+                            <div>
+                                <h3 class="stat-value">{{ stats.pending_leaves if stats and stats.pending_leaves is defined else 0 }}</h3>
+                                <p class="stat-label">طلبات معلقة</p>
+                            </div>
+                            <div class="stat-icon pending">
+                                <i class="fas fa-clock"></i>
+                            </div>
+                        </div>
+                        <div class="stat-trend {% if stats and stats.pending_leaves > 0 %}up{% else %}down{% endif %}">
+                            <i class="fas fa-arrow-{% if stats and stats.pending_leaves > 0 %}up{% else %}down{% endif %}"></i>
+                            <span>{{ stats.pending_leaves if stats and stats.pending_leaves is defined else 0 }} طلب</span>
+                        </div>
+                    </div>
+                    
+                    <div class="stat-card">
+                        <div class="stat-header">
+                            <div>
+                                <h3 class="stat-value">{{ stats.approved_leaves if stats and stats.approved_leaves is defined else 0 }}</h3>
+                                <p class="stat-label">طلبات مقبولة</p>
+                            </div>
+                            <div class="stat-icon approved">
+                                <i class="fas fa-check-circle"></i>
+                            </div>
+                        </div>
+                        <div class="stat-trend {% if stats and stats.approved_leaves > 0 %}up{% else %}down{% endif %}">
+                            <i class="fas fa-arrow-{% if stats and stats.approved_leaves > 0 %}up{% else %}down{% endif %}"></i>
+                            <span>{{ stats.approval_rate|default(0)|round(1) if stats and stats.approval_rate is defined else 0 }}% معدل القبول</span>
+                        </div>
+                    </div>
+                    
+                    <div class="stat-card">
+                        <div class="stat-header">
+                            <div>
+                                <h3 class="stat-value">{{ stats.rejected_leaves if stats and stats.rejected_leaves is defined else 0 }}</h3>
+                                <p class="stat-label">طلبات مرفوضة</p>
+                            </div>
+                            <div class="stat-icon rejected">
+                                <i class="fas fa-times-circle"></i>
+                            </div>
+                        </div>
+                        <div class="stat-trend {% if stats and stats.rejected_leaves > 0 %}up{% else %}down{% endif %}">
+                            <i class="fas fa-arrow-{% if stats and stats.rejected_leaves > 0 %}up{% else %}down{% endif %}"></i>
+                            <span>{{ stats.rejected_leaves if stats and stats.rejected_leaves is defined else 0 }} طلب</span>
+                        </div>
+                    </div>
+                </div>
+
+                <!-- Charts Section -->
+                <div class="charts-container">
+                    <div class="chart-card">
+                        <div class="chart-header">
+                            <h4 class="chart-title">توزيع أنواع الإجازات</h4>
+                            <select class="filter-select" style="width: auto;" id="chartPeriod">
+                                <option value="month">هذا الشهر</option>
+                                <option value="week">هذا الأسبوع</option>
+                                <option value="year">هذا العام</option>
+                            </select>
+                        </div>
+                        <div id="leaveTypesChart" style="height: 300px;"></div>
+                    </div>
+                    
+                    <div class="chart-card">
+                        <div class="chart-header">
+                            <h4 class="chart-title">الاتجاه الشهري</h4>
+                            <select class="filter-select" style="width: auto;" id="trendPeriod">
+                                <option value="6months">آخر 6 أشهر</option>
+                                <option value="year">آخر سنة</option>
+                                <option value="all">كل الوقت</option>
+                            </select>
+                        </div>
+                        <div id="monthlyTrendChart" style="height: 300px;"></div>
+                    </div>
+                </div>
+            </div>
+
+            <!-- Reports Tab -->
+            <div class="tab-content" id="reports-tab">
+                <div class="reports-container">
+                    <div class="reports-header">
+                        <h4>التقارير التفصيلية</h4>
+                        <div class="reports-actions">
+                            <div class="date-range-picker">
+                                <i class="fas fa-calendar-alt"></i>
+                                <input type="date" id="startDate" value="{{ (date.today() - timedelta(days=30)).strftime('%Y-%m-%d') }}">
+                                <span>إلى</span>
+                                <input type="date" id="endDate" value="{{ date.today().strftime('%Y-%m-%d') }}">
+                            </div>
+                            <button class="export-btn" onclick="generateReport()">
+                                <i class="fas fa-download"></i>
+                                تصدير تقرير
+                            </button>
+                            <button class="export-btn" onclick="printReport()">
+                                <i class="fas fa-print"></i>
+                                طباعة
+                            </button>
+                        </div>
+                    </div>
+
+                    <!-- Employee Details Report -->
+                    <div class="mt-4">
+                        <h5 class="mb-3">تفاصيل الموظفين والإجازات</h5>
+                        <div class="requests-table-container">
+                            <table class="employee-details-table">
+                                <thead>
+                                    <tr>
+                                        <th>اسم الموظف</th>
+                                        <th>القسم</th>
+                                        <th>إجمالي الإجازات</th>
+                                        <th>مقبولة</th>
+                                        <th>مرفوضة</th>
+                                        <th>معلقة</th>
+                                        <th>معدل القبول</th>
+                                        <th>متوسط أيام الإجازة</th>
+                                    </tr>
+                                </thead>
+                                <tbody id="employeeReportBody">
+                                    <!-- Will be populated by JavaScript -->
+                                </tbody>
+                            </table>
+                        </div>
+                    </div>
+
+                    <!-- Summary Statistics -->
+                    <div class="row mt-4">
+                        <div class="col-md-6">
+                            <div class="stat-card">
+                                <div class="stat-header">
+                                    <div>
+                                        <h3 class="stat-value" id="avgApprovalTime">2.5</h3>
+                                        <p class="stat-label">متوسط وقت المعالجة (أيام)</p>
+                                    </div>
+                                    <div class="stat-icon">
+                                        <i class="fas fa-clock"></i>
+                                    </div>
+                                </div>
+                            </div>
+                        </div>
+                        <div class="col-md-6">
+                            <div class="stat-card">
+                                <div class="stat-header">
+                                    <div>
+                                        <h3 class="stat-value" id="peakMonth">ديسمبر</h3>
+                                        <p class="stat-label">شهر الذروة للإجازات</p>
+                                    </div>
+                                    <div class="stat-icon">
+                                        <i class="fas fa-chart-line"></i>
+                                    </div>
+                                </div>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </div>
+
+    <!-- JavaScript Libraries -->
+    <script src="https://cdn.jsdelivr.net/npm/bootstrap@5.3.0/dist/js/bootstrap.bundle.min.js"></script>
+    <script src="https://cdn.jsdelivr.net/npm/apexcharts@3.35.0/dist/apexcharts.min.js"></script>
+    <!-- JavaScript Libraries - بالترتيب الصحيح -->
+<script src="https://code.jquery.com/jquery-3.6.0.min.js"></script>
+<script src="https://cdn.jsdelivr.net/npm/bootstrap@5.3.0/dist/js/bootstrap.bundle.min.js"></script>
+<script src="https://cdn.jsdelivr.net/npm/apexcharts@3.35.0/dist/apexcharts.min.js"></script>
+<script src="https://cdn.jsdelivr.net/npm/sweetalert2@11"></script>
+
+<script>
+// كل أكواد JavaScript هنا
+$(document).ready(function() {
+    // التحقق من تحميل jQuery
+    console.log('jQuery loaded successfully');
+    
+    // التحقق من حالة الحذف
+    $.getJSON('/api/check_deletion_status', function(data) {
+        console.log('Deletion status:', data);
+    }).fail(function() {
+        console.log('Could not check deletion status');
+    });
+
+    // ====== وظائف الحذف ======
+    
+    // حذف فردي
+    $('.delete-single-btn').click(function() {
+        const btn = $(this);
+        const id = btn.data('id');
+        const name = btn.data('name');
+        const type = btn.data('type');
+        const date = btn.data('date');
+        const fromBalance = btn.data('from-balance') === true;
+        
+        deleteLeaveRequest(id, name, type, date, fromBalance);
+    });
+    
+    // تحديد الكل للطلبات المعلقة
+    $('#selectAllPending').change(function() {
+        $('.pending-checkbox').prop('checked', $(this).prop('checked'));
+        toggleBulkDeletePendingButton();
+    });
+    
+    $('.pending-checkbox').change(function() {
+        toggleBulkDeletePendingButton();
+    });
+    
+    $('#selectAllPendingBtn').click(function() {
+        $('.pending-checkbox').prop('checked', true);
+        $('#selectAllPending').prop('checked', true);
+        toggleBulkDeletePendingButton();
+    });
+    
+    function toggleBulkDeletePendingButton() {
+        const checkedCount = $('.pending-checkbox:checked').length;
+        if (checkedCount > 0) {
+            $('#bulkDeletePendingBtn').prop('disabled', false);
+            $('#bulkDeletePendingBtn').html(`<i class="fas fa-trash me-1"></i> حذف (${checkedCount})`);
+        } else {
+            $('#bulkDeletePendingBtn').prop('disabled', true);
+            $('#bulkDeletePendingBtn').html(`<i class="fas fa-trash me-1"></i> حذف المحدد`);
+        }
+    }
+    
+    // تحديد الكل لسجل الطلبات
+    $('#selectAllHistory').change(function() {
+        $('.history-checkbox').prop('checked', $(this).prop('checked'));
+        toggleBulkDeleteHistoryButton();
+    });
+    
+    $('.history-checkbox').change(function() {
+        toggleBulkDeleteHistoryButton();
+    });
+    
+    function toggleBulkDeleteHistoryButton() {
+        const checkedCount = $('.history-checkbox:checked').length;
+        if (checkedCount > 0) {
+            $('#bulkDeleteHistoryBtn').prop('disabled', false);
+            $('#bulkDeleteHistoryBtn').html(`<i class="fas fa-trash me-1"></i> حذف (${checkedCount})`);
+        } else {
+            $('#bulkDeleteHistoryBtn').prop('disabled', true);
+            $('#bulkDeleteHistoryBtn').html(`<i class="fas fa-trash me-1"></i> حذف المحدد`);
+        }
+    }
+    
+    // حذف جماعي للطلبات المعلقة
+    $('#bulkDeletePendingBtn').click(function() {
+        bulkDeleteLeaves('pending');
+    });
+    
+    // حذف جماعي لسجل الطلبات
+    $('#bulkDeleteHistoryBtn').click(function() {
+        bulkDeleteLeaves('history');
+    });
+});
+
+// دالة حذف طلب إجازة
+function deleteLeaveRequest(requestId, employeeName, leaveType, leaveDate, fromBalance) {
+    const balanceWarning = fromBalance ? '\n\n⚠️ تنبيه: سيتم إعادة يوم إلى رصيد الموظف' : '';
+    
+    Swal.fire({
+        title: 'تأكيد حذف طلب الإجازة',
+        html: `
+            <div class="text-center" dir="rtl">
+                <i class="fas fa-exclamation-triangle text-warning" style="font-size: 3rem;"></i>
+                <h5 class="mt-3">هل أنت متأكد من حذف هذا الطلب؟</h5>
+                <p class="mb-2"><strong>الموظف:</strong> ${employeeName}</p>
+                <p class="mb-2"><strong>النوع:</strong> ${leaveType}</p>
+                <p class="mb-3"><strong>التاريخ:</strong> ${leaveDate}</p>
+                <div class="alert alert-warning">
+                    <i class="fas fa-info-circle me-2"></i>
+                    هذا الإجراء لا يمكن التراجع عنه
+                    ${fromBalance ? '<br><i class="fas fa-undo me-2 mt-2"></i>سيتم إعادة الرصيد للموظف' : ''}
+                </div>
+            </div>
+        `,
+        icon: 'warning',
+        showCancelButton: true,
+        confirmButtonColor: '#d33',
+        cancelButtonColor: '#3085d6',
+        confirmButtonText: 'نعم، احذف',
+        cancelButtonText: 'إلغاء',
+        reverseButtons: true
+    }).then((result) => {
+        if (result.isConfirmed) {
+            Swal.fire({
+                title: 'جاري الحذف...',
+                allowOutsideClick: false,
+                didOpen: () => {
+                    Swal.showLoading();
+                }
+            });
+            
+            fetch(`/manager/delete_leave/${requestId}`, {
+                method: 'POST',
+                headers: {
+                    'Content-Type': 'application/json',
+                }
+            })
+            .then(response => response.json())
+            .then(data => {
+                if (data.success) {
+                    Swal.fire({
+                        title: 'تم الحذف',
+                        text: data.message,
+                        icon: 'success',
+                        timer: 2000,
+                        showConfirmButton: false
+                    }).then(() => {
+                        location.reload();
+                    });
+                } else {
+                    Swal.fire({
+                        title: 'خطأ',
+                        text: data.message,
+                        icon: 'error'
+                    });
+                }
+            })
+            .catch(error => {
+                Swal.fire({
+                    title: 'خطأ',
+                    text: 'حدث خطأ في الاتصال',
+                    icon: 'error'
+                });
+            });
+        }
+    });
+}
+
+// دالة الحذف الجماعي
+function bulkDeleteLeaves(type) {
+    const selector = type === 'pending' ? '.pending-checkbox:checked' : '.history-checkbox:checked';
+    const selectedIds = [];
+    
+    $(selector).each(function() {
+        selectedIds.push($(this).data('id'));
+    });
+    
+    if (selectedIds.length === 0) {
+        Swal.fire('تنبيه', 'لم يتم تحديد أي طلبات', 'warning');
+        return;
+    }
+    
+    Swal.fire({
+        title: 'تأكيد الحذف الجماعي',
+        html: `
+            <div class="text-center" dir="rtl">
+                <i class="fas fa-exclamation-triangle text-warning" style="font-size: 3rem;"></i>
+                <h5 class="mt-3">هل أنت متأكد من حذف <strong>${selectedIds.length}</strong> طلب؟</h5>
+                <div class="alert alert-danger mt-3">
+                    <i class="fas fa-info-circle me-2"></i>
+                    <strong>تحذير:</strong> هذا الإجراء لا يمكن التراجع عنه
+                </div>
+                <p class="text-muted small">سيتم إعادة الرصيد تلقائياً للطلبات من نوع "من رصيد الإجازات"</p>
+            </div>
+        `,
+        icon: 'warning',
+        showCancelButton: true,
+        confirmButtonColor: '#d33',
+        cancelButtonColor: '#3085d6',
+        confirmButtonText: 'نعم، احذف الكل',
+        cancelButtonText: 'إلغاء',
+        reverseButtons: true
+    }).then((result) => {
+        if (result.isConfirmed) {
+            Swal.fire({
+                title: 'جاري الحذف...',
+                allowOutsideClick: false,
+                didOpen: () => {
+                    Swal.showLoading();
+                }
+            });
+            
+            fetch('/manager/bulk_delete_items', {
+                method: 'POST',
+                headers: {
+                    'Content-Type': 'application/json',
+                },
+                body: JSON.stringify({
+                    type: 'leaves',
+                    ids: selectedIds
+                })
+            })
+            .then(response => response.json())
+            .then(data => {
+                if (data.success) {
+                    Swal.fire({
+                        title: 'تم الحذف',
+                        html: data.message,
+                        icon: 'success',
+                        timer: 2500,
+                        showConfirmButton: false
+                    }).then(() => {
+                        location.reload();
+                    });
+                } else {
+                    Swal.fire({
+                        title: 'خطأ',
+                        text: data.message,
+                        icon: 'error'
+                    });
+                }
+            })
+            .catch(error => {
+                Swal.fire({
+                    title: 'خطأ',
+                    text: 'حدث خطأ في الاتصال',
+                    icon: 'error'
+                });
+            });
+        }
+    });
+}
+
+// إضافة تنسيق CSS
+const style = document.createElement('style');
+style.textContent = `
+    .delete-single-btn {
+        width: 32px;
+        height: 32px;
+        padding: 0;
+        display: flex;
+        align-items: center;
+        justify-content: center;
+        border-radius: 8px;
+        transition: all 0.3s ease;
+        background: linear-gradient(135deg, #ef4444 0%, #dc2626 100%);
+        border: none;
+        color: white;
+    }
+    
+    .delete-single-btn:hover {
+        transform: translateY(-2px);
+        box-shadow: 0 4px 8px rgba(220, 38, 38, 0.3);
+    }
+    
+    .delete-single-btn i {
+        font-size: 1rem;
+    }
+    
+    .action-btn.delete-mobile {
+        background: linear-gradient(135deg, #ef4444 0%, #dc2626 100%);
+        color: white;
+        width: 100%;
+        height: 48px;
+        border-radius: 12px;
+        border: none;
+        display: flex;
+        align-items: center;
+        justify-content: center;
+        font-size: 1rem;
+        font-weight: 600;
+        transition: all 0.3s ease;
+        cursor: pointer;
+    }
+    
+    .action-btn.delete-mobile:hover {
+        transform: translateY(-2px);
+        box-shadow: 0 4px 12px rgba(220, 38, 38, 0.4);
+    }
+    
+    .action-btn.delete-mobile i {
+        margin-left: 8px;
+        font-size: 1.1rem;
+    }
+    
+    .btn-group .btn-sm {
+        margin: 0 2px;
+        border-radius: 8px;
+    }
+    
+    #bulkDeletePendingBtn:disabled,
+    #bulkDeleteHistoryBtn:disabled {
+        opacity: 0.5;
+        cursor: not-allowed;
+    }
+    
+    .row-checkbox {
+        cursor: pointer;
+        width: 18px;
+        height: 18px;
+    }
+    
+    #selectAllPending,
+    #selectAllHistory {
+        cursor: pointer;
+        width: 18px;
+        height: 18px;
+    }
+    
+    /* تنسيق SweetAlert2 للعربية */
+    .swal2-popup {
+        font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif;
+        border-radius: 20px !important;
+    }
+    
+    .swal2-title {
+        color: #1a4731 !important;
+    }
+    
+    .swal2-confirm {
+        border-radius: 12px !important;
+    }
+    
+    .swal2-cancel {
+        border-radius: 12px !important;
+    }
+`;
+document.head.appendChild(style);
+</script>
+    <script>
+        // Mobile menu functionality
+        document.addEventListener('DOMContentLoaded', function() {
+            const mobileMenuBtn = document.getElementById('mobileMenuBtn');
+            const mobileNavMenu = document.getElementById('mobileNavMenu');
+            
+            if (mobileMenuBtn && mobileNavMenu) {
+                mobileMenuBtn.addEventListener('click', function() {
+                    mobileNavMenu.classList.toggle('active');
+                });
+                
+                document.addEventListener('click', function(event) {
+                    if (!mobileMenuBtn.contains(event.target) && !mobileNavMenu.contains(event.target)) {
+                        mobileNavMenu.classList.remove('active');
+                    }
+                });
+            }
+
+            // Real-time clock
+            function updateClock() {
+                const now = new Date();
+                const timeString = now.toLocaleTimeString('ar-EG');
+                const dateString = now.toLocaleDateString('ar-EG', {
+                    weekday: 'long',
+                    year: 'numeric',
+                    month: 'long',
+                    day: 'numeric'
+                });
+                
+                const clockElement = document.getElementById('live-clock');
+                if (clockElement) {
+                    clockElement.innerHTML = `
+                        <i class="bi bi-clock me-2"></i>
+                        ${timeString}
+                        <small class="text-white-50 ms-2 d-none d-md-inline">${dateString}</small>
+                    `;
+                }
+            }
+            
+            updateClock();
+            setInterval(updateClock, 1000);
+
+            // Tab switching
+            const tabButtons = document.querySelectorAll('.tab-btn');
+            const tabContents = document.querySelectorAll('.tab-content');
+            
+            tabButtons.forEach(button => {
+                button.addEventListener('click', () => {
+                    const tabId = button.getAttribute('data-tab');
+                    
+                    // Update active button
+                    tabButtons.forEach(btn => btn.classList.remove('active'));
+                    button.classList.add('active');
+                    
+                    // Show active tab content
+                    tabContents.forEach(content => {
+                        content.classList.remove('active');
+                        if (content.id === `${tabId}-tab`) {
+                            content.classList.add('active');
+                        }
+                    });
+                    
+                    // Initialize charts for statistics tab
+                    if (tabId === 'statistics') {
+                        initializeCharts();
+                    }
+                    
+                    // Load reports for reports tab
+                    if (tabId === 'reports') {
+                        loadReportsData();
+                    }
+                });
+            });
+
+            // Filter functionality for pending requests
+            function applyFilters() {
+                const leaveType = document.getElementById('leaveTypeFilter').value;
+                const department = document.getElementById('departmentFilter').value;
+                const dateFilter = document.getElementById('dateFilter').value;
+                
+                const rows = document.querySelectorAll('#pending-tab tbody tr');
+                let visibleCount = 0;
+                
+                rows.forEach(row => {
+                    let showRow = true;
+                    
+                    if (leaveType !== 'all' && row.getAttribute('data-type') !== leaveType) {
+                        showRow = false;
+                    }
+                    
+                    if (department !== 'all' && row.getAttribute('data-department') !== department) {
+                        showRow = false;
+                    }
+                    
+                    if (dateFilter !== 'all') {
+                        const rowDate = new Date(row.getAttribute('data-date'));
+                        const today = new Date();
+                        
+                        if (dateFilter === 'today') {
+                            if (rowDate.toDateString() !== today.toDateString()) {
+                                showRow = false;
+                            }
+                        } else if (dateFilter === 'week') {
+                            const weekAgo = new Date(today.getTime() - 7 * 24 * 60 * 60 * 1000);
+                            if (rowDate < weekAgo) {
+                                showRow = false;
+                            }
+                        } else if (dateFilter === 'month') {
+                            const monthAgo = new Date(today.getTime() - 30 * 24 * 60 * 60 * 1000);
+                            if (rowDate < monthAgo) {
+                                showRow = false;
+                            }
+                        }
+                    }
+                    
+                    row.style.display = showRow ? '' : 'none';
+                    if (showRow) visibleCount++;
+                });
+                
+                // Update badge count
+                const pendingBadge = document.querySelector('[data-tab="pending"] .tab-badge');
+                if (pendingBadge) {
+                    pendingBadge.textContent = visibleCount;
+                }
+            }
+            
+            // Initialize filters
+            document.getElementById('leaveTypeFilter').addEventListener('change', applyFilters);
+            document.getElementById('departmentFilter').addEventListener('change', applyFilters);
+            document.getElementById('dateFilter').addEventListener('change', applyFilters);
+            document.getElementById('resetFilters').addEventListener('click', () => {
+                document.getElementById('leaveTypeFilter').value = 'all';
+                document.getElementById('departmentFilter').value = 'all';
+                document.getElementById('dateFilter').value = 'all';
+                applyFilters();
+            });
+
+            // Add search functionality for processed requests
+            document.getElementById('historyStatusFilter').addEventListener('change', function() {
+                filterProcessedRequests();
+            });
+
+            document.getElementById('historyPeriodFilter').addEventListener('change', function() {
+                filterProcessedRequests();
+            });
+
+            document.getElementById('historySearch').addEventListener('input', function() {
+                filterProcessedRequests();
+            });
+
+            function filterProcessedRequests() {
+                const statusFilter = document.getElementById('historyStatusFilter').value;
+                const periodFilter = document.getElementById('historyPeriodFilter').value;
+                const searchTerm = document.getElementById('historySearch').value.toLowerCase();
+                
+                const rows = document.querySelectorAll('#history-tab tbody tr');
+                let visibleCount = 0;
+                
+                rows.forEach(row => {
+                    let showRow = true;
+                    
+                    // Filter by status
+                    if (statusFilter !== 'all' && row.getAttribute('data-status') !== statusFilter) {
+                        showRow = false;
+                    }
+                    
+                    // Filter by period
+                    if (periodFilter !== 'all' && row.getAttribute('data-period')) {
+                        // You'll need to add data-period attribute to rows based on creation date
+                    }
+                    
+                    // Filter by search
+                    if (searchTerm && !row.textContent.toLowerCase().includes(searchTerm)) {
+                        showRow = false;
+                    }
+                    
+                    row.style.display = showRow ? '' : 'none';
+                    if (showRow) visibleCount++;
+                });
+                
+                // Update badge count
+                const historyBadge = document.querySelector('[data-tab="history"] .tab-badge');
+                if (historyBadge) {
+                    historyBadge.textContent = visibleCount;
+                }
+            }
+            
+
+            // Initialize charts
+            // في قسم JavaScript في القالب، عدّل دالة initializeCharts:
+
+
+            // Initialize processed requests mobile cards
+            function initializeProcessedMobileCards() {
+                if (window.innerWidth < 768) {
+                    const cards = document.querySelectorAll('#mobile-processed-cards .request-card');
+                    
+                    cards.forEach((card, index) => {
+                        // Add click to expand functionality for long text
+                        const rejectionReason = card.querySelector('.mobile-card-section.text-danger .mobile-card-value');
+                        if (rejectionReason) {
+                            const reasonText = rejectionReason.textContent;
+                            if (reasonText.length > 100) {
+                                card.addEventListener('click', function(e) {
+                                    if (!e.target.closest('.mobile-card-actions')) {
+                                        if (rejectionReason.style.whiteSpace === 'nowrap') {
+                                            rejectionReason.style.whiteSpace = 'normal';
+                                            rejectionReason.textContent = reasonText;
+                                        } else {
+                                            rejectionReason.style.whiteSpace = 'nowrap';
+                                            rejectionReason.textContent = reasonText.substring(0, 100) + '...';
+                                        }
+                                    }
+                                });
+                            }
+                        }
+                        
+                        // Add status-specific styling
+                        const status = card.dataset.status;
+                        if (status === 'approved') {
+                            card.style.borderLeft = '4px solid #10b981';
+                        } else if (status === 'rejected') {
+                            card.style.borderLeft = '4px solid #ef4444';
+                        } else if (status === 'partially_approved') {
+                            card.style.borderLeft = '4px solid #f59e0b';
+                        }
+                    });
+                }
+            }
+
+            // Filter processed requests on mobile
+            function filterProcessedRequests(filterType) {
+                const cards = document.querySelectorAll('#mobile-processed-cards .request-card');
+                let visibleCount = 0;
+                
+                cards.forEach(card => {
+                    const status = card.dataset.status;
+                    let shouldShow = true;
+                    
+                    if (filterType === 'approved' && status !== 'approved') {
+                        shouldShow = false;
+                    } else if (filterType === 'rejected' && status !== 'rejected') {
+                        shouldShow = false;
+                    } else if (filterType === 'partially_approved' && status !== 'partially_approved') {
+                        shouldShow = false;
+                    }
+                    
+                    card.style.display = shouldShow ? 'block' : 'none';
+                    if (shouldShow) visibleCount++;
+                });
+                
+                // Show empty state if no cards visible
+                const emptyState = document.querySelector('#mobile-processed-cards + .empty-state');
+                const mobileContainer = document.getElementById('mobile-processed-cards');
+                
+                if (visibleCount === 0 && mobileContainer) {
+                    if (!emptyState) {
+                        const emptyDiv = document.createElement('div');
+                        emptyDiv.className = 'empty-state';
+                        emptyDiv.innerHTML = `
+                            <i class="fas fa-filter"></i>
+                            <h5>لا توجد طلبات ${getFilterText(filterType)}</h5>
+                            <p>لا توجد نتائج مطابقة للفلتر المحدد</p>
+                        `;
+                        mobileContainer.parentNode.insertBefore(emptyDiv, mobileContainer.nextSibling);
+                    }
+                } else if (emptyState) {
+                    emptyState.remove();
+                }
+            }
+
+            function getFilterText(filterType) {
+                switch(filterType) {
+                    case 'approved': return 'مقبولة';
+                    case 'rejected': return 'مرفوضة';
+                    case 'partially_approved': return 'مقبولة جزئياً';
+                    default: return 'مُرشحة';
+                }
+            }
+
+            // Add mobile filter buttons (optional - add to your HTML if needed)
+            function createMobileFilterButtons() {
+                if (window.innerWidth < 768) {
+                    const container = document.querySelector('#mobile-processed-cards');
+                    if (container) {
+                        const filterContainer = document.createElement('div');
+                        filterContainer.className = 'mobile-filter-buttons d-flex gap-2 mb-3 flex-wrap';
+                        filterContainer.innerHTML = `
+                            <button class="btn btn-sm btn-outline-success active" onclick="filterProcessedRequests('all')">الكل</button>
+                            <button class="btn btn-sm btn-outline-success" onclick="filterProcessedRequests('approved')">مقبولة</button>
+                            <button class="btn btn-sm btn-outline-danger" onclick="filterProcessedRequests('rejected')">مرفوضة</button>
+                            <button class="btn btn-sm btn-outline-warning" onclick="filterProcessedRequests('partially_approved')">جزئية</button>
+                        `;
+                        container.parentNode.insertBefore(filterContainer, container);
+                    }
+                }
+            }
+
+            // Call initialization functions
+            document.addEventListener('DOMContentLoaded', function() {
+                if (window.innerWidth < 768) {
+                    initializeProcessedMobileCards();
+                    createMobileFilterButtons();
+                }
+            });
+
+            // Handle window resize
+            window.addEventListener('resize', function() {
+                if (window.innerWidth < 768) {
+                    initializeProcessedMobileCards();
+                } else {
+                    // Remove mobile filter buttons if they exist
+                    const filterButtons = document.querySelector('.mobile-filter-buttons');
+                    if (filterButtons) {
+                        filterButtons.remove();
+                    }
+                }
+            });
+
+
+            function initializeCharts() {
+                // الحصول على البيانات الحقيقية من stats
+                const leaveTypesData = {{ stats.leave_types|tojson|safe if stats and stats.leave_types else '{}' }};
+                const monthlyStats = {{ stats.monthly_stats|tojson|safe if stats and stats.monthly_stats else '{}' }};
+                
+                // تحضير بيانات أنواع الإجازات
+                const leaveTypesLabels = Object.keys(leaveTypesData);
+                const leaveTypesValues = Object.values(leaveTypesData).map(item => item.total || 0);
+                
+                // Leave Types Chart
+                const leaveTypesChart = new ApexCharts(document.querySelector("#leaveTypesChart"), {
+                    series: leaveTypesValues.length > 0 ? leaveTypesValues : [0],
+                    chart: {
+                        type: 'donut',
+                        height: 300,
+                        fontFamily: 'inherit',
+                        toolbar: {
+                            show: false
+                        }
+                    },
+                    labels: leaveTypesLabels.length > 0 ? leaveTypesLabels : ['لا توجد بيانات'],
+                    colors: ['#10b981', '#f59e0b', '#8b5cf6', '#0ea5e9', '#ec4899', '#f97316', '#84cc16', '#06b6d4'],
+                    legend: {
+                        position: 'bottom',
+                        fontSize: '14px',
+                        fontFamily: 'inherit',
+                        labels: {
+                            colors: '#6b7280'
+                        }
+                    },
+                    plotOptions: {
+                        pie: {
+                            donut: {
+                                size: '65%',
+                                labels: {
+                                    show: true,
+                                    total: {
+                                        show: true,
+                                        label: 'إجمالي الطلبات',
+                                        color: '#6b7280',
+                                        formatter: function (w) {
+                                            const total = w.globals.seriesTotals.reduce((a, b) => a + b, 0);
+                                            return total > 0 ? total : '0'
+                                        }
+                                    }
+                                }
+                            }
+                        }
+                    },
+                    dataLabels: {
+                        enabled: false
+                    },
+                    tooltip: {
+                        y: {
+                            formatter: function(val) {
+                                return val + " طلب"
+                            }
+                        }
+                    }
+                });
+                leaveTypesChart.render();
+
+                // تحضير بيانات الاتجاه الشهري
+                const monthlyLabels = Object.keys(monthlyStats).slice(-6); // آخر 6 أشهر
+                const monthlyApproved = monthlyLabels.map(month => monthlyStats[month]?.approved || 0);
+                const monthlyRejected = monthlyLabels.map(month => monthlyStats[month]?.rejected || 0);
+
+                // Monthly Trend Chart
+                const monthlyTrendChart = new ApexCharts(document.querySelector("#monthlyTrendChart"), {
+                    series: [{
+                        name: 'طلبات مقبولة',
+                        data: monthlyApproved.length > 0 ? monthlyApproved : [0]
+                    }, {
+                        name: 'طلبات مرفوضة',
+                        data: monthlyRejected.length > 0 ? monthlyRejected : [0]
+                    }],
+                    chart: {
+                        type: 'line',
+                        height: 300,
+                        fontFamily: 'inherit',
+                        toolbar: {
+                            show: false
+                        }
+                    },
+                    colors: ['#10b981', '#ef4444'],
+                    stroke: {
+                        width: 3,
+                        curve: 'smooth'
+                    },
+                    grid: {
+                        borderColor: '#e5e7eb',
+                        strokeDashArray: 4
+                    },
+                    xaxis: {
+                        categories: monthlyLabels.length > 0 ? monthlyLabels : ['لا توجد بيانات'],
+                        labels: {
+                            style: {
+                                colors: '#6b7280',
+                                fontSize: '12px'
+                            }
+                        }
+                    },
+                    yaxis: {
+                        labels: {
+                            style: {
+                                colors: '#6b7280',
+                                fontSize: '12px'
+                            }
+                        }
+                    },
+                    legend: {
+                        position: 'top',
+                        horizontalAlign: 'left',
+                        fontSize: '14px',
+                        fontFamily: 'inherit',
+                        labels: {
+                            colors: '#6b7280'
+                        }
+                    },
+                    tooltip: {
+                        theme: 'light'
+                    }
+                });
+                monthlyTrendChart.render();
+
+                // تحضير بيانات إحصائيات الأقسام
+                const deptStats = {{ stats.department_stats|tojson|safe if stats and stats.department_stats else '{}' }};
+                const deptNames = Object.keys(deptStats);
+                const deptTotals = Object.values(deptStats).map(dept => dept.total || 0);
+
+                // Department Statistics Chart
+                const departmentStatsChart = new ApexCharts(document.querySelector("#departmentStatsChart"), {
+                    series: [{
+                        name: 'عدد الطلبات',
+                        data: deptTotals.length > 0 ? deptTotals : [0]
+                    }],
+                    chart: {
+                        type: 'bar',
+                        height: 350,
+                        fontFamily: 'inherit',
+                        toolbar: {
+                            show: false
+                        }
+                    },
+                    plotOptions: {
+                        bar: {
+                            borderRadius: 4,
+                            horizontal: true,
+                        }
+                    },
+                    colors: ['#10b981'],
+                    dataLabels: {
+                        enabled: false
+                    },
+                    xaxis: {
+                        categories: deptNames.length > 0 ? deptNames : ['لا توجد بيانات'],
+                        labels: {
+                            style: {
+                                colors: '#6b7280',
+                                fontSize: '12px'
+                            }
+                        }
+                    },
+                    yaxis: {
+                        labels: {
+                            style: {
+                                colors: '#6b7280',
+                                fontSize: '12px'
+                            }
+                        }
+                    }
+                });
+                departmentStatsChart.render();
+            }
+            // Load reports data
+
+            // Function to create mobile leave request card
+            function createMobileLeaveCard(request) {
+                const card = document.createElement('div');
+                card.className = `request-card ${request.status || 'pending'}`;
+                
+                card.innerHTML = `
+                    <div class="mobile-card-header">
+                        <div>
+                            <h6 class="fw-bold mb-1">${request.leave_type || 'إجازة'}</h6>
+                            <div class="mobile-card-badges">
+                                <span class="status-badge bg-${request.status === 'approved' ? 'success' : 
+                                                                request.status === 'rejected' ? 'danger' : 'warning'} 
+                                        text-${request.status === 'approved' || request.status === 'pending' ? 'dark' : 'white'}">
+                                    <i class="fas fa-${request.status === 'approved' ? 'check-circle' : 
+                                                    request.status === 'rejected' ? 'times-circle' : 'clock'} me-1"></i>
+                                    ${request.status === 'approved' ? 'مقبولة' : 
+                                    request.status === 'rejected' ? 'مرفوضة' : 'قيد الانتظار'}
+                                </span>
+                            </div>
+                        </div>
+                        <div class="text-end">
+                            <small class="text-muted">${request.created_at ? formatDate(request.created_at) : ''}</small>
+                        </div>
+                    </div>
+                    
+                    <div class="row g-3">
+                        <div class="col-6">
+                            <div class="mobile-card-section">
+                                <div class="mobile-card-label">
+                                    <i class="fas fa-calendar"></i>
+                                    تاريخ الإجازة
+                                </div>
+                                <div class="mobile-card-value">${request.leave_date ? formatDate(request.leave_date) : '-'}</div>
+                            </div>
+                        </div>
+                        
+                        <div class="col-6">
+                            <div class="mobile-card-section">
+                                <div class="mobile-card-label">
+                                    <i class="fas fa-clock"></i>
+                                    المدة
+                                </div>
+                                <div class="mobile-card-value">${request.days || '1'} يوم</div>
+                            </div>
+                        </div>
+                        
+                        ${request.shift_name ? `
+                        <div class="col-6">
+                            <div class="mobile-card-section">
+                                <div class="mobile-card-label">
+                                    <i class="fas fa-clock"></i>
+                                    الشيفت
+                                </div>
+                                <div class="mobile-card-value">
+                                    ${request.shift_name === 'صباحي' ? 
+                                        '<span class="shift-badge morning"><i class="fas fa-sun"></i> صباحي</span>' : 
+                                        request.shift_name === 'مسائي' ? 
+                                        '<span class="shift-badge evening"><i class="fas fa-moon"></i> مسائي</span>' : 
+                                        `<span class="shift-badge">${request.shift_name}</span>`}
+                                </div>
+                            </div>
+                        </div>
+                        ` : ''}
+                        
+                        ${request.shift_job ? `
+                        <div class="col-6">
+                            <div class="mobile-card-section">
+                                <div class="mobile-card-label">
+                                    <i class="fas fa-briefcase"></i>
+                                    الوظيفة
+                                </div>
+                                <div class="mobile-card-value">
+                                    <span class="job-badge">${request.shift_job}</span>
+                                </div>
+                            </div>
+                        </div>
+                        ` : ''}
+                        
+                        ${request.reason ? `
+                        <div class="col-12">
+                            <div class="mobile-card-section">
+                                <div class="mobile-card-label">
+                                    <i class="fas fa-comment"></i>
+                                    السبب
+                                </div>
+                                <div class="mobile-card-value">
+                                    ${request.reason.substring(0, 100) + (request.reason.length > 100 ? '...' : '')}
+                                </div>
+                            </div>
+                        </div>
+                        ` : ''}
+                        
+                        ${request.rejection_reason ? `
+                        <div class="col-12">
+                            <div class="mobile-card-section">
+                                <div class="mobile-card-label text-danger">
+                                    <i class="fas fa-times-circle"></i>
+                                    سبب الرفض
+                                </div>
+                                <div class="mobile-card-value text-danger">
+                                    ${request.rejection_reason.substring(0, 100) + (request.rejection_reason.length > 100 ? '...' : '')}
+                                </div>
+                            </div>
+                        </div>
+                        ` : ''}
+                    </div>
+                    
+                    ${request.status === 'pending' ? `
+                    <div class="mobile-card-actions single-button">
+                        <a href="${request.cancel_url || '#'}" 
+                        class="action-btn reject"
+                        onclick="return confirm('هل أنت متأكد من إلغاء طلب الإجازة؟')">
+                            <i class="fas fa-times"></i>
+                            <span>إلغاء الطلب</span>
+                        </a>
+                    </div>
+                    ` : ''}
+                `;
+                
+                return card;
+            }
+
+            // Function to create mobile permission card
+            function createMobilePermissionCard(request) {
+                const card = document.createElement('div');
+                card.className = `request-card ${request.status || 'pending'}`;
+                
+                // Parse extra data if available
+                let shiftData = {};
+                try {
+                    if (request.extra_data) {
+                        shiftData = JSON.parse(request.extra_data);
+                    }
+                } catch (e) {
+                    console.error('Error parsing extra data:', e);
+                }
+                
+                const permissionType = request.permission_type || '';
+                const shiftName = shiftData.shift || '';
+                const shiftJob = shiftData.shift_job || '';
+                const attendanceType = shiftData.attendance_type || '';
+                const overtimeHours = shiftData.overtime_hours || 0;
+                
+                card.innerHTML = `
+                    <div class="mobile-card-header">
+                        <div>
+                            <div class="mobile-card-badges mb-2">
+                                ${permissionType.includes('حضور') ? 
+                                    '<span class="permission-type-badge attendance"><i class="fas fa-sign-in-alt me-1"></i>حضور</span>' :
+                                permissionType.includes('انصراف') ? 
+                                    '<span class="permission-type-badge leave"><i class="fas fa-sign-out-alt me-1"></i>انصراف</span>' :
+                                permissionType.includes('نسيان') ? 
+                                    '<span class="permission-type-badge forgot"><i class="fas fa-fingerprint me-1"></i>نسيان توقيع</span>' :
+                                permissionType.includes('تبديل') ? 
+                                    '<span class="permission-type-badge exchange"><i class="fas fa-exchange-alt me-1"></i>تبديل وردية</span>' :
+                                permissionType.includes('اضافي') ? 
+                                    '<span class="permission-type-badge overtime"><i class="fas fa-clock me-1"></i>ساعات اضافي</span>' :
+                                    `<span class="badge bg-secondary">${permissionType}</span>`}
+                            </div>
+                            <div>
+                                <span class="status-badge bg-${request.status === 'approved' ? 'success' : 
+                                                                request.status === 'rejected' ? 'danger' : 'warning'} 
+                                        text-${request.status === 'approved' || request.status === 'pending' ? 'dark' : 'white'}">
+                                    <i class="fas fa-${request.status === 'approved' ? 'check-circle' : 
+                                                    request.status === 'rejected' ? 'times-circle' : 'clock'} me-1"></i>
+                                    ${request.status === 'approved' ? 'مقبولة' : 
+                                    request.status === 'rejected' ? 'مرفوضة' : 'قيد الانتظار'}
+                                </span>
+                            </div>
+                        </div>
+                        <div class="text-end">
+                            <small class="text-muted">${request.created_at ? formatDate(request.created_at) : ''}</small>
+                        </div>
+                    </div>
+                    
+                    <div class="row g-3">
+                        <div class="col-6">
+                            <div class="mobile-card-section">
+                                <div class="mobile-card-label">
+                                    <i class="fas fa-calendar"></i>
+                                    تاريخ الإذن
+                                </div>
+                                <div class="mobile-card-value">${request.date ? formatDate(request.date) : '-'}</div>
+                            </div>
+                        </div>
+                        
+                        ${request.time ? `
+                        <div class="col-6">
+                            <div class="mobile-card-section">
+                                <div class="mobile-card-label">
+                                    <i class="fas fa-clock"></i>
+                                    الوقت
+                                </div>
+                                <div class="mobile-card-value">${request.time}</div>
+                            </div>
+                        </div>
+                        ` : ''}
+                        
+                        ${shiftName ? `
+                        <div class="col-6">
+                            <div class="mobile-card-section">
+                                <div class="mobile-card-label">
+                                    <i class="fas fa-clock"></i>
+                                    الشيفت
+                                </div>
+                                <div class="mobile-card-value">
+                                    ${shiftName.includes('صباحي') ? 
+                                        '<span class="shift-badge morning"><i class="fas fa-sun"></i> صباحي</span>' : 
+                                        shiftName.includes('مسائي') || shiftName.includes('ليلي') ? 
+                                        '<span class="shift-badge evening"><i class="fas fa-moon"></i> ' + (shiftName.includes('ليلي') ? 'ليلي' : 'مسائي') + '</span>' : 
+                                        `<span class="shift-badge">${shiftName}</span>`}
+                                </div>
+                            </div>
+                        </div>
+                        ` : ''}
+                        
+                        ${shiftJob ? `
+                        <div class="col-6">
+                            <div class="mobile-card-section">
+                                <div class="mobile-card-label">
+                                    <i class="fas fa-briefcase"></i>
+                                    الوظيفة
+                                </div>
+                                <div class="mobile-card-value">
+                                    <span class="job-badge">${shiftJob}</span>
+                                </div>
+                            </div>
+                        </div>
+                        ` : ''}
+                        
+                        ${attendanceType ? `
+                        <div class="col-6">
+                            <div class="mobile-card-section">
+                                <div class="mobile-card-label">
+                                    <i class="fas fa-stopwatch"></i>
+                                    التوقيت
+                                </div>
+                                <div class="mobile-card-value">
+                                    <span class="attendance-type-badge ${attendanceType.includes('حضور') ? 'check-in' : 'check-out'}">
+                                        ${attendanceType}
+                                    </span>
+                                </div>
+                            </div>
+                        </div>
+                        ` : ''}
+                        
+                        ${overtimeHours > 0 ? `
+                        <div class="col-6">
+                            <div class="mobile-card-section">
+                                <div class="mobile-card-label">
+                                    <i class="fas fa-hourglass-half"></i>
+                                    ساعات اضافي
+                                </div>
+                                <div class="mobile-card-value">
+                                    <div class="overtime-hours mt-1">${overtimeHours}<small>س</small></div>
+                                </div>
+                            </div>
+                        </div>
+                        ` : ''}
+                        
+                        ${request.reason ? `
+                        <div class="col-12">
+                            <div class="mobile-card-section">
+                                <div class="mobile-card-label">
+                                    <i class="fas fa-comment"></i>
+                                    السبب
+                                </div>
+                                <div class="mobile-card-value">
+                                    ${request.reason.substring(0, 100) + (request.reason.length > 100 ? '...' : '')}
+                                </div>
+                            </div>
+                        </div>
+                        ` : ''}
+                        
+                        ${request.rejection_reason ? `
+                        <div class="col-12">
+                            <div class="mobile-card-section">
+                                <div class="mobile-card-label text-danger">
+                                    <i class="fas fa-times-circle"></i>
+                                    سبب الرفض
+                                </div>
+                                <div class="mobile-card-value text-danger">
+                                    ${request.rejection_reason.substring(0, 100) + (request.rejection_reason.length > 100 ? '...' : '')}
+                                </div>
+                            </div>
+                        </div>
+                        ` : ''}
+                    </div>
+                    
+                    ${request.status === 'pending' ? `
+                    <div class="mobile-card-actions single-button">
+                        <a href="${request.cancel_url || '#'}" 
+                        class="action-btn reject"
+                        onclick="return confirm('هل أنت متأكد من إلغاء طلب الإذن؟')">
+                            <i class="fas fa-times"></i>
+                            <span>إلغاء الطلب</span>
+                        </a>
+                    </div>
+                    ` : ''}
+                `;
+                
+                return card;
+            }
+
+            // Helper function to format date
+            function formatDate(dateString) {
+                if (!dateString) return '-';
+                try {
+                    const date = new Date(dateString);
+                    return date.toLocaleDateString('ar-EG', {
+                        year: 'numeric',
+                        month: 'numeric',
+                        day: 'numeric'
+                    });
+                } catch (e) {
+                    return '-';
+                }
+            }
+
+            // Initialize mobile card animations
+            function animateMobileCards() {
+                const cards = document.querySelectorAll('.request-card');
+                cards.forEach((card, index) => {
+                    card.style.opacity = '0';
+                    card.style.transform = 'translateY(20px)';
+                    card.style.transition = 'all 0.5s ease';
+                    
+                    setTimeout(() => {
+                        card.style.opacity = '1';
+                        card.style.transform = 'translateY(0)';
+                    }, index * 100);
+                });
+            }
+
+            // Add touch-friendly button styles
+            function initializeMobileButtonBehaviors() {
+                // Make buttons touch-friendly
+                const buttons = document.querySelectorAll('.action-btn');
+                buttons.forEach(button => {
+                    button.style.minHeight = '54px'; // Minimum touch target size
+                    button.style.touchAction = 'manipulation'; // Prevent double-tap zoom
+                    
+                    // Add loading state
+                    button.addEventListener('click', function(e) {
+                        if (this.classList.contains('loading')) {
+                            e.preventDefault();
+                            return;
+                        }
+                        
+                        // Add loading state for cancel buttons
+                        if (this.classList.contains('reject') && this.href.includes('cancel')) {
+                            const originalText = this.innerHTML;
+                            this.innerHTML = '<i class="fas fa-spinner fa-spin"></i><span>جاري الإلغاء...</span>';
+                            this.classList.add('loading');
+                            this.disabled = true;
+                            
+                            // Restore after 5 seconds if still on page
+                            setTimeout(() => {
+                                if (this.parentNode) {
+                                    this.innerHTML = originalText;
+                                    this.classList.remove('loading');
+                                    this.disabled = false;
+                                }
+                            }, 5000);
+                        }
+                    });
+                });
+            }
+
+            // Call these functions after your DOMContentLoaded event
+            setTimeout(() => {
+                if (window.innerWidth <= 768) {
+                    animateMobileCards();
+                    initializeMobileButtonBehaviors();
+                }
+            }, 500);
+
+            // Load reports data
+            function loadReportsData() {
+                // الحصول على بيانات الموظفين من stats
+                const employeeStats = {{ stats.employee_stats|tojson|safe if stats and stats.employee_stats else '{}' }};
+                
+                const tbody = document.getElementById('employeeReportBody');
+                tbody.innerHTML = '';
+                
+                // تحويل بيانات الموظفين إلى مصفوفة
+                const employeesArray = Object.entries(employeeStats).map(([name, data]) => ({
+                    name: name.split('(')[0].trim(), // إزالة اسم المستخدم من الاسم
+                    department: data.department,
+                    total: data.total || 0,
+                    approved: data.approved || 0,
+                    rejected: data.rejected || 0,
+                    pending: data.pending || 0,
+                    approvalRate: data.total > 0 ? Math.round((data.approved / data.total) * 100) : 0,
+                    avgDays: data.total > 0 ? (data.total_days / data.total).toFixed(1) : 0
+                }));
+                
+                // ترتيب الموظفين حسب عدد الإجازات (من الأكثر إلى الأقل)
+                employeesArray.sort((a, b) => b.total - a.total);
+                
+                // إضافة البيانات إلى الجدول
+                employeesArray.forEach(employee => {
+                    const row = document.createElement('tr');
+                    row.innerHTML = `
+                        <td>${employee.name}</td>
+                        <td>${employee.department}</td>
+                        <td>${employee.total}</td>
+                        <td>${employee.approved}</td>
+                        <td>${employee.rejected}</td>
+                        <td>${employee.pending}</td>
+                        <td>
+                            <div class="d-flex align-items-center gap-2">
+                                <span>${employee.approvalRate}%</span>
+                                <div class="progress" style="width: 100px; height: 8px;">
+                                    <div class="progress-bar bg-success" style="width: ${employee.approvalRate}%"></div>
+                                </div>
+                            </div>
+                        </td>
+                        <td>${employee.avgDays} يوم</td>
+                    `;
+                    tbody.appendChild(row);
+                });
+                
+                // إذا لم توجد بيانات
+                if (employeesArray.length === 0) {
+                    const row = document.createElement('tr');
+                    row.innerHTML = `
+                        <td colspan="8" class="text-center text-muted py-4">
+                            <i class="fas fa-info-circle me-2"></i>
+                            لا توجد بيانات متاحة
+                        </td>
+                    `;
+                    tbody.appendChild(row);
+                }
+                
+                // تحديث الإحصائيات
+                const totalEmployees = employeesArray.length;
+                const totalApproved = employeesArray.reduce((sum, emp) => sum + emp.approved, 0);
+                const totalDays = employeesArray.reduce((sum, emp) => sum + parseFloat(emp.avgDays), 0);
+                const avgDays = totalEmployees > 0 ? (totalDays / totalEmployees).toFixed(1) : 0;
+                
+                document.getElementById('avgApprovalTime').textContent = avgDays;
+                
+                // البحث عن شهر الذروة
+                const monthlyStats = {{ stats.monthly_stats|tojson|safe if stats and stats.monthly_stats else '{}' }};
+                let peakMonth = 'غير متاح';
+                let maxRequests = 0;
+                
+                Object.entries(monthlyStats).forEach(([month, data]) => {
+                    if (data.total > maxRequests) {
+                        maxRequests = data.total;
+                        peakMonth = month;
+                    }
+                });
+                
+                document.getElementById('peakMonth').textContent = peakMonth;
+            }
+
+
+
+            // Initialize on page load
+            applyFilters();
+            loadReportsData();
+        });
+
+        // Request handling functions
+        function approveSingleShift(requestId) {
+            if (confirm('هل أنت متأكد من الموافقة على هذا الطلب؟')) {
+                showLoading(true);
+                fetch(`/manager/approve_leave/${requestId}`, {
+                    method: 'GET',
+                    headers: {
+                        'Content-Type': 'application/json',
+                    }
+                })
+                .then(response => response.json())
+                .then(data => {
+                    showLoading(false);
+                    if (data.success) {
+                        showAlert('تم الموافقة على الطلب بنجاح', 'success');
+                        setTimeout(() => location.reload(), 1500);
+                    } else {
+                        showAlert(data.message || 'حدث خطأ أثناء المعالجة', 'error');
+                    }
+                })
+                .catch(error => {
+                    showLoading(false);
+                    showAlert('حدث خطأ في الاتصال', 'error');
+                });
+            }
+        }
+
+        function openRejectModal(requestId) {
+            const reason = prompt('يرجى كتابة سبب الرفض:');
+            if (reason && reason.trim().length > 0) {
+                if (confirm('هل أنت متأكد من رفض هذا الطلب؟')) {
+                    showLoading(true);
+                    fetch(`/manager/reject_leave/${requestId}`, {
+                        method: 'POST',
+                        headers: {
+                            'Content-Type': 'application/json',
+                        },
+                        body: JSON.stringify({ rejection_reason: reason })
+                    })
+                    .then(response => response.json())
+                    .then(data => {
+                        showLoading(false);
+                        if (data.success) {
+                            showAlert('تم رفض الطلب بنجاح', 'success');
+                            setTimeout(() => location.reload(), 1500);
+                        } else {
+                            showAlert(data.message || 'حدث خطأ أثناء المعالجة', 'error');
+                        }
+                    })
+                    .catch(error => {
+                        showLoading(false);
+                        showAlert('حدث خطأ في الاتصال', 'error');
+                    });
+                }
+            } else if (reason !== null) {
+                alert('يرجى كتابة سبب الرفض');
+            }
+        }
+
+        function viewRequestDetails(requestId) {
+            // Implement view details functionality
+            alert('عرض تفاصيل الطلب ' + requestId);
+        }
+
+        function generateReport() {
+            showLoading(true);
+            const startDate = document.getElementById('startDate').value;
+            const endDate = document.getElementById('endDate').value;
+            const reportType = 'detailed'; // يمكنك إضافة خيارات أخرى
+            
+            fetch(`/export/leave_report?start_date=${startDate}&end_date=${endDate}&report_type=${reportType}`, {
+                method: 'GET',
+                headers: {
+                    'Accept': 'application/vnd.openxmlformats-officedocument.spreadsheetml.sheet'
+                }
+            })
+            .then(response => response.blob())
+            .then(blob => {
+                showLoading(false);
+                const url = window.URL.createObjectURL(blob);
+                const a = document.createElement('a');
+                a.href = url;
+                a.download = `تقرير_الإجازات_${startDate}_إلى_${endDate}.xlsx`;
+                document.body.appendChild(a);
+                a.click();
+                window.URL.revokeObjectURL(url);
+                document.body.removeChild(a);
+                showAlert('تم تحميل التقرير بنجاح', 'success');
+            })
+            .catch(error => {
+                showLoading(false);
+                showAlert('حدث خطأ أثناء إنشاء التقرير', 'error');
+                console.error('Error:', error);
+            });
+        }
+        function printReport() {
+            window.print();
+        }
+
+        function showLoading(show = true) {
+            let overlay = document.getElementById('loadingOverlay');
+            if (!overlay && show) {
+                overlay = document.createElement('div');
+                overlay.id = 'loadingOverlay';
+                overlay.className = 'loading-overlay';
+                overlay.innerHTML = `
+                    <div class="loading-spinner"></div>
+                    <div class="text-white">جاري المعالجة...</div>
+                `;
+                document.body.appendChild(overlay);
+            } else if (overlay) {
+                overlay.style.display = show ? 'flex' : 'none';
+            }
+        }
+
+        function showAlert(message, type = 'success') {
+            const alert = document.createElement('div');
+            alert.className = `alert alert-${type} alert-dismissible fade show mb-2`;
+            alert.innerHTML = `
+                <i class="fas fa-${type === 'success' ? 'check-circle' : type === 'error' ? 'exclamation-triangle' : 'info-circle'} me-2"></i>
+                ${message}
+                <button type="button" class="btn-close" data-bs-dismiss="alert" aria-label="Close"></button>
+            `;
+            
+            const container = document.querySelector('.alert-container');
+            container.insertBefore(alert, container.firstChild);
+            
+            setTimeout(() => {
+                alert.remove();
+            }, 5000);
+        }
+
+        // Export functions for external use
+        window.approveSingleShift = approveSingleShift;
+        window.openRejectModal = openRejectModal;
+        window.viewRequestDetails = viewRequestDetails;
+        window.generateReport = generateReport;
+        window.printReport = printReport;
+    </script>
+
+
+
+
+</body>
+</html>

@@ -1,0 +1,1749 @@
+<!DOCTYPE html>
+<html lang="ar" dir="rtl">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>عرض الرسالة - نظام إدارة الموارد البشرية</title>
+    
+    <!-- Bootstrap 5 CSS -->
+    <link href="https://cdn.jsdelivr.net/npm/bootstrap@5.3.0/dist/css/bootstrap.min.css" rel="stylesheet">
+    
+    <!-- Bootstrap Icons -->
+    <link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/bootstrap-icons@1.10.0/font/bootstrap-icons.css">
+    
+    <!-- Font Awesome -->
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css">
+    
+    <style>
+        :root {
+            --primary-green: #10b981;
+            --dark-green: #059669;
+            --light-green: #34d399;
+            --accent-green: #a7f3d0;
+            --gradient-primary: linear-gradient(135deg, #10b981 0%, #059669 100%);
+            --gradient-secondary: linear-gradient(135deg, #34d399 0%, #10b981 100%);
+            --gradient-dark: linear-gradient(135deg, #065f46 0%, #047857 100%);
+            --gradient-warning: linear-gradient(135deg, #f59e0b 0%, #d97706 100%);
+            --gradient-danger: linear-gradient(135deg, #ef4444 0%, #dc2626 100%);
+            --gradient-info: linear-gradient(135deg, #0ea5e9 0%, #0284c7 100%);
+            --header-height: 130px;
+        }
+        
+        * {
+            margin: 0;
+            padding: 0;
+            box-sizing: border-box;
+        }
+        
+        body {
+            font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif;
+            background: #f8fdf9;
+            min-height: 100vh;
+            overflow-x: hidden;
+            padding-top: var(--header-height);
+            color: #1a4731;
+        }
+        
+        /* Unified Navigation Bar */
+        .unified-nav {
+            background: var(--gradient-dark);
+            color: white;
+            position: fixed;
+            top: 0;
+            right: 0;
+            left: 0;
+            height: var(--header-height);
+            z-index: 1000;
+            box-shadow: 0 4px 20px rgba(5, 150, 105, 0.25);
+            border-bottom: 1px solid rgba(255, 255, 255, 0.1);
+        }
+        
+        .unified-nav-container {
+            display: flex;
+            flex-direction: column;
+            height: 100%;
+            padding: 0 1rem;
+        }
+        
+        .nav-top-section {
+            display: flex;
+            align-items: center;
+            justify-content: space-between;
+            height: 70px;
+            flex-shrink: 0;
+            padding: 0.5rem 0;
+        }
+        
+        .nav-bottom-section {
+            display: flex;
+            align-items: center;
+            justify-content: space-between;
+            height: 60px;
+            flex-shrink: 0;
+            border-top: 1px solid rgba(255, 255, 255, 0.15);
+            position: relative;
+        }
+        
+        .nav-brand-section {
+            display: flex;
+            align-items: center;
+            flex-shrink: 0;
+            min-width: 0;
+        }
+        
+        .logo-container {
+            width: 45px;
+            height: 45px;
+            background: var(--gradient-primary);
+            border-radius: 10px;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            box-shadow: 0 4px 12px rgba(16, 185, 129, 0.4);
+            margin-left: 0.5rem;
+            flex-shrink: 0;
+        }
+        
+        .welcome-section {
+            display: flex;
+            align-items: center;
+            flex-grow: 1;
+            justify-content: center;
+            color: white;
+            text-align: center;
+            min-width: 0;
+            overflow: hidden;
+        }
+        
+        .welcome-content h4 {
+            margin-bottom: 0.2rem;
+            font-weight: 600;
+            font-size: 1.1rem;
+            white-space: nowrap;
+            overflow: hidden;
+            text-overflow: ellipsis;
+        }
+        
+        .welcome-content p {
+            margin-bottom: 0;
+            font-size: 0.85rem;
+            opacity: 0.9;
+            white-space: nowrap;
+            overflow: hidden;
+            text-overflow: ellipsis;
+        }
+        
+        .nav-user-section {
+            display: flex;
+            align-items: center;
+            flex-shrink: 0;
+            min-width: 0;
+        }
+        
+        .nav-menu-section {
+            display: flex;
+            align-items: center;
+            flex-grow: 1;
+            height: 100%;
+            position: relative;
+            min-width: 0;
+        }
+        
+        .nav-menu-wrapper {
+            display: flex;
+            align-items: center;
+            height: 100%;
+            overflow-x: auto;
+            overflow-y: hidden;
+            scroll-behavior: smooth;
+            -webkit-overflow-scrolling: touch;
+            width: 100%;
+            padding: 0 0.5rem;
+            scrollbar-width: thin;
+            scrollbar-color: var(--primary-green) rgba(255, 255, 255, 0.1);
+            min-width: 0;
+        }
+        
+        .nav-menu-wrapper::-webkit-scrollbar {
+            height: 6px;
+        }
+        
+        .nav-menu-wrapper::-webkit-scrollbar-track {
+            background: rgba(255, 255, 255, 0.1);
+            border-radius: 10px;
+        }
+        
+        .nav-menu-wrapper::-webkit-scrollbar-thumb {
+            background: var(--primary-green);
+            border-radius: 10px;
+        }
+        
+        .unified-nav .nav-link {
+            color: rgba(255, 255, 255, 0.9);
+            padding: 0.7rem 1.2rem;
+            margin: 0 0.2rem;
+            border-radius: 10px;
+            transition: all 0.3s ease;
+            font-weight: 500;
+            position: relative;
+            border: 1px solid transparent;
+            display: flex;
+            align-items: center;
+            text-decoration: none;
+            font-size: 0.9rem;
+            white-space: nowrap;
+            height: 80%;
+            flex-shrink: 0;
+            background: rgba(255, 255, 255, 0.05);
+            min-width: max-content;
+        }
+        
+        .unified-nav .nav-link:hover {
+            color: white;
+            background: rgba(255, 255, 255, 0.12);
+            border: 1px solid rgba(255, 255, 255, 0.2);
+            transform: translateY(-2px);
+            box-shadow: 0 4px 12px rgba(0, 0, 0, 0.15);
+        }
+        
+        .unified-nav .nav-link.active {
+            background: rgba(255, 255, 255, 0.15);
+            color: white;
+            border: 1px solid rgba(255, 255, 255, 0.25);
+            box-shadow: 0 4px 12px rgba(0, 0, 0, 0.2);
+        }
+        
+        .unified-nav .nav-link.active::after {
+            content: '';
+            position: absolute;
+            bottom: -10px;
+            right: 50%;
+            transform: translateX(50%);
+            width: 70%;
+            height: 3px;
+            background: var(--accent-green);
+            border-radius: 4px 4px 0 0;
+        }
+        
+        .nav-badge {
+            background: var(--accent-green);
+            color: #065f46;
+            padding: 0.2rem 0.4rem;
+            border-radius: 8px;
+            font-size: 0.65rem;
+            font-weight: bold;
+            margin-right: 0.3rem;
+            position: absolute;
+            top: 5px;
+            right: 5px;
+            box-shadow: 0 2px 4px rgba(0, 0, 0, 0.1);
+        }
+        
+        .notification-badge {
+            position: absolute;
+            top: -5px;
+            right: -5px;
+            font-size: 0.7rem;
+            background: var(--gradient-secondary);
+            border: 2px solid white;
+            box-shadow: 0 2px 8px rgba(16, 185, 129, 0.4);
+        }
+        
+        .user-avatar {
+            width: 38px;
+            height: 38px;
+            background: var(--gradient-primary);
+            border-radius: 50%;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            color: white;
+            font-weight: bold;
+            font-size: 1rem;
+            box-shadow: 0 4px 10px rgba(16, 185, 129, 0.4);
+            transition: all 0.3s ease;
+            flex-shrink: 0;
+        }
+        
+        .mobile-menu-btn {
+            display: none;
+            background: transparent;
+            border: 1px solid rgba(255, 255, 255, 0.3);
+            color: white;
+            width: 40px;
+            height: 40px;
+            border-radius: 8px;
+            align-items: center;
+            justify-content: center;
+            cursor: pointer;
+            transition: all 0.3s ease;
+            margin-right: 0.5rem;
+        }
+        
+        .mobile-nav-menu {
+            position: fixed;
+            top: var(--header-height);
+            right: 0;
+            left: 0;
+            background: var(--gradient-dark);
+            z-index: 999;
+            padding: 1rem;
+            box-shadow: 0 4px 20px rgba(0, 0, 0, 0.2);
+            display: none;
+            flex-direction: column;
+            max-height: calc(100vh - var(--header-height));
+            overflow-y: auto;
+        }
+        
+        .mobile-nav-menu.active {
+            display: flex;
+        }
+        
+        .mobile-nav-link {
+            color: white;
+            padding: 1rem;
+            margin: 0.2rem 0;
+            border-radius: 8px;
+            text-decoration: none;
+            display: flex;
+            align-items: center;
+            transition: all 0.3s ease;
+            border: 1px solid transparent;
+            position: relative;
+        }
+        
+        .mobile-nav-link:hover,
+        .mobile-nav-link.active {
+            background: rgba(255, 255, 255, 0.1);
+            border: 1px solid rgba(255, 255, 255, 0.2);
+        }
+        
+        @media (max-width: 992px) {
+            :root { --header-height: 100px; }
+            .nav-bottom-section { display: none; }
+            .mobile-menu-btn { display: flex; }
+            .welcome-section { display: none; }
+        }
+        
+        /* Main Content */
+        .main-content {
+            padding: 20px;
+            max-width: 1400px;
+            margin: 0 auto;
+        }
+        
+        /* Header Card */
+        .header-card {
+            background: var(--gradient-dark);
+            border: none;
+            border-radius: 20px;
+            color: white;
+            box-shadow: 0 15px 35px rgba(5, 150, 105, 0.2);
+            margin-bottom: 30px;
+            overflow: hidden;
+        }
+        
+        .header-content {
+            padding: 2rem;
+        }
+        
+        .page-title {
+            font-size: 1.8rem;
+            font-weight: 700;
+            display: flex;
+            align-items: center;
+            gap: 15px;
+        }
+        
+        .page-title i {
+            font-size: 2.2rem;
+            background: rgba(255, 255, 255, 0.2);
+            width: 60px;
+            height: 60px;
+            border-radius: 15px;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+        }
+        
+        /* Message Layout */
+        .message-layout {
+            display: flex;
+            gap: 20px;
+            min-height: calc(100vh - 250px);
+        }
+        
+        /* Sidebar */
+        .message-sidebar {
+            width: 280px;
+            flex-shrink: 0;
+        }
+        
+        .compose-btn {
+            background: var(--gradient-primary);
+            color: white;
+            border: none;
+            padding: 1rem;
+            border-radius: 15px;
+            font-weight: 600;
+            font-size: 1.1rem;
+            width: 100%;
+            margin-bottom: 20px;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            gap: 10px;
+            transition: all 0.3s ease;
+            box-shadow: 0 10px 20px rgba(16, 185, 129, 0.3);
+            text-decoration: none;
+        }
+        
+        .folders-card {
+            background: white;
+            border-radius: 20px;
+            padding: 1.5rem;
+            box-shadow: 0 10px 30px rgba(16, 185, 129, 0.1);
+            border: 2px solid rgba(16, 185, 129, 0.1);
+            margin-bottom: 20px;
+        }
+        
+        .folders-title {
+            font-size: 1rem;
+            color: #6b7280;
+            margin-bottom: 1rem;
+            padding-bottom: 0.5rem;
+            border-bottom: 2px solid #e5e7eb;
+        }
+        
+        .folder-item {
+            display: flex;
+            align-items: center;
+            padding: 0.8rem 1rem;
+            border-radius: 12px;
+            color: #374151;
+            text-decoration: none;
+            transition: all 0.3s ease;
+            margin-bottom: 5px;
+        }
+        
+        .folder-item:hover {
+            background: rgba(16, 185, 129, 0.1);
+            transform: translateX(-5px);
+        }
+        
+        .folder-item.active {
+            background: var(--gradient-primary);
+            color: white;
+            box-shadow: 0 5px 15px rgba(16, 185, 129, 0.3);
+        }
+        
+        .folder-icon {
+            width: 32px;
+            height: 32px;
+            border-radius: 8px;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            margin-left: 12px;
+            background: rgba(16, 185, 129, 0.1);
+            color: var(--primary-green);
+        }
+        
+        .folder-item.active .folder-icon {
+            background: rgba(255, 255, 255, 0.2);
+            color: white;
+        }
+        
+        .folder-name { flex: 1; font-weight: 500; }
+        .folder-badge {
+            background: var(--gradient-primary);
+            color: white;
+            padding: 0.2rem 0.6rem;
+            border-radius: 20px;
+            font-size: 0.75rem;
+        }
+        
+        /* Message View Card */
+        .message-view-card {
+            flex: 1;
+            background: white;
+            border-radius: 20px;
+            box-shadow: 0 10px 30px rgba(16, 185, 129, 0.1);
+            border: 2px solid rgba(16, 185, 129, 0.1);
+            overflow: hidden;
+        }
+        
+        .message-toolbar {
+            padding: 1.5rem;
+            border-bottom: 2px solid #e5e7eb;
+            background: linear-gradient(135deg, #f8fafc 0%, #f1f5f9 100%);
+            display: flex;
+            align-items: center;
+            justify-content: space-between;
+            flex-wrap: wrap;
+            gap: 1rem;
+        }
+        
+        .toolbar-title h2 {
+            font-size: 1.5rem;
+            font-weight: 700;
+            color: #1f2937;
+            margin: 0;
+            display: flex;
+            align-items: center;
+            gap: 10px;
+        }
+        
+        .toolbar-actions {
+            display: flex;
+            gap: 10px;
+            flex-wrap: wrap;
+        }
+        
+        .toolbar-btn {
+            background: white;
+            border: 2px solid #e5e7eb;
+            padding: 0.6rem 1.2rem;
+            border-radius: 10px;
+            color: #4b5563;
+            font-weight: 500;
+            display: flex;
+            align-items: center;
+            gap: 8px;
+            transition: all 0.3s ease;
+            cursor: pointer;
+            text-decoration: none;
+        }
+        
+        .toolbar-btn:hover {
+            border-color: var(--primary-green);
+            color: var(--primary-green);
+            transform: translateY(-2px);
+            box-shadow: 0 5px 15px rgba(16, 185, 129, 0.2);
+        }
+        
+        .toolbar-btn.danger:hover {
+            border-color: #ef4444;
+            color: #ef4444;
+        }
+        
+        /* Message Content */
+        .message-detail-content {
+            padding: 2rem;
+        }
+        
+        .message-subject-section {
+            display: flex;
+            align-items: center;
+            justify-content: space-between;
+            margin-bottom: 1.5rem;
+            padding-bottom: 1rem;
+            border-bottom: 2px solid #e5e7eb;
+        }
+        
+        .message-subject {
+            font-size: 1.5rem;
+            font-weight: 700;
+            color: #1f2937;
+            display: flex;
+            align-items: center;
+            gap: 10px;
+        }
+        
+        .priority-badge {
+            display: inline-block;
+            padding: 0.3rem 1rem;
+            border-radius: 20px;
+            font-size: 0.8rem;
+            font-weight: 600;
+        }
+        
+        .priority-badge.normal {
+            background: #e5e7eb;
+            color: #4b5563;
+        }
+        
+        .priority-badge.high {
+            background: #fef3c7;
+            color: #92400e;
+        }
+        
+        .priority-badge.urgent {
+            background: #fee2e2;
+            color: #7f1d1d;
+        }
+        
+        .message-meta-info {
+            background: #f9fafb;
+            border-radius: 15px;
+            padding: 1.5rem;
+            margin-bottom: 2rem;
+        }
+        
+        .sender-row {
+            display: flex;
+            align-items: center;
+            gap: 15px;
+            margin-bottom: 1rem;
+        }
+        
+        .sender-avatar {
+            width: 50px;
+            height: 50px;
+            background: var(--gradient-primary);
+            border-radius: 50%;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            color: white;
+            font-weight: bold;
+            font-size: 1.2rem;
+        }
+        
+        .sender-details {
+            flex: 1;
+        }
+        
+        .sender-name {
+            font-size: 1.1rem;
+            font-weight: 600;
+            margin-bottom: 0.2rem;
+        }
+        
+        .sender-email {
+            color: #6b7280;
+            font-size: 0.9rem;
+        }
+        
+        .meta-details {
+            display: flex;
+            gap: 20px;
+            color: #6b7280;
+            font-size: 0.9rem;
+            margin-top: 0.5rem;
+        }
+        
+        .recipients-details {
+            margin-top: 1rem;
+            padding-top: 1rem;
+            border-top: 1px solid #e5e7eb;
+        }
+        
+        .recipient-group {
+            display: flex;
+            align-items: flex-start;
+            gap: 10px;
+            margin-bottom: 0.5rem;
+        }
+        
+        .recipient-label {
+            min-width: 70px;
+            font-weight: 600;
+            color: #4b5563;
+        }
+        
+        .recipient-names {
+            display: flex;
+            flex-wrap: wrap;
+            gap: 8px;
+        }
+        
+        .recipient-tag {
+            background: white;
+            border: 2px solid #e5e7eb;
+            padding: 0.2rem 1rem;
+            border-radius: 20px;
+            font-size: 0.85rem;
+            color: #374151;
+        }
+        
+        .recipient-tag.cc {
+            background: #fef3c7;
+            border-color: #f59e0b;
+            color: #92400e;
+        }
+        
+        .recipient-tag.bcc {
+            background: #e5e7eb;
+            border-color: #6b7280;
+            color: #374151;
+        }
+        
+        .message-body {
+            background: #f9fafb;
+            border-radius: 15px;
+            padding: 2rem;
+            margin-bottom: 2rem;
+            line-height: 1.8;
+            color: #374151;
+            min-height: 200px;
+        }
+        
+        .message-body img {
+            max-width: 100%;
+            height: auto;
+        }
+        
+        /* Attachments */
+        .attachments-section {
+            background: #f9fafb;
+            border-radius: 15px;
+            padding: 1.5rem;
+            margin-bottom: 2rem;
+        }
+        
+        .attachments-title {
+            font-weight: 600;
+            margin-bottom: 1rem;
+            display: flex;
+            align-items: center;
+            gap: 8px;
+            color: #374151;
+        }
+        
+        .attachments-grid {
+            display: grid;
+            grid-template-columns: repeat(auto-fill, minmax(200px, 1fr));
+            gap: 1rem;
+        }
+        
+        .attachment-item {
+            background: white;
+            border: 2px solid #e5e7eb;
+            border-radius: 12px;
+            padding: 1rem;
+            display: flex;
+            align-items: center;
+            gap: 12px;
+            transition: all 0.3s ease;
+            cursor: pointer;
+            text-decoration: none;
+            color: inherit;
+        }
+        
+        .attachment-item:hover {
+            border-color: var(--primary-green);
+            transform: translateY(-3px);
+            box-shadow: 0 5px 15px rgba(16, 185, 129, 0.2);
+        }
+        
+        .attachment-icon {
+            width: 40px;
+            height: 40px;
+            background: rgba(16, 185, 129, 0.1);
+            border-radius: 8px;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            color: var(--primary-green);
+            font-size: 1.2rem;
+        }
+        
+        .attachment-info {
+            flex: 1;
+            min-width: 0;
+        }
+        
+        .attachment-name {
+            font-weight: 600;
+            margin-bottom: 0.2rem;
+            white-space: nowrap;
+            overflow: hidden;
+            text-overflow: ellipsis;
+        }
+        
+        .attachment-size {
+            font-size: 0.8rem;
+            color: #6b7280;
+        }
+        
+        /* Thread Section */
+        .thread-section {
+            background: #f9fafb;
+            border-radius: 15px;
+            margin-bottom: 2rem;
+            overflow: hidden;
+        }
+        
+        .thread-header {
+            padding: 1.2rem 1.5rem;
+            background: linear-gradient(135deg, #f8fafc 0%, #f1f5f9 100%);
+            border-bottom: 2px solid #e5e7eb;
+            cursor: pointer;
+            display: flex;
+            align-items: center;
+            justify-content: space-between;
+            font-weight: 600;
+            color: #374151;
+        }
+        
+        .thread-header i {
+            transition: transform 0.3s ease;
+        }
+        
+        .thread-header.active i {
+            transform: rotate(180deg);
+        }
+        
+        .thread-messages {
+            display: none;
+            padding: 1.5rem;
+        }
+        
+        .thread-messages.show {
+            display: block;
+        }
+        
+        .thread-message {
+            margin-bottom: 1.5rem;
+            padding: 1.5rem;
+            background: white;
+            border-radius: 12px;
+            border-right: 4px solid var(--primary-green);
+        }
+        
+        .thread-message-header {
+            display: flex;
+            align-items: center;
+            justify-content: space-between;
+            margin-bottom: 1rem;
+        }
+        
+        .thread-message-sender {
+            font-weight: 600;
+            color: #1f2937;
+        }
+        
+        .thread-message-date {
+            color: #6b7280;
+            font-size: 0.85rem;
+        }
+        
+        .thread-message-body {
+            color: #374151;
+            line-height: 1.6;
+        }
+        
+        /* Reply Form */
+        .reply-form {
+            background: #f9fafb;
+            border-radius: 15px;
+            padding: 1.5rem;
+        }
+        
+        .reply-form textarea {
+            width: 100%;
+            padding: 1rem;
+            border: 2px solid #e5e7eb;
+            border-radius: 12px;
+            font-family: inherit;
+            margin-bottom: 1rem;
+            resize: vertical;
+            transition: all 0.3s ease;
+        }
+        
+        .reply-form textarea:focus {
+            outline: none;
+            border-color: var(--primary-green);
+            box-shadow: 0 0 0 3px rgba(16, 185, 129, 0.2);
+        }
+        
+        .reply-actions {
+            display: flex;
+            gap: 10px;
+            justify-content: flex-end;
+        }
+        
+        .btn-reply {
+            background: var(--gradient-primary);
+            color: white;
+            border: none;
+            padding: 0.8rem 2rem;
+            border-radius: 12px;
+            font-weight: 600;
+            display: flex;
+            align-items: center;
+            gap: 8px;
+            cursor: pointer;
+            transition: all 0.3s ease;
+        }
+        
+        .btn-reply:hover {
+            transform: translateY(-2px);
+            box-shadow: 0 5px 15px rgba(16, 185, 129, 0.3);
+        }
+        
+        /* Alert Container */
+        .alert-container {
+            position: fixed;
+            top: calc(var(--header-height) + 20px);
+            right: 20px;
+            z-index: 1000;
+            min-width: 300px;
+            max-width: 400px;
+        }
+        
+        /* Loading Overlay */
+        .loading-overlay {
+            position: fixed;
+            top: 0;
+            left: 0;
+            width: 100%;
+            height: 100%;
+            background: rgba(0, 0, 0, 0.7);
+            display: flex;
+            justify-content: center;
+            align-items: center;
+            z-index: 9999;
+            flex-direction: column;
+            gap: 1.5rem;
+            backdrop-filter: blur(5px);
+        }
+        
+        .loading-spinner {
+            width: 60px;
+            height: 60px;
+            border: 5px solid rgba(255, 255, 255, 0.3);
+            border-top: 5px solid var(--primary-green);
+            border-radius: 50%;
+            animation: spin 1s linear infinite;
+        }
+        
+        @keyframes spin {
+            0% { transform: rotate(0deg); }
+            100% { transform: rotate(360deg); }
+        }
+        
+        /* Responsive */
+        @media (max-width: 992px) {
+            .message-layout { flex-direction: column; }
+            .message-sidebar { width: 100%; }
+            .folders-list { display: flex; flex-wrap: wrap; gap: 10px; }
+            .folder-item { flex: 1; min-width: 150px; }
+        }
+        
+        @media (max-width: 768px) {
+            .message-toolbar { flex-direction: column; }
+            .toolbar-actions { justify-content: center; }
+            .message-subject-section { flex-direction: column; align-items: flex-start; gap: 10px; }
+            .sender-row { flex-direction: column; text-align: center; }
+            .meta-details { flex-direction: column; gap: 5px; }
+            .recipient-group { flex-direction: column; gap: 5px; }
+            .attachments-grid { grid-template-columns: 1fr; }
+            .reply-actions { flex-direction: column; }
+            .reply-actions button { width: 100%; justify-content: center; }
+        }
+    </style>
+</head>
+<body>
+    <!-- Unified Navigation Bar -->
+    <nav class="unified-nav">
+        <div class="unified-nav-container">
+            <div class="nav-top-section">
+                <div class="nav-brand-section">
+                    <div class="logo-container">
+                        <i class="bi bi-envelope-open text-white"></i>
+                    </div>
+                    <div class="d-none d-md-block ms-2">
+                        <h6 class="text-white mb-0 fw-bold">نظام الموارد البشرية</h6>
+                        <small class="text-white-50">عرض الرسالة</small>
+                    </div>
+                </div>
+                
+                <div class="welcome-section d-none d-lg-flex">
+                    <div class="welcome-content">
+                        <h4 class="text-white mb-1">مرحباً، {{ current_user.name if current_user else 'المستخدم' }}</h4>
+                        <p class="text-white-50 mb-0">عرض تفاصيل الرسالة</p>
+                    </div>
+                    <div class="text-white fw-bold me-3" id="live-clock">
+                        <i class="bi bi-clock me-2"></i>
+                        جاري التحميل...
+                    </div>
+                </div>
+                
+                <div class="nav-user-section">
+                    <div class="dropdown">
+                        <button class="btn btn-outline-light dropdown-toggle rounded-pill d-flex align-items-center" 
+                                type="button" data-bs-toggle="dropdown">
+                            <div class="user-avatar me-2">
+                                {{ current_user.name[0] if current_user else 'م' }}
+                            </div>
+                            <span class="d-none d-md-inline">{{ current_user.username if current_user else 'مدير' }}</span>
+                        </button>
+                        <ul class="dropdown-menu dropdown-menu-end">
+                            <li><a class="dropdown-item" href="{{ url_for('user_dashboard') }}"><i class="bi bi-house-door me-2 text-success"></i>الرئيسية</a></li>
+                            <li><a class="dropdown-item text-danger fw-bold" href="{{ url_for('logout') }}"><i class="bi bi-box-arrow-right me-2"></i>تسجيل الخروج</a></li>
+                        </ul>
+                    </div>
+                    <button class="mobile-menu-btn d-lg-none" id="mobileMenuBtn">
+                        <i class="bi bi-list"></i>
+                    </button>
+                </div>
+            </div>
+            
+            <div class="nav-bottom-section d-none d-lg-flex">
+                <div class="nav-controls"></div>
+                
+                <div class="nav-menu-section">
+                    <div class="nav-menu-wrapper">
+                        {% if current_user.is_admin %}
+                            <!-- Admin Navigation -->
+                            <a class="nav-link {% if request.endpoint == 'admin_dashboard' %}active{% endif %}" href="{{ url_for('admin_dashboard') }}">
+                                <i class="bi bi-speedometer2 me-2"></i>
+                                لوحة التحكم
+                            </a>
+                            <a class="nav-link {% if request.endpoint == 'admin_users' %}active{% endif %}" href="{{ url_for('admin_users') }}">
+                                <i class="bi bi-people me-2"></i>
+                                إدارة المستخدمين
+                            </a>
+                            <a class="nav-link {% if request.endpoint == 'admin_departments' %}active{% endif %}" href="{{ url_for('admin_departments') }}">
+                                <i class="bi bi-building me-2"></i>
+                                إدارة الأقسام
+                            </a>
+                            <a class="nav-link {% if request.endpoint == 'admin_employee_progress' %}active{% endif %}" href="{{ url_for('admin_employee_progress') }}">
+                                <i class="bi bi-graph-up me-2"></i>
+                                تقدم الموظفين
+                            </a>
+                            <a class="nav-link {% if request.endpoint == 'admin_schedules' %}active{% endif %}" href="{{ url_for('admin_schedules') }}">
+                                <i class="bi bi-calendar-check me-2"></i>
+                                اعتماد الجداول
+                            </a>
+                            <!-- Add Messages Link for Admin -->
+                            <a class="nav-link nav-link-with-badge {% if request.endpoint == 'messages_inbox' %}active{% endif %}" href="{{ url_for('messages_inbox') }}">
+                                <i class="bi bi-envelope me-2"></i>
+                                الرسائل
+                                {% if unread_count and unread_count > 0 %}
+                                <span class="nav-badge">{{ unread_count }}</span>
+                                {% endif %}
+                            </a>
+                            <a class="nav-link" href="{{ url_for('admin_all_leaves') }}">
+                                <i class="bi bi-calendar-minus me-2"></i>
+                                طلبات الإجازات
+                            </a>
+                            <a class="nav-link" href="{{ url_for('admin_all_permissions') }}">
+                                <i class="bi bi-clock me-2"></i>
+                                طلبات الإذونات
+                            </a>
+                            <a class="nav-link" href="{{ url_for('manager_advance_requests') }}">
+                                <i class="bi bi-cash-coin me-2"></i>
+                                طلبات السلف
+                            </a>
+                            
+                        {% elif current_user.is_manager %}
+                            <!-- Manager Navigation -->
+                            <a class="nav-link {% if request.endpoint == 'manager_dashboard' %}active{% endif %}" href="{{ url_for('manager_dashboard') }}">
+                                <i class="bi bi-speedometer2 me-2"></i>
+                                لوحة التحكم
+                            </a>
+                            <a class="nav-link {% if request.endpoint == 'manager_employees' %}active{% endif %}" href="{{ url_for('manager_employees') }}">
+                                <i class="bi bi-people me-2"></i>
+                                موظفي القسم
+                            </a>
+                            <a class="nav-link {% if request.endpoint == 'manager_schedules' %}active{% endif %}" href="{{ url_for('manager_schedules') }}">
+                                <i class="bi bi-calendar-check me-2"></i>
+                                جدولة الموظفين
+                            </a>
+                            <!-- Add Messages Link for Manager -->
+                            <a class="nav-link nav-link-with-badge {% if request.endpoint == 'messages_inbox' %}active{% endif %}" href="{{ url_for('messages_inbox') }}">
+                                <i class="bi bi-envelope me-2"></i>
+                                الرسائل
+                                {% if unread_count and unread_count > 0 %}
+                                <span class="nav-badge">{{ unread_count }}</span>
+                                {% endif %}
+                            </a>
+                            <a class="nav-link nav-link-with-badge {% if request.endpoint == 'manager_leave_requests' %}active{% endif %}" href="{{ url_for('manager_leave_requests') }}">
+                                <i class="bi bi-calendar-minus me-2"></i>
+                                طلبات الإجازات
+                                {% if stats and stats.pending_leaves > 0 %}
+                                <span class="nav-badge">{{ stats.pending_leaves }}</span>
+                                {% endif %}
+                            </a>
+                            <a class="nav-link nav-link-with-badge {% if request.endpoint == 'manager_permission_requests' %}active{% endif %}" href="{{ url_for('manager_permission_requests') }}">
+                                <i class="bi bi-clock me-2"></i>
+                                طلبات الإذونات
+                                {% if stats and stats.pending_permissions > 0 %}
+                                <span class="nav-badge">{{ stats.pending_permissions }}</span>
+                                {% endif %}
+                            </a>
+                            <a class="nav-link nav-link-with-badge active" href="{{ url_for('user_salary_slips') }}">
+                                <i class="bi bi-file-earmark-text me-2"></i>
+                                شيت المرتب
+                                {% if new_salary_slips and new_salary_slips > 0 %}
+                                <span class="nav-badge">{{ new_salary_slips }}</span>
+                                {% endif %}
+                            </a>
+                            <a class="nav-link nav-link-with-badge {% if request.endpoint == 'manager_advance_requests' %}active{% endif %}" href="{{ url_for('manager_advance_requests') }}">
+                                <i class="bi bi-cash-coin me-2"></i>
+                                طلبات السلف
+                                {% if stats and stats.pending_advances > 0 %}
+                                <span class="nav-badge">{{ stats.pending_advances }}</span>
+                                {% endif %}
+                            </a>
+                            <a class="nav-link {% if request.endpoint == 'manager_rewards_penalties' %}active{% endif %}" href="{{ url_for('manager_rewards_penalties') }}">
+                                <i class="bi bi-award me-2"></i>
+                                المكافآت والخصومات
+                            </a>
+                            <a class="nav-link" href="{{ url_for('user_excel_data') }}">
+                                <i class="fas fa-file-excel me-2"></i>
+                                الحضور والانصراف
+                            </a>
+                            {% if current_user.is_admin %}
+                            <a class="nav-link text-warning" href="{{ url_for('admin_dashboard') }}">
+                                <i class="bi bi-person-shield me-2"></i>
+                                لوحة المسؤول
+                            </a>
+                            {% endif %}
+                            
+                        {% else %}
+                            <!-- User Navigation -->
+                            <a class="nav-link" href="{{ url_for('user_dashboard') }}">
+                                <i class="bi bi-speedometer2 me-2"></i>
+                                لوحة التحكم
+                            </a>
+                            <a class="nav-link" href="{{ url_for('user_form') }}">
+                                <i class="bi bi-person-lines-fill me-2"></i>
+                                البيانات الشخصية
+                            </a>
+                            <!-- Add Messages Link for User -->
+                            <a class="nav-link nav-link-with-badge {% if request.endpoint == 'messages_inbox' %}active{% endif %}" href="{{ url_for('messages_inbox') }}">
+                                <i class="bi bi-envelope me-2"></i>
+                                الرسائل
+                                {% if unread_count and unread_count > 0 %}
+                                <span class="nav-badge">{{ unread_count }}</span>
+                                {% endif %}
+                            </a>
+                            <a class="nav-link" href="{{ url_for('user_leave') }}">
+                                <i class="bi bi-calendar-minus me-2"></i>
+                                طلب إجازة
+                            </a>
+                            <a class="nav-link" href="{{ url_for('user_permission') }}">
+                                <i class="bi bi-clock me-2"></i>
+                                طلب إذن
+                            </a>
+                            <a class="nav-link active" href="{{ url_for('user_salary_slips') }}">
+                                <i class="bi bi-file-earmark-text me-2"></i>
+                                شيت المرتب
+                                {% if new_salary_slips and new_salary_slips > 0 %}
+                                <span class="nav-badge">{{ new_salary_slips }}</span>
+                                {% endif %}
+                            </a>
+                            <a class="nav-link" href="{{ url_for('user_schedule') }}">
+                                <i class="bi bi-calendar-week me-2"></i>
+                                الجدول الأسبوعي
+                            </a>
+                            <a class="nav-link" href="{{ url_for('user_leave_requests') }}">
+                                <i class="bi bi-clock-history me-2"></i>
+                                طلباتي السابقة
+                            </a>
+                            <a class="nav-link" href="{{ url_for('user_excel_data') }}">
+                                <i class="fas fa-file-excel me-2"></i>
+                                الحضور والانصراف
+                            </a>
+                        {% endif %}
+                    </div>
+                </div>
+                
+                <div class="nav-controls-right"></div>
+            </div>
+        </div>
+    </nav>
+
+    <!-- Mobile Navigation Menu -->
+    <!-- Mobile Navigation Menu -->
+    <div class="mobile-nav-menu" id="mobileNavMenu">
+        {% if current_user.is_admin %}
+            <!-- Admin Mobile Navigation -->
+            <a class="mobile-nav-link {% if request.endpoint == 'admin_dashboard' %}active{% endif %}" href="{{ url_for('admin_dashboard') }}">
+                <i class="bi bi-speedometer2"></i>
+                لوحة التحكم
+            </a>
+            <a class="mobile-nav-link {% if request.endpoint == 'admin_users' %}active{% endif %}" href="{{ url_for('admin_users') }}">
+                <i class="bi bi-people"></i>
+                إدارة المستخدمين
+            </a>
+            <a class="mobile-nav-link {% if request.endpoint == 'admin_departments' %}active{% endif %}" href="{{ url_for('admin_departments') }}">
+                <i class="bi bi-building"></i>
+                إدارة الأقسام
+            </a>
+            <a class="mobile-nav-link {% if request.endpoint == 'admin_employee_progress' %}active{% endif %}" href="{{ url_for('admin_employee_progress') }}">
+                <i class="bi bi-graph-up"></i>
+                تقدم الموظفين
+            </a>
+            <a class="mobile-nav-link {% if request.endpoint == 'admin_schedules' %}active{% endif %}" href="{{ url_for('admin_schedules') }}">
+                <i class="bi bi-calendar-check"></i>
+                اعتماد الجداول
+            </a>
+            <!-- Add Messages Link for Admin Mobile -->
+            <a class="mobile-nav-link nav-link-with-badge {% if request.endpoint == 'messages_inbox' %}active{% endif %}" href="{{ url_for('messages_inbox') }}">
+                <i class="bi bi-envelope"></i>
+                الرسائل
+                {% if unread_count and unread_count > 0 %}
+                <span class="nav-badge">{{ unread_count }}</span>
+                {% endif %}
+            </a>
+            <a class="mobile-nav-link" href="{{ url_for('admin_all_leaves') }}">
+                <i class="bi bi-calendar-minus"></i>
+                طلبات الإجازات
+            </a>
+            <a class="mobile-nav-link" href="{{ url_for('admin_all_permissions') }}">
+                <i class="bi bi-clock"></i>
+                طلبات الإذونات
+            </a>
+            <a class="mobile-nav-link" href="{{ url_for('manager_advance_requests') }}">
+                <i class="bi bi-cash-coin"></i>
+                طلبات السلف
+            </a>
+            
+        {% elif current_user.is_manager %}
+            <!-- Manager Mobile Navigation -->
+            <a class="mobile-nav-link {% if request.endpoint == 'manager_dashboard' %}active{% endif %}" href="{{ url_for('manager_dashboard') }}">
+                <i class="bi bi-speedometer2"></i>
+                لوحة التحكم
+            </a>
+            <a class="mobile-nav-link {% if request.endpoint == 'manager_employees' %}active{% endif %}" href="{{ url_for('manager_employees') }}">
+                <i class="bi bi-people"></i>
+                موظفي القسم
+            </a>
+            <a class="mobile-nav-link {% if request.endpoint == 'manager_schedules' %}active{% endif %}" href="{{ url_for('manager_schedules') }}">
+                <i class="bi bi-calendar-check"></i>
+                جدولة الموظفين
+            </a>
+            <!-- Add Messages Link for Manager Mobile -->
+            <a class="mobile-nav-link nav-link-with-badge {% if request.endpoint == 'messages_inbox' %}active{% endif %}" href="{{ url_for('messages_inbox') }}">
+                <i class="bi bi-envelope"></i>
+                الرسائل
+                {% if unread_count and unread_count > 0 %}
+                <span class="nav-badge">{{ unread_count }}</span>
+                {% endif %}
+            </a>
+            <a class="mobile-nav-link {% if request.endpoint == 'manager_leave_requests' %}active{% endif %}" href="{{ url_for('manager_leave_requests') }}">
+                <i class="bi bi-calendar-minus"></i>
+                طلبات الإجازات
+                {% if stats and stats.pending_leaves > 0 %}
+                <span class="nav-badge">{{ stats.pending_leaves }}</span>
+                {% endif %}
+            </a>
+            <a class="mobile-nav-link {% if request.endpoint == 'manager_permission_requests' %}active{% endif %}" href="{{ url_for('manager_permission_requests') }}">
+                <i class="bi bi-clock"></i>
+                طلبات الإذونات
+                {% if stats and stats.pending_permissions > 0 %}
+                <span class="nav-badge">{{ stats.pending_permissions }}</span>
+                {% endif %}
+            </a>
+            <a class="mobile-nav-link active" href="{{ url_for('user_salary_slips') }}">
+                <i class="bi bi-file-earmark-text"></i>
+                شيت المرتب
+                {% if new_salary_slips and new_salary_slips > 0 %}
+                <span class="nav-badge">{{ new_salary_slips }}</span>
+                {% endif %}
+            </a>
+            <a class="mobile-nav-link {% if request.endpoint == 'manager_advance_requests' %}active{% endif %}" href="{{ url_for('manager_advance_requests') }}">
+                <i class="bi bi-cash-coin"></i>
+                طلبات السلف
+                {% if stats and stats.pending_advances > 0 %}
+                <span class="nav-badge">{{ stats.pending_advances }}</span>
+                {% endif %}
+            </a>
+            <a class="mobile-nav-link {% if request.endpoint == 'manager_rewards_penalties' %}active{% endif %}" href="{{ url_for('manager_rewards_penalties') }}">
+                <i class="bi bi-award"></i>
+                المكافآت والخصومات
+            </a>
+            <a class="mobile-nav-link" href="{{ url_for('user_excel_data') }}">
+                <i class="fas fa-file-excel me-2"></i>
+                الحضور والانصراف
+            </a>
+            {% if current_user.is_admin %}
+            <a class="mobile-nav-link text-warning" href="{{ url_for('admin_dashboard') }}">
+                <i class="bi bi-person-shield"></i>
+                لوحة المسؤول
+            </a>
+            {% endif %}
+            
+        {% else %}
+            <!-- User Mobile Navigation -->
+            <a class="mobile-nav-link" href="{{ url_for('user_dashboard') }}">
+                <i class="bi bi-speedometer2"></i>
+                لوحة التحكم
+            </a>
+            <a class="mobile-nav-link" href="{{ url_for('user_form') }}">
+                <i class="bi bi-person-lines-fill"></i>
+                البيانات الشخصية
+            </a>
+            <!-- Add Messages Link for User Mobile -->
+            <a class="mobile-nav-link nav-link-with-badge {% if request.endpoint == 'messages_inbox' %}active{% endif %}" href="{{ url_for('messages_inbox') }}">
+                <i class="bi bi-envelope"></i>
+                الرسائل
+                {% if unread_count and unread_count > 0 %}
+                <span class="nav-badge">{{ unread_count }}</span>
+                {% endif %}
+            </a>
+            <a class="mobile-nav-link" href="{{ url_for('user_leave') }}">
+                <i class="bi bi-calendar-minus"></i>
+                طلب إجازة
+            </a>
+            <a class="mobile-nav-link" href="{{ url_for('user_permission') }}">
+                <i class="bi bi-clock"></i>
+                طلب إذن
+            </a>
+            <a class="mobile-nav-link active" href="{{ url_for('user_salary_slips') }}">
+                <i class="bi bi-file-earmark-text"></i>
+                شيت المرتب
+                {% if new_salary_slips and new_salary_slips > 0 %}
+                <span class="nav-badge">{{ new_salary_slips }}</span>
+                {% endif %}
+            </a>
+            <a class="mobile-nav-link" href="{{ url_for('user_schedule') }}">
+                <i class="bi bi-calendar-week"></i>
+                الجدول الأسبوعي
+            </a>
+            <a class="mobile-nav-link" href="{{ url_for('user_leave_requests') }}">
+                <i class="bi bi-clock-history"></i>
+                طلباتي السابقة
+            </a>
+            <a class="mobile-nav-link" href="{{ url_for('user_excel_data') }}">
+                <i class="fas fa-file-excel"></i>
+                الحضور والانصراف
+            </a>
+        {% endif %}
+    </div>
+
+    <!-- Main Content -->
+    <div class="main-content">
+        <div class="alert-container">
+            {% with messages = get_flashed_messages(with_categories=true) %}
+                {% if messages %}
+                    {% for category, message in messages %}
+                        <div class="alert alert-{{ category if category in ['success', 'danger', 'warning', 'info'] else 'info' }} alert-dismissible fade show mb-2">
+                            <i class="bi bi-{{ 'check-circle' if category == 'success' else 'exclamation-triangle' if category == 'danger' else 'info-circle' }} me-2"></i>
+                            {{ message }}
+                            <button type="button" class="btn-close" data-bs-dismiss="alert"></button>
+                        </div>
+                    {% endfor %}
+                {% endif %}
+            {% endwith %}
+        </div>
+
+        <!-- Header Card -->
+        <div class="header-card">
+            <div class="header-content">
+                <div class="page-title">
+                    <i class="bi bi-envelope-open"></i>
+                    <div>
+                        <h1 class="mb-2">عرض الرسالة</h1>
+                        <p class="mb-0 text-white-50">تفاصيل الرسالة والمرفقات</p>
+                    </div>
+                </div>
+            </div>
+        </div>
+
+        <!-- Message Layout -->
+        <div class="message-layout">
+            <!-- Sidebar -->
+            <div class="message-sidebar">
+                <a href="{{ url_for('messages_compose') }}" class="compose-btn">
+                    <i class="bi bi-pencil-square"></i>
+                    رسالة جديدة
+                </a>
+                
+                <div class="folders-card">
+                    <h6 class="folders-title">المجلدات</h6>
+                    <div class="folders-list">
+                        <a href="{{ url_for('messages_inbox') }}" class="folder-item">
+                            <div class="folder-icon"><i class="bi bi-inbox"></i></div>
+                            <span class="folder-name">صندوق الوارد</span>
+                        </a>
+                        <a href="{{ url_for('messages_sent') }}" class="folder-item">
+                            <div class="folder-icon"><i class="bi bi-send"></i></div>
+                            <span class="folder-name">المرسلة</span>
+                        </a>
+                        <a href="{{ url_for('messages_drafts') }}" class="folder-item">
+                            <div class="folder-icon"><i class="bi bi-file-earmark"></i></div>
+                            <span class="folder-name">المسودات</span>
+                        </a>
+                        <a href="{{ url_for('messages_starred') }}" class="folder-item">
+                            <div class="folder-icon"><i class="bi bi-star"></i></div>
+                            <span class="folder-name">المميزة</span>
+                        </a>
+                        <a href="{{ url_for('messages_archived') }}" class="folder-item">
+                            <div class="folder-icon"><i class="bi bi-archive"></i></div>
+                            <span class="folder-name">الأرشيف</span>
+                        </a>
+                    </div>
+                </div>
+            </div>
+            
+            <!-- Message View Card -->
+            <div class="message-view-card">
+                <!-- Toolbar -->
+                <div class="message-toolbar">
+                    <div class="toolbar-title">
+                        <h2>تفاصيل الرسالة</h2>
+                    </div>
+                    <div class="toolbar-actions">
+                        <a href="{{ url_for('messages_inbox') }}" class="toolbar-btn">
+                            <i class="bi bi-arrow-right"></i>
+                            العودة
+                        </a>
+                        <a href="{{ url_for('messages_compose', reply_to=message.id) }}" class="toolbar-btn">
+                            <i class="bi bi-reply"></i>
+                            رد
+                        </a>
+                        <a href="{{ url_for('messages_compose', forward=message.id) }}" class="toolbar-btn">
+                            <i class="bi bi-forward"></i>
+                            إعادة توجيه
+                        </a>
+                        <button class="toolbar-btn" onclick="toggleStar({{ message.id }})">
+                            <i class="bi {% if message.is_starred %}bi-star-fill{% else %}bi-star{% endif %}"></i>
+                            {% if message.is_starred %}إزالة التمييز{% else %}تمييز{% endif %}
+                        </button>
+                        <button class="toolbar-btn" onclick="archiveMessage({{ message.id }})">
+                            <i class="bi bi-archive"></i>
+                            أرشيف
+                        </button>
+                        <button class="toolbar-btn danger" onclick="deleteMessage({{ message.id }})">
+                            <i class="bi bi-trash"></i>
+                            حذف
+                        </button>
+                    </div>
+                </div>
+
+                <!-- Message Content -->
+                <div class="message-detail-content">
+                    <!-- Subject -->
+                    <div class="message-subject-section">
+                        <div class="message-subject">
+                            <i class="bi bi-envelope"></i>
+                            {{ message.subject }}
+                        </div>
+                        <span class="priority-badge {{ message.priority }}">
+                            {% if message.priority == 'high' %}مهم
+                            {% elif message.priority == 'urgent' %}عاجل
+                            {% else %}عادي{% endif %}
+                        </span>
+                    </div>
+
+                    <!-- Meta Info -->
+                    <div class="message-meta-info">
+                        <div class="sender-row">
+                            <div class="sender-avatar">
+                                {{ message.sender.name[0] if message.sender else '?' }}
+                            </div>
+                            <div class="sender-details">
+                                <div class="sender-name">{{ message.sender.name if message.sender else 'غير معروف' }}</div>
+                                <div class="sender-email">{{ message.sender.username if message.sender else '' }}</div>
+                                <div class="meta-details">
+                                    <span><i class="bi bi-clock me-1"></i> {{ message.created_at.strftime('%Y-%m-%d %H:%M') }}</span>
+                                    {% if message.has_attachments %}
+                                    <span><i class="bi bi-paperclip me-1"></i> مرفقات</span>
+                                    {% endif %}
+                                </div>
+                            </div>
+                        </div>
+
+                        <!-- Recipients -->
+                        <div class="recipients-details">
+                            {% set to_recipients = message.recipients|selectattr('recipient_type', 'equalto', 'to')|list %}
+                            {% set cc_recipients = message.recipients|selectattr('recipient_type', 'equalto', 'cc')|list %}
+                            {% set bcc_recipients = message.recipients|selectattr('recipient_type', 'equalto', 'bcc')|list %}
+                            
+                            {% if to_recipients %}
+                            <div class="recipient-group">
+                                <span class="recipient-label">إلى:</span>
+                                <div class="recipient-names">
+                                    {% for r in to_recipients %}
+                                    <span class="recipient-tag">{{ r.user.name }}</span>
+                                    {% endfor %}
+                                </div>
+                            </div>
+                            {% endif %}
+                            
+                            {% if cc_recipients %}
+                            <div class="recipient-group">
+                                <span class="recipient-label">نسخة:</span>
+                                <div class="recipient-names">
+                                    {% for r in cc_recipients %}
+                                    <span class="recipient-tag cc">{{ r.user.name }}</span>
+                                    {% endfor %}
+                                </div>
+                            </div>
+                            {% endif %}
+                            
+                            {% if bcc_recipients and is_sender %}
+                            <div class="recipient-group">
+                                <span class="recipient-label">نسخة مخفية:</span>
+                                <div class="recipient-names">
+                                    {% for r in bcc_recipients %}
+                                    <span class="recipient-tag bcc">{{ r.user.name }}</span>
+                                    {% endfor %}
+                                </div>
+                            </div>
+                            {% endif %}
+                        </div>
+                    </div>
+
+                    <!-- Message Body -->
+                    <div class="message-body">
+                        {{ message.body|safe }}
+                    </div>
+
+                    <!-- Attachments -->
+                    {% if attachments %}
+                    <div class="attachments-section">
+                        <div class="attachments-title">
+                            <i class="bi bi-paperclip"></i>
+                            المرفقات ({{ attachments|length }})
+                        </div>
+                        <div class="attachments-grid">
+                            {% for attachment in attachments %}
+                            <a href="{{ url_for('download_message_attachment', attachment_id=attachment.id) }}" class="attachment-item">
+                                <div class="attachment-icon">
+                                    {% if attachment.mime_type and attachment.mime_type.startswith('image/') %}
+                                    <i class="bi bi-image"></i>
+                                    {% elif attachment.mime_type and attachment.mime_type.startswith('application/pdf') %}
+                                    <i class="bi bi-file-pdf"></i>
+                                    {% elif attachment.mime_type and attachment.mime_type.startswith('application/vnd.openxmlformats-officedocument.spreadsheetml.sheet') %}
+                                    <i class="bi bi-file-excel"></i>
+                                    {% elif attachment.mime_type and attachment.mime_type.startswith('application/vnd.openxmlformats-officedocument.wordprocessingml.document') %}
+                                    <i class="bi bi-file-word"></i>
+                                    {% else %}
+                                    <i class="bi bi-file-earmark"></i>
+                                    {% endif %}
+                                </div>
+                                <div class="attachment-info">
+                                    <div class="attachment-name">{{ attachment.original_filename }}</div>
+                                    <div class="attachment-size">{{ attachment.get_formatted_size() }}</div>
+                                </div>
+                            </a>
+                            {% endfor %}
+                        </div>
+                    </div>
+                    {% endif %}
+
+                    <!-- Thread Section -->
+                    {% if thread_messages and thread_messages|length > 1 %}
+                    <div class="thread-section">
+                        <div class="thread-header" onclick="toggleThread()">
+                            <span>
+                                <i class="bi bi-chat-dots me-2"></i>
+                                عرض سلسلة المحادثة ({{ thread_messages|length }} رسائل)
+                            </span>
+                            <i class="bi bi-chevron-down" id="threadToggle"></i>
+                        </div>
+                        <div class="thread-messages" id="threadMessages">
+                            {% for msg in thread_messages %}
+                                {% if msg.id != message.id %}
+                                <div class="thread-message">
+                                    <div class="thread-message-header">
+                                        <span class="thread-message-sender">{{ msg.sender.name if msg.sender else 'غير معروف' }}</span>
+                                        <span class="thread-message-date">{{ msg.created_at.strftime('%Y-%m-%d %H:%M') }}</span>
+                                    </div>
+                                    <div class="thread-message-body">
+                                        {{ msg.body|safe }}
+                                    </div>
+                                </div>
+                                {% endif %}
+                            {% endfor %}
+                        </div>
+                    </div>
+                    {% endif %}
+
+                    <!-- Reply Form -->
+                    <div class="reply-form">
+                        <form action="{{ url_for('messages_reply', message_id=message.id) }}" method="POST">
+                            <textarea name="body" rows="4" placeholder="اكتب ردك هنا..."></textarea>
+                            <div class="reply-actions">
+                                <button type="submit" class="btn-reply">
+                                    <i class="bi bi-reply"></i>
+                                    إرسال الرد
+                                </button>
+                            </div>
+                        </form>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </div>
+
+    <!-- Loading Overlay -->
+    <div id="loadingOverlay" class="loading-overlay" style="display: none;">
+        <div class="loading-spinner"></div>
+        <div class="text-white">جاري المعالجة...</div>
+    </div>
+
+    <script>
+        document.addEventListener('DOMContentLoaded', function() {
+            // Mobile menu
+            const mobileMenuBtn = document.getElementById('mobileMenuBtn');
+            const mobileNavMenu = document.getElementById('mobileNavMenu');
+            
+            if (mobileMenuBtn && mobileNavMenu) {
+                mobileMenuBtn.addEventListener('click', () => mobileNavMenu.classList.toggle('active'));
+            }
+
+            // Real-time clock
+            function updateClock() {
+                const now = new Date();
+                const clockElement = document.getElementById('live-clock');
+                if (clockElement) {
+                    clockElement.innerHTML = `
+                        <i class="bi bi-clock me-2"></i>
+                        ${now.toLocaleTimeString('ar-EG')}
+                    `;
+                }
+            }
+            updateClock();
+            setInterval(updateClock, 1000);
+        });
+
+        // Toggle thread
+        function toggleThread() {
+            const threadMessages = document.getElementById('threadMessages');
+            const toggleIcon = document.getElementById('threadToggle');
+            const threadHeader = document.querySelector('.thread-header');
+            
+            threadMessages.classList.toggle('show');
+            threadHeader.classList.toggle('active');
+            
+            if (threadMessages.classList.contains('show')) {
+                toggleIcon.classList.remove('bi-chevron-down');
+                toggleIcon.classList.add('bi-chevron-up');
+            } else {
+                toggleIcon.classList.remove('bi-chevron-up');
+                toggleIcon.classList.add('bi-chevron-down');
+            }
+        }
+
+        // Toggle star
+        function toggleStar(messageId) {
+            showLoading(true);
+            
+            fetch(`/messages/star/${messageId}`, {
+                method: 'POST',
+                headers: {
+                    'Content-Type': 'application/json',
+                }
+            })
+            .then(response => response.json())
+            .then(data => {
+                showLoading(false);
+                if (data.success) {
+                    const starBtn = document.querySelector('.toolbar-btn:nth-child(4)');
+                    const starIcon = starBtn.querySelector('i');
+                    
+                    if (data.is_starred) {
+                        starIcon.classList.remove('bi-star');
+                        starIcon.classList.add('bi-star-fill');
+                        starBtn.innerHTML = starIcon.outerHTML + ' إزالة التمييز';
+                    } else {
+                        starIcon.classList.remove('bi-star-fill');
+                        starIcon.classList.add('bi-star');
+                        starBtn.innerHTML = starIcon.outerHTML + ' تمييز';
+                    }
+                    
+                    showAlert('تم تحديث حالة التمييز', 'success');
+                }
+            })
+            .catch(error => {
+                showLoading(false);
+                showAlert('حدث خطأ', 'error');
+            });
+        }
+
+        // Archive message
+        function archiveMessage(messageId) {
+            if (!confirm('هل أنت متأكد من نقل الرسالة إلى الأرشيف؟')) {
+                return;
+            }
+            
+            showLoading(true);
+            
+            fetch(`/messages/archive/${messageId}`, {
+                method: 'POST',
+                headers: {
+                    'Content-Type': 'application/json',
+                }
+            })
+            .then(response => response.json())
+            .then(data => {
+                showLoading(false);
+                if (data.success) {
+                    showAlert('تم نقل الرسالة إلى الأرشيف', 'success');
+                    setTimeout(() => {
+                        window.location.href = '{{ url_for('messages_inbox') }}';
+                    }, 1500);
+                } else {
+                    showAlert(data.message || 'حدث خطأ', 'error');
+                }
+            })
+            .catch(error => {
+                showLoading(false);
+                showAlert('حدث خطأ', 'error');
+            });
+        }
+
+        // Delete message
+        function deleteMessage(messageId) {
+            if (!confirm('هل أنت متأكد من حذف هذه الرسالة؟')) {
+                return;
+            }
+            
+            showLoading(true);
+            
+            fetch(`/messages/delete/${messageId}`, {
+                method: 'POST',
+                headers: {
+                    'Content-Type': 'application/json',
+                }
+            })
+            .then(response => response.json())
+            .then(data => {
+                showLoading(false);
+                if (data.success) {
+                    showAlert('تم حذف الرسالة', 'success');
+                    setTimeout(() => {
+                        window.location.href = '{{ url_for('messages_inbox') }}';
+                    }, 1500);
+                } else {
+                    showAlert(data.message || 'حدث خطأ', 'error');
+                }
+            })
+            .catch(error => {
+                showLoading(false);
+                showAlert('حدث خطأ', 'error');
+            });
+        }
+
+        // Show loading
+        function showLoading(show = true) {
+            const overlay = document.getElementById('loadingOverlay');
+            if (overlay) {
+                overlay.style.display = show ? 'flex' : 'none';
+            }
+        }
+
+        // Show alert
+        function showAlert(message, type = 'success') {
+            const alert = document.createElement('div');
+            alert.className = `alert alert-${type === 'error' ? 'danger' : type} alert-dismissible fade show mb-2`;
+            alert.innerHTML = `
+                <i class="bi bi-${type === 'success' ? 'check-circle' : type === 'error' ? 'exclamation-triangle' : 'info-circle'} me-2"></i>
+                ${message}
+                <button type="button" class="btn-close" data-bs-dismiss="alert" aria-label="Close"></button>
+            `;
+            
+            const container = document.querySelector('.alert-container');
+            container.insertBefore(alert, container.firstChild);
+            
+            setTimeout(() => {
+                alert.remove();
+            }, 5000);
+        }
+
+        // Export functions
+        window.toggleStar = toggleStar;
+        window.archiveMessage = archiveMessage;
+        window.deleteMessage = deleteMessage;
+        window.toggleThread = toggleThread;
+    </script>
+</body>
+</html>

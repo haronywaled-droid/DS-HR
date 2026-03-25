@@ -1,0 +1,302 @@
+
+<div class="container-fluid">
+    <div class="row mb-4">
+        <div class="col-12">
+            <h1 class="h3 mb-0">لوحة تحكم مزامنة الجداول</h1>
+            <p class="text-muted">إدارة وتوحيد جميع الجداول الأسبوعية مع هياكل الأقسام</p>
+        </div>
+    </div>
+
+    <!-- إحصائيات سريعة -->
+    <div class="row mb-4">
+        <div class="col-md-3">
+            <div class="card border-primary">
+                <div class="card-body">
+                    <h5 class="card-title text-primary">الأقسام</h5>
+                    <h2 class="display-6">{{ total_departments }}</h2>
+                    <p class="text-muted">{{ departments_with_structure }} لديهم هيكل</p>
+                </div>
+            </div>
+        </div>
+        
+        <div class="col-md-3">
+            <div class="card border-success">
+                <div class="card-body">
+                    <h5 class="card-title text-success">الجداول</h5>
+                    <h2 class="display-6">{{ total_schedules }}</h2>
+                    <p class="text-muted">{{ synced_schedules }} مزامنة</p>
+                </div>
+            </div>
+        </div>
+        
+        <div class="col-md-3">
+            <div class="card border-warning">
+                <div class="card-body">
+                    <h5 class="card-title text-warning">هياكل البيانات</h5>
+                    <h2 class="display-6">{{ structure_types.new_format }}</h2>
+                    <p class="text-muted">الحديثة: {{ structure_types.new_format }}</p>
+                </div>
+            </div>
+        </div>
+        
+        <div class="col-md-3">
+            <div class="card border-info">
+                <div class="card-body">
+                    <h5 class="card-title text-info">الحالة العامة</h5>
+                    <div class="progress" style="height: 20px;">
+                        <div class="progress-bar bg-info" 
+                             style="width: {{ (synced_schedules / total_schedules * 100) if total_schedules > 0 else 0 }}%">
+                            {{ "%.1f"|format((synced_schedules / total_schedules * 100) if total_schedules > 0 else 0) }}%
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </div>
+
+    <!-- أقسام تحتاج اهتماماً -->
+    <div class="row mb-4">
+        <div class="col-12">
+            <div class="card">
+                <div class="card-header bg-warning text-white">
+                    <h5 class="mb-0">أقسام تحتاج مزامنة</h5>
+                </div>
+                <div class="card-body">
+                    {% if departments_needing_attention %}
+                    <div class="table-responsive">
+                        <table class="table table-hover">
+                            <thead>
+                                <tr>
+                                    <th>اسم القسم</th>
+                                    <th>الجداول غير المزامنة</th>
+                                    <th>إجمالي الجداول</th>
+                                    <th>نسبة المزامنة</th>
+                                    <th>الإجراءات</th>
+                                </tr>
+                            </thead>
+                            <tbody>
+                                {% for dept_info in departments_needing_attention %}
+                                <tr>
+                                    <td>{{ dept_info.department.name }}</td>
+                                    <td>
+                                        <span class="badge bg-danger">{{ dept_info.unsynced_count }}</span>
+                                    </td>
+                                    <td>{{ dept_info.total_schedules }}</td>
+                                    <td>
+                                        <div class="progress" style="height: 10px;">
+                                            {% set sync_percentage = ((dept_info.total_schedules - dept_info.unsynced_count) / dept_info.total_schedules * 100) if dept_info.total_schedules > 0 else 0 %}
+                                            <div class="progress-bar bg-success" style="width: {{ sync_percentage }}%"></div>
+                                        </div>
+                                        {{ "%.1f"|format(sync_percentage) }}%
+                                    </td>
+                                    <td>
+                                        <button class="btn btn-sm btn-primary sync-department-btn" 
+                                                data-dept-id="{{ dept_info.department.id }}">
+                                            <i class="fas fa-sync"></i> مزامنة
+                                        </button>
+                                    </td>
+                                </tr>
+                                {% endfor %}
+                            </tbody>
+                        </table>
+                    </div>
+                    {% else %}
+                    <div class="alert alert-success">
+                        <i class="fas fa-check-circle"></i>
+                        جميع الأقسام مزامنة بشكل كامل
+                    </div>
+                    {% endif %}
+                </div>
+            </div>
+        </div>
+    </div>
+
+    <!-- إجراءات المزامنة -->
+    <div class="row">
+        <div class="col-md-6">
+            <div class="card">
+                <div class="card-header">
+                    <h5 class="mb-0">مزامنة فورية</h5>
+                </div>
+                <div class="card-body">
+                    <div class="alert alert-info">
+                        <i class="fas fa-info-circle"></i>
+                        مزامنة جميع الجداول مع هياكل الأقسام الحالية
+                    </div>
+                    
+                    <div class="d-grid gap-2">
+                        <button class="btn btn-lg btn-primary" id="full-sync-btn">
+                            <i class="fas fa-sync fa-spin d-none"></i>
+                            <span>مزامنة جميع الجداول</span>
+                        </button>
+                        
+                        <button class="btn btn-lg btn-success" id="generate-future-btn">
+                            <i class="fas fa-calendar-plus"></i>
+                            إنشاء جداول مستقبلية
+                        </button>
+                    </div>
+                    
+                    <div class="mt-3">
+                        <a href="{{ url_for('admin_schedule_sync_report') }}" class="btn btn-outline-secondary">
+                            <i class="fas fa-chart-bar"></i>
+                            عرض التقرير التفصيلي
+                        </a>
+                        
+                        <a href="{{ url_for('admin_auto_sync_settings') }}" class="btn btn-outline-secondary">
+                            <i class="fas fa-cog"></i>
+                            إعدادات المزامنة
+                        </a>
+                    </div>
+                </div>
+            </div>
+        </div>
+        
+        <div class="col-md-6">
+            <div class="card">
+                <div class="card-header">
+                    <h5 class="mb-0">تحليل هياكل البيانات</h5>
+                </div>
+                <div class="card-body">
+                    <table class="table">
+                        <tbody>
+                            <tr>
+                                <td><span class="badge bg-success">الجديد</span></td>
+                                <td>هيكل موحد مع الهيكل الأساسي</td>
+                                <td><strong>{{ structure_types.new_format }}</strong></td>
+                            </tr>
+                            <tr>
+                                <td><span class="badge bg-warning">القديم</span></td>
+                                <td>هيكل قاموس قديم</td>
+                                <td><strong>{{ structure_types.old_format }}</strong></td>
+                            </tr>
+                            <tr>
+                                <td><span class="badge bg-info">قائمة</span></td>
+                                <td>هيكل قائمة</td>
+                                <td><strong>{{ structure_types.list_format }}</strong></td>
+                            </tr>
+                            <tr>
+                                <td><span class="badge bg-secondary">فارغ</span></td>
+                                <td>لا يحتوي على بيانات</td>
+                                <td><strong>{{ structure_types.empty }}</strong></td>
+                            </tr>
+                            <tr class="table-primary">
+                                <td><span class="badge bg-primary">مزامن</span></td>
+                                <td>مزامن مع الهيكل</td>
+                                <td><strong>{{ structure_types.synced }}</strong></td>
+                            </tr>
+                            <tr class="table-danger">
+                                <td><span class="badge bg-danger">غير مزامن</span></td>
+                                <td>غير مزامن مع الهيكل</td>
+                                <td><strong>{{ structure_types.not_synced }}</strong></td>
+                            </tr>
+                        </tbody>
+                    </table>
+                </div>
+            </div>
+        </div>
+    </div>
+</div>
+
+<!-- JavaScript لمعالجة المزامنة -->
+<script>
+$(document).ready(function() {
+    // مزامنة كاملة
+    $('#full-sync-btn').click(function() {
+        const btn = $(this);
+        const icon = btn.find('.fa-sync');
+        
+        btn.prop('disabled', true);
+        icon.removeClass('d-none');
+        
+        $.ajax({
+            url: '{{ url_for("admin_execute_full_sync") }}',
+            method: 'POST',
+            contentType: 'application/json',
+            success: function(response) {
+                if (response.success) {
+                    showAlert('success', response.message);
+                    setTimeout(() => location.reload(), 2000);
+                } else {
+                    showAlert('danger', response.message);
+                }
+            },
+            error: function() {
+                showAlert('danger', 'حدث خطأ في المزامنة');
+            },
+            complete: function() {
+                btn.prop('disabled', false);
+                icon.addClass('d-none');
+            }
+        });
+    });
+    
+    // إنشاء جداول مستقبلية
+    $('#generate-future-btn').click(function() {
+        const btn = $(this);
+        
+        btn.prop('disabled', true);
+        
+        $.ajax({
+            url: '{{ url_for("admin_generate_future_schedules") }}',
+            method: 'POST',
+            contentType: 'application/json',
+            success: function(response) {
+                if (response.success) {
+                    showAlert('success', response.message);
+                    setTimeout(() => location.reload(), 2000);
+                } else {
+                    showAlert('danger', response.message);
+                }
+            },
+            error: function() {
+                showAlert('danger', 'حدث خطأ في إنشاء الجداول');
+            },
+            complete: function() {
+                btn.prop('disabled', false);
+            }
+        });
+    });
+    
+    // مزامنة قسم معين
+    $('.sync-department-btn').click(function() {
+        const btn = $(this);
+        const deptId = btn.data('dept-id');
+        
+        btn.prop('disabled', true);
+        btn.html('<i class="fas fa-spinner fa-spin"></i> جاري المزامنة...');
+        
+        $.ajax({
+            url: '/admin/sync_department_schedules/' + deptId,
+            method: 'POST',
+            contentType: 'application/json',
+            success: function(response) {
+                if (response.success) {
+                    showAlert('success', response.message);
+                    setTimeout(() => location.reload(), 2000);
+                } else {
+                    showAlert('danger', response.message);
+                }
+            },
+            error: function() {
+                showAlert('danger', 'حدث خطأ في مزامنة القسم');
+            },
+            complete: function() {
+                btn.prop('disabled', false);
+                btn.html('<i class="fas fa-sync"></i> مزامنة');
+            }
+        });
+    });
+    
+    function showAlert(type, message) {
+        const alert = $('<div class="alert alert-' + type + ' alert-dismissible fade show mt-3">' +
+                       '<button type="button" class="btn-close" data-bs-dismiss="alert"></button>' +
+                       message + '</div>');
+        
+        $('.container-fluid').prepend(alert);
+        
+        setTimeout(() => {
+            alert.alert('close');
+        }, 5000);
+    }
+});
+</script>

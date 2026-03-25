@@ -1,0 +1,345 @@
+{% extends "layouts/manager_base.html" %}
+
+{% block title %}طلبات السلف{% endblock %}
+
+{% block manager_content %}
+<div class="d-flex justify-content-between flex-wrap flex-md-nowrap align-items-center pt-3 pb-2 mb-3 border-bottom">
+    <h1 class="h2">طلبات السلف</h1>
+    <div class="btn-group">
+        <span class="badge bg-warning fs-6">
+            طلبات معلقة: {{ advance_requests | selectattr('status', 'equalto', 'pending') | list | length }}
+        </span>
+    </div>
+</div>
+
+<!-- Statistics -->
+<div class="row mb-4">
+    <div class="col-xl-3 col-md-6 mb-4">
+        <div class="card stat-card">
+            <div class="card-body">
+                <div class="row no-gutters align-items-center">
+                    <div class="col me-2">
+                        <div class="text-xs font-weight-bold text-white text-uppercase mb-1">
+                            طلبات معلقة
+                        </div>
+                        <div class="h5 mb-0 font-weight-bold text-white">
+                            {{ advance_requests | selectattr('status', 'equalto', 'pending') | list | length }}
+                        </div>
+                    </div>
+                    <div class="col-auto">
+                        <i class="fas fa-clock fa-2x text-white"></i>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </div>
+
+    <div class="col-xl-3 col-md-6 mb-4">
+        <div class="card stat-card">
+            <div class="card-body">
+                <div class="row no-gutters align-items-center">
+                    <div class="col me-2">
+                        <div class="text-xs font-weight-bold text-white text-uppercase mb-1">
+                            إجمالي المبالغ المطلوبة
+                        </div>
+                        <div class="h5 mb-0 font-weight-bold text-white">
+                            {{ advance_requests | selectattr('status', 'equalto', 'pending') | map(attribute='amount') | sum }} جنيه
+                        </div>
+                    </div>
+                    <div class="col-auto">
+                        <i class="fas fa-money-bill-wave fa-2x text-white"></i>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </div>
+
+    <div class="col-xl-3 col-md-6 mb-4">
+        <div class="card stat-card">
+            <div class="card-body">
+                <div class="row no-gutters align-items-center">
+                    <div class="col me-2">
+                        <div class="text-xs font-weight-bold text-white text-uppercase mb-1">
+                            طلبات مقبولة
+                        </div>
+                        <div class="h5 mb-0 font-weight-bold text-white">
+                            {{ advance_requests | selectattr('status', 'equalto', 'approved') | list | length }}
+                        </div>
+                    </div>
+                    <div class="col-auto">
+                        <i class="fas fa-check-circle fa-2x text-white"></i>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </div>
+
+    <div class="col-xl-3 col-md-6 mb-4">
+        <div class="card stat-card">
+            <div class="card-body">
+                <div class="row no-gutters align-items-center">
+                    <div class="col me-2">
+                        <div class="text-xs font-weight-bold text-white text-uppercase mb-1">
+                            إجمالي الطلبات
+                        </div>
+                        <div class="h5 mb-0 font-weight-bold text-white">{{ advance_requests|length }}</div>
+                    </div>
+                    <div class="col-auto">
+                        <i class="fas fa-list-alt fa-2x text-white"></i>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </div>
+</div>
+
+<!-- Pending Requests -->
+<div class="card">
+    <div class="card-header bg-warning text-dark">
+        <h5 class="card-title mb-0">
+            <i class="fas fa-clock me-2"></i>
+            الطلبات المعلقة
+        </h5>
+    </div>
+    <div class="card-body">
+        {% set pending_requests = advance_requests | selectattr('status', 'equalto', 'pending') | list %}
+        {% if pending_requests %}
+        <div class="table-responsive">
+            <table class="table table-striped">
+                <thead class="table-warning">
+                    <tr>
+                        <th>الموظف</th>
+                        <th>المبلغ</th>
+                        <th>عدد الأقساط</th>
+                        <th>القسط الشهري</th>
+                        <th>السبب</th>
+                        <th>تاريخ الطلب</th>
+                        <th>الإجراءات</th>
+                    </tr>
+                </thead>
+                <tbody>
+                    {% for request in pending_requests %}
+                    <tr>
+                        <td>
+                            <div class="d-flex align-items-center">
+                                <div class="avatar me-3">
+                                    <div class="bg-primary rounded-circle d-flex align-items-center justify-content-center" 
+                                         style="width: 35px; height: 35px;">
+                                        <span class="text-white fw-bold">{{ request.user.name[0] }}</span>
+                                    </div>
+                                </div>
+                                <div>
+                                    <h6 class="mb-0">{{ request.user.name }}</h6>
+                                    <small class="text-muted">{{ request.department.name }}</small>
+                                </div>
+                            </div>
+                        </td>
+                        <td>
+                            <span class="badge bg-success fs-6">{{ request.amount }} جنيه</span>
+                        </td>
+                        <td>
+                            <span class="badge bg-info">{{ request.installment_months }} شهر</span>
+                        </td>
+                        <td>
+                            <strong>{{ (request.amount / request.installment_months) | round | int }} جنيه/شهر</strong>
+                        </td>
+                        <td>
+                            {% if request.reason %}
+                                <button type="button" class="btn btn-sm btn-outline-secondary" 
+                                        data-bs-toggle="tooltip" data-bs-placement="top" 
+                                        title="{{ request.reason }}">
+                                    <i class="fas fa-eye"></i> عرض السبب
+                                </button>
+                            {% else %}
+                                <span class="text-muted">لا يوجد</span>
+                            {% endif %}
+                        </td>
+                        <td>{{ request.created_at.strftime('%Y-%m-%d') }}</td>
+                        <td>
+                            <div class="btn-group btn-group-sm">
+                                <a href="{{ url_for('approve_advance', request_id=request.id) }}" 
+                                   class="btn btn-success" 
+                                   title="موافقة"
+                                   onclick="return confirm('هل تريد الموافقة على طلب السلفة؟')">
+                                    <i class="fas fa-check"></i> موافقة
+                                </a>
+                                <button type="button" class="btn btn-danger" 
+                                        data-bs-toggle="modal" 
+                                        data-bs-target="#rejectModal{{ request.id }}"
+                                        title="رفض">
+                                    <i class="fas fa-times"></i> رفض
+                                </button>
+                            </div>
+
+                            <!-- Reject Modal -->
+                            <div class="modal fade" id="rejectModal{{ request.id }}" tabindex="-1">
+                                <div class="modal-dialog">
+                                    <div class="modal-content">
+                                        <div class="modal-header">
+                                            <h5 class="modal-title">رفض طلب السلفة</h5>
+                                            <button type="button" class="btn-close" data-bs-dismiss="modal"></button>
+                                        </div>
+                                        <form method="POST" action="{{ url_for('reject_advance', request_id=request.id) }}">
+                                            <div class="modal-body">
+                                                <div class="alert alert-info">
+                                                    <h6>تفاصيل الطلب:</h6>
+                                                    <p><strong>الموظف:</strong> {{ request.user.name }}</p>
+                                                    <p><strong>المبلغ:</strong> {{ request.amount }} جنيه</p>
+                                                    <p><strong>عدد الأقساط:</strong> {{ request.installment_months }} شهر</p>
+                                                    <p><strong>القسط الشهري:</strong> {{ (request.amount / request.installment_months) | round | int }} جنيه</p>
+                                                </div>
+                                                <div class="mb-3">
+                                                    <label for="rejection_reason{{ request.id }}" class="form-label">سبب الرفض *</label>
+                                                    <textarea class="form-control" id="rejection_reason{{ request.id }}" 
+                                                              name="rejection_reason" rows="4" 
+                                                              placeholder="يرجى كتابة سبب رفض طلب السلفة..." required></textarea>
+                                                </div>
+                                            </div>
+                                            <div class="modal-footer">
+                                                <button type="button" class="btn btn-secondary" data-bs-dismiss="modal">إلغاء</button>
+                                                <button type="submit" class="btn btn-danger">
+                                                    <i class="fas fa-times me-1"></i> رفض الطلب
+                                                </button>
+                                            </div>
+                                        </form>
+                                    </div>
+                                </div>
+                            </div>
+                        </td>
+                    </tr>
+                    {% endfor %}
+                </tbody>
+            </table>
+        </div>
+        {% else %}
+        <div class="text-center py-4">
+            <i class="fas fa-check-circle fa-3x text-success mb-3"></i>
+            <h5 class="text-success">لا توجد طلبات سلف معلقة</h5>
+            <p class="text-muted">جميع الطلبات تمت معالجتها</p>
+        </div>
+        {% endif %}
+    </div>
+</div>
+
+<!-- Request History -->
+<div class="card mt-4">
+    <div class="card-header bg-light">
+        <h5 class="card-title mb-0">
+            <i class="fas fa-history me-2"></i>
+            سجل الطلبات
+        </h5>
+    </div>
+    <div class="card-body">
+        {% set processed_requests = advance_requests | rejectattr('status', 'equalto', 'pending') | list %}
+        {% if processed_requests %}
+        <div class="table-responsive">
+            <table class="table table-striped">
+                <thead>
+                    <tr>
+                        <th>الموظف</th>
+                        <th>المبلغ</th>
+                        <th>عدد الأقساط</th>
+                        <th>الحالة</th>
+                        <th>تاريخ القرار</th>
+                        <th>سبب الرفض</th>
+                        <th>تمت المعالجة بواسطة</th>
+                    </tr>
+                </thead>
+                <tbody>
+                    {% for request in processed_requests %}
+                    <tr>
+                        <td>{{ request.user.name }}</td>
+                        <td>
+                            <strong>{{ request.amount }} جنيه</strong>
+                        </td>
+                        <td>{{ request.installment_months }} شهر</td>
+                        <td>
+                            {% if request.status == 'approved' %}
+                                <span class="badge bg-success">
+                                    <i class="fas fa-check me-1"></i>موافق
+                                </span>
+                            {% else %}
+                                <span class="badge bg-danger">
+                                    <i class="fas fa-times me-1"></i>مرفوض
+                                </span>
+                            {% endif %}
+                        </td>
+                        <td>
+                            {% if request.approved_at %}
+                                {{ request.approved_at.strftime('%Y-%m-%d') }}
+                            {% else %}
+                                <span class="text-muted">-</span>
+                            {% endif %}
+                        </td>
+                        <td>
+                            {% if request.rejection_reason %}
+                                <button type="button" class="btn btn-sm btn-outline-secondary" 
+                                        data-bs-toggle="tooltip" data-bs-placement="top" 
+                                        title="{{ request.rejection_reason }}">
+                                    <i class="fas fa-eye"></i>
+                                </button>
+                            {% else %}
+                                <span class="text-muted">-</span>
+                            {% endif %}
+                        </td>
+                        <td>
+                            {% if request.approved_by %}
+                                <span class="text-muted">مدير النظام</span>
+                            {% else %}
+                                <span class="text-muted">-</span>
+                            {% endif %}
+                        </td>
+                    </tr>
+                    {% endfor %}
+                </tbody>
+            </table>
+        </div>
+
+        <!-- Financial Summary -->
+        <div class="row mt-4">
+            <div class="col-md-6">
+                <div class="card bg-success text-white">
+                    <div class="card-body text-center">
+                        <h5>إجمالي السلف المعتمدة</h5>
+                        <h3>
+                            {{ processed_requests | selectattr('status', 'equalto', 'approved') | map(attribute='amount') | sum }} جنيه
+                        </h3>
+                    </div>
+                </div>
+            </div>
+            <div class="col-md-6">
+                <div class="card bg-danger text-white">
+                    <div class="card-body text-center">
+                        <h5>إجمالي السلف المرفوضة</h5>
+                        <h3>
+                            {{ processed_requests | selectattr('status', 'equalto', 'rejected') | map(attribute='amount') | sum }} جنيه
+                        </h3>
+                    </div>
+                </div>
+            </div>
+        </div>
+        {% else %}
+        <div class="text-center py-4">
+            <i class="fas fa-inbox fa-3x text-muted mb-3"></i>
+            <p class="text-muted">لا توجد طلبات سابقة</p>
+        </div>
+        {% endif %}
+    </div>
+</div>
+
+<script>
+// Initialize tooltips
+document.addEventListener('DOMContentLoaded', function() {
+    var tooltipTriggerList = [].slice.call(document.querySelectorAll('[data-bs-toggle="tooltip"]'))
+    var tooltipList = tooltipTriggerList.map(function (tooltipTriggerEl) {
+        return new bootstrap.Tooltip(tooltipTriggerEl)
+    });
+});
+</script>
+
+<style>
+.avatar {
+    flex-shrink: 0;
+}
+</style>
+{% endblock %}
